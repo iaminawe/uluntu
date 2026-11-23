@@ -41,9 +41,7 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
         <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2 group-hover:text-orange-500 transition-colors">
           {article.title}
         </h3>
-        <p className="text-slate-600 dark:text-slate-300 mb-4 flex-1">
-          {truncateExcerpt(article.excerpt)}
-        </p>
+        <p className="text-slate-600 dark:text-slate-300 mb-4 flex-1">{truncateExcerpt(article.excerpt)}</p>
         <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center">
@@ -52,16 +50,12 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
                 alt={article.author.name}
                 className="w-8 h-8 rounded-full mr-2 object-cover"
               />
-              <span className="text-sm text-slate-600 dark:text-slate-300">
-                {article.author.name}
-              </span>
+              <span className="text-sm text-slate-600 dark:text-slate-300">{article.author.name}</span>
             </div>
-            <span className="text-sm text-slate-500 dark:text-slate-400">
-              {formatDate(article.date)}
-            </span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">{formatDate(article.date)}</span>
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4" onClick={(e) => e.preventDefault()}>
+            <div className="flex items-center gap-4" onClick={e => e.preventDefault()}>
               <LikeButton
                 entityType="news"
                 entityId={article.id}

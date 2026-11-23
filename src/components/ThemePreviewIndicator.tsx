@@ -11,10 +11,7 @@ export const ThemePreviewIndicator: React.FC = () => {
     <div className="theme-preview-indicator flex items-center gap-2">
       <Eye className="w-4 h-4" />
       <span>Preview Mode</span>
-      <button
-        onClick={() => setPreviewTheme(null)}
-        className="ml-2 text-xs underline hover:no-underline"
-      >
+      <button onClick={() => setPreviewTheme(null)} className="ml-2 text-xs underline hover:no-underline">
         Exit
       </button>
     </div>

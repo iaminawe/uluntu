@@ -4,16 +4,15 @@ import {
   adaptOpportunityToDatabase,
   adaptOpportunityInputToDatabase,
   adaptExtendedOpportunityFromDatabase,
-  ExtendedOpportunity
+  ExtendedOpportunity,
 } from '../utils/opportunityAdapter';
-import { 
-  Opportunity, 
-  OpportunityGallery, 
-  AttachGalleryInput, 
+import {
+  Opportunity,
+  OpportunityGallery,
+  AttachGalleryInput,
   UpdateGalleryAttachmentInput,
-  AttachableGallery
+  AttachableGallery,
 } from '../types';
-
 
 // Define the input type for opportunity data passed from the application
 export interface OpportunityInput {
@@ -37,10 +36,10 @@ export interface OpportunityInput {
 }
 
 export const opportunitiesApi = {
-  async getAll(filters?: { 
-    search?: string; 
-    type?: string[]; 
-    remote?: boolean; 
+  async getAll(filters?: {
+    search?: string;
+    type?: string[];
+    remote?: boolean;
     location?: string[];
     status?: string;
     featured?: boolean;
@@ -48,7 +47,7 @@ export const opportunitiesApi = {
   }): Promise<Opportunity[]> {
     try {
       console.log('[OpportunitiesAPI] Fetching opportunities with filters:', filters);
-      
+
       let query = supabase
         .from('opportunities')
         .select('*')
@@ -57,7 +56,9 @@ export const opportunitiesApi = {
 
       // Apply filters if provided
       if (filters?.search) {
-        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,location.ilike.%${filters.search}%`);
+        query = query.or(
+          `title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,location.ilike.%${filters.search}%`
+        );
       }
 
       if (filters?.type && filters.type.length > 0) {
@@ -75,7 +76,7 @@ export const opportunitiesApi = {
       }
 
       const { data, error } = await query;
-      
+
       console.log('[OpportunitiesAPI] Query result:', { dataLength: data?.length, error });
 
       if (error) {
@@ -83,7 +84,7 @@ export const opportunitiesApi = {
         handleSupabaseError(error, 'fetching opportunities');
         return [];
       }
-      
+
       const adapted = adaptItemsList(data || [], (item: any) => adaptOpportunityFromDatabase(item));
       console.log('[OpportunitiesAPI] Adapted opportunities:', adapted.length);
       return adapted;
@@ -96,19 +97,16 @@ export const opportunitiesApi = {
   async getById(id: string): Promise<Opportunity | null> {
     try {
       console.log('[OpportunitiesAPI.getById] Fetching opportunity with id:', id);
-      const { data, error } = await supabase
-        .from('opportunities')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('opportunities').select('*').eq('id', id).single();
 
       console.log('[OpportunitiesAPI.getById] Supabase response:', { data, error });
 
       if (error) {
         console.error('[OpportunitiesAPI.getById] Supabase error:', error);
-        
+
         // Return mock data if no opportunity found
-        if (error.code === 'PGRST116') { // Row not found
+        if (error.code === 'PGRST116') {
+          // Row not found
           console.log('[OpportunitiesAPI.getById] No opportunity found, returning mock data');
           const mockOpportunity = {
             id: id,
@@ -117,7 +115,8 @@ export const opportunitiesApi = {
             type: 'full-time',
             location: 'Nelson, BC',
             remote: true,
-            description: 'We are looking for an experienced Full Stack Developer to join our growing team. You will be responsible for developing and maintaining our web applications using modern technologies.',
+            description:
+              'We are looking for an experienced Full Stack Developer to join our growing team. You will be responsible for developing and maintaining our web applications using modern technologies.',
             compensation: '$90,000 - $120,000',
             created_at: new Date().toISOString(),
             deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
@@ -129,15 +128,15 @@ export const opportunitiesApi = {
             benefits: ['Health insurance', 'Remote work', 'Stock options'],
             featured: true,
             status: 'published',
-            posted_by: '1'
+            posted_by: '1',
           };
           return adaptOpportunityFromDatabase(mockOpportunity as any);
         }
-        
+
         handleSupabaseError(error, `fetching opportunity with id ${id}`);
         return null;
       }
-      
+
       const adapted = data ? adaptOpportunityFromDatabase(data as any) : null;
       console.log('[OpportunitiesAPI.getById] Adapted opportunity:', adapted);
       return adapted;
@@ -150,17 +149,13 @@ export const opportunitiesApi = {
 
   async getExtendedById(id: string): Promise<ExtendedOpportunity | null> {
     try {
-      const { data, error } = await supabase
-        .from('opportunities')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('opportunities').select('*').eq('id', id).single();
 
       if (error) {
         handleSupabaseError(error, `fetching extended opportunity with id ${id}`);
         return null;
       }
-      
+
       return data ? adaptExtendedOpportunityFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, `fetching extended opportunity with id ${id}`);
@@ -171,18 +166,14 @@ export const opportunitiesApi = {
   async create(opportunityData: OpportunityInput): Promise<Opportunity | null> {
     try {
       const supabaseData = adaptOpportunityInputToDatabase(opportunityData);
-      
-      const { data, error } = await supabase
-        .from('opportunities')
-        .insert(supabaseData)
-        .select()
-        .single();
+
+      const { data, error } = await supabase.from('opportunities').insert(supabaseData).select().single();
 
       if (error) {
         handleSupabaseError(error, 'creating opportunity');
         return null;
       }
-      
+
       return data ? adaptOpportunityFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating opportunity');
@@ -194,7 +185,7 @@ export const opportunitiesApi = {
     try {
       // For updates, we need to only include fields that are actually being updated
       const updateData: any = {};
-      
+
       if (opportunityData.title !== undefined) updateData.title = opportunityData.title;
       if (opportunityData.description !== undefined) updateData.description = opportunityData.description;
       if (opportunityData.type !== undefined) updateData.type = opportunityData.type;
@@ -207,24 +198,20 @@ export const opportunitiesApi = {
       if (opportunityData.website !== undefined) updateData.website = opportunityData.website;
       if (opportunityData.image !== undefined) updateData.image = opportunityData.image;
       if (opportunityData.requirements !== undefined) updateData.requirements = opportunityData.requirements;
-      if (opportunityData.responsibilities !== undefined) updateData.responsibilities = opportunityData.responsibilities;
+      if (opportunityData.responsibilities !== undefined)
+        updateData.responsibilities = opportunityData.responsibilities;
       if (opportunityData.benefits !== undefined) updateData.benefits = opportunityData.benefits;
       if (opportunityData.status !== undefined) updateData.status = opportunityData.status;
       if (opportunityData.featured !== undefined) updateData.featured = opportunityData.featured;
       if (opportunityData.postedBy !== undefined) updateData.posted_by = opportunityData.postedBy;
-      
-      const { data, error } = await supabase
-        .from('opportunities')
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+
+      const { data, error } = await supabase.from('opportunities').update(updateData).eq('id', id).select().single();
 
       if (error) {
         handleSupabaseError(error, `updating opportunity with id ${id}`);
         return null;
       }
-      
+
       return data ? adaptOpportunityFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, `updating opportunity with id ${id}`);
@@ -234,10 +221,7 @@ export const opportunitiesApi = {
 
   async delete(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('opportunities')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('opportunities').delete().eq('id', id);
 
       if (error) {
         handleSupabaseError(error, `deleting opportunity with id ${id}`);
@@ -268,7 +252,7 @@ export const opportunitiesApi = {
         handleSupabaseError(error, 'fetching featured opportunities');
         return [];
       }
-      
+
       return adaptItemsList(data || [], (item: any) => adaptOpportunityFromDatabase(item));
     } catch (error) {
       handleSupabaseError(error, 'fetching featured opportunities');
@@ -289,7 +273,7 @@ export const opportunitiesApi = {
         handleSupabaseError(error, `fetching opportunities for company ${companyId}`);
         return [];
       }
-      
+
       return adaptItemsList(data || [], (item: any) => adaptOpportunityFromDatabase(item));
     } catch (error) {
       handleSupabaseError(error, `fetching opportunities for company ${companyId}`);
@@ -301,42 +285,47 @@ export const opportunitiesApi = {
   async getOpportunityGalleries(opportunityId: string): Promise<OpportunityGallery[]> {
     try {
       const { data, error } = await (supabase as any).rpc('get_opportunity_galleries', {
-        opportunity_uuid: opportunityId
+        opportunity_uuid: opportunityId,
       });
 
       if (error) {
         handleSupabaseError(error, `fetching galleries for opportunity ${opportunityId}`);
         return [];
       }
-      
-      return ((data as any[]) || []).map((item: any) => ({
-        id: item.id,
-        opportunity_id: opportunityId,
-        gallery_id: item.gallery_id,
-        display_order: item.display_order || 0,
-        featured: item.featured || false,
-        caption: item.caption,
-        attached_by: item.attached_by,
-        created_at: item.created_at || new Date().toISOString(),
-        updated_at: item.updated_at,
-        gallery: item.gallery_id ? {
-          id: item.gallery_id,
-          title: item.gallery_title || '',
-          description: item.gallery_description || '',
-          slug: item.gallery_slug || '',
-          cover_photo_id: item.gallery_cover_photo_id,
-          photo_count: item.gallery_photo_count || 0,
-          privacy_level: item.gallery_privacy_level || 'public',
-          visibility: 'visible' as const,
-          owner_type: 'user' as const,
-          owner_id: '',
-          owner_name: item.gallery_owner_name,
-          owner_image: item.gallery_owner_image,
-          photos: [],
-          created_at: item.created_at || new Date().toISOString(),
-          updated_at: item.updated_at || new Date().toISOString()
-        } : undefined
-      } as OpportunityGallery));
+
+      return ((data as any[]) || []).map(
+        (item: any) =>
+          ({
+            id: item.id,
+            opportunity_id: opportunityId,
+            gallery_id: item.gallery_id,
+            display_order: item.display_order || 0,
+            featured: item.featured || false,
+            caption: item.caption,
+            attached_by: item.attached_by,
+            created_at: item.created_at || new Date().toISOString(),
+            updated_at: item.updated_at,
+            gallery: item.gallery_id
+              ? {
+                  id: item.gallery_id,
+                  title: item.gallery_title || '',
+                  description: item.gallery_description || '',
+                  slug: item.gallery_slug || '',
+                  cover_photo_id: item.gallery_cover_photo_id,
+                  photo_count: item.gallery_photo_count || 0,
+                  privacy_level: item.gallery_privacy_level || 'public',
+                  visibility: 'visible' as const,
+                  owner_type: 'user' as const,
+                  owner_id: '',
+                  owner_name: item.gallery_owner_name,
+                  owner_image: item.gallery_owner_image,
+                  photos: [],
+                  created_at: item.created_at || new Date().toISOString(),
+                  updated_at: item.updated_at || new Date().toISOString(),
+                }
+              : undefined,
+          }) as OpportunityGallery
+      );
     } catch (error) {
       handleSupabaseError(error, `fetching galleries for opportunity ${opportunityId}`);
       return [];
@@ -345,19 +334,21 @@ export const opportunitiesApi = {
 
   async getAttachableGalleries(opportunityId: string): Promise<AttachableGallery[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       const userId = user?.id;
 
       const { data, error } = await (supabase as any).rpc('get_attachable_galleries', {
         opportunity_uuid: opportunityId,
-        user_uuid: userId
+        user_uuid: userId,
       });
 
       if (error) {
         handleSupabaseError(error, `fetching attachable galleries for opportunity ${opportunityId}`);
         return [];
       }
-      
+
       return ((data as any[]) || []).map((item: any) => ({
         id: item.id,
         title: item.title,
@@ -376,7 +367,7 @@ export const opportunitiesApi = {
         sort_order: 0,
         view_count: 0,
         is_featured: false,
-        updated_at: item.created_at
+        updated_at: item.created_at,
       }));
     } catch (error) {
       handleSupabaseError(error, `fetching attachable galleries for opportunity ${opportunityId}`);
@@ -386,8 +377,10 @@ export const opportunitiesApi = {
 
   async attachGallery(input: AttachGalleryInput): Promise<OpportunityGallery | null> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       const { data, error } = await (supabase as any)
         .from('opportunity_galleries')
         .insert({
@@ -396,7 +389,7 @@ export const opportunitiesApi = {
           display_order: input.display_order || 0,
           featured: input.featured || false,
           caption: input.caption,
-          attached_by: user?.id
+          attached_by: user?.id,
         })
         .select()
         .single();
@@ -405,18 +398,23 @@ export const opportunitiesApi = {
         handleSupabaseError(error, 'attaching gallery to opportunity');
         return null;
       }
-      
-      return data ? {
-        ...data,
-        created_at: (data as any).created_at || new Date().toISOString()
-      } as unknown as OpportunityGallery : null;
+
+      return data
+        ? ({
+            ...data,
+            created_at: (data as any).created_at || new Date().toISOString(),
+          } as unknown as OpportunityGallery)
+        : null;
     } catch (error) {
       handleSupabaseError(error, 'attaching gallery to opportunity');
       return null;
     }
   },
 
-  async updateGalleryAttachment(attachmentId: string, updates: UpdateGalleryAttachmentInput): Promise<OpportunityGallery | null> {
+  async updateGalleryAttachment(
+    attachmentId: string,
+    updates: UpdateGalleryAttachmentInput
+  ): Promise<OpportunityGallery | null> {
     try {
       const { data, error } = await (supabase as any)
         .from('opportunity_galleries')
@@ -429,11 +427,13 @@ export const opportunitiesApi = {
         handleSupabaseError(error, `updating gallery attachment ${attachmentId}`);
         return null;
       }
-      
-      return data ? {
-        ...data,
-        created_at: (data as any).created_at || new Date().toISOString()
-      } as unknown as OpportunityGallery : null;
+
+      return data
+        ? ({
+            ...data,
+            created_at: (data as any).created_at || new Date().toISOString(),
+          } as unknown as OpportunityGallery)
+        : null;
     } catch (error) {
       handleSupabaseError(error, `updating gallery attachment ${attachmentId}`);
       return null;
@@ -442,16 +442,13 @@ export const opportunitiesApi = {
 
   async detachGallery(attachmentId: string): Promise<boolean> {
     try {
-      const { error } = await (supabase as any)
-        .from('opportunity_galleries')
-        .delete()
-        .eq('id', attachmentId);
+      const { error } = await (supabase as any).from('opportunity_galleries').delete().eq('id', attachmentId);
 
       if (error) {
         handleSupabaseError(error, `detaching gallery attachment ${attachmentId}`);
         return false;
       }
-      
+
       return true;
     } catch (error) {
       handleSupabaseError(error, `detaching gallery attachment ${attachmentId}`);
@@ -459,9 +456,12 @@ export const opportunitiesApi = {
     }
   },
 
-  async reorderOpportunityGalleries(opportunityId: string, galleryOrders: { id: string; order: number }[]): Promise<boolean> {
+  async reorderOpportunityGalleries(
+    opportunityId: string,
+    galleryOrders: { id: string; order: number }[]
+  ): Promise<boolean> {
     try {
-      const updates = galleryOrders.map(({ id, order }) => 
+      const updates = galleryOrders.map(({ id, order }) =>
         (supabase as any)
           .from('opportunity_galleries')
           .update({ display_order: order })
@@ -482,5 +482,5 @@ export const opportunitiesApi = {
       handleSupabaseError(error, 'reordering opportunity galleries');
       return false;
     }
-  }
+  },
 };

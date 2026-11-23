@@ -10,9 +10,9 @@ export const useGalleryResources = () => {
   return useQuery<Resource[]>({
     queryKey: ['gallery-resources'],
     queryFn: async () => {
-    // This would need to be implemented in the resourcesApi
-    // For now, we'll fetch all resources and filter client-side
-    const allResources = await resourcesApi.getAll();
+      // This would need to be implemented in the resourcesApi
+      // For now, we'll fetch all resources and filter client-side
+      const allResources = await resourcesApi.getAll();
       return allResources.filter((resource: any) => resource.type === 'gallery');
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -33,9 +33,7 @@ export const useIsGalleryResource = (galleryId: string) => {
         setLoading(true);
         const allResources = await resourcesApi.getAll();
         const galleryUrl = `/galleries/${galleryId}`;
-        const exists = allResources.some(
-          (resource: any) => resource.type === 'gallery' && resource.url === galleryUrl
-        );
+        const exists = allResources.some((resource: any) => resource.type === 'gallery' && resource.url === galleryUrl);
         setIsResource(exists);
       } catch (error) {
         console.error('Error checking if gallery is resource:', error);
@@ -82,7 +80,7 @@ export const useAddGalleryResource = () => {
         featured: false,
         contributorId: contributorId || '',
         groupId,
-        tags: ['gallery', 'photos', 'community']
+        tags: ['gallery', 'photos', 'community'],
       });
 
       return true;
@@ -99,6 +97,6 @@ export const useAddGalleryResource = () => {
     addGalleryResource,
     loading,
     error,
-    clearError: () => setError(null)
+    clearError: () => setError(null),
   };
 };

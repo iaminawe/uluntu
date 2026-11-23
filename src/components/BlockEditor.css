@@ -83,19 +83,20 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
-    opacity: .5;
+    opacity: 0.5;
   }
 }
 
 /* BlockNote container styles */
 .blocknote-editor-wrapper .bn-container {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   line-height: 1.6;
 }
 
@@ -195,13 +196,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    #667eea 20%, 
-    #764ba2 50%, 
-    #667eea 80%, 
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, #667eea 20%, #764ba2 50%, #667eea 80%, transparent);
   animation: streaming 1.5s linear infinite;
 }
 
@@ -292,23 +287,23 @@
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
-  .blocknote-editor-wrapper[data-theme="dark"] {
+  .blocknote-editor-wrapper[data-theme='dark'] {
     background: #1f2937;
   }
-  
-  .blocknote-editor-wrapper[data-theme="dark"] .bn-ai-menu,
-  .blocknote-editor-wrapper[data-theme="dark"] .bn-formatting-toolbar,
-  .blocknote-editor-wrapper[data-theme="dark"] .bn-slash-menu {
+
+  .blocknote-editor-wrapper[data-theme='dark'] .bn-ai-menu,
+  .blocknote-editor-wrapper[data-theme='dark'] .bn-formatting-toolbar,
+  .blocknote-editor-wrapper[data-theme='dark'] .bn-slash-menu {
     background: #374151;
     border-color: #4b5563;
   }
-  
-  .blocknote-editor-wrapper[data-theme="dark"] .bn-ai-menu-item:hover,
-  .blocknote-editor-wrapper[data-theme="dark"] .bn-slash-menu-item:hover {
+
+  .blocknote-editor-wrapper[data-theme='dark'] .bn-ai-menu-item:hover,
+  .blocknote-editor-wrapper[data-theme='dark'] .bn-slash-menu-item:hover {
     background-color: #4b5563;
   }
-  
-  .blocknote-editor-wrapper[data-theme="dark"] .ai-status-indicator {
+
+  .blocknote-editor-wrapper[data-theme='dark'] .ai-status-indicator {
     background: rgba(31, 41, 55, 0.9);
     border-color: #4b5563;
     color: #d1d5db;
@@ -320,11 +315,11 @@
   .blocknote-editor-wrapper .bn-editor {
     padding: 12px;
   }
-  
+
   .bn-ai-menu {
     max-width: 280px;
   }
-  
+
   .ai-status-indicator {
     font-size: 11px;
     padding: 3px 6px;

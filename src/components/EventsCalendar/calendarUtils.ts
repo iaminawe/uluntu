@@ -20,13 +20,11 @@ export const generateICalendar = (events: Event[]): string => {
 
   events.forEach(event => {
     const startDate = new Date(event.date);
-    const endDate = event.endDate 
-      ? new Date(event.endDate) 
-      : new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default to 2 hours if no end date
-    
+    const endDate = event.endDate ? new Date(event.endDate) : new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default to 2 hours if no end date
+
     const description = event.description ? event.description.replace(/\\n/g, '\\n') : '';
     const location = event.location ? event.location.replace(/,/g, '\\,') : '';
-    
+
     icalContent = icalContent.concat([
       'BEGIN:VEVENT',
       `UID:${event.id}@uluntu.io`,
@@ -37,7 +35,7 @@ export const generateICalendar = (events: Event[]): string => {
       `DESCRIPTION:${description}`,
       `LOCATION:${location}`,
       `URL:https://uluntu.io${getEventUrl(event)}`,
-      'END:VEVENT'
+      'END:VEVENT',
     ]);
   });
 
@@ -50,14 +48,12 @@ export const generateICalendar = (events: Event[]): string => {
  */
 export const generateGoogleCalendarUrl = (event: Event): string => {
   const startDate = new Date(event.date);
-  const endDate = event.endDate 
-    ? new Date(event.endDate) 
-    : new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default to 2 hours if no end date
-  
+  const endDate = event.endDate ? new Date(event.endDate) : new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default to 2 hours if no end date
+
   const formatDateForGoogle = (date: Date): string => {
     return date.toISOString().replace(/-|:|\.\d\d\d/g, '');
   };
-  
+
   const params = new URLSearchParams({
     action: 'TEMPLATE',
     text: event.title,
@@ -65,7 +61,7 @@ export const generateGoogleCalendarUrl = (event: Event): string => {
     details: event.description || '',
     location: event.location || '',
   });
-  
+
   return `https://www.google.com/calendar/render?${params.toString()}`;
 };
 
@@ -74,14 +70,12 @@ export const generateGoogleCalendarUrl = (event: Event): string => {
  */
 export const generateOutlookCalendarUrl = (event: Event): string => {
   const startDate = new Date(event.date);
-  const endDate = event.endDate 
-    ? new Date(event.endDate) 
-    : new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default to 2 hours if no end date
-  
+  const endDate = event.endDate ? new Date(event.endDate) : new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default to 2 hours if no end date
+
   const formatDateForOutlook = (date: Date): string => {
     return date.toISOString();
   };
-  
+
   const params = new URLSearchParams({
     path: '/calendar/action/compose',
     rru: 'addevent',
@@ -91,6 +85,6 @@ export const generateOutlookCalendarUrl = (event: Event): string => {
     body: event.description || '',
     location: event.location || '',
   });
-  
+
   return `https://outlook.office.com/calendar/0/deeplink/compose?${params.toString()}`;
 };

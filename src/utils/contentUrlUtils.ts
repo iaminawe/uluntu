@@ -155,10 +155,10 @@ export function getContentUrl(contentType: string, item: SlugEntity): string {
 export function parseContentIdentifier(identifier: string): { type: 'id' | 'slug'; value: string } {
   // UUID regex pattern
   const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  
+
   return {
     type: uuidPattern.test(identifier) ? 'id' : 'slug',
-    value: identifier
+    value: identifier,
   };
 }
 
@@ -172,30 +172,22 @@ export async function lookupContent<T = any>(
   supabase: any
 ): Promise<{ data: T | null; foundBy: 'id' | 'slug' | null }> {
   const { type, value } = parseContentIdentifier(identifier);
-  
+
   // First try as slug if it's not a UUID
   if (type === 'slug') {
-    const { data, error } = await supabase
-      .from(tableName)
-      .select('*')
-      .eq('slug', value)
-      .single();
-    
+    const { data, error } = await supabase.from(tableName).select('*').eq('slug', value).single();
+
     if (!error && data) {
       return { data, foundBy: 'slug' };
     }
   }
-  
+
   // Try as ID (either because it's a UUID or slug lookup failed)
-  const { data, error } = await supabase
-    .from(tableName)
-    .select('*')
-    .eq('id', value)
-    .single();
-  
+  const { data, error } = await supabase.from(tableName).select('*').eq('id', value).single();
+
   if (!error && data) {
     return { data, foundBy: 'id' };
   }
-  
+
   return { data: null, foundBy: null };
 }

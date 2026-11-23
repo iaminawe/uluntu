@@ -19,13 +19,10 @@ const CompanyProfile = ({ companyId: _companyId }: CompanyProfileProps) => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <CompanyHeader 
-        company={company}
-        onContactClick={() => setShowContactModal(true)}
-      />
-      
+      <CompanyHeader company={company} onContactClick={() => setShowContactModal(true)} />
+
       <CompanyContent company={company} />
-      
+
       {/* Like and Comment Section */}
       <div className="mt-8 bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
         <div className="flex items-center gap-4 mb-6">
@@ -35,21 +32,11 @@ const CompanyProfile = ({ companyId: _companyId }: CompanyProfileProps) => {
             initialLikeCount={company.like_count || 0}
           />
         </div>
-        
-        <CommentsList
-          entityType="company"
-          entityId={company.id.toString()}
-          showToggle
-          defaultExpanded={false}
-        />
+
+        <CommentsList entityType="company" entityId={company.id.toString()} showToggle defaultExpanded={false} />
       </div>
-      
-      {showContactModal && (
-        <ContactModal
-          company={company}
-          onClose={() => setShowContactModal(false)}
-        />
-      )}
+
+      {showContactModal && <ContactModal company={company} onClose={() => setShowContactModal(false)} />}
     </div>
   );
 };

@@ -1,10 +1,5 @@
 import { LoadingStateProps } from './types';
-import {
-  SkeletonContainer,
-  SkeletonText,
-  SkeletonImage,
-  SkeletonCard
-} from '@/shared/components/ui/Skeleton';
+import { SkeletonContainer, SkeletonText, SkeletonImage, SkeletonCard } from '@/shared/components/ui/Skeleton';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
 
@@ -17,7 +12,7 @@ const LoadingState: React.FC<LoadingStateProps> = () => {
           <SkeletonText width="w-1/4" className="mb-2" />
           <SkeletonText height="h-8" width="w-2/3" className="mb-8" />
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main content */}
           <div className="lg:col-span-2">
@@ -25,14 +20,14 @@ const LoadingState: React.FC<LoadingStateProps> = () => {
             <Card className="mb-6 overflow-hidden">
               <SkeletonImage height="h-80" className="w-full" />
             </Card>
-            
+
             {/* Title and price */}
             <Card className="p-6 mb-6">
               <SkeletonText height="h-6" width="w-1/2" className="mb-4" />
               <SkeletonText lines={3} className="mb-4" />
               <SkeletonText height="h-8" width="w-1/3" className="mt-6" />
             </Card>
-            
+
             {/* Seller info */}
             <Card className="p-6 mb-6">
               <div className="flex items-center mb-4">
@@ -45,7 +40,7 @@ const LoadingState: React.FC<LoadingStateProps> = () => {
               <SkeletonText width="w-full" className="mt-4" />
             </Card>
           </div>
-          
+
           {/* Sidebar */}
           <div>
             <Card className="p-6 mb-6">
@@ -53,7 +48,7 @@ const LoadingState: React.FC<LoadingStateProps> = () => {
               <SkeletonText lines={2} className="mb-4" />
               <SkeletonText height="h-10" width="w-full" className="mt-4" />
             </Card>
-            
+
             <Card className="p-6">
               <SkeletonText height="h-6" width="w-1/2" className="mb-4" />
               <SkeletonCard hasImage={true} hasFooter={false} className="mb-4" />

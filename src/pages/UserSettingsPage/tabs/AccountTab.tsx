@@ -48,7 +48,7 @@ export const AccountTab: React.FC<AccountTabProps> = ({
   notificationSettings,
   setNotificationSettings,
   onPasswordUpdate,
-  isSaving
+  isSaving,
 }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -56,10 +56,7 @@ export const AccountTab: React.FC<AccountTabProps> = ({
       <div className="space-y-8">
         {/* Account Information Section */}
         <SettingsSection title="Account Information">
-          <SettingsField
-            label="Current Email"
-            description="To change your email, please contact support"
-          >
+          <SettingsField label="Current Email" description="To change your email, please contact support">
             <input
               type="email"
               value={user?.email || ''}
@@ -99,16 +96,20 @@ export const AccountTab: React.FC<AccountTabProps> = ({
           description="Update your account password. You'll need to sign in again after changing it."
         >
           {passwordError && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800
-                          rounded-lg p-4 flex items-center gap-3">
+            <div
+              className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800
+                          rounded-lg p-4 flex items-center gap-3"
+            >
               <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
               <p className="text-sm text-red-700 dark:text-red-300">{passwordError}</p>
             </div>
           )}
 
           {passwordSuccess && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800
-                          rounded-lg p-4 flex items-center gap-3">
+            <div
+              className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800
+                          rounded-lg p-4 flex items-center gap-3"
+            >
               <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
               <p className="text-sm text-green-700 dark:text-green-300">
                 Password updated successfully! You may need to sign in again.
@@ -116,15 +117,12 @@ export const AccountTab: React.FC<AccountTabProps> = ({
             </div>
           )}
 
-          <SettingsField
-            label="New Password"
-            description="Must be at least 6 characters long"
-          >
+          <SettingsField label="New Password" description="Must be at least 6 characters long">
             <div className="relative">
               <input
                 type={showNewPassword ? 'text' : 'password'}
                 value={newPassword}
-                onChange={(e) => {
+                onChange={e => {
                   setNewPassword(e.target.value);
                   setPasswordError(null);
                   setPasswordSuccess(false);
@@ -150,7 +148,7 @@ export const AccountTab: React.FC<AccountTabProps> = ({
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
-                onChange={(e) => {
+                onChange={e => {
                   setConfirmPassword(e.target.value);
                   setPasswordError(null);
                   setPasswordSuccess(false);
@@ -200,10 +198,12 @@ export const AccountTab: React.FC<AccountTabProps> = ({
           <SettingsField label="Email Frequency">
             <select
               value={notificationSettings.frequency}
-              onChange={(e) => setNotificationSettings({
-                ...notificationSettings,
-                frequency: e.target.value as 'instant' | 'daily' | 'weekly' | 'never'
-              })}
+              onChange={e =>
+                setNotificationSettings({
+                  ...notificationSettings,
+                  frequency: e.target.value as 'instant' | 'daily' | 'weekly' | 'never',
+                })
+              }
               className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -216,9 +216,7 @@ export const AccountTab: React.FC<AccountTabProps> = ({
           </SettingsField>
 
           <div className="space-y-4">
-            <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              Email Notifications
-            </h4>
+            <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Notifications</h4>
 
             {[
               { key: 'messages', label: 'Direct messages', icon: MessageSquare },
@@ -227,7 +225,10 @@ export const AccountTab: React.FC<AccountTabProps> = ({
               { key: 'newsletter', label: 'Newsletter', icon: Mail },
               { key: 'communityUpdates', label: 'Community updates', icon: Bell },
             ].map(({ key, label, icon: Icon }) => (
-              <label key={key} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+              <label
+                key={key}
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+              >
                 <span className="flex items-center text-sm text-slate-700 dark:text-slate-300">
                   <Icon className="w-4 h-4 mr-2" />
                   {label}
@@ -235,13 +236,15 @@ export const AccountTab: React.FC<AccountTabProps> = ({
                 <input
                   type="checkbox"
                   checked={notificationSettings.email[key as keyof typeof notificationSettings.email]}
-                  onChange={(e) => setNotificationSettings({
-                    ...notificationSettings,
-                    email: {
-                      ...notificationSettings.email,
-                      [key]: e.target.checked
-                    }
-                  })}
+                  onChange={e =>
+                    setNotificationSettings({
+                      ...notificationSettings,
+                      email: {
+                        ...notificationSettings.email,
+                        [key]: e.target.checked,
+                      },
+                    })
+                  }
                   className="rounded border-slate-300 dark:border-slate-600 text-orange-500
                            focus:ring-orange-500 dark:bg-slate-700"
                 />
@@ -255,7 +258,9 @@ export const AccountTab: React.FC<AccountTabProps> = ({
               <Bell className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div className="text-sm text-blue-700 dark:text-blue-400">
                 <p className="font-medium mb-1">Stay Connected</p>
-                <p className="text-xs">Manage how and when you receive updates from the community. You can change these settings anytime.</p>
+                <p className="text-xs">
+                  Manage how and when you receive updates from the community. You can change these settings anytime.
+                </p>
               </div>
             </div>
           </div>

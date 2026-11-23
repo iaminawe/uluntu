@@ -21,10 +21,10 @@ const GalleryEditPageContent: React.FC = () => {
   const navigate = useNavigate();
   const user = useAppSelector(selectCurrentUser);
   const isEditing = !!id;
-  
+
   // Get user's groups for gallery selector
   const { groups: userGroups } = useUserGroups();
-  
+
   // Mock user companies for now - you'd want to implement useUserCompanies hook
   const userCompanies: Array<{ id: string; name: string; role: string }> = [];
 
@@ -38,7 +38,7 @@ const GalleryEditPageContent: React.FC = () => {
     visibility: 'visible',
     tags: [],
     owner_type: 'user',
-    owner_id: undefined
+    owner_id: undefined,
   });
   const [galleryOwner, setGalleryOwner] = useState<{
     type: 'user' | 'group' | 'company';
@@ -49,7 +49,7 @@ const GalleryEditPageContent: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
   const [enableImageInsertion, setEnableImageInsertion] = useState(true);
-  
+
   // Topic management
   const { data: entityTopics } = useEntityTopics('gallery', id || '');
   const setEntityTopicsMutation = useSetEntityTopics();
@@ -70,45 +70,45 @@ const GalleryEditPageContent: React.FC = () => {
 
   const loadGallery = async () => {
     if (!id) return;
-    
+
     try {
       setLoading(true);
       const gallery = await galleryApi.getGallery(id);
-      
+
       // Check if gallery was found
       if (!gallery) {
         navigate('/404');
         return;
       }
-      
+
       // Check ownership
       if (gallery.owner_id !== user?.id) {
         navigate('/unauthorized');
         return;
       }
-      
+
       setFormData({
         title: gallery.title,
         description: gallery.description || '',
         privacy_level: gallery.privacy_level,
-        visibility: gallery.visibility === 'archived' ? 'hidden' : gallery.visibility as 'hidden' | 'visible',
+        visibility: gallery.visibility === 'archived' ? 'hidden' : (gallery.visibility as 'hidden' | 'visible'),
         tags: gallery.tags || [],
         owner_type: gallery.owner_type || 'user',
-        owner_id: gallery.owner_id
+        owner_id: gallery.owner_id,
       });
-      
+
       // Set gallery owner for selector
       if (gallery.owner_type === 'group' && gallery.group) {
         setGalleryOwner({
           type: 'group',
           id: gallery.group.id,
-          name: gallery.group.name
+          name: gallery.group.name,
         });
       } else if (gallery.owner_type === 'company' && gallery.company) {
         setGalleryOwner({
           type: 'company',
           id: gallery.company.id,
-          name: gallery.company.name
+          name: gallery.company.name,
         });
       } else {
         setGalleryOwner({ type: 'user' });
@@ -120,7 +120,7 @@ const GalleryEditPageContent: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   // Effect to populate topics
   useEffect(() => {
     if (entityTopics) {
@@ -130,72 +130,72 @@ const GalleryEditPageContent: React.FC = () => {
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
     }
-    
+
     if (formData.title.length > 100) {
       newErrors.title = 'Title must be less than 100 characters';
     }
-    
+
     if (formData.description && formData.description.length > 2000) {
       newErrors.description = 'Description must be less than 2000 characters';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     try {
       setSaving(true);
-      
+
       // Update form data with current gallery owner selection
       const finalFormData = {
         ...formData,
         owner_type: galleryOwner.type,
-        owner_id: galleryOwner.type === 'user' ? user?.id : galleryOwner.id
+        owner_id: galleryOwner.type === 'user' ? user?.id : galleryOwner.id,
       };
-      
+
       let result;
       if (isEditing && id) {
         result = await galleryApi.updateGallery(id, finalFormData as UpdateGalleryInput);
-        
+
         // Save topics after successful entity save
         if (selectedTopicIds.length > 0) {
           try {
             await setEntityTopicsMutation.mutateAsync({
               entityType: 'gallery',
               entityId: id,
-              topicIds: selectedTopicIds
+              topicIds: selectedTopicIds,
             });
           } catch (topicError) {
             console.error('Error saving topics:', topicError);
           }
         }
-        
+
         navigate(`/galleries/${id}`);
       } else {
         result = await galleryApi.createGallery(finalFormData);
-        
+
         // Save topics after successful entity save
         if (result && selectedTopicIds.length > 0) {
           try {
             await setEntityTopicsMutation.mutateAsync({
               entityType: 'gallery',
               entityId: result.id,
-              topicIds: selectedTopicIds
+              topicIds: selectedTopicIds,
             });
           } catch (topicError) {
             console.error('Error saving topics:', topicError);
           }
         }
-        
+
         // After creating, show upload modal or navigate
         if (result) {
           setShowUpload(true);
@@ -221,13 +221,13 @@ const GalleryEditPageContent: React.FC = () => {
   const handleRemoveTag = (tagToRemove: string) => {
     setFormData({
       ...formData,
-      tags: (formData.tags || []).filter(tag => tag !== tagToRemove)
+      tags: (formData.tags || []).filter(tag => tag !== tagToRemove),
     });
   };
 
   const handlePhotoUpload = async (files: File[]) => {
     if (!id) return;
-    
+
     try {
       await uploadApi.uploadBatch(files, { galleryId: id });
       navigate(`/galleries/${id}`);
@@ -235,7 +235,7 @@ const GalleryEditPageContent: React.FC = () => {
       console.error('Error uploading photos:', err);
     }
   };
-  
+
   const handleBatchUpload = (uploadedPhotos: any[]) => {
     console.log('Batch upload completed:', uploadedPhotos);
     navigate(`/galleries/${id}`);
@@ -293,16 +293,14 @@ const GalleryEditPageContent: React.FC = () => {
               id="title"
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={e => setFormData({ ...formData, title: e.target.value })}
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 ${
                 errors.title ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="My Amazing Photos"
               maxLength={100}
             />
-            {errors.title && (
-              <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-            )}
+            {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
           </div>
 
           {/* Description */}
@@ -315,17 +313,17 @@ const GalleryEditPageContent: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={enableImageInsertion}
-                  onChange={(e) => setEnableImageInsertion(e.target.checked)}
+                  onChange={e => setEnableImageInsertion(e.target.checked)}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <Image className="w-4 h-4" />
                 Enable AI Image Insertion
               </label>
             </div>
-            
+
             <EnhancedContentAIEditor
               value={formData.description}
-              onChange={(content) => setFormData({ ...formData, description: content })}
+              onChange={content => setFormData({ ...formData, description: content })}
               placeholder="Tell us about this gallery... You can use AI to generate compelling descriptions, improve your writing, or add relevant images."
               contentType="gallery"
               includeImages={enableImageInsertion}
@@ -335,27 +333,27 @@ const GalleryEditPageContent: React.FC = () => {
                 {
                   id: 'collection-story',
                   label: '📚 Collection Story',
-                  prompt: 'Write a compelling story about this photo collection, explaining its significance and what makes it special.',
-                  icon: '📚'
+                  prompt:
+                    'Write a compelling story about this photo collection, explaining its significance and what makes it special.',
+                  icon: '📚',
                 },
                 {
                   id: 'photo-context',
                   label: '🎨 Add Photo Context',
                   prompt: 'Provide rich context and background information about the photos in this gallery.',
-                  icon: '🎨'
+                  icon: '🎨',
                 },
                 {
                   id: 'exhibition-description',
                   label: '🖼️ Exhibition Style',
-                  prompt: 'Write this as if it were a professional exhibition description for an art gallery or museum.',
-                  icon: '🖼️'
-                }
+                  prompt:
+                    'Write this as if it were a professional exhibition description for an art gallery or museum.',
+                  icon: '🖼️',
+                },
               ]}
             />
-            
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description}</p>
-            )}
+
+            {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Content length: {(formData.description || '').length} characters. Rich content supported (Markdown, HTML).
             </p>
@@ -363,9 +361,7 @@ const GalleryEditPageContent: React.FC = () => {
 
           {/* Privacy Level */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Privacy Level
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Privacy Level</label>
             <div className="space-y-3">
               <label className="flex items-start gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700">
                 <input
@@ -373,7 +369,7 @@ const GalleryEditPageContent: React.FC = () => {
                   name="privacy"
                   value="public"
                   checked={formData.privacy_level === 'public'}
-                  onChange={(e) => setFormData({ ...formData, privacy_level: e.target.value as any })}
+                  onChange={e => setFormData({ ...formData, privacy_level: e.target.value as any })}
                   className="mt-1"
                 />
                 <div className="flex-1">
@@ -381,9 +377,7 @@ const GalleryEditPageContent: React.FC = () => {
                     <Globe className="w-5 h-5 text-green-600" />
                     <span className="font-medium text-gray-900 dark:text-gray-100">Public</span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Anyone can view this gallery
-                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Anyone can view this gallery</p>
                 </div>
               </label>
 
@@ -393,7 +387,7 @@ const GalleryEditPageContent: React.FC = () => {
                   name="privacy"
                   value="members_only"
                   checked={formData.privacy_level === 'members_only'}
-                  onChange={(e) => setFormData({ ...formData, privacy_level: e.target.value as any })}
+                  onChange={e => setFormData({ ...formData, privacy_level: e.target.value as any })}
                   className="mt-1"
                 />
                 <div className="flex-1">
@@ -413,7 +407,7 @@ const GalleryEditPageContent: React.FC = () => {
                   name="privacy"
                   value="private"
                   checked={formData.privacy_level === 'private'}
-                  onChange={(e) => setFormData({ ...formData, privacy_level: e.target.value as any })}
+                  onChange={e => setFormData({ ...formData, privacy_level: e.target.value as any })}
                   className="mt-1"
                 />
                 <div className="flex-1">
@@ -421,9 +415,7 @@ const GalleryEditPageContent: React.FC = () => {
                     <Lock className="w-5 h-5 text-gray-600" />
                     <span className="font-medium text-gray-900 dark:text-gray-100">Private</span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Only you can view this gallery
-                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Only you can view this gallery</p>
                 </div>
               </label>
             </div>
@@ -431,9 +423,7 @@ const GalleryEditPageContent: React.FC = () => {
 
           {/* Topics Section */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Topics
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topics</label>
             <TopicSelector
               selectedTopics={selectedTopicIds}
               onTopicsChange={setSelectedTopicIds}
@@ -445,18 +435,16 @@ const GalleryEditPageContent: React.FC = () => {
               Add topics to help categorize this gallery and make it discoverable on topic pages.
             </p>
           </div>
-          
+
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Tags
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tags</label>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
                 value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+                onChange={e => setTagInput(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
                 className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                 placeholder="Add a tag..."
                 maxLength={30}
@@ -471,17 +459,13 @@ const GalleryEditPageContent: React.FC = () => {
             </div>
             {(formData.tags || []).length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {(formData.tags || []).map((tag) => (
+                {(formData.tags || []).map(tag => (
                   <span
                     key={tag}
                     className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
                   >
                     {tag}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTag(tag)}
-                      className="hover:text-blue-900"
-                    >
+                    <button type="button" onClick={() => handleRemoveTag(tag)} className="hover:text-blue-900">
                       <X className="w-3 h-3" />
                     </button>
                   </span>
@@ -507,7 +491,7 @@ const GalleryEditPageContent: React.FC = () => {
               <Save className="w-5 h-5" />
               {saving ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Gallery'}
             </button>
-            
+
             <button
               type="button"
               onClick={() => navigate(isEditing ? `/galleries/${id}` : '/my-galleries')}
@@ -525,18 +509,13 @@ const GalleryEditPageContent: React.FC = () => {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-2xl font-bold">Upload Photos</h2>
-                  <button
-                    onClick={() => navigate('/my-galleries')}
-                    className="p-2 hover:bg-gray-100 rounded-lg"
-                  >
+                  <button onClick={() => navigate('/my-galleries')} className="p-2 hover:bg-gray-100 rounded-lg">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                
-                <p className="text-gray-600 mb-6">
-                  Your gallery has been created! Now add some photos to it.
-                </p>
-                
+
+                <p className="text-gray-600 mb-6">Your gallery has been created! Now add some photos to it.</p>
+
                 <PhotoUpload
                   galleryId={id}
                   onUpload={handlePhotoUpload}
@@ -544,7 +523,7 @@ const GalleryEditPageContent: React.FC = () => {
                   maxFiles={20}
                   showBatchUpload={true}
                 />
-                
+
                 <div className="mt-6 flex justify-end">
                   <button
                     onClick={() => navigate('/my-galleries')}
@@ -571,12 +550,7 @@ const GalleryEditPage: React.FC = () => {
   return (
     <FeatureErrorBoundary
       featureName="Gallery Editor"
-      fallback={
-        <GalleryErrorFallback
-          onRetry={() => window.location.reload()}
-          onGoBack={() => navigate('/gallery')}
-        />
-      }
+      fallback={<GalleryErrorFallback onRetry={() => window.location.reload()} onGoBack={() => navigate('/gallery')} />}
     >
       <GalleryEditPageContent />
     </FeatureErrorBoundary>

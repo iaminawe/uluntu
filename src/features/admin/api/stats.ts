@@ -5,7 +5,17 @@ export const adminStatsApi = {
   async getDashboardStats() {
     try {
       // Get counts for all entities in parallel
-      const [membersResult, companiesResult, eventsResult, newsResult, groupsResult, resourcesResult, marketplaceResult, opportunitiesResult, recentActivityResult] = await Promise.all([
+      const [
+        membersResult,
+        companiesResult,
+        eventsResult,
+        newsResult,
+        groupsResult,
+        resourcesResult,
+        marketplaceResult,
+        opportunitiesResult,
+        recentActivityResult,
+      ] = await Promise.all([
         supabase.from('members').select('id', { count: 'exact', head: true }),
         supabase.from('companies').select('id', { count: 'exact', head: true }),
         supabase.from('events').select('id', { count: 'exact', head: true }),
@@ -14,11 +24,20 @@ export const adminStatsApi = {
         supabase.from('resources').select('id', { count: 'exact', head: true }),
         supabase.from('marketplace_listings').select('id', { count: 'exact', head: true }),
         supabase.from('opportunities').select('id', { count: 'exact', head: true }),
-        supabase.from('admin_activity_logs').select('*').order('created_at', { ascending: false }).limit(5)
+        supabase.from('admin_activity_logs').select('*').order('created_at', { ascending: false }).limit(5),
       ]);
 
       // Check for any errors
-      const results = [membersResult, companiesResult, eventsResult, newsResult, groupsResult, resourcesResult, marketplaceResult, opportunitiesResult];
+      const results = [
+        membersResult,
+        companiesResult,
+        eventsResult,
+        newsResult,
+        groupsResult,
+        resourcesResult,
+        marketplaceResult,
+        opportunitiesResult,
+      ];
       for (const result of results) {
         if (result.error) {
           console.warn('Database query error:', result.error);
@@ -35,7 +54,7 @@ export const adminStatsApi = {
         totalMarketplaceListings: marketplaceResult.count || 0,
         totalOpportunities: opportunitiesResult.count || 0,
         pendingModeration: 0, // TODO: Implement moderation queue
-        recentActivity: recentActivityResult.data || []
+        recentActivity: recentActivityResult.data || [],
       };
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
@@ -50,7 +69,7 @@ export const adminStatsApi = {
         totalMarketplaceListings: 0,
         totalOpportunities: 0,
         pendingModeration: 0,
-        recentActivity: []
+        recentActivity: [],
       };
     }
   },
@@ -85,7 +104,7 @@ export const adminStatsApi = {
 
       return {
         labels,
-        data: counts
+        data: counts,
       };
     } catch (error) {
       console.error('Error in getUserGrowthStats:', error);
@@ -100,7 +119,7 @@ export const adminStatsApi = {
       const [newsResult, eventsResult, resourcesResult] = await Promise.all([
         supabase.from('news').select('status', { count: 'exact' }),
         supabase.from('events').select('status', { count: 'exact' }),
-        supabase.from('resources').select('status', { count: 'exact' })
+        supabase.from('resources').select('status', { count: 'exact' }),
       ]);
 
       // For now, just return total counts (status filtering can be added later)
@@ -109,7 +128,7 @@ export const adminStatsApi = {
       return {
         published,
         draft: 0, // TODO: Implement draft status filtering
-        archived: 0 // TODO: Implement archived status filtering
+        archived: 0, // TODO: Implement archived status filtering
       };
     } catch (error) {
       console.error('Error fetching content stats:', error);
@@ -129,11 +148,11 @@ export const adminStatsApi = {
       let endDate = new Date();
       let groupBy: string;
       let dateFormat: string;
-      
+
       if (timeRange === 'custom' && customStartDate && customEndDate) {
         startDate = new Date(customStartDate);
         endDate = new Date(customEndDate);
-        
+
         // Determine groupBy based on date range length
         const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
         if (daysDiff <= 31) {
@@ -188,13 +207,13 @@ export const adminStatsApi = {
       signups?.forEach(signup => {
         const date = new Date(signup.created_at);
         let key: string;
-        
+
         if (groupBy === 'month') {
           key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         } else {
           key = date.toISOString().split('T')[0]; // YYYY-MM-DD
         }
-        
+
         signupCounts[key] = (signupCounts[key] || 0) + 1;
       });
 
@@ -202,11 +221,11 @@ export const adminStatsApi = {
       const labels: string[] = [];
       const data: number[] = [];
       const currentDate = new Date(startDate);
-      
+
       while (currentDate <= endDate) {
         let key: string;
         let label: string;
-        
+
         if (groupBy === 'month') {
           key = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
           // For month view, show month/year format
@@ -222,7 +241,11 @@ export const adminStatsApi = {
         } else {
           key = currentDate.toISOString().split('T')[0];
           // For day view, determine label format based on time range type
-          if (timeRange === 'week' || (timeRange === 'custom' && Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) <= 7)) {
+          if (
+            timeRange === 'week' ||
+            (timeRange === 'custom' &&
+              Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) <= 7)
+          ) {
             // Week view: show day name and date
             label = currentDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
           } else {
@@ -231,7 +254,7 @@ export const adminStatsApi = {
           }
           currentDate.setDate(currentDate.getDate() + 1);
         }
-        
+
         labels.push(label);
         data.push(signupCounts[key] || 0);
       }
@@ -243,18 +266,18 @@ export const adminStatsApi = {
         timeRange,
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
-        dateRangeLabel: this.formatDateRangeLabel(startDate, endDate, timeRange)
+        dateRangeLabel: this.formatDateRangeLabel(startDate, endDate, timeRange),
       };
     } catch (error) {
       console.error('Error in getUserSignupAnalytics:', error);
-      return { 
-        labels: [], 
-        data: [], 
-        totalSignups: 0, 
+      return {
+        labels: [],
+        data: [],
+        totalSignups: 0,
         timeRange,
         startDate: '',
         endDate: '',
-        dateRangeLabel: ''
+        dateRangeLabel: '',
       };
     }
   },
@@ -270,11 +293,11 @@ export const adminStatsApi = {
       let startDate = new Date();
       let endDate = new Date();
       let groupBy: string;
-      
+
       if (timeRange === 'custom' && customStartDate && customEndDate) {
         startDate = new Date(customStartDate);
         endDate = new Date(customEndDate);
-        
+
         // Determine groupBy based on date range length
         const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
         if (daysDiff <= 31) {
@@ -329,7 +352,7 @@ export const adminStatsApi = {
       const pageViewMultiplier = 4;
       const pageViews: Record<string, number> = {};
       const interactions: Record<string, number> = {};
-      
+
       // Process member activity as page views
       memberActivity?.forEach(member => {
         const dates = [member.updated_at, member.created_at].filter(Boolean);
@@ -337,13 +360,13 @@ export const adminStatsApi = {
           const date = new Date(dateStr);
           if (date >= startDate) {
             let key: string;
-            
+
             if (groupBy === 'month') {
               key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
             } else {
               key = date.toISOString().split('T')[0];
             }
-            
+
             pageViews[key] = (pageViews[key] || 0) + pageViewMultiplier;
           }
         });
@@ -353,13 +376,13 @@ export const adminStatsApi = {
       comments?.forEach(comment => {
         const date = new Date(comment.created_at);
         let key: string;
-        
+
         if (groupBy === 'month') {
           key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         } else {
           key = date.toISOString().split('T')[0];
         }
-        
+
         interactions[key] = (interactions[key] || 0) + 1;
       });
 
@@ -368,11 +391,11 @@ export const adminStatsApi = {
       const pageViewData: number[] = [];
       const interactionData: number[] = [];
       const currentDate = new Date(startDate);
-      
+
       while (currentDate <= endDate) {
         let key: string;
         let label: string;
-        
+
         if (groupBy === 'month') {
           key = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
           label = currentDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
@@ -386,7 +409,11 @@ export const adminStatsApi = {
         } else {
           key = currentDate.toISOString().split('T')[0];
           // For day view, determine label format based on time range type
-          if (timeRange === 'week' || (timeRange === 'custom' && Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) <= 7)) {
+          if (
+            timeRange === 'week' ||
+            (timeRange === 'custom' &&
+              Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) <= 7)
+          ) {
             // Week view: show day name and date
             label = currentDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
           } else {
@@ -395,7 +422,7 @@ export const adminStatsApi = {
           }
           currentDate.setDate(currentDate.getDate() + 1);
         }
-        
+
         labels.push(label);
         pageViewData.push(pageViews[key] || 0);
         interactionData.push(interactions[key] || 0);
@@ -404,7 +431,7 @@ export const adminStatsApi = {
       const totalPageViews = pageViewData.reduce((sum, count) => sum + count, 0);
       const totalInteractions = interactionData.reduce((sum, count) => sum + count, 0);
       const avgDailyPageViews = Math.round(totalPageViews / pageViewData.length);
-      
+
       return {
         labels,
         pageViews: pageViewData,
@@ -415,7 +442,7 @@ export const adminStatsApi = {
         timeRange,
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
-        dateRangeLabel: this.formatDateRangeLabel(startDate, endDate, timeRange)
+        dateRangeLabel: this.formatDateRangeLabel(startDate, endDate, timeRange),
       };
     } catch (error) {
       console.error('Error in getPageViewsAndEngagement:', error);
@@ -429,7 +456,7 @@ export const adminStatsApi = {
         timeRange,
         startDate: '',
         endDate: '',
-        dateRangeLabel: ''
+        dateRangeLabel: '',
       };
     }
   },
@@ -463,7 +490,7 @@ export const adminStatsApi = {
       return {
         activeUsers: activeUsers?.length || 0,
         pageViews: 0, // Will be populated by getPageViewsAndEngagement
-        interactions: commentsCount || 0
+        interactions: commentsCount || 0,
       };
     } catch (error) {
       console.error('Error fetching engagement stats:', error);
@@ -475,7 +502,7 @@ export const adminStatsApi = {
   formatDateRangeLabel(startDate: Date, endDate: Date, timeRange: string): string {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    
+
     if (timeRange === 'week') {
       return `Past Week (${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})`;
     } else if (timeRange === 'month') {
@@ -490,5 +517,5 @@ export const adminStatsApi = {
         return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
       }
     }
-  }
+  },
 };

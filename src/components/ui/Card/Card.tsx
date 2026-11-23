@@ -17,19 +17,19 @@ const Card: React.FC<CardProps> = ({
 }) => {
   // Base classes for the card
   const baseClasses = 'bg-white dark:bg-slate-800 rounded-lg overflow-hidden';
-  
+
   // Optional classes based on props
   const shadowClass = shadow ? 'shadow-md' : '';
   const borderClass = border ? 'border border-slate-200 dark:border-slate-700' : '';
   const paddingClass = padding ? 'p-6' : '';
   const hoverClass = hoverable ? 'hover:shadow-lg transition-shadow' : '';
-  
+
   // Determine if the card should be clickable
   const isClickable = !!onClick;
   const clickableClass = isClickable ? 'cursor-pointer' : '';
-  
+
   return (
-    <div 
+    <div
       id={id}
       className={`
         ${baseClasses}

@@ -9,16 +9,11 @@ interface GroupMemberInviteProps {
   onInviteSent: () => void;
 }
 
-const GroupMemberInvite: React.FC<GroupMemberInviteProps> = ({
-  groupId,
-  groupName,
-  onClose,
-  onInviteSent
-}) => {
+const GroupMemberInvite: React.FC<GroupMemberInviteProps> = ({ groupId, groupName, onClose, onInviteSent }) => {
   const [inviteData, setInviteData] = useState({
     email: '',
     role: 'member' as 'admin' | 'moderator' | 'member',
-    message: ''
+    message: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +29,7 @@ const GroupMemberInvite: React.FC<GroupMemberInviteProps> = ({
         group_id: groupId,
         invited_email: inviteData.email,
         role: inviteData.role,
-        message: inviteData.message
+        message: inviteData.message,
       });
 
       if (token) {
@@ -42,11 +37,11 @@ const GroupMemberInvite: React.FC<GroupMemberInviteProps> = ({
         const baseUrl = window.location.origin;
         const link = `${baseUrl}/groups/invite/${token}`;
         setInviteLink(link);
-        
+
         // Optional: Send email notification
         // This would typically be handled by your backend
         console.log('Invitation created with token:', token);
-        
+
         // Show success message
         setTimeout(() => {
           onInviteSent();
@@ -73,19 +68,13 @@ const GroupMemberInvite: React.FC<GroupMemberInviteProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
         {/* Background overlay */}
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={onClose} />
 
         {/* Modal panel */}
         <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Invite Members to {groupName}</h3>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
               <XMarkIcon className="h-6 w-6" />
             </button>
           </div>
@@ -101,7 +90,7 @@ const GroupMemberInvite: React.FC<GroupMemberInviteProps> = ({
                   id="email"
                   required
                   value={inviteData.email}
-                  onChange={(e) => setInviteData({ ...inviteData, email: e.target.value })}
+                  onChange={e => setInviteData({ ...inviteData, email: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="member@example.com"
                 />
@@ -114,7 +103,7 @@ const GroupMemberInvite: React.FC<GroupMemberInviteProps> = ({
                 <select
                   id="role"
                   value={inviteData.role}
-                  onChange={(e) => setInviteData({ ...inviteData, role: e.target.value as any })}
+                  onChange={e => setInviteData({ ...inviteData, role: e.target.value as any })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="member">Member</option>
@@ -131,15 +120,13 @@ const GroupMemberInvite: React.FC<GroupMemberInviteProps> = ({
                   id="message"
                   rows={3}
                   value={inviteData.message}
-                  onChange={(e) => setInviteData({ ...inviteData, message: e.target.value })}
+                  onChange={e => setInviteData({ ...inviteData, message: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Add a personal message to your invitation..."
                 />
               </div>
 
-              {error && (
-                <div className="text-red-600 text-sm">{error}</div>
-              )}
+              {error && <div className="text-red-600 text-sm">{error}</div>}
 
               <div className="flex justify-end space-x-3">
                 <button
@@ -186,7 +173,9 @@ const GroupMemberInvite: React.FC<GroupMemberInviteProps> = ({
 
               <div className="text-sm text-gray-600">
                 <p>This invitation will expire in 7 days.</p>
-                <p>The invitee will be added as a <strong>{inviteData.role}</strong> when they accept.</p>
+                <p>
+                  The invitee will be added as a <strong>{inviteData.role}</strong> when they accept.
+                </p>
               </div>
 
               <div className="flex justify-end">

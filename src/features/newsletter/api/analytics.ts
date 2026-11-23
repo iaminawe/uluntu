@@ -1,10 +1,10 @@
 import { supabase } from '@/lib/supabase';
-import { 
-  NewsletterAnalytics, 
-  CampaignAnalytics, 
+import {
+  NewsletterAnalytics,
+  CampaignAnalytics,
   AnalyticsFilters,
   PaginatedAnalytics,
-  NewsletterStats
+  NewsletterStats,
 } from '@/types/newsletter';
 
 class NewsletterAnalyticsAPI {
@@ -20,17 +20,15 @@ class NewsletterAnalyticsAPI {
     userAgent?: string
   ): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('newsletter_analytics')
-        .insert({
-          campaign_id: campaignId,
-          subscription_id: subscriptionId,
-          event_type: eventType,
-          event_data: (eventData || {}) as any,
-          occurred_at: new Date().toISOString(),
-          ip_address: ipAddress,
-          user_agent: userAgent
-        });
+      const { error } = await supabase.from('newsletter_analytics').insert({
+        campaign_id: campaignId,
+        subscription_id: subscriptionId,
+        event_type: eventType,
+        event_data: (eventData || {}) as any,
+        occurred_at: new Date().toISOString(),
+        ip_address: ipAddress,
+        user_agent: userAgent,
+      });
 
       if (error) throw error;
       return true;
@@ -74,10 +72,10 @@ class NewsletterAnalyticsAPI {
         if (!event.occurred_at) return;
         const date = new Date(event.occurred_at).toISOString().split('T')[0];
         const existing = timelineMap.get(date) || { opens: 0, clicks: 0 };
-        
+
         if (event.event_type === 'opened') existing.opens++;
         if (event.event_type === 'clicked') existing.clicks++;
-        
+
         timelineMap.set(date, existing);
       });
 
@@ -88,7 +86,9 @@ class NewsletterAnalyticsAPI {
       // Calculate top links from click events
       const linkMap = new Map<string, number>();
       events
-        .filter(e => e.event_type === 'clicked' && e.event_data && typeof e.event_data === 'object' && 'url' in e.event_data)
+        .filter(
+          e => e.event_type === 'clicked' && e.event_data && typeof e.event_data === 'object' && 'url' in e.event_data
+        )
         .forEach(event => {
           if (!event.event_data || typeof event.event_data !== 'object') return;
           const url = (event.event_data as any).url;
@@ -101,12 +101,15 @@ class NewsletterAnalyticsAPI {
         .slice(0, 10);
 
       // Count event types
-      const eventCounts = events.reduce((acc, event) => {
-        if (event.event_type) {
-          acc[event.event_type] = (acc[event.event_type] || 0) + 1;
-        }
-        return acc;
-      }, {} as Record<string, number>);
+      const eventCounts = events.reduce(
+        (acc, event) => {
+          if (event.event_type) {
+            acc[event.event_type] = (acc[event.event_type] || 0) + 1;
+          }
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
       return {
         campaign_id: campaignId,
@@ -122,7 +125,7 @@ class NewsletterAnalyticsAPI {
         bounce_rate: totalSent > 0 ? ((stats.bounced || 0) / totalSent) * 100 : 0,
         unsubscribe_rate: totalSent > 0 ? ((eventCounts.unsubscribed || 0) / totalSent) * 100 : 0,
         top_links,
-        engagement_timeline
+        engagement_timeline,
       };
     } catch (error) {
       console.error('Error getting campaign analytics:', error);
@@ -137,7 +140,9 @@ class NewsletterAnalyticsAPI {
     try {
       let query = supabase
         .from('newsletter_analytics')
-        .select('*, campaign:newsletter_campaigns(title, subject), subscription:newsletter_subscriptions(email)', { count: 'exact' });
+        .select('*, campaign:newsletter_campaigns(title, subject), subscription:newsletter_subscriptions(email)', {
+          count: 'exact',
+        });
 
       // Apply filters
       if (filters.campaign_id) {
@@ -149,9 +154,7 @@ class NewsletterAnalyticsAPI {
       }
 
       if (filters.date_range) {
-        query = query
-          .gte('occurred_at', filters.date_range.start)
-          .lte('occurred_at', filters.date_range.end);
+        query = query.gte('occurred_at', filters.date_range.start).lte('occurred_at', filters.date_range.end);
       }
 
       // Apply pagination
@@ -170,12 +173,12 @@ class NewsletterAnalyticsAPI {
         data: (data || []).map(item => ({
           ...item,
           event_type: item.event_type as NewsletterAnalytics['event_type'],
-          event_data: item.event_data as Record<string, unknown> | null | undefined
+          event_data: item.event_data as Record<string, unknown> | null | undefined,
         })) as NewsletterAnalytics[],
         total: count || 0,
         page: Math.floor(offset / limit) + 1,
         page_size: limit,
-        total_pages: Math.ceil((count || 0) / limit)
+        total_pages: Math.ceil((count || 0) / limit),
       };
     } catch (error) {
       console.error('Error getting analytics events:', error);
@@ -238,7 +241,7 @@ class NewsletterAnalyticsAPI {
         total_campaigns,
         sent_campaigns,
         avg_open_rate: Math.round(avg_open_rate * 100) / 100,
-        avg_click_rate: Math.round(avg_click_rate * 100) / 100
+        avg_click_rate: Math.round(avg_click_rate * 100) / 100,
       };
     } catch (error) {
       console.error('Error getting newsletter stats:', error);
@@ -249,7 +252,12 @@ class NewsletterAnalyticsAPI {
   /**
    * Track email open (called via tracking pixel)
    */
-  async trackOpen(campaignId: string, subscriptionId: string, ipAddress?: string, userAgent?: string): Promise<boolean> {
+  async trackOpen(
+    campaignId: string,
+    subscriptionId: string,
+    ipAddress?: string,
+    userAgent?: string
+  ): Promise<boolean> {
     try {
       // Check if already opened to avoid duplicate opens
       const { data: existing } = await supabase
@@ -280,7 +288,13 @@ class NewsletterAnalyticsAPI {
   /**
    * Track link click
    */
-  async trackClick(campaignId: string, subscriptionId: string, url: string, ipAddress?: string, userAgent?: string): Promise<boolean> {
+  async trackClick(
+    campaignId: string,
+    subscriptionId: string,
+    url: string,
+    ipAddress?: string,
+    userAgent?: string
+  ): Promise<boolean> {
     try {
       // Record click event
       await this.recordEvent(campaignId, subscriptionId, 'clicked', { url }, ipAddress, userAgent);
@@ -298,7 +312,10 @@ class NewsletterAnalyticsAPI {
   /**
    * Update campaign delivery statistics
    */
-  private async updateCampaignStats(campaignId: string, eventType: 'delivered' | 'bounced' | 'opened' | 'clicked'): Promise<void> {
+  private async updateCampaignStats(
+    campaignId: string,
+    eventType: 'delivered' | 'bounced' | 'opened' | 'clicked'
+  ): Promise<void> {
     try {
       const { data: campaign, error: fetchError } = await supabase
         .from('newsletter_campaigns')
@@ -356,15 +373,14 @@ class NewsletterAnalyticsAPI {
       // Recent activity (last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const recentEvents = events.filter(e => 
-        e.occurred_at && new Date(e.occurred_at) > thirtyDaysAgo
-      );
+      const recentEvents = events.filter(e => e.occurred_at && new Date(e.occurred_at) > thirtyDaysAgo);
       const recent_activity = recentEvents.length;
 
       // Subscription longevity (months)
       const subscriptionDate = new Date(subscription.subscribed_at);
       const now = new Date();
-      const subscription_longevity = Math.max(1, 
+      const subscription_longevity = Math.max(
+        1,
         (now.getTime() - subscriptionDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
       );
 
@@ -373,13 +389,17 @@ class NewsletterAnalyticsAPI {
       const content_engagement = uniqueEventTypes * 10; // Scale factor
 
       // Calculate overall score (0-100)
-      const score = Math.min(100, Math.max(0,
-        (open_rate * 0.3) + 
-        (click_rate * 0.3) + 
-        (Math.min(recent_activity, 10) * 2) + 
-        (Math.min(subscription_longevity, 12) * 1.5) + 
-        (content_engagement * 0.5)
-      ));
+      const score = Math.min(
+        100,
+        Math.max(
+          0,
+          open_rate * 0.3 +
+            click_rate * 0.3 +
+            Math.min(recent_activity, 10) * 2 +
+            Math.min(subscription_longevity, 12) * 1.5 +
+            content_engagement * 0.5
+        )
+      );
 
       return {
         subscriber_id: subscriptionId,
@@ -389,9 +409,9 @@ class NewsletterAnalyticsAPI {
           click_rate: Math.round(click_rate * 100) / 100,
           recent_activity,
           subscription_longevity: Math.round(subscription_longevity * 100) / 100,
-          content_engagement
+          content_engagement,
         },
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
     } catch (error) {
       console.error('Error calculating engagement score:', error);
@@ -406,13 +426,13 @@ class NewsletterAnalyticsAPI {
     try {
       const cohorts: CohortAnalysis[] = [];
       const periodMonths = cohortPeriod === 'quarter' ? 3 : 1;
-      
+
       // Get cohorts for the last 12 periods
       for (let i = 11; i >= 0; i--) {
         const cohortStart = new Date();
-        cohortStart.setMonth(cohortStart.getMonth() - (i * periodMonths));
+        cohortStart.setMonth(cohortStart.getMonth() - i * periodMonths);
         cohortStart.setDate(1);
-        
+
         const cohortEnd = new Date(cohortStart);
         cohortEnd.setMonth(cohortEnd.getMonth() + periodMonths);
         cohortEnd.setDate(0);
@@ -439,8 +459,8 @@ class NewsletterAnalyticsAPI {
 
         for (let period = 0; period < 12; period++) {
           const periodStart = new Date(cohortEnd);
-          periodStart.setMonth(periodStart.getMonth() + (period * periodMonths));
-          
+          periodStart.setMonth(periodStart.getMonth() + period * periodMonths);
+
           const periodEnd = new Date(periodStart);
           periodEnd.setMonth(periodEnd.getMonth() + periodMonths);
 
@@ -462,7 +482,7 @@ class NewsletterAnalyticsAPI {
           retention_rates.push({
             period,
             subscribers: activeCount,
-            retention_rate: Math.round(retention_rate * 100) / 100
+            retention_rate: Math.round(retention_rate * 100) / 100,
           });
 
           // Calculate engagement metrics for this period
@@ -485,7 +505,7 @@ class NewsletterAnalyticsAPI {
             engagement_metrics.push({
               period,
               avg_open_rate: Math.round(avg_open_rate * 100) / 100,
-              avg_click_rate: Math.round(avg_click_rate * 100) / 100
+              avg_click_rate: Math.round(avg_click_rate * 100) / 100,
             });
           }
         }
@@ -494,7 +514,7 @@ class NewsletterAnalyticsAPI {
           cohort_period: cohortPeriodLabel,
           cohort_size,
           retention_rates,
-          engagement_metrics
+          engagement_metrics,
         });
       }
 
@@ -516,13 +536,13 @@ class NewsletterAnalyticsAPI {
 
       // Subscriber growth
       const subscriber_growth = await this.getSubscriberGrowth(startDate, endDate);
-      
+
       // Engagement trends
       const engagement_trends = await this.getEngagementTrends(startDate, endDate);
-      
+
       // Content performance
       const content_performance = await this.getContentPerformance();
-      
+
       // Segment performance
       const segment_performance = await this.getSegmentPerformance();
 
@@ -530,7 +550,7 @@ class NewsletterAnalyticsAPI {
         subscriber_growth,
         engagement_trends,
         content_performance,
-        segment_performance
+        segment_performance,
       };
     } catch (error) {
       console.error('Error getting advanced analytics:', error);
@@ -565,10 +585,10 @@ class NewsletterAnalyticsAPI {
         if (!event.occurred_at) return;
         const date = new Date(event.occurred_at).toISOString().split('T')[0];
         const metrics = dailyMetrics.get(date) || { opens: 0, clicks: 0 };
-        
+
         if (event.event_type === 'opened') metrics.opens++;
         if (event.event_type === 'clicked') metrics.clicks++;
-        
+
         dailyMetrics.set(date, metrics);
       });
 
@@ -599,7 +619,7 @@ class NewsletterAnalyticsAPI {
           return {
             title: c.title,
             open_rate: Math.round(open_rate * 100) / 100,
-            click_rate: Math.round(click_rate * 100) / 100
+            click_rate: Math.round(click_rate * 100) / 100,
           };
         })
         .sort((a, b) => b.open_rate - a.open_rate);
@@ -607,7 +627,7 @@ class NewsletterAnalyticsAPI {
       return {
         daily_opens,
         daily_clicks,
-        top_campaigns
+        top_campaigns,
       };
     } catch (error) {
       console.error('Error getting engagement metrics:', error);
@@ -619,7 +639,7 @@ class NewsletterAnalyticsAPI {
 
   private async getSubscriberGrowth(startDate: Date, endDate: Date) {
     const growth: Array<{ date: string; new_subscribers: number; unsubscribes: number; net_growth: number }> = [];
-    
+
     const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       const dateStr = currentDate.toISOString().split('T')[0];
@@ -649,7 +669,7 @@ class NewsletterAnalyticsAPI {
           date: dateStr,
           new_subscribers,
           unsubscribes: unsubscribes_count,
-          net_growth
+          net_growth,
         });
       }
 
@@ -661,7 +681,7 @@ class NewsletterAnalyticsAPI {
 
   private async getEngagementTrends(startDate: Date, endDate: Date) {
     const trends: Array<{ date: string; open_rate: number; click_rate: number; engagement_score: number }> = [];
-    
+
     const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       const dateStr = currentDate.toISOString().split('T')[0];
@@ -688,7 +708,7 @@ class NewsletterAnalyticsAPI {
           date: dateStr,
           open_rate: Math.round(open_rate * 100) / 100,
           click_rate: Math.round(click_rate * 100) / 100,
-          engagement_score: Math.round(engagement_score * 100) / 100
+          engagement_score: Math.round(engagement_score * 100) / 100,
         });
       }
 
@@ -710,17 +730,19 @@ class NewsletterAnalyticsAPI {
     try {
       const { data: campaigns, error } = await supabase
         .from('newsletter_campaigns')
-        .select(`
+        .select(
+          `
           content,
           delivery_stats
-        `)
+        `
+        )
         .eq('status', 'sent')
         .not('delivery_stats', 'is', null);
 
       if (error) throw error;
 
       const contentTypes = ['events', 'news', 'opportunities', 'marketplace', 'members', 'companies'];
-      
+
       for (const contentType of contentTypes) {
         // Filter campaigns that contain this content type
         const relevantCampaigns = (campaigns || []).filter(campaign => {
@@ -737,14 +759,14 @@ class NewsletterAnalyticsAPI {
             content_type: contentType,
             avg_open_rate: totalSent > 0 ? (totalOpen / totalSent) * 100 : 0,
             avg_click_rate: totalOpen > 0 ? (totalClick / totalOpen) * 100 : 0,
-            total_campaigns: relevantCampaigns.length
+            total_campaigns: relevantCampaigns.length,
           });
         } else {
           performance.push({
             content_type: contentType,
             avg_open_rate: 0,
             avg_click_rate: 0,
-            total_campaigns: 0
+            total_campaigns: 0,
           });
         }
       }
@@ -757,7 +779,7 @@ class NewsletterAnalyticsAPI {
           content_type: contentType,
           avg_open_rate: 0,
           avg_click_rate: 0,
-          total_campaigns: 0
+          total_campaigns: 0,
         });
       }
     }
@@ -774,9 +796,7 @@ class NewsletterAnalyticsAPI {
     }> = [];
 
     try {
-      const { data: segments, error } = await supabase
-        .from('newsletter_segments')
-        .select('id, name');
+      const { data: segments, error } = await supabase.from('newsletter_segments').select('id, name');
 
       if (!error && segments) {
         for (const segment of segments) {
@@ -791,7 +811,7 @@ class NewsletterAnalyticsAPI {
               segment_id: segment.id,
               segment_name: segment.name,
               subscriber_count: count || 0,
-              avg_engagement: 0 // TODO: Calculate actual engagement
+              avg_engagement: 0, // TODO: Calculate actual engagement
             });
           }
         }

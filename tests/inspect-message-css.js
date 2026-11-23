@@ -7,15 +7,15 @@ async function inspectMessageCSS() {
 
   try {
     console.log('🔍 Direct CSS inspection of MessageBubble component...');
-    
+
     // Navigate to a page where we can inspect the component
     await page.goto('http://localhost:5555', { waitUntil: 'networkidle' });
-    
+
     // Take a screenshot of the homepage
     await page.screenshot({ path: '/Users/iaminawe/Sites/nelson-tech/tests/homepage.png', fullPage: true });
-    
+
     console.log('🧪 Injecting test message elements to analyze CSS...');
-    
+
     // Inject test message elements directly into the page to see how they would render
     await page.evaluate(() => {
       // Create a test container
@@ -104,47 +104,49 @@ async function inspectMessageCSS() {
           </div>
         </div>
       `;
-      
+
       document.body.appendChild(testContainer);
     });
-    
+
     // Wait for the test elements to render
     await page.waitForTimeout(2000);
-    
+
     // Take a screenshot showing the test
     await page.screenshot({ path: '/Users/iaminawe/Sites/nelson-tech/tests/css-alignment-test.png', fullPage: true });
     console.log('📷 CSS alignment test screenshot saved to tests/css-alignment-test.png');
-    
+
     // Now analyze the classes being used
     console.log('\n🔍 Analyzing CSS classes used in test elements...');
-    
+
     const alignmentInfo = await page.evaluate(() => {
       const containers = document.querySelectorAll('.flex.items-end.gap-2.mb-4');
       const results = [];
-      
+
       containers.forEach((container, index) => {
         const classes = container.className;
         const hasJustifyStart = classes.includes('justify-start');
         const hasJustifyEnd = classes.includes('justify-end');
-        
+
         const messageContent = container.querySelector('.px-4.py-2.rounded-2xl');
-        const bgColor = messageContent ? messageContent.className.match(/bg-\\w+-\\d+/)?.[0] || 'no-bg-found' : 'no-message-found';
-        
+        const bgColor = messageContent
+          ? messageContent.className.match(/bg-\\w+-\\d+/)?.[0] || 'no-bg-found'
+          : 'no-message-found';
+
         const avatar = container.querySelector('.rounded-full');
         const avatarText = avatar ? avatar.textContent.trim() : 'no-avatar';
-        
+
         results.push({
           index: index + 1,
           classes: classes,
           alignment: hasJustifyStart ? 'LEFT (justify-start)' : hasJustifyEnd ? 'RIGHT (justify-end)' : 'NO ALIGNMENT',
           messageColor: bgColor,
-          avatarText: avatarText
+          avatarText: avatarText,
         });
       });
-      
+
       return results;
     });
-    
+
     console.log('\n📊 Test Element Analysis:');
     alignmentInfo.forEach(info => {
       console.log(`\n--- Message Container ${info.index} ---`);
@@ -153,14 +155,13 @@ async function inspectMessageCSS() {
       console.log(`🎨 Message Color: ${info.messageColor}`);
       console.log(`👤 Avatar: ${info.avatarText}`);
     });
-    
+
     console.log('\n✅ Analysis complete! Check the screenshot to see the visual differences.');
     console.log('🎯 Key takeaways:');
     console.log('   - Own messages should use justify-end for right alignment');
     console.log('   - Other user messages should use justify-start for left alignment');
     console.log('   - Avatar positioning should match the alignment (own: right, others: left)');
     console.log('   - Content alignment (items-end vs items-start) should match the container alignment');
-    
   } catch (error) {
     console.error('❌ Error:', error.message);
     await page.screenshot({ path: '/Users/iaminawe/Sites/nelson-tech/tests/css-error.png', fullPage: true });

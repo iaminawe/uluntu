@@ -17,17 +17,17 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
   galleryId,
   disabled = false,
   maxFiles = 10,
-  showBatchUpload = true
+  showBatchUpload = true,
 }) => {
   const [showBatchDialog, setShowBatchDialog] = useState(false);
-  
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length > 0) {
       onUpload?.(files.slice(0, maxFiles));
     }
   };
-  
+
   const handleBatchUploadComplete = (uploadedPhotos: any[]) => {
     onBatchUpload?.(uploadedPhotos);
     setShowBatchDialog(false);
@@ -40,19 +40,16 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
           <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
             <Upload className="w-6 h-6 text-orange-500" />
           </div>
-          
+
           <div>
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-              Upload Photos
-            </h3>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Upload Photos</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
-              {showBatchUpload 
+              {showBatchUpload
                 ? 'Choose single or batch upload method'
-                : 'Drag and drop photos here, or click to select files'
-              }
+                : 'Drag and drop photos here, or click to select files'}
             </p>
           </div>
-          
+
           <div className="flex items-center space-x-3">
             <label className="cursor-pointer">
               <input
@@ -68,7 +65,7 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
                 {showBatchUpload ? 'Quick Upload' : 'Choose Photos'}
               </span>
             </label>
-            
+
             {showBatchUpload && galleryId && (
               <button
                 onClick={() => setShowBatchDialog(true)}
@@ -80,16 +77,15 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
               </button>
             )}
           </div>
-          
+
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {showBatchUpload 
+            {showBatchUpload
               ? `Quick upload: Up to ${maxFiles} photos • Batch upload: Advanced features with progress tracking`
-              : `Maximum ${maxFiles} photos. Supported formats: JPG, PNG, WebP`
-            }
+              : `Maximum ${maxFiles} photos. Supported formats: JPG, PNG, WebP`}
           </p>
         </div>
       </div>
-      
+
       {/* Batch Upload Dialog */}
       {showBatchUpload && galleryId && (
         <BatchUploadDialog

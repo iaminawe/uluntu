@@ -15,7 +15,7 @@ import messagingUISlice from '../src/features/messaging/store/messagingUISlice';
 
 // Mock implementations
 jest.mock('../src/features/messaging/api/messagingApi', () => ({
-  messagingApi: require('../src/features/messaging/api/messagingApi.mock').messagingApi
+  messagingApi: require('../src/features/messaging/api/messagingApi.mock').messagingApi,
 }));
 
 jest.mock('../src/shared/contexts/SessionContextWithRedux', () => ({
@@ -23,9 +23,9 @@ jest.mock('../src/shared/contexts/SessionContextWithRedux', () => ({
     user: {
       id: 'test-user-1',
       email: 'test@example.com',
-      name: 'Test User'
-    }
-  })
+      name: 'Test User',
+    },
+  }),
 }));
 
 describe('Messaging Flow Integration Test', () => {
@@ -36,14 +36,14 @@ describe('Messaging Flow Integration Test', () => {
     queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
-        mutations: { retry: false }
-      }
+        mutations: { retry: false },
+      },
     });
 
     store = configureStore({
       reducer: {
-        messagingUI: messagingUISlice
-      }
+        messagingUI: messagingUISlice,
+      },
     });
   });
 
@@ -54,9 +54,7 @@ describe('Messaging Flow Integration Test', () => {
   const renderWithProviders = (component: React.ReactElement) => {
     return render(
       <Provider store={store}>
-        <QueryClientProvider client={queryClient}>
-          {component}
-        </QueryClientProvider>
+        <QueryClientProvider client={queryClient}>{component}</QueryClientProvider>
       </Provider>
     );
   };
@@ -70,7 +68,7 @@ describe('Messaging Flow Integration Test', () => {
     test('Shows sign-in prompt when user is not authenticated', () => {
       // Mock no user
       jest.mock('../src/shared/contexts/SessionContextWithRedux', () => ({
-        useSession: () => ({ user: null })
+        useSession: () => ({ user: null }),
       }));
 
       renderWithProviders(<MessagesPage />);
@@ -84,7 +82,7 @@ describe('Messaging Flow Integration Test', () => {
         type: 'direct',
         title: 'Test Conversation',
         participant_ids: ['user-1', 'user-2'],
-        metadata: {}
+        metadata: {},
       });
 
       expect(conversation).toHaveProperty('id');
@@ -98,7 +96,7 @@ describe('Messaging Flow Integration Test', () => {
         type: 'direct',
         title: 'Test Conversation',
         participant_ids: ['user-1', 'user-2'],
-        metadata: {}
+        metadata: {},
       });
 
       // Send a message
@@ -106,7 +104,7 @@ describe('Messaging Flow Integration Test', () => {
         conversation_id: conversation.id,
         content: 'Hello World!',
         message_type: 'text',
-        metadata: {}
+        metadata: {},
       });
 
       expect(message).toHaveProperty('id');
@@ -120,14 +118,14 @@ describe('Messaging Flow Integration Test', () => {
         type: 'direct',
         title: 'Conv 1',
         participant_ids: ['user-1', 'user-2'],
-        metadata: {}
+        metadata: {},
       });
 
       await messagingApi.createConversation({
-        type: 'direct', 
+        type: 'direct',
         title: 'Conv 2',
         participant_ids: ['user-1', 'user-3'],
-        metadata: {}
+        metadata: {},
       });
 
       const conversations = await messagingApi.getConversations();
@@ -140,27 +138,27 @@ describe('Messaging Flow Integration Test', () => {
         type: 'direct',
         title: 'Test Conversation',
         participant_ids: ['user-1', 'user-2'],
-        metadata: {}
+        metadata: {},
       });
 
       await messagingApi.sendMessage({
         conversation_id: conversation.id,
         content: 'Message 1',
         message_type: 'text',
-        metadata: {}
+        metadata: {},
       });
 
       await messagingApi.sendMessage({
         conversation_id: conversation.id,
         content: 'Message 2',
         message_type: 'text',
-        metadata: {}
+        metadata: {},
       });
 
       const messages = await messagingApi.getMessages({
         conversation_id: conversation.id,
         limit: 50,
-        offset: 0
+        offset: 0,
       });
 
       expect(messages).toHaveLength(2);
@@ -203,7 +201,7 @@ describe('Messaging Flow Integration Test', () => {
         type: 'direct',
         title: 'Hook Test Conversation',
         participant_ids: ['user-1', 'user-2'],
-        metadata: {}
+        metadata: {},
       });
 
       expect(newConversation).toHaveProperty('id');
@@ -215,7 +213,7 @@ describe('Messaging Flow Integration Test', () => {
     test('Redux store updates when conversation is selected', () => {
       const action = { type: 'messagingUI/setSelectedConversation', payload: 'conv-123' };
       const newState = messagingUISlice(undefined, action);
-      
+
       expect(newState.selectedConversationId).toBe('conv-123');
     });
 
@@ -231,9 +229,10 @@ describe('Messaging Flow Integration Test', () => {
   describe('5. Database Connection Status', () => {
     test('Check if real database tables exist', async () => {
       // This test checks if the mock is being used vs real database
-      const isUsingMock = require('../src/features/messaging/api/messagingApi').messagingApi === 
-                         require('../src/features/messaging/api/messagingApi.mock').messagingApi;
-      
+      const isUsingMock =
+        require('../src/features/messaging/api/messagingApi').messagingApi ===
+        require('../src/features/messaging/api/messagingApi.mock').messagingApi;
+
       expect(isUsingMock).toBe(true);
       console.log('🔍 FINDING: Currently using MOCK API - no real database connection');
     });
@@ -241,10 +240,10 @@ describe('Messaging Flow Integration Test', () => {
     test('Verify database migration existence', () => {
       const fs = require('fs');
       const path = require('path');
-      
+
       const migrationPath = path.join(process.cwd(), 'database/migrations/009_create_messaging_system.sql');
       const migrationExists = fs.existsSync(migrationPath);
-      
+
       console.log(`🔍 FINDING: Migration file exists at ${migrationPath}: ${migrationExists}`);
       expect(migrationExists).toBe(true);
     });
@@ -257,16 +256,16 @@ describe('Messaging Flow Integration Test', () => {
         type: 'direct',
         title: 'Persistence Test',
         participant_ids: ['user-1', 'user-2'],
-        metadata: {}
+        metadata: {},
       });
 
       // Retrieve conversations
       const conversations = await messagingApi.getConversations();
       const foundConv = conversations.find(c => c.id === conv1.id);
-      
+
       expect(foundConv).toBeDefined();
       expect(foundConv?.title).toBe('Persistence Test');
-      
+
       console.log('🔍 FINDING: Data persists in mock API between calls');
     });
 
@@ -276,7 +275,7 @@ describe('Messaging Flow Integration Test', () => {
         type: 'direct',
         title: 'Message Persistence Test',
         participant_ids: ['user-1', 'user-2'],
-        metadata: {}
+        metadata: {},
       });
 
       // Send message
@@ -284,19 +283,19 @@ describe('Messaging Flow Integration Test', () => {
         conversation_id: conversation.id,
         content: 'Persistence test message',
         message_type: 'text',
-        metadata: {}
+        metadata: {},
       });
 
       // Retrieve messages
       const messages = await messagingApi.getMessages({
         conversation_id: conversation.id,
         limit: 50,
-        offset: 0
+        offset: 0,
       });
 
       expect(messages).toHaveLength(1);
       expect(messages[0].content).toBe('Persistence test message');
-      
+
       console.log('🔍 FINDING: Messages persist in mock API');
     });
   });
@@ -330,12 +329,12 @@ describe('Critical Issues Identified', () => {
       '5. NO USER CONTEXT: Mock API uses hardcoded user IDs',
       '6. INCOMPLETE COMPONENTS: MessageThread composer not connected to send function',
       '7. NO ERROR HANDLING: No proper error boundaries for messaging failures',
-      '8. NO AUTHENTICATION: No check for proper user permissions'
+      '8. NO AUTHENTICATION: No check for proper user permissions',
     ];
 
     console.log('\n🚨 CRITICAL MESSAGING FLOW ISSUES:');
     issues.forEach(issue => console.log(`   ${issue}`));
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 });

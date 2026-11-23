@@ -1,7 +1,7 @@
 // Mock environment dependencies first
 jest.mock('@/config/env', () => ({
   getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
-  IS_SUPABASE_ENABLED: false
+  IS_SUPABASE_ENABLED: false,
 }));
 
 import { newsletterSubscriptionApi } from '@/features/newsletter/api/subscriptions';
@@ -14,29 +14,33 @@ jest.mock('@/lib/supabase', () => ({
     from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({ data: null, error: null }))
+          single: jest.fn(() => Promise.resolve({ data: null, error: null })),
         })),
-        order: jest.fn(() => Promise.resolve({ data: [], error: null }))
+        order: jest.fn(() => Promise.resolve({ data: [], error: null })),
       })),
       insert: jest.fn(() => ({
         select: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({ 
-            data: { id: 'test-id', email: 'test@example.com' }, 
-            error: null 
-          }))
-        }))
+          single: jest.fn(() =>
+            Promise.resolve({
+              data: { id: 'test-id', email: 'test@example.com' },
+              error: null,
+            })
+          ),
+        })),
       })),
       update: jest.fn(() => ({
-        eq: jest.fn(() => Promise.resolve({ error: null }))
-      }))
+        eq: jest.fn(() => Promise.resolve({ error: null })),
+      })),
     })),
     auth: {
-      getUser: jest.fn(() => Promise.resolve({ 
-        data: { user: { id: 'test-user-id' } }, 
-        error: null 
-      }))
-    }
-  }
+      getUser: jest.fn(() =>
+        Promise.resolve({
+          data: { user: { id: 'test-user-id' } },
+          error: null,
+        })
+      ),
+    },
+  },
 }));
 
 // Mock Resend service
@@ -44,13 +48,15 @@ jest.mock('@/services/resend', () => ({
   resendService: {
     sendConfirmationEmail: jest.fn(() => Promise.resolve(true)),
     sendTestEmail: jest.fn(() => Promise.resolve(true)),
-    sendNewsletterCampaign: jest.fn(() => Promise.resolve({
-      success: true,
-      sent_count: 1,
-      failed_count: 0,
-      failed_emails: []
-    }))
-  }
+    sendNewsletterCampaign: jest.fn(() =>
+      Promise.resolve({
+        success: true,
+        sent_count: 1,
+        failed_count: 0,
+        failed_emails: [],
+      })
+    ),
+  },
 }));
 
 describe('Newsletter System Basic Tests', () => {
@@ -70,8 +76,8 @@ describe('Newsletter System Basic Tests', () => {
           content_types: ['events' as const, 'news' as const],
           format: 'digest' as const,
           location_filter: true,
-          language: 'en'
-        }
+          language: 'en',
+        },
       };
 
       const result = await newsletterSubscriptionApi.subscribe(request);
@@ -93,7 +99,7 @@ describe('Newsletter System Basic Tests', () => {
         title: 'Test Newsletter',
         subject: 'Test Subject',
         template_id: 'test-template',
-        custom_message: 'Hello community!'
+        custom_message: 'Hello community!',
       };
 
       const result = await newsletterCampaignApi.createCampaign(request);
@@ -127,13 +133,13 @@ describe('Newsletter System Basic Tests', () => {
           content_types: ['events' as const],
           format: 'digest' as const,
           location_filter: true,
-          language: 'en'
+          language: 'en',
         },
         subscription_token: 'token',
         subscribed_at: new Date().toISOString(),
         bounce_count: 0,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       expect(subscriptionData.status).toBe('active');

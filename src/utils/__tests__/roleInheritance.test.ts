@@ -7,7 +7,7 @@ import {
   getAssignableRoles,
   validateRoleHierarchy,
   getRoleDescription,
-  ROLE_HIERARCHY
+  ROLE_HIERARCHY,
 } from '../roleInheritance';
 
 describe('roleInheritance', () => {
@@ -15,7 +15,7 @@ describe('roleInheritance', () => {
     it('should return direct roles plus inherited roles', () => {
       const userRoles = ['admin'];
       const effectiveRoles = getEffectiveRoles(userRoles);
-      
+
       expect(effectiveRoles).toContain('admin');
       expect(effectiveRoles).toContain('group_member');
       expect(effectiveRoles).toContain('authenticated');
@@ -25,7 +25,7 @@ describe('roleInheritance', () => {
     it('should handle superadmin role', () => {
       const userRoles = ['superadmin'];
       const effectiveRoles = getEffectiveRoles(userRoles);
-      
+
       expect(effectiveRoles).toContain('superadmin');
       expect(effectiveRoles).toContain('admin');
       expect(effectiveRoles).toContain('group_member');
@@ -35,7 +35,7 @@ describe('roleInheritance', () => {
     it('should handle multiple direct roles', () => {
       const userRoles = ['admin', 'group_member'];
       const effectiveRoles = getEffectiveRoles(userRoles);
-      
+
       // Should not duplicate inherited roles
       const uniqueRoles = [...new Set(effectiveRoles)];
       expect(effectiveRoles.length).toBe(uniqueRoles.length);
@@ -44,7 +44,7 @@ describe('roleInheritance', () => {
     it('should handle unknown roles gracefully', () => {
       const userRoles = ['unknown_role', 'authenticated'];
       const effectiveRoles = getEffectiveRoles(userRoles);
-      
+
       expect(effectiveRoles).toContain('unknown_role');
       expect(effectiveRoles).toContain('authenticated');
     });
@@ -58,8 +58,8 @@ describe('roleInheritance', () => {
           members: ['read'],
           events: ['read'],
           groups: [],
-          users: []
-        }
+          users: [],
+        },
       },
       {
         id: 'group_member',
@@ -67,8 +67,8 @@ describe('roleInheritance', () => {
           members: ['read', 'update'],
           events: ['read', 'create'],
           groups: ['read', 'update'],
-          users: []
-        }
+          users: [],
+        },
       },
       {
         id: 'admin',
@@ -76,15 +76,15 @@ describe('roleInheritance', () => {
           members: ['*'],
           events: ['*'],
           groups: ['*'],
-          users: ['read', 'update']
-        }
-      }
+          users: ['read', 'update'],
+        },
+      },
     ];
 
     it('should merge permissions correctly', () => {
       const userRoles = ['group_member'];
       const merged = getMergedPermissions(mockRoles, userRoles);
-      
+
       expect(merged.members).toContain('read');
       expect(merged.members).toContain('update');
       expect(merged.events).toContain('read');
@@ -96,7 +96,7 @@ describe('roleInheritance', () => {
     it('should prioritize higher-level roles', () => {
       const userRoles = ['admin'];
       const merged = getMergedPermissions(mockRoles, userRoles);
-      
+
       expect(merged.members).toEqual(['*']);
       expect(merged.events).toEqual(['*']);
       expect(merged.users).toContain('read');
@@ -106,12 +106,12 @@ describe('roleInheritance', () => {
     it('should handle wildcard permissions correctly', () => {
       const adminRole = {
         id: 'admin',
-        permissions: { members: ['*'] }
+        permissions: { members: ['*'] },
       };
-      
+
       const userRoles = ['admin'];
       const merged = getMergedPermissions([adminRole], userRoles);
-      
+
       expect(merged.members).toEqual(['*']);
     });
   });
@@ -173,7 +173,7 @@ describe('roleInheritance', () => {
     it('should return correct assignable roles for admin', () => {
       const userRoles = ['admin'];
       const assignable = getAssignableRoles(userRoles);
-      
+
       expect(assignable).toContain('group_member');
       expect(assignable).toContain('authenticated');
       expect(assignable).toContain('guest');
@@ -184,7 +184,7 @@ describe('roleInheritance', () => {
     it('should return all roles for superadmin', () => {
       const userRoles = ['superadmin'];
       const assignable = getAssignableRoles(userRoles);
-      
+
       expect(assignable).toContain('admin');
       expect(assignable).toContain('group_member');
       expect(assignable).toContain('authenticated');
@@ -194,7 +194,7 @@ describe('roleInheritance', () => {
     it('should return empty array for regular users', () => {
       const userRoles = ['authenticated'];
       const assignable = getAssignableRoles(userRoles);
-      
+
       expect(assignable).toEqual([]);
     });
   });
@@ -227,7 +227,7 @@ describe('roleInheritance', () => {
   describe('ROLE_HIERARCHY', () => {
     it('should have consistent level ordering', () => {
       const roles = Object.entries(ROLE_HIERARCHY);
-      
+
       // Check that inherited roles have higher level numbers
       roles.forEach(([_roleName, config]) => {
         config.inherits.forEach(inheritedRole => {

@@ -1,13 +1,5 @@
-export type ContentType = 
-  | 'news' 
-  | 'events' 
-  | 'resources' 
-  | 'groups' 
-  | 'gallery' 
-  | 'marketplace' 
-  | 'opportunities'
-  | 'blog'
-  | 'general';
+export type ContentType =
+  'news' | 'events' | 'resources' | 'groups' | 'gallery' | 'marketplace' | 'opportunities' | 'blog' | 'general';
 
 export type EditorMode = 'visual' | 'markdown' | 'html';
 

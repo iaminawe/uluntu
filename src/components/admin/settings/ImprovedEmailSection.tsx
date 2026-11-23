@@ -4,19 +4,19 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { 
-  Mail, 
-  Send, 
-  Bell, 
+import {
+  Mail,
+  Send,
+  Bell,
   Server,
   Eye,
   EyeOff,
-  Save, 
-  RotateCcw, 
+  Save,
+  RotateCcw,
   Info,
   CheckCircle,
   XCircle,
-  TestTube
+  TestTube,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -51,7 +51,7 @@ const smtpFields: SettingField[] = [
     type: 'text',
     placeholder: 'smtp.gmail.com',
     description: 'SMTP server hostname or IP address',
-    required: true
+    required: true,
   },
   {
     key: 'smtp_port',
@@ -59,7 +59,7 @@ const smtpFields: SettingField[] = [
     type: 'number',
     placeholder: '587',
     description: 'SMTP server port (587 for TLS, 465 for SSL, 25 for non-encrypted)',
-    validation: { min: 1, max: 65535 }
+    validation: { min: 1, max: 65535 },
   },
   {
     key: 'smtp_username',
@@ -67,7 +67,7 @@ const smtpFields: SettingField[] = [
     type: 'email',
     placeholder: 'your-email@gmail.com',
     description: 'Username for SMTP authentication',
-    sensitive: true
+    sensitive: true,
   },
   {
     key: 'smtp_password',
@@ -75,7 +75,7 @@ const smtpFields: SettingField[] = [
     type: 'password',
     placeholder: '••••••••••••',
     description: 'Password or app-specific password for SMTP authentication',
-    sensitive: true
+    sensitive: true,
   },
   {
     key: 'smtp_encryption',
@@ -85,9 +85,9 @@ const smtpFields: SettingField[] = [
     options: [
       { value: 'none', label: 'None (Not recommended)' },
       { value: 'tls', label: 'TLS (Recommended)' },
-      { value: 'ssl', label: 'SSL' }
-    ]
-  }
+      { value: 'ssl', label: 'SSL' },
+    ],
+  },
 ];
 
 const senderFields: SettingField[] = [
@@ -97,7 +97,7 @@ const senderFields: SettingField[] = [
     type: 'email',
     placeholder: 'noreply@example.com',
     description: 'Default sender email address for outgoing emails',
-    required: true
+    required: true,
   },
   {
     key: 'from_name',
@@ -105,15 +105,15 @@ const senderFields: SettingField[] = [
     type: 'text',
     placeholder: 'Uluntu',
     description: 'Default sender name displayed in emails',
-    required: true
+    required: true,
   },
   {
     key: 'reply_to_email',
     label: 'Reply-To Email',
     type: 'email',
     placeholder: 'support@example.com',
-    description: 'Email address for replies (optional)'
-  }
+    description: 'Email address for replies (optional)',
+  },
 ];
 
 const notificationFields: SettingField[] = [
@@ -121,32 +121,32 @@ const notificationFields: SettingField[] = [
     key: 'welcome_email_enabled',
     label: 'Welcome Email',
     type: 'boolean',
-    description: 'Send welcome email to new users'
+    description: 'Send welcome email to new users',
   },
   {
     key: 'email_verification_enabled',
     label: 'Email Verification',
     type: 'boolean',
-    description: 'Send email verification links to new users'
+    description: 'Send email verification links to new users',
   },
   {
     key: 'password_reset_enabled',
     label: 'Password Reset Emails',
     type: 'boolean',
-    description: 'Allow password reset via email'
+    description: 'Allow password reset via email',
   },
   {
     key: 'admin_notifications_enabled',
     label: 'Admin Notifications',
     type: 'boolean',
-    description: 'Send email notifications to administrators'
+    description: 'Send email notifications to administrators',
   },
   {
     key: 'daily_digest_enabled',
     label: 'Daily Digest',
     type: 'boolean',
-    description: 'Send daily activity digest to users'
-  }
+    description: 'Send daily activity digest to users',
+  },
 ];
 
 const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
@@ -154,7 +154,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
   features,
   onUpdateSetting,
   onRefresh,
-  isLoading
+  isLoading,
 }) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
@@ -184,22 +184,22 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
     setSaving(true);
     try {
       const updates: UpdateSettingRequest[] = [];
-      
+
       for (const fieldKey of changedFields) {
         const [category, settingKey] = fieldKey.split('.');
         const value = formData[fieldKey];
-        
+
         const setting = settings.find(s => s.setting_key === settingKey && s.category === category);
         updates.push({
           setting_key: settingKey,
           setting_value: value,
           category: category as any,
-          data_type: (setting?.data_type || 'string') as SettingDataType
+          data_type: (setting?.data_type || 'string') as SettingDataType,
         });
       }
-      
+
       await Promise.all(updates.map(update => onUpdateSetting(update)));
-      
+
       setChangedFields(new Set());
       toast.success(`Saved ${updates.length} email settings successfully`);
       onRefresh();
@@ -239,7 +239,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
     const fieldKey = `${category}.${field.key}`;
     const value = formData[fieldKey];
     const hasChanged = changedFields.has(fieldKey);
-    
+
     return (
       <div key={fieldKey} className="space-y-3">
         <label className="block text-sm font-medium text-gray-700">
@@ -251,7 +251,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
             </Badge>
           )}
         </label>
-        
+
         {field.type === 'boolean' ? (
           <div className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
             <div className="flex-1">
@@ -261,23 +261,23 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
                 ) : (
                   <XCircle className="h-4 w-4 text-gray-400" />
                 )}
-                <span className="text-sm font-medium">
-                  {value ? 'Enabled' : 'Disabled'}
-                </span>
+                <span className="text-sm font-medium">{value ? 'Enabled' : 'Disabled'}</span>
               </div>
             </div>
             <Switch
               checked={value || false}
-              onCheckedChange={(checked) => handleFieldChange(category, field.key, checked)}
+              onCheckedChange={checked => handleFieldChange(category, field.key, checked)}
               className={hasChanged ? 'ring-2 ring-blue-300' : ''}
             />
           </div>
         ) : field.type === 'select' ? (
           <select
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors ${
-              hasChanged ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-300 dark:border-slate-600'
+              hasChanged
+                ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-slate-300 dark:border-slate-600'
             }`}
           >
             <option value="">Select an option...</option>
@@ -292,7 +292,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
             <input
               type={showSensitive ? 'text' : 'password'}
               value={value || ''}
-              onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+              onChange={e => handleFieldChange(category, field.key, e.target.value)}
               placeholder={field.placeholder}
               className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                 hasChanged ? 'border-blue-300 bg-blue-50' : 'border-gray-300'
@@ -303,28 +303,32 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
               onClick={() => setShowSensitive(!showSensitive)}
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
-              {showSensitive ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
-              )}
+              {showSensitive ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
             </button>
           </div>
         ) : (
           <input
             type={field.type}
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, field.type === 'number' ? parseInt(e.target.value) || 0 : e.target.value)}
+            onChange={e =>
+              handleFieldChange(
+                category,
+                field.key,
+                field.type === 'number' ? parseInt(e.target.value) || 0 : e.target.value
+              )
+            }
             placeholder={field.placeholder}
             min={field.validation?.min}
             max={field.validation?.max}
             className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors ${
-              hasChanged ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-300 dark:border-slate-600'
+              hasChanged
+                ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-slate-300 dark:border-slate-600'
             }`}
             required={field.required}
           />
         )}
-        
+
         {field.description && (
           <p className="text-xs text-gray-500 flex items-start">
             <Info className="h-3 w-3 mt-0.5 mr-1 flex-shrink-0" />
@@ -336,11 +340,11 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
   };
 
   // Check email configuration status
-  const isSmtpConfigured = formData['integration.smtp_host'] && formData['integration.smtp_port'] && formData['integration.from_email'];
-  const emailFeatures = features.filter(f => 
-    f.feature_key.includes('email') || 
-    f.feature_key.includes('notification') || 
-    f.feature_key.includes('newsletter')
+  const isSmtpConfigured =
+    formData['integration.smtp_host'] && formData['integration.smtp_port'] && formData['integration.from_email'];
+  const emailFeatures = features.filter(
+    f =>
+      f.feature_key.includes('email') || f.feature_key.includes('notification') || f.feature_key.includes('newsletter')
   );
 
   return (
@@ -349,11 +353,9 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-xl font-semibold text-gray-900">Email & Communications</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Configure SMTP settings, notifications, and email templates
-          </p>
+          <p className="text-sm text-gray-500 mt-1">Configure SMTP settings, notifications, and email templates</p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
@@ -375,19 +377,14 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
               <span>{testingEmail ? 'Sending...' : 'Test Email'}</span>
             </Button>
           )}
-          
+
           {changedFields.size > 0 && (
             <>
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                disabled={saving}
-                className="flex items-center space-x-2"
-              >
+              <Button variant="outline" onClick={handleReset} disabled={saving} className="flex items-center space-x-2">
                 <RotateCcw className="h-4 w-4" />
                 <span>Reset</span>
               </Button>
-              
+
               <Button
                 onClick={handleSaveAll}
                 disabled={saving}
@@ -395,9 +392,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
               >
                 <Save className="h-4 w-4" />
                 <span>Save Changes</span>
-                <span className="ml-1 px-2 py-0.5 bg-blue-500 text-xs rounded-full">
-                  {changedFields.size}
-                </span>
+                <span className="ml-1 px-2 py-0.5 bg-blue-500 text-xs rounded-full">{changedFields.size}</span>
               </Button>
             </>
           )}
@@ -420,9 +415,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
                   ) : (
                     <XCircle className="h-4 w-4 text-red-600" />
                   )}
-                  <span className="text-sm">
-                    {isSmtpConfigured ? 'Configured' : 'Not Configured'}
-                  </span>
+                  <span className="text-sm">{isSmtpConfigured ? 'Configured' : 'Not Configured'}</span>
                 </div>
                 {formData['integration.smtp_host'] && (
                   <p className="text-xs text-gray-500 mt-1">
@@ -430,21 +423,20 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
                   </p>
                 )}
               </div>
-              
+
               <div className="bg-white p-4 rounded-lg border">
                 <h4 className="font-medium text-gray-900 mb-2">Sender Info</h4>
-                <p className="text-sm">
-                  From: {formData['integration.from_name'] || 'Not set'}
-                </p>
+                <p className="text-sm">From: {formData['integration.from_name'] || 'Not set'}</p>
                 <p className="text-xs text-gray-500 mt-1">
                   {formData['integration.from_email'] || 'No email configured'}
                 </p>
               </div>
-              
+
               <div className="bg-white p-4 rounded-lg border">
                 <h4 className="font-medium text-gray-900 mb-2">Active Notifications</h4>
                 <p className="text-sm">
-                  {notificationFields.filter(f => formData[`integration.${f.key}`]).length} of {notificationFields.length} enabled
+                  {notificationFields.filter(f => formData[`integration.${f.key}`]).length} of{' '}
+                  {notificationFields.length} enabled
                 </p>
               </div>
             </div>
@@ -454,15 +446,21 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
               <h4 className="font-medium text-gray-900 mb-3">Sample Email Preview</h4>
               <div className="border rounded-lg p-3 bg-gray-50 text-sm">
                 <div className="mb-2">
-                  <span className="font-medium">From:</span> {formData['integration.from_name'] || 'Your Site'} &lt;{formData['integration.from_email'] || 'noreply@yoursite.com'}&gt;
+                  <span className="font-medium">From:</span> {formData['integration.from_name'] || 'Your Site'} &lt;
+                  {formData['integration.from_email'] || 'noreply@yoursite.com'}&gt;
                 </div>
                 <div className="mb-2">
-                  <span className="font-medium">Subject:</span> Welcome to {formData['integration.from_name'] || 'Our Community'}!
+                  <span className="font-medium">Subject:</span> Welcome to{' '}
+                  {formData['integration.from_name'] || 'Our Community'}!
                 </div>
                 <div className="border-t pt-2 text-gray-600">
                   <p>Hello [User Name],</p>
                   <p className="mt-2">Welcome to our community! We're excited to have you on board.</p>
-                  <p className="mt-2">Best regards,<br />The Team</p>
+                  <p className="mt-2">
+                    Best regards,
+                    <br />
+                    The Team
+                  </p>
                 </div>
               </div>
             </div>
@@ -499,9 +497,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {senderFields.map(field => renderField('integration', field))}
-          </div>
+          <div className="space-y-6">{senderFields.map(field => renderField('integration', field))}</div>
         </CardContent>
       </Card>
 
@@ -512,7 +508,8 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
             <Bell className="h-5 w-5 text-yellow-600" />
             <span>Email Notifications</span>
             <Badge variant="secondary">
-              {notificationFields.filter(f => formData[`integration.${f.key}`]).length}/{notificationFields.length} enabled
+              {notificationFields.filter(f => formData[`integration.${f.key}`]).length}/{notificationFields.length}{' '}
+              enabled
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -537,24 +534,27 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {emailFeatures.map((feature) => (
-                <div key={feature.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg bg-gray-50">
+              {emailFeatures.map(feature => (
+                <div
+                  key={feature.id}
+                  className="flex items-center justify-between p-3 border border-gray-100 rounded-lg bg-gray-50"
+                >
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
                       <h4 className="font-medium text-gray-900 text-sm">
                         {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </h4>
                       {feature.enabled && (
-                        <Badge variant="success" size="sm">Active</Badge>
+                        <Badge variant="success" size="sm">
+                          Active
+                        </Badge>
                       )}
                     </div>
-                    {feature.description && (
-                      <p className="text-xs text-gray-500 mt-1">{feature.description}</p>
-                    )}
+                    {feature.description && <p className="text-xs text-gray-500 mt-1">{feature.description}</p>}
                   </div>
                   <Switch
                     checked={feature.enabled || false}
-                    onCheckedChange={(checked) => {
+                    onCheckedChange={checked => {
                       toast.success('Email feature toggle functionality coming soon');
                     }}
                     disabled={isLoading}
@@ -579,10 +579,18 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
             <div>
               <h4 className="font-medium mb-2">Popular SMTP Providers:</h4>
               <ul className="list-disc list-inside space-y-1">
-                <li><strong>Gmail:</strong> smtp.gmail.com:587 (TLS) - Use app-specific password</li>
-                <li><strong>Outlook:</strong> smtp-mail.outlook.com:587 (TLS)</li>
-                <li><strong>SendGrid:</strong> smtp.sendgrid.net:587 (TLS)</li>
-                <li><strong>Mailgun:</strong> smtp.mailgun.org:587 (TLS)</li>
+                <li>
+                  <strong>Gmail:</strong> smtp.gmail.com:587 (TLS) - Use app-specific password
+                </li>
+                <li>
+                  <strong>Outlook:</strong> smtp-mail.outlook.com:587 (TLS)
+                </li>
+                <li>
+                  <strong>SendGrid:</strong> smtp.sendgrid.net:587 (TLS)
+                </li>
+                <li>
+                  <strong>Mailgun:</strong> smtp.mailgun.org:587 (TLS)
+                </li>
               </ul>
             </div>
             <div>
@@ -618,15 +626,11 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
               <div className="text-sm text-gray-600">Active Notifications</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {emailFeatures.filter(f => f.enabled).length}
-              </div>
+              <div className="text-2xl font-bold text-purple-600">{emailFeatures.filter(f => f.enabled).length}</div>
               <div className="text-sm text-gray-600">Email Features</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
-                {changedFields.size}
-              </div>
+              <div className="text-2xl font-bold text-orange-600">{changedFields.size}</div>
               <div className="text-sm text-gray-600">Unsaved Changes</div>
             </div>
           </div>

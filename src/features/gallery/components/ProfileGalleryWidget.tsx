@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  Grid, 
-  Star, 
-  Eye, 
-  Calendar, 
-  ChevronRight, 
-  Image as ImageIcon,
-  Users,
-  Globe,
-  Lock
-} from 'lucide-react';
+import { Grid, Star, Eye, Calendar, ChevronRight, Image as ImageIcon, Users, Globe, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
@@ -38,7 +28,7 @@ const ProfileGalleryWidget: React.FC<ProfileGalleryWidgetProps> = ({
   showPrivacyIndicator = true,
   showStats = true,
   compact = false,
-  className = ''
+  className = '',
 }) => {
   const [showAll, setShowAll] = useState(false);
 
@@ -51,10 +41,10 @@ const ProfileGalleryWidget: React.FC<ProfileGalleryWidgetProps> = ({
         ownerId: userId,
         visibility: 'visible',
         sortBy: showFeaturedFirst ? 'featured' : 'date',
-        sortOrder: 'desc'
+        sortOrder: 'desc',
       };
       return galleryApi.getGalleries(filters);
-    }
+    },
   });
 
   const galleryItems = galleries?.items || [];
@@ -85,9 +75,11 @@ const ProfileGalleryWidget: React.FC<ProfileGalleryWidgetProps> = ({
       } bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-slate-300 dark:hover:border-slate-600 transition-all hover:shadow-md`}
     >
       {/* Gallery thumbnail */}
-      <div className={`aspect-video bg-slate-100 dark:bg-slate-700 rounded-lg mb-3 overflow-hidden relative ${
-        compact ? 'mb-2' : 'mb-3'
-      }`}>
+      <div
+        className={`aspect-video bg-slate-100 dark:bg-slate-700 rounded-lg mb-3 overflow-hidden relative ${
+          compact ? 'mb-2' : 'mb-3'
+        }`}
+      >
         {gallery.cover_photo_url ? (
           <img
             src={gallery.cover_photo_url}
@@ -112,28 +104,28 @@ const ProfileGalleryWidget: React.FC<ProfileGalleryWidgetProps> = ({
 
         {/* Privacy indicator */}
         {showPrivacyIndicator && (
-          <div className="absolute bottom-2 left-2">
-            {getPrivacyIcon(gallery.privacy_level)}
-          </div>
+          <div className="absolute bottom-2 left-2">{getPrivacyIcon(gallery.privacy_level)}</div>
         )}
       </div>
 
       {/* Gallery info */}
       <div className="space-y-2">
-        <h4 className={`font-medium text-slate-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors ${
-          compact ? 'text-sm' : 'text-base'
-        }`}>
+        <h4
+          className={`font-medium text-slate-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors ${
+            compact ? 'text-sm' : 'text-base'
+          }`}
+        >
           {gallery.title}
         </h4>
 
         {gallery.description && !compact && (
-          <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
-            {gallery.description}
-          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{gallery.description}</p>
         )}
 
         {showStats && (
-          <div className={`flex items-center justify-between ${compact ? 'text-xs' : 'text-sm'} text-slate-500 dark:text-slate-400`}>
+          <div
+            className={`flex items-center justify-between ${compact ? 'text-xs' : 'text-sm'} text-slate-500 dark:text-slate-400`}
+          >
             <div className="flex items-center space-x-3">
               <div className="flex items-center">
                 <ImageIcon className="w-3 h-3 mr-1" />
@@ -182,11 +174,9 @@ const ProfileGalleryWidget: React.FC<ProfileGalleryWidgetProps> = ({
       <div className="flex items-center justify-between">
         <h3 className={`font-semibold text-slate-900 dark:text-white ${compact ? 'text-lg' : 'text-xl'}`}>
           Galleries
-          <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">
-            ({galleryItems.length})
-          </span>
+          <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">({galleryItems.length})</span>
         </h3>
-        
+
         {galleryItems.length > maxGalleries && (
           <Button
             onClick={() => setShowAll(!showAll)}
@@ -212,14 +202,14 @@ const ProfileGalleryWidget: React.FC<ProfileGalleryWidgetProps> = ({
       )}
 
       {/* Gallery Grid */}
-      <div className={`grid gap-4 ${
-        compact 
-          ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
-          : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-      }`}>
+      <div
+        className={`grid gap-4 ${
+          compact ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+        }`}
+      >
         {displayedGalleries
           .filter(gallery => !featuredGallery || gallery.id !== featuredGallery.id)
-          .map((gallery) => renderGalleryCard(gallery))}
+          .map(gallery => renderGalleryCard(gallery))}
       </div>
 
       {/* View All Link */}

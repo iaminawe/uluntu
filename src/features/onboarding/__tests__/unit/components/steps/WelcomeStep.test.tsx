@@ -51,9 +51,7 @@ describe('WelcomeStep', () => {
 
       // Then: Should show length error
       await waitFor(() => {
-        expect(screen.getByTestId('name-error')).toHaveTextContent(
-          'Name must be at least 2 characters'
-        );
+        expect(screen.getByTestId('name-error')).toHaveTextContent('Name must be at least 2 characters');
       });
     });
 
@@ -68,9 +66,7 @@ describe('WelcomeStep', () => {
 
       // Then: Should show length error
       await waitFor(() => {
-        expect(screen.getByTestId('name-error')).toHaveTextContent(
-          'Name must be less than 100 characters'
-        );
+        expect(screen.getByTestId('name-error')).toHaveTextContent('Name must be less than 100 characters');
       });
     });
 
@@ -84,9 +80,7 @@ describe('WelcomeStep', () => {
 
       // Then: Should show length error
       await waitFor(() => {
-        expect(screen.getByTestId('title-error')).toHaveTextContent(
-          'Title must be at least 2 characters'
-        );
+        expect(screen.getByTestId('title-error')).toHaveTextContent('Title must be at least 2 characters');
       });
     });
 
@@ -100,9 +94,7 @@ describe('WelcomeStep', () => {
 
       // Then: Should show format error
       await waitFor(() => {
-        expect(screen.getByTestId('location-error')).toHaveTextContent(
-          'Please enter a valid location'
-        );
+        expect(screen.getByTestId('location-error')).toHaveTextContent('Please enter a valid location');
       });
     });
 
@@ -131,14 +123,14 @@ describe('WelcomeStep', () => {
   describe('Photo Upload', () => {
     it('should accept valid image files', async () => {
       // Given: A valid image file
-      const file = new File(['image content'], 'photo.jpg', { 
-        type: 'image/jpeg' 
+      const file = new File(['image content'], 'photo.jpg', {
+        type: 'image/jpeg',
       });
-      
+
       mockUploadProfilePhoto.mockResolvedValue({
         url: 'https://example.com/photo.jpg',
       });
-      
+
       renderComponent();
 
       // When: User uploads the file
@@ -148,10 +140,7 @@ describe('WelcomeStep', () => {
       // Then: Should show preview
       await waitFor(() => {
         expect(screen.getByTestId('photo-preview')).toBeInTheDocument();
-        expect(screen.getByAltText('Profile preview')).toHaveAttribute(
-          'src',
-          expect.stringContaining('blob:')
-        );
+        expect(screen.getByAltText('Profile preview')).toHaveAttribute('src', expect.stringContaining('blob:'));
       });
     });
 
@@ -159,9 +148,9 @@ describe('WelcomeStep', () => {
       // Given: A large file (6MB)
       const largeContent = new Uint8Array(6 * 1024 * 1024);
       const largeFile = new File([largeContent], 'large.jpg', {
-        type: 'image/jpeg'
+        type: 'image/jpeg',
       });
-      
+
       renderComponent();
 
       // When: User uploads the large file
@@ -170,9 +159,7 @@ describe('WelcomeStep', () => {
 
       // Then: Should show error
       await waitFor(() => {
-        expect(screen.getByTestId('photo-error')).toHaveTextContent(
-          'File size must be less than 5MB'
-        );
+        expect(screen.getByTestId('photo-error')).toHaveTextContent('File size must be less than 5MB');
         expect(screen.queryByTestId('photo-preview')).not.toBeInTheDocument();
       });
     });
@@ -180,9 +167,9 @@ describe('WelcomeStep', () => {
     it('should reject non-image files', async () => {
       // Given: A PDF file
       const pdfFile = new File(['pdf content'], 'document.pdf', {
-        type: 'application/pdf'
+        type: 'application/pdf',
       });
-      
+
       renderComponent();
 
       // When: User uploads the PDF
@@ -191,9 +178,7 @@ describe('WelcomeStep', () => {
 
       // Then: Should show error
       await waitFor(() => {
-        expect(screen.getByTestId('photo-error')).toHaveTextContent(
-          'Please upload an image file (JPEG, PNG, or WebP)'
-        );
+        expect(screen.getByTestId('photo-error')).toHaveTextContent('Please upload an image file (JPEG, PNG, or WebP)');
       });
     });
 
@@ -201,10 +186,10 @@ describe('WelcomeStep', () => {
       // Given: User has uploaded a photo
       const file = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
       renderComponent();
-      
+
       const input = screen.getByLabelText('Profile Photo (optional)');
       await userEvent.upload(input, file);
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('photo-preview')).toBeInTheDocument();
       });
@@ -219,7 +204,7 @@ describe('WelcomeStep', () => {
     it('should handle upload errors gracefully', async () => {
       // Given: Upload will fail
       mockUploadProfilePhoto.mockRejectedValue(new Error('Upload failed'));
-      
+
       const file = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
       renderComponent();
 
@@ -231,7 +216,7 @@ describe('WelcomeStep', () => {
       // When: User uploads file and submits
       const input = screen.getByLabelText('Profile Photo (optional)');
       await userEvent.upload(input, file);
-      
+
       fireEvent.click(screen.getByTestId('next-button'));
 
       // Then: Should show error but allow proceeding without photo
@@ -259,7 +244,7 @@ describe('WelcomeStep', () => {
 
       // Then: Should show personalized message
       expect(screen.getByTestId('welcome-message')).toHaveTextContent(
-        'Welcome back, Jane! Let\'s complete your profile.'
+        "Welcome back, Jane! Let's complete your profile."
       );
     });
 
@@ -269,7 +254,7 @@ describe('WelcomeStep', () => {
 
       // Then: Should show generic message
       expect(screen.getByTestId('welcome-message')).toHaveTextContent(
-        'Welcome to Uluntu Community! Let\'s get you started.'
+        "Welcome to Uluntu Community! Let's get you started."
       );
     });
   });
@@ -282,7 +267,7 @@ describe('WelcomeStep', () => {
         title: 'Senior Developer',
         location: 'Toronto, ON',
       };
-      
+
       renderComponent({ userData: existingData });
 
       // Then: Form should be pre-filled
@@ -295,7 +280,7 @@ describe('WelcomeStep', () => {
       // Given: Form with validation errors
       renderComponent();
       fireEvent.click(screen.getByTestId('next-button'));
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('name-error')).toBeInTheDocument();
       });
@@ -309,13 +294,11 @@ describe('WelcomeStep', () => {
 
     it('should show loading state during submission', async () => {
       // Given: Slow upload
-      mockUploadProfilePhoto.mockImplementation(
-        () => new Promise(resolve => setTimeout(resolve, 1000))
-      );
-      
+      mockUploadProfilePhoto.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+
       const file = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
       renderComponent();
-      
+
       // Fill form
       await userEvent.type(screen.getByLabelText('Name'), 'John Doe');
       await userEvent.type(screen.getByLabelText('Title'), 'Developer');
@@ -343,7 +326,7 @@ describe('WelcomeStep', () => {
 
     it('should announce errors to screen readers', async () => {
       renderComponent();
-      
+
       fireEvent.click(screen.getByTestId('next-button'));
 
       await waitFor(() => {

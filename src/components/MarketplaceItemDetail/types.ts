@@ -30,7 +30,7 @@ export interface Listing {
 // Adapter function to convert from main MarketplaceItem type to local Listing type
 export const adaptMainMarketplaceItemToDetail = (item: MainMarketplaceItem): Partial<Listing> => {
   return {
-    id: typeof item.id === 'string' ? parseInt(item.id) : item.id as number,
+    id: typeof item.id === 'string' ? parseInt(item.id) : (item.id as number),
     title: item.title,
     description: item.description,
     type: item.type as ListingType,
@@ -39,16 +39,16 @@ export const adaptMainMarketplaceItemToDetail = (item: MainMarketplaceItem): Par
     images: item.image ? [item.image] : [],
     createdAt: item.datePosted,
     seller: {
-      id: typeof item.seller.id === 'string' ? parseInt(item.seller.id) : item.seller.id as number,
+      id: typeof item.seller.id === 'string' ? parseInt(item.seller.id) : (item.seller.id as number),
       name: item.seller.name,
       image: item.seller.image,
       // These fields don't exist in the main type
       title: '',
-      bio: ''
+      bio: '',
     },
     location: '', // This field doesn't exist in the main type
     tags: [item.category], // Using category as a tag
-    status: item.status
+    status: item.status,
   };
 };
 
@@ -65,10 +65,10 @@ export const adaptDetailToMainMarketplaceItem = (listing: Listing): Partial<Main
     seller: {
       id: listing.seller.id.toString(),
       name: listing.seller.name,
-      image: listing.seller.image
+      image: listing.seller.image,
     },
     datePosted: listing.createdAt,
-    status: listing.status
+    status: listing.status,
   };
 };
 
@@ -91,7 +91,7 @@ Includes original charger and box. Battery cycle count under 100.`,
   condition: 'like-new',
   images: [
     'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg',
-    'https://images.pexels.com/photos/5474296/pexels-photo-5474296.jpeg'
+    'https://images.pexels.com/photos/5474296/pexels-photo-5474296.jpeg',
   ],
   createdAt: '2025-03-15',
   seller: {
@@ -99,8 +99,8 @@ Includes original charger and box. Battery cycle count under 100.`,
     name: 'Sarah Johnson',
     title: 'Senior Developer',
     image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
-    bio: 'Full-stack developer with 8 years of experience. Passionate about clean code and great user experiences.'
+    bio: 'Full-stack developer with 8 years of experience. Passionate about clean code and great user experiences.',
   },
   location: 'Nelson, BC',
-  tags: ['Apple', 'Laptop', 'Development']
+  tags: ['Apple', 'Laptop', 'Development'],
 };

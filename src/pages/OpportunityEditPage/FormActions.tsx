@@ -36,14 +36,14 @@ const FormActions: React.FC<FormActionsProps> = ({
   formData,
   id,
   setShowDeleteConfirm,
-  setFormData
+  setFormData,
 }) => {
   const navigate = useNavigate();
-  
+
   const handleCancel = () => {
     navigate(isEditMode ? `/opportunities/${id}` : '/opportunities');
   };
-  
+
   return (
     <div className="flex flex-wrap items-center gap-4 mt-8 justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
       {/* Delete button - only shown for existing entities */}
@@ -61,7 +61,7 @@ const FormActions: React.FC<FormActionsProps> = ({
           Delete
         </button>
       )}
-      
+
       <div className="flex items-center gap-4 ml-auto">
         {/* Cancel button */}
         <button
@@ -75,10 +75,10 @@ const FormActions: React.FC<FormActionsProps> = ({
         >
           Cancel
         </button>
-        
+
         {/* Publish/Unpublish button */}
-        {setFormData && (
-          formData.status === 'published' ? (
+        {setFormData &&
+          (formData.status === 'published' ? (
             <button
               type="button"
               onClick={() => setFormData(prev => ({ ...prev, status: 'draft' }))}
@@ -104,9 +104,8 @@ const FormActions: React.FC<FormActionsProps> = ({
               <Eye className="h-5 w-5 mr-2" />
               Publish
             </button>
-          )
-        )}
-        
+          ))}
+
         {/* Submit button */}
         <button
           type="submit"

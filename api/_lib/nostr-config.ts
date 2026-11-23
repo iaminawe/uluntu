@@ -34,8 +34,8 @@ export function getInstanceKey(): InstanceKey | null {
 export function getRelays(): string[] {
   const configured = (process.env.NOSTR_RELAYS || '')
     .split(',')
-    .map((r) => r.trim())
-    .filter((r) => /^wss:\/\/[^\s]+$/.test(r));
+    .map(r => r.trim())
+    .filter(r => /^wss:\/\/[^\s]+$/.test(r));
   return configured.length ? configured : DEFAULT_RELAYS;
 }
 

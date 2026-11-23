@@ -1,11 +1,11 @@
-import type { 
-  ColorConfig, 
-  TypographyConfig, 
-  SpacingConfig, 
-  BordersConfig, 
+import type {
+  ColorConfig,
+  TypographyConfig,
+  SpacingConfig,
+  BordersConfig,
   ShadowsConfig,
   ThemeFormData,
-  ThemeMetadataFormData
+  ThemeMetadataFormData,
 } from '@/types/theme';
 
 // Color validation
@@ -25,9 +25,7 @@ export function isValidColor(color: string): boolean {
 
 export function validateColorConfig(config: Partial<ColorConfig>): string[] {
   const errors: string[] = [];
-  const requiredFields: (keyof ColorConfig)[] = [
-    'primary', 'secondary', 'background', 'text'
-  ];
+  const requiredFields: (keyof ColorConfig)[] = ['primary', 'secondary', 'background', 'text'];
 
   // Check required fields
   for (const field of requiredFields) {
@@ -59,9 +57,7 @@ export function isValidLineHeight(height: string): boolean {
 
 export function validateTypographyConfig(config: Partial<TypographyConfig>): string[] {
   const errors: string[] = [];
-  const requiredFields: (keyof TypographyConfig)[] = [
-    'font_family', 'font_size_base', 'line_height_base'
-  ];
+  const requiredFields: (keyof TypographyConfig)[] = ['font_family', 'font_size_base', 'line_height_base'];
 
   // Check required fields
   for (const field of requiredFields) {
@@ -72,8 +68,13 @@ export function validateTypographyConfig(config: Partial<TypographyConfig>): str
 
   // Validate font sizes
   const fontSizeFields: (keyof TypographyConfig)[] = [
-    'font_size_base', 'font_size_sm', 'font_size_lg', 
-    'font_size_xl', 'font_size_2xl', 'font_size_3xl', 'font_size_4xl'
+    'font_size_base',
+    'font_size_sm',
+    'font_size_lg',
+    'font_size_xl',
+    'font_size_2xl',
+    'font_size_3xl',
+    'font_size_4xl',
   ];
 
   for (const field of fontSizeFields) {
@@ -84,9 +85,7 @@ export function validateTypographyConfig(config: Partial<TypographyConfig>): str
   }
 
   // Validate line heights
-  const lineHeightFields: (keyof TypographyConfig)[] = [
-    'line_height_base', 'line_height_tight', 'line_height_loose'
-  ];
+  const lineHeightFields: (keyof TypographyConfig)[] = ['line_height_base', 'line_height_tight', 'line_height_loose'];
 
   for (const field of lineHeightFields) {
     const value = config[field];
@@ -131,9 +130,7 @@ export function validateBordersConfig(config: Partial<BordersConfig>): string[] 
   const errors: string[] = [];
 
   // Validate radius values
-  const radiusFields: (keyof BordersConfig)[] = [
-    'radius_sm', 'radius_md', 'radius_lg', 'radius_xl', 'radius_full'
-  ];
+  const radiusFields: (keyof BordersConfig)[] = ['radius_sm', 'radius_md', 'radius_lg', 'radius_xl', 'radius_full'];
 
   for (const field of radiusFields) {
     const value = config[field];
@@ -143,9 +140,7 @@ export function validateBordersConfig(config: Partial<BordersConfig>): string[] 
   }
 
   // Validate width values
-  const widthFields: (keyof BordersConfig)[] = [
-    'width_thin', 'width_medium', 'width_thick'
-  ];
+  const widthFields: (keyof BordersConfig)[] = ['width_thin', 'width_medium', 'width_thick'];
 
   for (const field of widthFields) {
     const value = config[field];
@@ -270,6 +265,6 @@ export function validateThemeConfiguration(config: {
 
   return {
     valid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 }

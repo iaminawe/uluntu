@@ -17,25 +17,25 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 export async function isFeatureEnabled(featureKey: FeatureKey): Promise<boolean> {
   const cacheKey = `feature_${featureKey}`;
   const cached = featureCache.get(cacheKey);
-  
+
   // Return cached value if still valid
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return cached.value;
   }
-  
+
   try {
     const enabled = await settingsApi.isFeatureEnabled(featureKey);
-    
+
     // Cache the result
     featureCache.set(cacheKey, {
       value: enabled,
       timestamp: Date.now(),
     });
-    
+
     return enabled;
   } catch (error) {
     console.error(`Error checking feature toggle for ${featureKey}:`, error);
-    
+
     // Return cached value if available, fallback to false
     return cached?.value ?? false;
   }
@@ -53,13 +53,13 @@ export function clearFeatureCache(): void {
  */
 export async function preloadFeatures(features: FeatureKey[]): Promise<Record<string, boolean>> {
   const results: Record<string, boolean> = {};
-  
+
   await Promise.all(
-    features.map(async (feature) => {
+    features.map(async feature => {
       results[feature] = await isFeatureEnabled(feature);
     })
   );
-  
+
   return results;
 }
 
@@ -69,7 +69,7 @@ export async function preloadFeatures(features: FeatureKey[]): Promise<Record<st
 export function createFeatureMiddleware(requiredFeature: FeatureKey) {
   return async (next: () => void, fallback?: () => void) => {
     const enabled = await isFeatureEnabled(requiredFeature);
-    
+
     if (enabled) {
       next();
     } else if (fallback) {
@@ -95,7 +95,7 @@ export function FeatureGate({
   feature,
   fallback = null,
   loading = null,
-  children
+  children,
 }: FeatureGateProps): React.ReactElement {
   // Use the hook-based approach for better performance and caching
   const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
@@ -121,30 +121,30 @@ export function FeatureGate({
 export function useFeatureToggle(feature: FeatureKey) {
   const [enabled, setEnabled] = React.useState<boolean | null>(null);
   const [loading, setLoading] = React.useState(true);
-  
+
   React.useEffect(() => {
     let mounted = true;
-    
+
     isFeatureEnabled(feature)
-      .then((result) => {
+      .then(result => {
         if (mounted) {
           setEnabled(result);
           setLoading(false);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         if (mounted) {
           console.error(`Error loading feature toggle ${feature}:`, error);
           setEnabled(false);
           setLoading(false);
         }
       });
-    
+
     return () => {
       mounted = false;
     };
   }, [feature]);
-  
+
   return { enabled, loading };
 }
 
@@ -154,39 +154,39 @@ export function useFeatureToggle(feature: FeatureKey) {
 export function useFeatureToggles(features: FeatureKey[]) {
   const [toggles, setToggles] = React.useState<Record<string, boolean>>({});
   const [loading, setLoading] = React.useState(true);
-  
+
   // Create a stable string key from features array to prevent infinite re-renders
   // Sort the features to ensure consistent ordering
   const featuresKey = React.useMemo(
-    () => [...features].sort().join(','), 
+    () => [...features].sort().join(','),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(features.sort())]
   );
-  
+
   React.useEffect(() => {
     let mounted = true;
-    
+
     preloadFeatures(features)
-      .then((results) => {
+      .then(results => {
         if (mounted) {
           setToggles(results);
           setLoading(false);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         if (mounted) {
           console.error('Error loading feature toggles:', error);
           setLoading(false);
         }
       });
-    
+
     return () => {
       mounted = false;
     };
   }, [featuresKey, features]);
-  
+
   const isEnabled = (feature: FeatureKey) => toggles[feature] ?? false;
-  
+
   return { toggles, isEnabled, loading };
 }
 
@@ -205,20 +205,20 @@ export interface ConditionalNavItem {
 
 export async function filterNavigationItems(items: ConditionalNavItem[]): Promise<ConditionalNavItem[]> {
   const filteredItems: ConditionalNavItem[] = [];
-  
+
   for (const item of items) {
     // Check if item should be visible based on feature toggle
     if (item.feature) {
       const enabled = await isFeatureEnabled(item.feature);
       if (!enabled) continue;
     }
-    
+
     // Check explicit visibility flag
     if (item.visible === false) continue;
-    
+
     filteredItems.push(item);
   }
-  
+
   // Sort by order if specified
   return filteredItems.sort((a, b) => (a.order || 0) - (b.order || 0));
 }
@@ -248,14 +248,14 @@ export function filterRoutes(routes: FeatureRoute[], enabledFeatures: Record<str
  */
 export class FeatureToggleDebugger {
   private static instance: FeatureToggleDebugger;
-  
+
   static getInstance(): FeatureToggleDebugger {
     if (!FeatureToggleDebugger.instance) {
       FeatureToggleDebugger.instance = new FeatureToggleDebugger();
     }
     return FeatureToggleDebugger.instance;
   }
-  
+
   /**
    * Log all enabled features
    */
@@ -267,7 +267,7 @@ export class FeatureToggleDebugger {
     });
     console.groupEnd();
   }
-  
+
   /**
    * Get feature toggle statistics
    */
@@ -280,7 +280,7 @@ export class FeatureToggleDebugger {
     const features = await settingsApi.getEnabledFeatures();
     const enabled = Object.values(features).filter(Boolean).length;
     const total = Object.keys(features).length;
-    
+
     return {
       total,
       enabled,
@@ -288,7 +288,7 @@ export class FeatureToggleDebugger {
       percentage: total > 0 ? Math.round((enabled / total) * 100) : 0,
     };
   }
-  
+
   /**
    * Override feature toggle for testing (client-side only)
    */
@@ -300,7 +300,7 @@ export class FeatureToggleDebugger {
     });
     console.warn(`🔧 Feature override: ${feature} = ${enabled}`);
   }
-  
+
   /**
    * Clear all overrides
    */
@@ -329,10 +329,10 @@ export interface FeatureAnnouncement {
 
 export class FeatureAnnouncementManager {
   private static readonly STORAGE_KEY = 'dismissed_feature_announcements';
-  
+
   static getDismissedAnnouncements(): Set<string> {
     if (typeof localStorage === 'undefined') return new Set();
-    
+
     try {
       const dismissed = localStorage.getItem(this.STORAGE_KEY);
       return new Set(dismissed ? JSON.parse(dismissed) : []);
@@ -340,31 +340,31 @@ export class FeatureAnnouncementManager {
       return new Set();
     }
   }
-  
+
   static dismissAnnouncement(feature: FeatureKey): void {
     if (typeof localStorage === 'undefined') return;
-    
+
     const dismissed = this.getDismissedAnnouncements();
     dismissed.add(feature);
-    
+
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify([...dismissed]));
     } catch (error) {
       console.warn('Failed to save dismissed announcements:', error);
     }
   }
-  
+
   static shouldShowAnnouncement(announcement: FeatureAnnouncement): boolean {
     // Check if dismissed
     if (announcement.dismissible && this.getDismissedAnnouncements().has(announcement.feature)) {
       return false;
     }
-    
+
     // Check expiry
     if (announcement.showUntil && new Date() > announcement.showUntil) {
       return false;
     }
-    
+
     return true;
   }
 }

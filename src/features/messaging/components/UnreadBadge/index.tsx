@@ -18,7 +18,7 @@ export function UnreadBadge({ className = '', maxCount = 99 }: UnreadBadgeProps)
 
   // Only fetch unread count if messaging is enabled
   const { data: unreadCount = 0, isLoading } = useUnreadCount(undefined, {
-    enabled: messagingEnabled
+    enabled: messagingEnabled,
   });
 
   // Don't show badge if messaging is disabled or no unread messages
@@ -29,12 +29,14 @@ export function UnreadBadge({ className = '', maxCount = 99 }: UnreadBadgeProps)
   const displayCount = unreadCount > maxCount ? `${maxCount}+` : unreadCount.toString();
 
   return (
-    <span className={`
+    <span
+      className={`
       inline-flex items-center justify-center
       bg-red-500 text-white text-xs font-bold
       rounded-full min-w-[1.25rem] h-5 px-1
       ${className}
-    `}>
+    `}
+    >
       {displayCount}
     </span>
   );

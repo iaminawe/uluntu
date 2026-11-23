@@ -23,7 +23,7 @@ export function useInteractions({ entityType, entityId }: UseInteractionsOptions
 
   const fetchInteractions = async () => {
     setIsLoading(true);
-    
+
     try {
       // Fetch likes
       const { data: likesData, count: likesCount } = await supabase
@@ -35,7 +35,7 @@ export function useInteractions({ entityType, entityId }: UseInteractionsOptions
       if (likesData) {
         setLikes(likesData as Like[]);
         setLikeCount(likesCount || 0);
-        
+
         if (user) {
           setIsLiked(likesData.some((like: any) => like.user_id === user.id));
         }
@@ -80,7 +80,7 @@ export function useInteractions({ entityType, entityId }: UseInteractionsOptions
           .insert({
             user_id: user.id,
             entity_type: entityType,
-            entity_id: entityId
+            entity_id: entityId,
           })
           .select()
           .single();
@@ -107,7 +107,7 @@ export function useInteractions({ entityType, entityId }: UseInteractionsOptions
           entity_type: entityType,
           entity_id: entityId,
           parent_id: parentId,
-          content: content.trim()
+          content: content.trim(),
         })
         .select()
         .single();
@@ -129,9 +129,9 @@ export function useInteractions({ entityType, entityId }: UseInteractionsOptions
       // @ts-ignore - comments table doesn't exist in types yet
       const { data, error } = await supabase
         .from('comments')
-        .update({ 
+        .update({
           content: content.trim(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', commentId)
         .eq('user_id', user.id)
@@ -176,6 +176,6 @@ export function useInteractions({ entityType, entityId }: UseInteractionsOptions
     addComment,
     updateComment,
     deleteComment,
-    refetch: fetchInteractions
+    refetch: fetchInteractions,
   };
 }

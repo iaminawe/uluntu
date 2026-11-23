@@ -1,6 +1,6 @@
 /**
  * Integration Tests for Menu Management System
- * 
+ *
  * Tests the complete workflow from database to UI components,
  * including data flow, mutations, and user interactions.
  */
@@ -31,7 +31,8 @@ vi.mock('react-beautiful-dnd', async () => {
     ...actual,
     DragDropContext: ({ children, onDragEnd }: any) => children,
     Droppable: ({ children }: any) => children({ innerRef: vi.fn(), draggableProps: {}, placeholder: null }),
-    Draggable: ({ children }: any) => children({ innerRef: vi.fn(), draggableProps: {}, dragHandleProps: {}, isDragging: false }, {}),
+    Draggable: ({ children }: any) =>
+      children({ innerRef: vi.fn(), draggableProps: {}, dragHandleProps: {}, isDragging: false }, {}),
   };
 });
 
@@ -56,9 +57,7 @@ describe('Menu Management Integration Tests', () => {
   };
 
   const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
   beforeEach(() => {
@@ -69,10 +68,10 @@ describe('Menu Management Integration Tests', () => {
       },
     });
     user = userEvent.setup();
-    
+
     mockUseSession.mockReturnValue({ user: mockUser });
     mockUseAppSelector.mockReturnValue(mockAuthState);
-    
+
     // Reset all adapter mocks
     Object.keys(mockMenuManagementAdapter).forEach(key => {
       if (typeof mockMenuManagementAdapter[key] === 'function') {
@@ -93,7 +92,7 @@ describe('Menu Management Integration Tests', () => {
     it('should complete full create-read-update-delete workflow', async () => {
       // Setup - Mock initial empty state
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue([]);
-      
+
       render(
         <TestWrapper>
           <AdminMenuManagementPage />
@@ -212,12 +211,8 @@ describe('Menu Management Integration Tests', () => {
 
   describe('Menu Type Tab Navigation', () => {
     it('should filter items by menu type when switching tabs', async () => {
-      const mainMenuItems = [
-        createMockMenuItem({ id: '1', title: 'Main Item', menu_type: 'main' }),
-      ];
-      const footerMenuItems = [
-        createMockMenuItem({ id: '2', title: 'Footer Item', menu_type: 'footer' }),
-      ];
+      const mainMenuItems = [createMockMenuItem({ id: '1', title: 'Main Item', menu_type: 'main' })];
+      const footerMenuItems = [createMockMenuItem({ id: '2', title: 'Footer Item', menu_type: 'footer' })];
       const allMenuItems = [...mainMenuItems, ...footerMenuItems];
 
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue(allMenuItems);
@@ -257,7 +252,13 @@ describe('Menu Management Integration Tests', () => {
     const testMenuItems = [
       createMockMenuItem({ id: '1', title: 'Community Events', url: '/events', visibility: 'public' }),
       createMockMenuItem({ id: '2', title: 'Admin Panel', url: '/admin', visibility: 'admin' }),
-      createMockMenuItem({ id: '3', title: 'User Profile', url: '/profile', visibility: 'authenticated', is_enabled: false }),
+      createMockMenuItem({
+        id: '3',
+        title: 'User Profile',
+        url: '/profile',
+        visibility: 'authenticated',
+        is_enabled: false,
+      }),
     ];
 
     beforeEach(() => {
@@ -374,9 +375,7 @@ describe('Menu Management Integration Tests', () => {
       await user.click(checkboxes[2]); // Item 2
 
       // Bulk enable
-      mockMenuManagementAdapter.toggleMenuItemStatus.mockResolvedValue(
-        createMockMenuItem({ is_enabled: true })
-      );
+      mockMenuManagementAdapter.toggleMenuItemStatus.mockResolvedValue(createMockMenuItem({ is_enabled: true }));
 
       const enableAllButton = screen.getByText('Enable All');
       await user.click(enableAllButton);
@@ -449,7 +448,7 @@ describe('Menu Management Integration Tests', () => {
             }, 100);
           }
         }, [onDragEnd]);
-        
+
         return children;
       };
 
@@ -474,10 +473,8 @@ describe('Menu Management Integration Tests', () => {
 
   describe('Menu Preview Functionality', () => {
     it('should show correct preview for different menu types', async () => {
-      const testMenuItems = [
-        createMockMenuItem({ id: '1', title: 'Main Item', menu_type: 'main', is_enabled: true }),
-      ];
-      
+      const testMenuItems = [createMockMenuItem({ id: '1', title: 'Main Item', menu_type: 'main', is_enabled: true })];
+
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue(testMenuItems);
 
       render(
@@ -572,9 +569,7 @@ describe('Menu Management Integration Tests', () => {
       await user.type(titleInput, 'Role-based Item');
       await user.type(urlInput, '/admin-only');
 
-      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(
-        createMockMenuItem({ id: 'role-based-item' })
-      );
+      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(createMockMenuItem({ id: 'role-based-item' }));
 
       const submitButton = screen.getByText('Create Menu Item');
       await user.click(submitButton);
@@ -597,7 +592,7 @@ describe('Menu Management Integration Tests', () => {
         createMockMenuItem({ id: '2', is_enabled: false, visibility: 'admin', parent_id: '1' }),
         createMockMenuItem({ id: '3', is_enabled: true, visibility: 'authenticated', parent_id: null }),
       ];
-      
+
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue(testMenuItems);
 
       render(
@@ -615,10 +610,8 @@ describe('Menu Management Integration Tests', () => {
     });
 
     it('should export menu structure', async () => {
-      const testMenuItems = [
-        createMockMenuItem({ id: '1', title: 'Test Item' }),
-      ];
-      
+      const testMenuItems = [createMockMenuItem({ id: '1', title: 'Test Item' })];
+
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue(testMenuItems);
 
       // Mock URL.createObjectURL and document.createElement
@@ -646,9 +639,7 @@ describe('Menu Management Integration Tests', () => {
 
   describe('Error Handling', () => {
     it('should handle API errors gracefully', async () => {
-      mockMenuManagementAdapter.getMenuItems.mockRejectedValue(
-        new Error('Database connection failed')
-      );
+      mockMenuManagementAdapter.getMenuItems.mockRejectedValue(new Error('Database connection failed'));
 
       render(
         <TestWrapper>
@@ -673,7 +664,7 @@ describe('Menu Management Integration Tests', () => {
 
     it('should handle permission denied', async () => {
       mockUseAppSelector.mockReturnValue({
-        roles: { list: ['user'] } // Non-admin user
+        roles: { list: ['user'] }, // Non-admin user
       });
 
       render(
@@ -690,7 +681,7 @@ describe('Menu Management Integration Tests', () => {
 
     it('should handle create/update/delete failures', async () => {
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue([]);
-      
+
       render(
         <TestWrapper>
           <AdminMenuManagementPage />
@@ -705,9 +696,7 @@ describe('Menu Management Integration Tests', () => {
       await user.type(titleInput, 'Test Item');
       await user.type(urlInput, '/test');
 
-      mockMenuManagementAdapter.createMenuItem.mockRejectedValue(
-        new Error('Validation failed')
-      );
+      mockMenuManagementAdapter.createMenuItem.mockRejectedValue(new Error('Validation failed'));
 
       const submitButton = screen.getByText('Create Menu Item');
       await user.click(submitButton);

@@ -16,35 +16,35 @@ import type {
  */
 export class SettingsAPI {
   // Public settings methods (accessible to all users)
-  
+
   /**
    * Get all public settings grouped by category
    */
   async getPublicSettings(): Promise<PublicSettings> {
     try {
       const { data, error } = await supabase.rpc('get_public_settings');
-      
+
       if (error) throw error;
-      
+
       // Group settings by category
       const grouped: PublicSettings = {};
-      
+
       data?.forEach((setting: any) => {
         if (!grouped[setting.category]) {
           grouped[setting.category] = {};
         }
-        
+
         // Handle both old and new function signatures
         const key = setting.setting_key || setting.key;
         const value = setting.setting_value || setting.value;
         const type = setting.data_type || 'string';
-        
+
         grouped[setting.category][key] = {
           value: value,
           type: type,
         };
       });
-      
+
       return grouped;
     } catch (error) {
       console.error('Error fetching public settings:', error);
@@ -61,13 +61,13 @@ export class SettingsAPI {
       const { data, error } = await supabase.rpc('is_feature_enabled', {
         feature_key_param: featureKey,
       });
-      
+
       if (error) {
         console.warn(`Feature toggle function not available for ${featureKey}:`, error);
         // Fallback: check feature_toggles table directly
         return this.checkFeatureToggleDirect(featureKey);
       }
-      
+
       return data || false;
     } catch (error) {
       console.error('Error checking feature toggle:', error);
@@ -86,11 +86,11 @@ export class SettingsAPI {
         .select('enabled')
         .eq('feature_key', featureKey)
         .single();
-      
+
       if (error || !data) {
         return false;
       }
-      
+
       return data.enabled || false;
     } catch (error) {
       console.warn(`Could not check feature ${featureKey} directly:`, error);
@@ -106,17 +106,17 @@ export class SettingsAPI {
       const { data, error } = await supabase
         .from('feature_toggles')
         .select('feature_key, enabled, enabled_for_users, enabled_for_roles');
-      
+
       if (error) throw error;
-      
+
       const features: Record<string, boolean> = {};
-      
+
       // Use direct evaluation instead of calling isFeatureEnabled to avoid loops
       for (const feature of data || []) {
         // Simple enabled check - can be enhanced with user/role logic later
         features[feature.feature_key] = feature.enabled || false;
       }
-      
+
       return features;
     } catch (error) {
       console.error('Error fetching enabled features:', error);
@@ -125,7 +125,7 @@ export class SettingsAPI {
   }
 
   // Admin settings methods (restricted to super admins)
-  
+
   /**
    * Get all application settings (admin only)
    */
@@ -136,13 +136,13 @@ export class SettingsAPI {
         .select('*')
         .order('category', { ascending: true })
         .order('setting_key', { ascending: true });
-      
+
       if (error) {
         console.error('Error fetching all settings:', error);
         // Return empty array instead of throwing to prevent app crash
         return [];
       }
-      
+
       return data || [];
     } catch (error) {
       console.error('Error fetching all settings:', error);
@@ -161,9 +161,9 @@ export class SettingsAPI {
         .select('*')
         .eq('category', category)
         .order('setting_key', { ascending: true });
-      
+
       if (error) throw error;
-      
+
       return data || [];
     } catch (error) {
       console.error('Error fetching settings by category:', error);
@@ -178,23 +178,26 @@ export class SettingsAPI {
     try {
       const { data, error } = await supabase
         .from('application_settings')
-        .upsert({
-          category: request.category,
-          setting_key: request.setting_key,
-          setting_value: request.setting_value,
-          data_type: request.data_type,
-          is_public: request.is_public ?? false,
-          description: request.description,
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'category,setting_key',
-          ignoreDuplicates: false,
-        })
+        .upsert(
+          {
+            category: request.category,
+            setting_key: request.setting_key,
+            setting_value: request.setting_value,
+            data_type: request.data_type,
+            is_public: request.is_public ?? false,
+            description: request.description,
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'category,setting_key',
+            ignoreDuplicates: false,
+          }
+        )
         .select()
         .single();
-      
+
       if (error) throw error;
-      
+
       return {
         success: true,
         data,
@@ -214,13 +217,10 @@ export class SettingsAPI {
    */
   async deleteSetting(id: string): Promise<SettingsResponse> {
     try {
-      const { error } = await supabase
-        .from('application_settings')
-        .delete()
-        .eq('id', id);
-      
+      const { error } = await supabase.from('application_settings').delete().eq('id', id);
+
       if (error) throw error;
-      
+
       return {
         success: true,
         message: 'Setting deleted successfully',
@@ -235,7 +235,7 @@ export class SettingsAPI {
   }
 
   // Feature toggle methods
-  
+
   /**
    * Get all feature toggles (admin only)
    */
@@ -245,13 +245,13 @@ export class SettingsAPI {
         .from('feature_toggles')
         .select('*')
         .order('feature_key', { ascending: true });
-      
+
       if (error) {
         console.error('Error fetching feature toggles:', error);
         // Return empty array instead of throwing to prevent app crash
         return [];
       }
-      
+
       return data || [];
     } catch (error) {
       console.error('Error fetching feature toggles:', error);
@@ -268,23 +268,23 @@ export class SettingsAPI {
       const updateData: any = {
         updated_at: new Date().toISOString(),
       };
-      
+
       if (request.enabled !== undefined) updateData.enabled = request.enabled;
       if (request.config !== undefined) updateData.config = request.config;
       if (request.rollout_percentage !== undefined) updateData.rollout_percentage = request.rollout_percentage;
       if (request.enabled_for_users !== undefined) updateData.enabled_for_users = request.enabled_for_users;
       if (request.enabled_for_roles !== undefined) updateData.enabled_for_roles = request.enabled_for_roles;
       if (request.description !== undefined) updateData.description = request.description;
-      
+
       const { data, error } = await supabase
         .from('feature_toggles')
         .update(updateData)
         .eq('feature_key', request.feature_key)
         .select()
         .single();
-      
+
       if (error) throw error;
-      
+
       return {
         success: true,
         data,
@@ -302,7 +302,9 @@ export class SettingsAPI {
   /**
    * Create a new feature toggle
    */
-  async createFeatureToggle(request: Omit<UpdateFeatureToggleRequest, 'feature_key'> & { feature_key: string }): Promise<SettingsResponse> {
+  async createFeatureToggle(
+    request: Omit<UpdateFeatureToggleRequest, 'feature_key'> & { feature_key: string }
+  ): Promise<SettingsResponse> {
     try {
       const { data, error } = await supabase
         .from('feature_toggles')
@@ -317,9 +319,9 @@ export class SettingsAPI {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
-      
+
       return {
         success: true,
         data,
@@ -339,13 +341,10 @@ export class SettingsAPI {
    */
   async deleteFeatureToggle(id: string): Promise<SettingsResponse> {
     try {
-      const { error } = await supabase
-        .from('feature_toggles')
-        .delete()
-        .eq('id', id);
-      
+      const { error } = await supabase.from('feature_toggles').delete().eq('id', id);
+
       if (error) throw error;
-      
+
       return {
         success: true,
         message: 'Feature toggle deleted successfully',
@@ -360,30 +359,26 @@ export class SettingsAPI {
   }
 
   // Settings history methods
-  
+
   /**
    * Get settings change history
    */
   async getSettingsHistory(category?: string, settingKey?: string): Promise<SettingsHistory[]> {
     try {
-      let query = supabase
-        .from('settings_history')
-        .select('*')
-        .order('changed_at', { ascending: false })
-        .limit(100);
-      
+      let query = supabase.from('settings_history').select('*').order('changed_at', { ascending: false }).limit(100);
+
       if (category) {
         query = query.eq('category', category);
       }
-      
+
       if (settingKey) {
         query = query.eq('setting_key', settingKey);
       }
-      
+
       const { data, error } = await query;
-      
+
       if (error) throw error;
-      
+
       return data || [];
     } catch (error) {
       console.error('Error fetching settings history:', error);
@@ -392,17 +387,14 @@ export class SettingsAPI {
   }
 
   // Import/Export methods
-  
+
   /**
    * Export all settings and feature toggles
    */
   async exportSettings(): Promise<SettingsExport> {
     try {
-      const [settings, features] = await Promise.all([
-        this.getAllSettings(),
-        this.getAllFeatureToggles(),
-      ]);
-      
+      const [settings, features] = await Promise.all([this.getAllSettings(), this.getAllFeatureToggles()]);
+
       const exportData: SettingsExport = {
         version: '1.0',
         exported_at: new Date().toISOString(),
@@ -410,7 +402,7 @@ export class SettingsAPI {
         feature_toggles: features,
         checksum: this.generateChecksum(settings, features),
       };
-      
+
       return exportData;
     } catch (error) {
       console.error('Error exporting settings:', error);
@@ -446,7 +438,7 @@ export class SettingsAPI {
             is_public: setting.is_public ?? undefined,
             description: setting.description ?? undefined,
           });
-          
+
           if (result.success) {
             successCount++;
           } else {
@@ -455,7 +447,9 @@ export class SettingsAPI {
           }
         } catch (error) {
           errorCount++;
-          errors.push(`Setting ${setting.category}.${setting.setting_key}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          errors.push(
+            `Setting ${setting.category}.${setting.setting_key}: ${error instanceof Error ? error.message : 'Unknown error'}`
+          );
         }
       }
 
@@ -471,7 +465,7 @@ export class SettingsAPI {
             enabled_for_roles: feature.enabled_for_roles ?? undefined,
             description: feature.description ?? undefined,
           });
-          
+
           if (result.success) {
             successCount++;
           } else {
@@ -511,7 +505,7 @@ export class SettingsAPI {
   }
 
   // Utility methods
-  
+
   /**
    * Generate checksum for export validation
    */
@@ -521,7 +515,7 @@ export class SettingsAPI {
     let hash = 0;
     for (let i = 0; i < content.length; i++) {
       const char = content.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return hash.toString();

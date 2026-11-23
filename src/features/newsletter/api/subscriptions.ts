@@ -1,13 +1,13 @@
 import { supabase } from '@/lib/supabase';
 import { resendService } from '@/services/resend';
-import { 
-  NewsletterSubscription, 
-  CreateSubscriptionRequest, 
+import {
+  NewsletterSubscription,
+  CreateSubscriptionRequest,
   UpdateSubscriptionRequest,
   SubscriptionFilters,
   PaginatedSubscriptions,
   NewsletterStats,
-  SubscriptionPreferences
+  SubscriptionPreferences,
 } from '@/types/newsletter';
 import type { Database } from '@/types/supabase';
 
@@ -28,7 +28,7 @@ class NewsletterSubscriptionAPI {
         content_types: ['events', 'news', 'opportunities'],
         format: 'digest',
         location_filter: true,
-        language: 'en'
+        language: 'en',
       },
       subscription_token: data.subscription_token,
       confirmation_token: data.confirmation_token || undefined,
@@ -38,7 +38,7 @@ class NewsletterSubscriptionAPI {
       last_sent_at: data.last_sent_at || undefined,
       bounce_count: data.bounce_count || 0,
       created_at: data.created_at || new Date().toISOString(),
-      updated_at: data.updated_at || new Date().toISOString()
+      updated_at: data.updated_at || new Date().toISOString(),
     };
   }
   // Public subscription methods
@@ -65,14 +65,14 @@ class NewsletterSubscriptionAPI {
               preferences: request.preferences || existing.preferences,
               member_id: request.member_id || existing.member_id,
               confirmation_token: this.generateToken(),
-              subscribed_at: new Date().toISOString()
+              subscribed_at: new Date().toISOString(),
             })
             .eq('id', existing.id)
             .select()
             .single();
 
           if (error) throw error;
-          
+
           // Send confirmation email
           const mapped = this.mapSubscription(data);
           await this.sendConfirmationEmail(mapped);
@@ -92,10 +92,10 @@ class NewsletterSubscriptionAPI {
           content_types: ['events', 'news', 'opportunities', 'marketplace'],
           format: 'digest',
           location_filter: true,
-          language: 'en'
+          language: 'en',
         },
         confirmation_token: this.generateToken(),
-        status: 'pending'
+        status: 'pending',
       };
 
       const { data, error } = await supabase
@@ -109,19 +109,19 @@ class NewsletterSubscriptionAPI {
       // Send confirmation email
       const mappedSubscription = this.mapSubscription(data);
       await this.sendConfirmationEmail(mappedSubscription);
-      
+
       // Transform to match NewsletterSubscription interface
       return {
         id: data.id,
         email: data.email,
         member_id: data.member_id || undefined,
         status: (data.status as any) || 'pending',
-        preferences: data.preferences as any || {
+        preferences: (data.preferences as any) || {
           frequency: 'weekly',
           content_types: ['events', 'news', 'opportunities', 'marketplace'],
           format: 'digest',
           location_filter: true,
-          language: 'en'
+          language: 'en',
         },
         subscription_token: data.subscription_token,
         confirmation_token: data.confirmation_token || undefined,
@@ -131,7 +131,7 @@ class NewsletterSubscriptionAPI {
         last_sent_at: data.last_sent_at || undefined,
         bounce_count: data.bounce_count || 0,
         created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString()
+        updated_at: data.updated_at || new Date().toISOString(),
       };
     } catch (error) {
       console.error('Error subscribing to newsletter:', error);
@@ -149,7 +149,7 @@ class NewsletterSubscriptionAPI {
         .update({
           status: 'active',
           confirmed_at: new Date().toISOString(),
-          confirmation_token: null
+          confirmation_token: null,
         })
         .eq('confirmation_token', token)
         .eq('status', 'pending')
@@ -172,7 +172,7 @@ class NewsletterSubscriptionAPI {
         .from('newsletter_subscriptions')
         .update({
           status: 'unsubscribed',
-          unsubscribed_at: new Date().toISOString()
+          unsubscribed_at: new Date().toISOString(),
         })
         .eq('subscription_token', token)
         .select();
@@ -216,11 +216,7 @@ class NewsletterSubscriptionAPI {
    */
   async getSubscription(email: string): Promise<NewsletterSubscription | null> {
     try {
-      const { data, error } = await supabase
-        .from('newsletter_subscriptions')
-        .select('*')
-        .eq('email', email)
-        .single();
+      const { data, error } = await supabase.from('newsletter_subscriptions').select('*').eq('email', email).single();
 
       if (error && error.code !== 'PGRST116') throw error;
       return data ? this.mapSubscription(data) : null;
@@ -256,9 +252,7 @@ class NewsletterSubscriptionAPI {
    */
   async getAllSubscriptions(filters: SubscriptionFilters = {}): Promise<PaginatedSubscriptions | null> {
     try {
-      let query = supabase
-        .from('newsletter_subscriptions')
-        .select('*', { count: 'exact' });
+      let query = supabase.from('newsletter_subscriptions').select('*', { count: 'exact' });
 
       // Apply filters
       if (filters.status) {
@@ -274,9 +268,7 @@ class NewsletterSubscriptionAPI {
       }
 
       if (filters.date_range) {
-        query = query
-          .gte('created_at', filters.date_range.start)
-          .lte('created_at', filters.date_range.end);
+        query = query.gte('created_at', filters.date_range.start).lte('created_at', filters.date_range.end);
       }
 
       // Apply pagination
@@ -296,7 +288,7 @@ class NewsletterSubscriptionAPI {
         total: count || 0,
         page: Math.floor(offset / limit) + 1,
         page_size: limit,
-        total_pages: Math.ceil((count || 0) / limit)
+        total_pages: Math.ceil((count || 0) / limit),
       };
     } catch (error) {
       console.error('Error getting all subscriptions:', error);
@@ -323,14 +315,12 @@ class NewsletterSubscriptionAPI {
         total_campaigns: 0,
         sent_campaigns: 0,
         avg_open_rate: 0,
-        avg_click_rate: 0
+        avg_click_rate: 0,
       };
 
       // Get campaign counts if table exists
       try {
-        const { data: campaigns, error: campError } = await supabase
-          .from('newsletter_campaigns')
-          .select('status');
+        const { data: campaigns, error: campError } = await supabase.from('newsletter_campaigns').select('status');
 
         if (!campError && campaigns) {
           stats.total_campaigns = campaigns.length;
@@ -351,7 +341,7 @@ class NewsletterSubscriptionAPI {
           const totalEvents = analytics.length;
           const openEvents = analytics.filter(a => a.event_type === 'opened').length;
           const clickEvents = analytics.filter(a => a.event_type === 'clicked').length;
-          
+
           stats.avg_open_rate = totalEvents > 0 ? (openEvents / totalEvents) * 100 : 0;
           stats.avg_click_rate = totalEvents > 0 ? (clickEvents / totalEvents) * 100 : 0;
         }
@@ -381,7 +371,7 @@ class NewsletterSubscriptionAPI {
       // Create CSV headers
       const headers = [
         'Email',
-        'Status', 
+        'Status',
         'Member ID',
         'Frequency',
         'Content Types',
@@ -391,7 +381,7 @@ class NewsletterSubscriptionAPI {
         'Confirmed At',
         'Unsubscribed At',
         'Last Sent At',
-        'Bounce Count'
+        'Bounce Count',
       ];
 
       // Create CSV rows
@@ -407,13 +397,11 @@ class NewsletterSubscriptionAPI {
         subscription.confirmed_at || '',
         subscription.unsubscribed_at || '',
         subscription.last_sent_at || '',
-        subscription.bounce_count.toString()
+        subscription.bounce_count.toString(),
       ]);
 
       // Combine headers and rows
-      const csvContent = [headers, ...rows]
-        .map(row => row.map(field => `"${field}"`).join(','))
-        .join('\n');
+      const csvContent = [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
 
       return csvContent;
     } catch (error) {
@@ -428,7 +416,7 @@ class NewsletterSubscriptionAPI {
   async updateSubscriptionStatus(id: string, status: NewsletterSubscription['status']): Promise<boolean> {
     try {
       const updateData: Record<string, unknown> = { status };
-      
+
       if (status === 'unsubscribed') {
         updateData.unsubscribed_at = new Date().toISOString();
       } else if (status === 'active') {
@@ -436,10 +424,7 @@ class NewsletterSubscriptionAPI {
         updateData.unsubscribed_at = null;
       }
 
-      const { error } = await supabase
-        .from('newsletter_subscriptions')
-        .update(updateData)
-        .eq('id', id);
+      const { error } = await supabase.from('newsletter_subscriptions').update(updateData).eq('id', id);
 
       if (error) throw error;
       return true;
@@ -454,10 +439,7 @@ class NewsletterSubscriptionAPI {
    */
   async deleteSubscription(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('newsletter_subscriptions')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('newsletter_subscriptions').delete().eq('id', id);
 
       if (error) throw error;
       return true;
@@ -507,10 +489,7 @@ class NewsletterSubscriptionAPI {
         updateData.status = 'bounced';
       }
 
-      await supabase
-        .from('newsletter_subscriptions')
-        .update(updateData)
-        .eq('id', subscription.id);
+      await supabase.from('newsletter_subscriptions').update(updateData).eq('id', subscription.id);
     } catch (error) {
       console.error('Error recording bounce:', error);
     }
@@ -549,13 +528,11 @@ class NewsletterSubscriptionAPI {
   private async logUnsubscribeReason(subscriptionId: string, reason: string): Promise<void> {
     try {
       // Log to analytics table
-      await supabase
-        .from('newsletter_analytics')
-        .insert({
-          subscription_id: subscriptionId,
-          event_type: 'unsubscribed',
-          event_data: { reason }
-        });
+      await supabase.from('newsletter_analytics').insert({
+        subscription_id: subscriptionId,
+        event_type: 'unsubscribed',
+        event_data: { reason },
+      });
     } catch (error) {
       console.error('Error logging unsubscribe reason:', error);
     }

@@ -21,7 +21,11 @@ export const useUserFilters = (isAdmin: boolean) => {
   const [showOrphanedProfiles, setShowOrphanedProfiles] = useState(false);
 
   // Fetch users with their roles using the proper database function
-  const { data: users, isLoading, refetch } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['admin-users', searchTerm, selectedRole, currentPage, pageSize, showOrphanedProfiles],
     queryFn: async () => {
       try {
@@ -35,15 +39,12 @@ export const useUserFilters = (isAdmin: boolean) => {
             .order('created_at', { ascending: false });
 
           // Get all user IDs that have accounts
-          const { data: adminUsersData } = await supabase
-            .rpc('get_admin_users');
+          const { data: adminUsersData } = await supabase.rpc('get_admin_users');
 
           const userIdsWithAccounts = new Set(adminUsersData?.map(u => u.user_id) || []);
 
           // Filter for orphaned profiles (no user account)
-          const orphanedProfiles = allProfiles?.filter(p =>
-            !p.user_id || !userIdsWithAccounts.has(p.user_id)
-          ) || [];
+          const orphanedProfiles = allProfiles?.filter(p => !p.user_id || !userIdsWithAccounts.has(p.user_id)) || [];
 
           // Convert orphaned profiles to AdminUser format
           usersArray = orphanedProfiles.map(profile => ({
@@ -60,13 +61,12 @@ export const useUserFilters = (isAdmin: boolean) => {
               company: profile.company,
               bio: profile.bio,
               status: profile.status,
-              featured: profile.featured
-            }
+              featured: profile.featured,
+            },
           }));
         } else {
           // Normal flow - get users with accounts
-          const { data: adminUsersData, error: functionError } = await supabase
-            .rpc('get_admin_users');
+          const { data: adminUsersData, error: functionError } = await supabase.rpc('get_admin_users');
 
           if (functionError) {
             console.warn('Database function failed:', functionError);
@@ -74,37 +74,37 @@ export const useUserFilters = (isAdmin: boolean) => {
           }
 
           // Convert to our interface format
-          usersArray = adminUsersData?.map(user => ({
-            user_id: user.user_id,
-            email: user.email,
-            name: user.name,
-            created_at: user.created_at,
-            last_sign_in_at: user.last_sign_in_at,
-            roles: user.roles || []
-          })) || [];
+          usersArray =
+            adminUsersData?.map(user => ({
+              user_id: user.user_id,
+              email: user.email,
+              name: user.name,
+              created_at: user.created_at,
+              last_sign_in_at: user.last_sign_in_at,
+              roles: user.roles || [],
+            })) || [];
 
           // Get member profiles for each user
           const userIds = usersArray.map(u => u.user_id);
           if (userIds.length > 0) {
-            const { data: memberProfiles } = await supabase
-              .from('members')
-              .select('*')
-              .in('user_id', userIds);
+            const { data: memberProfiles } = await supabase.from('members').select('*').in('user_id', userIds);
 
             // Attach member profiles
             usersArray = usersArray.map(user => {
               const profile = memberProfiles?.find(p => p.user_id === user.user_id);
               return {
                 ...user,
-                member_profile: profile ? {
-                  id: profile.id,
-                  location: profile.location,
-                  title: profile.title,
-                  company: profile.company,
-                  bio: profile.bio,
-                  status: profile.status,
-                  featured: profile.featured
-                } : undefined
+                member_profile: profile
+                  ? {
+                      id: profile.id,
+                      location: profile.location,
+                      title: profile.title,
+                      company: profile.company,
+                      bio: profile.bio,
+                      status: profile.status,
+                      featured: profile.featured,
+                    }
+                  : undefined,
               };
             });
           }
@@ -114,32 +114,30 @@ export const useUserFilters = (isAdmin: boolean) => {
         let filteredUsers = usersArray;
 
         if (searchTerm) {
-          filteredUsers = filteredUsers.filter(user =>
-            user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.member_profile?.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.member_profile?.location?.toLowerCase().includes(searchTerm.toLowerCase())
+          filteredUsers = filteredUsers.filter(
+            user =>
+              user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              user.member_profile?.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              user.member_profile?.location?.toLowerCase().includes(searchTerm.toLowerCase())
           );
         }
 
         if (selectedRole !== 'all') {
-          filteredUsers = filteredUsers.filter(user =>
-            user.roles.includes(selectedRole)
-          );
+          filteredUsers = filteredUsers.filter(user => user.roles.includes(selectedRole));
         }
 
         // Apply pagination
         const startIndex = (currentPage - 1) * pageSize;
         const endIndex = startIndex + pageSize;
         return filteredUsers.slice(startIndex, endIndex);
-
       } catch (error) {
         console.error('Error fetching users:', error);
         toast.error('Failed to load users');
         return [];
       }
     },
-    enabled: isAdmin
+    enabled: isAdmin,
   });
 
   const formatDate = (date: string | null) => {
@@ -166,6 +164,6 @@ export const useUserFilters = (isAdmin: boolean) => {
 
     // Actions
     refetch,
-    formatDate
+    formatDate,
   };
 };

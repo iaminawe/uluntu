@@ -33,10 +33,10 @@ const SAMPLE_RESOURCE = {
   tags: ['AI', 'Ethics', 'Technology', 'Guidelines'],
   group: {
     id: '1', // Use string ID for consistency across the application
-    name: 'AI Enthusiasts Kootenay'
+    name: 'AI Enthusiasts Kootenay',
   },
   status: 'published' as ContentStatus,
-  featured: true // Example resource is featured
+  featured: true, // Example resource is featured
 };
 
 export default function ResourceEditPage() {
@@ -45,7 +45,7 @@ export default function ResourceEditPage() {
   const isEditing = id !== undefined && id !== 'create';
   const { user } = useAuth();
   const { data: member } = useMemberByUserId(user?.id);
-  
+
   const [formData, setFormData] = useState<FormData>({
     title: '',
     slug: '',
@@ -56,25 +56,25 @@ export default function ResourceEditPage() {
     url: '',
     tags: [] as string[],
     groupId: '',
-    newTag: ''
+    newTag: '',
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditing);
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
-  
+
   // Topic management
   const { data: entityTopics } = useEntityTopics('resource', id || '');
   const setEntityTopicsMutation = useSetEntityTopics();
-  
+
   useEffect(() => {
     if (isEditing && id) {
       loadResource();
     }
   }, [isEditing, id]);
-  
+
   // Populate topics when entity topics are loaded
   useEffect(() => {
     if (entityTopics) {
@@ -84,7 +84,7 @@ export default function ResourceEditPage() {
 
   const loadResource = async () => {
     if (!id) return;
-    
+
     setIsLoading(true);
     try {
       const resource = await resourcesApi.getById(id);
@@ -99,7 +99,7 @@ export default function ResourceEditPage() {
           groupId: resource.groupId || '',
           newTag: '',
           status: resource.status || 'draft',
-          featured: resource.featured || false
+          featured: resource.featured || false,
         });
       }
     } catch (error) {
@@ -108,38 +108,38 @@ export default function ResourceEditPage() {
       setIsLoading(false);
     }
   };
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleAddTag = () => {
     if (formData.newTag.trim() && !formData.tags.includes(formData.newTag.trim())) {
       setFormData(prev => ({
         ...prev,
         tags: [...prev.tags, prev.newTag.trim()],
-        newTag: ''
+        newTag: '',
       }));
     }
   };
-  
+
   const handleRemoveTag = (tagToRemove: string) => {
     setFormData(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter(tag => tag !== tagToRemove),
     }));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!member) {
       console.error('Member not found');
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       const resourceData: ResourceInput = {
         title: formData.title,
@@ -151,7 +151,7 @@ export default function ResourceEditPage() {
         featured: formData.featured,
         contributorId: member.id,
         groupId: formData.groupId || null,
-        tags: formData.tags
+        tags: formData.tags,
       };
 
       let result;
@@ -167,12 +167,12 @@ export default function ResourceEditPage() {
           await setEntityTopicsMutation.mutateAsync({
             entityType: 'resource',
             entityId: result.id,
-            topicIds: selectedTopicIds
+            topicIds: selectedTopicIds,
           });
         }
-        
+
         setSubmitSuccess(true);
-        
+
         // Redirect after a short delay
         setTimeout(() => {
           navigate('/resources');
@@ -186,12 +186,12 @@ export default function ResourceEditPage() {
       setIsSubmitting(false);
     }
   };
-  
+
   const handleDelete = async () => {
     if (!id) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       const success = await resourcesApi.delete(id);
       if (success) {
@@ -206,22 +206,22 @@ export default function ResourceEditPage() {
       setShowDeleteConfirm(false);
     }
   };
-  
+
   if (isLoading) {
     return <LoadingState />;
   }
-  
+
   return (
     <>
       <Helmet>
         <title>{isEditing ? 'Edit Resource' : 'Add New Resource'} - Uluntu</title>
       </Helmet>
-      
+
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12">
         <div className="w-4/5 max-w-[80%] mx-auto bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
           <div className="px-6 py-4 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 flex items-center">
-            <Link 
-              to="/resources" 
+            <Link
+              to="/resources"
               className="mr-3 p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-slate-300" />
@@ -230,7 +230,7 @@ export default function ResourceEditPage() {
               {isEditing ? 'Edit Resource' : 'Add New Resource'}
             </h1>
           </div>
-          
+
           <div className="p-6">
             {submitSuccess ? (
               <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4">
@@ -244,44 +244,26 @@ export default function ResourceEditPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <ResourceDetails 
-                  formData={formData} 
-                  handleChange={handleChange} 
-                />
-                
-                <ResourceTypeSelect 
-                  formData={formData} 
-                  handleChange={handleChange} 
-                />
-                
-                <UrlInput 
-                  formData={formData} 
-                  handleChange={handleChange} 
-                />
-                
-                <TagsInput 
-                  formData={formData} 
+                <ResourceDetails formData={formData} handleChange={handleChange} />
+
+                <ResourceTypeSelect formData={formData} handleChange={handleChange} />
+
+                <UrlInput formData={formData} handleChange={handleChange} />
+
+                <TagsInput
+                  formData={formData}
                   handleChange={handleChange}
                   handleAddTag={handleAddTag}
                   handleRemoveTag={handleRemoveTag}
                 />
-                
-                <GroupSelect 
-                  formData={formData} 
-                  handleChange={handleChange} 
-                />
-                
-                <StatusOptions 
-                  formData={formData} 
-                  handleChange={handleChange}
-                  setFormData={setFormData}
-                />
-                
+
+                <GroupSelect formData={formData} handleChange={handleChange} />
+
+                <StatusOptions formData={formData} handleChange={handleChange} setFormData={setFormData} />
+
                 {/* Topics Section */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Topics
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topics</label>
                   <TopicSelector
                     selectedTopics={selectedTopicIds}
                     onTopicsChange={setSelectedTopicIds}
@@ -293,7 +275,7 @@ export default function ResourceEditPage() {
                     Add topics to help categorize this resource and make it discoverable on topic pages.
                   </p>
                 </div>
-                
+
                 <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                   <button
                     type="button"
@@ -304,7 +286,7 @@ export default function ResourceEditPage() {
                   >
                     Cancel
                   </button>
-                  
+
                   <div className="flex gap-2">
                     {isEditing && (
                       <button
@@ -317,7 +299,7 @@ export default function ResourceEditPage() {
                         Delete
                       </button>
                     )}
-                    
+
                     {formData.status === 'published' ? (
                       <button
                         type="button"
@@ -340,7 +322,7 @@ export default function ResourceEditPage() {
                         Publish
                       </button>
                     )}
-                    
+
                     <button
                       type="submit"
                       disabled={isSubmitting}
@@ -358,7 +340,7 @@ export default function ResourceEditPage() {
           </div>
         </div>
       </div>
-      
+
       <DeleteConfirm
         show={showDeleteConfirm}
         setShow={setShowDeleteConfirm}

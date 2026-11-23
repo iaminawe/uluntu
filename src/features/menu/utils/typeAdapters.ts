@@ -53,10 +53,10 @@ export function convertDatabaseRowToMenuItem(row: MenuItemDatabaseRow): MenuItem
     required_roles: Array.isArray(row.required_roles) ? row.required_roles : undefined,
     is_external: Boolean(row.is_external),
     feature_flag: row.custom_properties?.feature_flag || undefined,
-    status: row.status as any || undefined,
+    status: (row.status as any) || undefined,
     featured: row.featured || undefined,
     created_at: row.created_at || undefined,
-    updated_at: row.updated_at || undefined
+    updated_at: row.updated_at || undefined,
   };
 }
 
@@ -83,7 +83,7 @@ export function convertMenuItemToDatabaseRow(item: MenuItem): Partial<MenuItemDa
     featured: item.featured || null,
     custom_properties: item.feature_flag ? { feature_flag: item.feature_flag } : null,
     created_at: item.created_at || null,
-    updated_at: item.updated_at || null
+    updated_at: item.updated_at || null,
   };
 }
 
@@ -100,7 +100,12 @@ export function adaptLegacyMenuItem(legacyItem: any): MenuItem {
     menu_type: legacyItem.menu_type || 'main',
     parent_id: legacyItem.parent_id || undefined,
     sort_order: legacyItem.sort_order || legacyItem.order || 0,
-    is_enabled: legacyItem.is_enabled !== undefined ? legacyItem.is_enabled : legacyItem.enabled !== undefined ? legacyItem.enabled : true,
+    is_enabled:
+      legacyItem.is_enabled !== undefined
+        ? legacyItem.is_enabled
+        : legacyItem.enabled !== undefined
+          ? legacyItem.enabled
+          : true,
     target: legacyItem.target || '_self',
     icon: legacyItem.icon || undefined,
     css_classes: legacyItem.css_classes || undefined,
@@ -109,7 +114,7 @@ export function adaptLegacyMenuItem(legacyItem: any): MenuItem {
     is_external: legacyItem.is_external || false,
     feature_flag: legacyItem.feature_flag || undefined,
     created_at: legacyItem.created_at || undefined,
-    updated_at: legacyItem.updated_at || undefined
+    updated_at: legacyItem.updated_at || undefined,
   };
 }
 
@@ -164,7 +169,7 @@ export function validateMenuItem(item: any): item is MenuItem {
 /**
  * Batch convert array of database rows to MenuItems with error handling
  */
-export function convertDatabaseRowsToMenuItems(rows: any[]): { items: MenuItem[], errors: string[] } {
+export function convertDatabaseRowsToMenuItems(rows: any[]): { items: MenuItem[]; errors: string[] } {
   const items: MenuItem[] = [];
   const errors: string[] = [];
 
@@ -214,7 +219,7 @@ export function safeConvertToMenuItem(item: any): MenuItem {
       is_enabled: false,
       target: '_self',
       visibility: 'public',
-      is_external: false
+      is_external: false,
     };
   }
 }

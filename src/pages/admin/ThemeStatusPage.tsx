@@ -16,10 +16,7 @@ const ThemeStatusPage: React.FC = () => {
   const checkDatabaseStatus = async () => {
     try {
       // Check database connection
-      const { data: testData, error: testError } = await supabase
-        .from('admin_features')
-        .select('count')
-        .limit(1);
+      const { data: testData, error: testError } = await supabase.from('admin_features').select('count').limit(1);
 
       if (testError) {
         setDbStatus('error');
@@ -30,10 +27,7 @@ const ThemeStatusPage: React.FC = () => {
       setDbStatus('connected');
 
       // Check if themes table exists
-      const { data: tableData, error: tableError } = await supabase
-        .from('themes')
-        .select('count')
-        .limit(1);
+      const { data: tableData, error: tableError } = await supabase.from('themes').select('count').limit(1);
 
       if (tableError) {
         if (tableError.message?.includes('relation') && tableError.message?.includes('does not exist')) {
@@ -111,11 +105,7 @@ const ThemeStatusPage: React.FC = () => {
 };
 
 const ThemePageContent: React.FC = () => {
-  const { 
-    themes, 
-    currentTheme, 
-    loading
-  } = useTheme();
+  const { themes, currentTheme, loading } = useTheme();
 
   if (loading) {
     return (
@@ -132,9 +122,7 @@ const ThemePageContent: React.FC = () => {
     <div className="max-w-7xl mx-auto p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Theme Configuration</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Customize the visual appearance of your site
-        </p>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">Customize the visual appearance of your site</p>
       </div>
 
       {/* Status Summary */}
@@ -144,8 +132,7 @@ const ThemePageContent: React.FC = () => {
           <div className="ml-3">
             <p className="text-sm font-medium text-green-900 dark:text-green-100">Theme System Active</p>
             <p className="text-sm text-green-700 dark:text-green-300">
-              {themes.length} themes available • 
-              Current theme: {currentTheme?.name || 'None'}
+              {themes.length} themes available • Current theme: {currentTheme?.name || 'None'}
             </p>
           </div>
         </div>

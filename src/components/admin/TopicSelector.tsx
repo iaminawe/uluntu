@@ -15,10 +15,10 @@ interface TopicSelectorProps {
 const TopicSelector: React.FC<TopicSelectorProps> = ({
   selectedTopics,
   onTopicsChange,
-  placeholder = "Search and select topics...",
+  placeholder = 'Search and select topics...',
   maxTopics = 5,
   disabled = false,
-  className = ""
+  className = '',
 }) => {
   const { topics, isLoading } = useTopicsHybrid();
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,10 +27,9 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
   // Memoize filtered topics to prevent infinite loops
   const filteredTopics = useMemo(() => {
     if (!topics) return [];
-    
-    return topics.filter(topic => 
-      topic.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      !selectedTopics.includes(topic.id)
+
+    return topics.filter(
+      topic => topic.name.toLowerCase().includes(searchTerm.toLowerCase()) && !selectedTopics.includes(topic.id)
     );
   }, [topics, searchTerm, selectedTopics]);
 
@@ -57,7 +56,7 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
       {/* Selected Topics Display */}
       {selectedTopicObjects.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-3">
-          {selectedTopicObjects.map((topic) => (
+          {selectedTopicObjects.map(topic => (
             <div
               key={topic.id}
               className="flex items-center gap-2 px-3 py-1 rounded-full text-sm text-white"
@@ -87,7 +86,7 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
             <input
               type="text"
               value={searchTerm}
-              onChange={(e) => {
+              onChange={e => {
                 setSearchTerm(e.target.value);
                 setIsOpen(true);
               }}
@@ -113,7 +112,7 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
           {/* Dropdown */}
           {isOpen && filteredTopics.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
-              {filteredTopics.map((topic) => (
+              {filteredTopics.map(topic => (
                 <button
                   key={topic.id}
                   type="button"
@@ -128,11 +127,7 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
                   </div>
                   <div>
                     <div className="font-medium text-gray-900">{topic.name}</div>
-                    {topic.description && (
-                      <div className="text-xs text-gray-500 truncate">
-                        {topic.description}
-                      </div>
-                    )}
+                    {topic.description && <div className="text-xs text-gray-500 truncate">{topic.description}</div>}
                   </div>
                 </button>
               ))}
@@ -140,21 +135,14 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
           )}
 
           {/* Close dropdown when clicking outside */}
-          {isOpen && (
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setIsOpen(false)}
-            />
-          )}
+          {isOpen && <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />}
         </div>
       )}
 
       {/* Help Text */}
       <div className="mt-2 text-xs text-gray-500">
         {selectedTopics.length}/{maxTopics} topics selected
-        {selectedTopics.length === maxTopics && (
-          <span className="text-amber-600"> (maximum reached)</span>
-        )}
+        {selectedTopics.length === maxTopics && <span className="text-amber-600"> (maximum reached)</span>}
       </div>
 
       {/* Loading State */}

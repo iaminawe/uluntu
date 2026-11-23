@@ -15,7 +15,7 @@ import {
   BarChart3,
   Building2,
   Search,
-  Filter
+  Filter,
 } from 'lucide-react';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useDashboardData } from '../hooks/useDashboardData';
@@ -39,14 +39,44 @@ interface DashboardTab {
 
 // Convert horizontal tabs to vertical content tabs with feature requirements
 const ALL_CONTENT_TABS: DashboardTab[] = [
-  { id: 'galleries', label: 'Photo Galleries', icon: Camera, type: 'gallery' as ContentType, feature: 'photo_galleries' },
+  {
+    id: 'galleries',
+    label: 'Photo Galleries',
+    icon: Camera,
+    type: 'gallery' as ContentType,
+    feature: 'photo_galleries',
+  },
   { id: 'events', label: 'Events', icon: Calendar, type: 'event' as ContentType, feature: 'events_system' },
   { id: 'news', label: 'News', icon: Newspaper, type: 'news' as ContentType, feature: 'news_blog' },
-  { id: 'resources', label: 'Resources', icon: BookOpen, type: 'resource' as ContentType, feature: 'resources_library' },
-  { id: 'marketplace', label: 'Marketplace', icon: ShoppingBag, type: 'marketplace' as ContentType, feature: 'marketplace' },
-  { id: 'opportunities', label: 'Opportunities', icon: Briefcase, type: 'opportunity' as ContentType, feature: 'opportunities_board' },
+  {
+    id: 'resources',
+    label: 'Resources',
+    icon: BookOpen,
+    type: 'resource' as ContentType,
+    feature: 'resources_library',
+  },
+  {
+    id: 'marketplace',
+    label: 'Marketplace',
+    icon: ShoppingBag,
+    type: 'marketplace' as ContentType,
+    feature: 'marketplace',
+  },
+  {
+    id: 'opportunities',
+    label: 'Opportunities',
+    icon: Briefcase,
+    type: 'opportunity' as ContentType,
+    feature: 'opportunities_board',
+  },
   { id: 'groups', label: 'My Groups', icon: Users, type: 'group' as ContentType, feature: 'groups_communities' },
-  { id: 'companies', label: 'My Companies', icon: Building2, type: 'company' as ContentType, feature: 'companies_listing' },
+  {
+    id: 'companies',
+    label: 'My Companies',
+    icon: Building2,
+    type: 'company' as ContentType,
+    feature: 'companies_listing',
+  },
   { id: 'analytics', label: 'Analytics', icon: BarChart3, type: 'analytics' as ContentType }, // No feature requirement
   { id: 'messages', label: 'Messages', icon: MessageCircle, type: 'message' as ContentType, feature: 'user_messaging' },
   { id: 'activity', label: 'Activity', icon: Activity, type: 'activity' as ContentType }, // No feature requirement
@@ -57,12 +87,12 @@ export const UserDashboard: React.FC = () => {
   const { tab = 'galleries' } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
   const { isFeatureEnabled } = useEnabledFeatures();
-  
+
   const [layout, setLayout] = useState<DashboardLayout>({
     sidebar: { collapsed: false, pinned: true },
     contentView: 'grid',
     activeTab: tab,
-    filters: {}
+    filters: {},
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -73,11 +103,7 @@ export const UserDashboard: React.FC = () => {
   }, [tab]);
 
   // Get dashboard overview data
-  const {
-    data: dashboardData,
-    isLoading: dashboardLoading,
-    error: dashboardError
-  } = useDashboardData();
+  const { data: dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData();
 
   // Filter tabs based on enabled features
   const enabledTabs = useMemo(() => {
@@ -157,10 +183,7 @@ export const UserDashboard: React.FC = () => {
   if (dashboardError) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <ErrorDisplay 
-          error={dashboardError} 
-          retry={() => window.location.reload()} 
-        />
+        <ErrorDisplay error={dashboardError} retry={() => window.location.reload()} />
       </div>
     );
   }
@@ -172,14 +195,12 @@ export const UserDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
-                Dashboard
-              </h1>
+              <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Dashboard</h1>
               <span className="text-sm text-slate-500 dark:text-slate-400">
                 Welcome back, {user?.email?.split('@')[0]}
               </span>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               {/* Search */}
               <div className="relative">
@@ -188,7 +209,7 @@ export const UserDashboard: React.FC = () => {
                   type="text"
                   placeholder="Search content..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
@@ -197,18 +218,20 @@ export const UserDashboard: React.FC = () => {
               <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg">
                 <button
                   onClick={() => setLayout(prev => ({ ...prev, contentView: 'grid' }))}
-                  className={`p-2 ${layout.contentView === 'grid' 
-                    ? 'bg-orange-500 text-white' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  className={`p-2 ${
+                    layout.contentView === 'grid'
+                      ? 'bg-orange-500 text-white'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <Grid3X3 className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => setLayout(prev => ({ ...prev, contentView: 'list' }))}
-                  className={`p-2 ${layout.contentView === 'list' 
-                    ? 'bg-orange-500 text-white' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  className={`p-2 ${
+                    layout.contentView === 'list'
+                      ? 'bg-orange-500 text-white'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <List className="h-4 w-4" />
@@ -233,9 +256,7 @@ export const UserDashboard: React.FC = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Key Metrics */}
-        {dashboardData?.stats && (
-          <KeyMetrics stats={dashboardData.stats} />
-        )}
+        {dashboardData?.stats && <KeyMetrics stats={dashboardData.stats} />}
 
         {/* Vertical Tab Layout */}
         <VerticalTabSet

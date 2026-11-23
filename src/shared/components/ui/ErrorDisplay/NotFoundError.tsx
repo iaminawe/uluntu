@@ -14,7 +14,8 @@ const NotFoundError: React.FC<NotFoundErrorProps> = ({
   actions,
   primaryAction,
 }) => {
-  const defaultMessage = message || 
+  const defaultMessage =
+    message ||
     `We couldn't find the ${resourceType} you're looking for. It may have been removed or the URL might be incorrect.`;
 
   return (

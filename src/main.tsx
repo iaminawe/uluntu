@@ -43,27 +43,27 @@ createRoot(document.getElementById('root')!).render(
           {/* SessionProvider syncs Supabase auth with Redux */}
           <SessionProvider>
             <QueryClientProvider client={queryClient}>
-                {/* SettingsProvider for global site configuration */}
-                <SettingsProvider>
-                  <EnhancedThemeProvider>
-                    <DynamicAppConfig />
-                    <RouterProvider router={router} />
-                    <ReactQueryDevtools initialIsOpen={false} />
-                    <Toaster 
-                      position="top-right"
-                      toastOptions={{
-                        duration: 4000,
-                        style: {
-                          background: '#363636',
-                          color: '#fff',
-                        },
-                      }}
-                    />
-                    {/* Debug components */}
-                    {/* <SettingsDebugger /> */}
-                  </EnhancedThemeProvider>
-                </SettingsProvider>
-              </QueryClientProvider>
+              {/* SettingsProvider for global site configuration */}
+              <SettingsProvider>
+                <EnhancedThemeProvider>
+                  <DynamicAppConfig />
+                  <RouterProvider router={router} />
+                  <ReactQueryDevtools initialIsOpen={false} />
+                  <Toaster
+                    position="top-right"
+                    toastOptions={{
+                      duration: 4000,
+                      style: {
+                        background: '#363636',
+                        color: '#fff',
+                      },
+                    }}
+                  />
+                  {/* Debug components */}
+                  {/* <SettingsDebugger /> */}
+                </EnhancedThemeProvider>
+              </SettingsProvider>
+            </QueryClientProvider>
           </SessionProvider>
         </HelmetProvider>
       </ReduxProvider>

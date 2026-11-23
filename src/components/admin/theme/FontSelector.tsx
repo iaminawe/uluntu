@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Type, 
-  Search, 
-  Download, 
-  Check,
-  X,
-  AlertCircle,
-  Loader2
-} from 'lucide-react';
+import { Type, Search, Download, Check, X, AlertCircle, Loader2 } from 'lucide-react';
 import { Theme, GoogleFont } from './types';
 
 interface FontSelectorProps {
@@ -26,7 +18,7 @@ const popularFonts = [
   { family: 'Playfair Display', category: 'serif' },
   { family: 'Merriweather', category: 'serif' },
   { family: 'Source Code Pro', category: 'monospace' },
-  { family: 'Fira Code', category: 'monospace' }
+  { family: 'Fira Code', category: 'monospace' },
 ];
 
 const fontCategories = [
@@ -35,7 +27,7 @@ const fontCategories = [
   { value: 'serif', label: 'Serif' },
   { value: 'display', label: 'Display' },
   { value: 'handwriting', label: 'Handwriting' },
-  { value: 'monospace', label: 'Monospace' }
+  { value: 'monospace', label: 'Monospace' },
 ];
 
 export default function FontSelector({ typography, onChange }: FontSelectorProps) {
@@ -57,26 +49,31 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
     }
   }, [typography.fontFamily]);
 
-  const loadGoogleFont = useCallback((fontFamily: string) => {
-    if (loadedFonts.has(fontFamily)) return;
+  const loadGoogleFont = useCallback(
+    (fontFamily: string) => {
+      if (loadedFonts.has(fontFamily)) return;
 
-    const link = document.createElement('link');
-    link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(' ', '+')}:wght@300;400;500;600;700&display=swap`;
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
+      const link = document.createElement('link');
+      link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(' ', '+')}:wght@300;400;500;600;700&display=swap`;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
 
-    setLoadedFonts(prev => new Set(prev).add(fontFamily));
-  }, [loadedFonts]);
+      setLoadedFonts(prev => new Set(prev).add(fontFamily));
+    },
+    [loadedFonts]
+  );
 
   const fetchGoogleFonts = useCallback(async () => {
     if (GOOGLE_FONTS_API_KEY === 'demo-key') {
       // Use popular fonts as fallback when no API key
-      setGoogleFonts(popularFonts.map(font => ({
-        family: font.family,
-        variants: ['regular', '500', '600', '700'],
-        subsets: ['latin'],
-        category: font.category
-      })));
+      setGoogleFonts(
+        popularFonts.map(font => ({
+          family: font.family,
+          variants: ['regular', '500', '600', '700'],
+          subsets: ['latin'],
+          category: font.category,
+        }))
+      );
       return;
     }
 
@@ -87,19 +84,21 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
       const response = await fetch(
         `https://www.googleapis.com/webfonts/v1/webfonts?key=${GOOGLE_FONTS_API_KEY}&sort=popularity`
       );
-      
+
       if (!response.ok) throw new Error('Failed to fetch fonts');
-      
+
       const data = await response.json();
       setGoogleFonts(data.items.slice(0, 100)); // Limit to top 100 fonts
     } catch (err) {
       setError('Failed to load Google Fonts. Using popular fonts instead.');
-      setGoogleFonts(popularFonts.map(font => ({
-        family: font.family,
-        variants: ['regular', '500', '600', '700'],
-        subsets: ['latin'],
-        category: font.category
-      })));
+      setGoogleFonts(
+        popularFonts.map(font => ({
+          family: font.family,
+          variants: ['regular', '500', '600', '700'],
+          subsets: ['latin'],
+          category: font.category,
+        }))
+      );
     } finally {
       setLoading(false);
     }
@@ -115,40 +114,52 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
     return matchesSearch && matchesCategory;
   });
 
-  const handleFontChange = useCallback((fontFamily: string) => {
-    loadGoogleFont(fontFamily);
-    onChange({ 
-      fontFamily,
-      fontFallback: `${fontFamily}, system-ui, -apple-system, sans-serif`
-    });
-  }, [onChange, loadGoogleFont]);
+  const handleFontChange = useCallback(
+    (fontFamily: string) => {
+      loadGoogleFont(fontFamily);
+      onChange({
+        fontFamily,
+        fontFallback: `${fontFamily}, system-ui, -apple-system, sans-serif`,
+      });
+    },
+    [onChange, loadGoogleFont]
+  );
 
-  const handleFontSizeChange = useCallback((size: keyof Theme['typography']['fontSize'], value: string) => {
-    onChange({
-      fontSize: {
-        ...typography.fontSize,
-        [size]: value
-      }
-    });
-  }, [typography.fontSize, onChange]);
+  const handleFontSizeChange = useCallback(
+    (size: keyof Theme['typography']['fontSize'], value: string) => {
+      onChange({
+        fontSize: {
+          ...typography.fontSize,
+          [size]: value,
+        },
+      });
+    },
+    [typography.fontSize, onChange]
+  );
 
-  const handleFontWeightChange = useCallback((weight: keyof Theme['typography']['fontWeight'], value: number) => {
-    onChange({
-      fontWeight: {
-        ...typography.fontWeight,
-        [weight]: value
-      }
-    });
-  }, [typography.fontWeight, onChange]);
+  const handleFontWeightChange = useCallback(
+    (weight: keyof Theme['typography']['fontWeight'], value: number) => {
+      onChange({
+        fontWeight: {
+          ...typography.fontWeight,
+          [weight]: value,
+        },
+      });
+    },
+    [typography.fontWeight, onChange]
+  );
 
-  const handleLineHeightChange = useCallback((type: keyof Theme['typography']['lineHeight'], value: number) => {
-    onChange({
-      lineHeight: {
-        ...typography.lineHeight,
-        [type]: value
-      }
-    });
-  }, [typography.lineHeight, onChange]);
+  const handleLineHeightChange = useCallback(
+    (type: keyof Theme['typography']['lineHeight'], value: number) => {
+      onChange({
+        lineHeight: {
+          ...typography.lineHeight,
+          [type]: value,
+        },
+      });
+    },
+    [typography.lineHeight, onChange]
+  );
 
   return (
     <div className="space-y-6">
@@ -158,7 +169,7 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
           <h4 className="font-medium text-gray-900">Font Family</h4>
           <p className="text-sm text-gray-500 mt-1">Choose from Google Fonts library</p>
         </div>
-        
+
         <div className="p-6 space-y-4">
           {/* Search and Filter */}
           <div className="flex flex-col sm:flex-row gap-4">
@@ -167,15 +178,15 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search fonts..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
               />
             </div>
-            
+
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={e => setSelectedCategory(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             >
               {fontCategories.map(category => (
@@ -191,7 +202,7 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-orange-900">Current Font</p>
-                <p 
+                <p
                   className="text-2xl mt-1"
                   style={{ fontFamily: `${typography.fontFamily}, ${typography.fontFallback}` }}
                 >
@@ -216,14 +227,12 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-              {filteredFonts.map((font) => (
+              {filteredFonts.map(font => (
                 <button
                   key={font.family}
                   onClick={() => handleFontChange(font.family)}
                   className={`p-4 text-left border rounded-lg transition-all hover:border-orange-300 hover:bg-orange-50 ${
-                    typography.fontFamily === font.family 
-                      ? 'border-orange-500 bg-orange-50' 
-                      : 'border-gray-200'
+                    typography.fontFamily === font.family ? 'border-orange-500 bg-orange-50' : 'border-gray-200'
                   }`}
                   style={{ fontFamily: loadedFonts.has(font.family) ? font.family : 'inherit' }}
                 >
@@ -239,13 +248,11 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
 
           {/* Preview Text Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Preview Text
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Preview Text</label>
             <input
               type="text"
               value={previewText}
-              onChange={(e) => setPreviewText(e.target.value)}
+              onChange={e => setPreviewText(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
               placeholder="Enter preview text..."
             />
@@ -259,7 +266,7 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
           <h4 className="font-medium text-gray-900">Font Sizes</h4>
           <p className="text-sm text-gray-500 mt-1">Configure text sizes for different elements</p>
         </div>
-        
+
         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Object.entries(typography.fontSize).map(([key, value]) => (
             <div key={key}>
@@ -269,7 +276,7 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
               <input
                 type="text"
                 value={value}
-                onChange={(e) => handleFontSizeChange(key as keyof Theme['typography']['fontSize'], e.target.value)}
+                onChange={e => handleFontSizeChange(key as keyof Theme['typography']['fontSize'], e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                 placeholder="16px"
               />
@@ -284,7 +291,7 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
           <h4 className="font-medium text-gray-900">Font Weights</h4>
           <p className="text-sm text-gray-500 mt-1">Set weight values for text emphasis</p>
         </div>
-        
+
         <div className="p-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {Object.entries(typography.fontWeight).map(([key, value]) => (
             <div key={key}>
@@ -293,7 +300,9 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
               </label>
               <select
                 value={value}
-                onChange={(e) => handleFontWeightChange(key as keyof Theme['typography']['fontWeight'], parseInt(e.target.value))}
+                onChange={e =>
+                  handleFontWeightChange(key as keyof Theme['typography']['fontWeight'], parseInt(e.target.value))
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
               >
                 <option value="300">300 (Light)</option>
@@ -315,7 +324,7 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
           <h4 className="font-medium text-gray-900">Line Heights</h4>
           <p className="text-sm text-gray-500 mt-1">Control spacing between lines of text</p>
         </div>
-        
+
         <div className="p-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
           {Object.entries(typography.lineHeight).map(([key, value]) => (
             <div key={key}>
@@ -325,7 +334,9 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
               <input
                 type="number"
                 value={value}
-                onChange={(e) => handleLineHeightChange(key as keyof Theme['typography']['lineHeight'], parseFloat(e.target.value))}
+                onChange={e =>
+                  handleLineHeightChange(key as keyof Theme['typography']['lineHeight'], parseFloat(e.target.value))
+                }
                 step="0.05"
                 min="1"
                 max="3"
@@ -339,33 +350,78 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
       {/* Typography Preview */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h4 className="font-medium text-gray-900 mb-4">Typography Preview</h4>
-        
-        <div 
-          className="space-y-4"
-          style={{ fontFamily: `${typography.fontFamily}, ${typography.fontFallback}` }}
-        >
-          <div style={{ fontSize: typography.fontSize['4xl'], fontWeight: typography.fontWeight.bold, lineHeight: typography.lineHeight.tight }}>
+
+        <div className="space-y-4" style={{ fontFamily: `${typography.fontFamily}, ${typography.fontFallback}` }}>
+          <div
+            style={{
+              fontSize: typography.fontSize['4xl'],
+              fontWeight: typography.fontWeight.bold,
+              lineHeight: typography.lineHeight.tight,
+            }}
+          >
             Heading 1 - {typography.fontSize['4xl']}
           </div>
-          <div style={{ fontSize: typography.fontSize['3xl'], fontWeight: typography.fontWeight.semibold, lineHeight: typography.lineHeight.tight }}>
+          <div
+            style={{
+              fontSize: typography.fontSize['3xl'],
+              fontWeight: typography.fontWeight.semibold,
+              lineHeight: typography.lineHeight.tight,
+            }}
+          >
             Heading 2 - {typography.fontSize['3xl']}
           </div>
-          <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: typography.fontWeight.semibold, lineHeight: typography.lineHeight.normal }}>
+          <div
+            style={{
+              fontSize: typography.fontSize['2xl'],
+              fontWeight: typography.fontWeight.semibold,
+              lineHeight: typography.lineHeight.normal,
+            }}
+          >
             Heading 3 - {typography.fontSize['2xl']}
           </div>
-          <div style={{ fontSize: typography.fontSize.xl, fontWeight: typography.fontWeight.medium, lineHeight: typography.lineHeight.normal }}>
+          <div
+            style={{
+              fontSize: typography.fontSize.xl,
+              fontWeight: typography.fontWeight.medium,
+              lineHeight: typography.lineHeight.normal,
+            }}
+          >
             Heading 4 - {typography.fontSize.xl}
           </div>
-          <div style={{ fontSize: typography.fontSize.lg, fontWeight: typography.fontWeight.medium, lineHeight: typography.lineHeight.normal }}>
+          <div
+            style={{
+              fontSize: typography.fontSize.lg,
+              fontWeight: typography.fontWeight.medium,
+              lineHeight: typography.lineHeight.normal,
+            }}
+          >
             Heading 5 - {typography.fontSize.lg}
           </div>
-          <p style={{ fontSize: typography.fontSize.base, fontWeight: typography.fontWeight.normal, lineHeight: typography.lineHeight.relaxed }}>
+          <p
+            style={{
+              fontSize: typography.fontSize.base,
+              fontWeight: typography.fontWeight.normal,
+              lineHeight: typography.lineHeight.relaxed,
+            }}
+          >
             Body text - This is how your regular paragraph text will look. {previewText}
           </p>
-          <p style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.normal, lineHeight: typography.lineHeight.normal }}>
+          <p
+            style={{
+              fontSize: typography.fontSize.sm,
+              fontWeight: typography.fontWeight.normal,
+              lineHeight: typography.lineHeight.normal,
+            }}
+          >
             Small text - {typography.fontSize.sm}
           </p>
-          <p style={{ fontSize: typography.fontSize.xs, fontWeight: typography.fontWeight.normal, lineHeight: typography.lineHeight.normal }}>
+          <p
+            style={{
+              fontSize: typography.fontSize.xs,
+              fontWeight: typography.fontWeight.normal,
+              lineHeight: typography.lineHeight.normal,
+            }}
+          >
             Extra small text - {typography.fontSize.xs}
           </p>
         </div>

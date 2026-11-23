@@ -23,7 +23,7 @@ const ShareModal = ({ article, onClose }: ShareModalProps) => {
         navigator.clipboard.writeText(articleUrl);
         alert('Link copied to clipboard!');
         onClose();
-      }
+      },
     },
     {
       name: 'Email',
@@ -36,7 +36,7 @@ const ShareModal = ({ article, onClose }: ShareModalProps) => {
       handler: () => {
         window.location.href = `mailto:?subject=${encodeURIComponent(article.title)}&body=${encodeURIComponent(articleUrl)}`;
         onClose();
-      }
+      },
     },
     {
       name: 'Twitter',
@@ -46,9 +46,12 @@ const ShareModal = ({ article, onClose }: ShareModalProps) => {
         </svg>
       ),
       handler: () => {
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(articleUrl)}`, '_blank');
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(articleUrl)}`,
+          '_blank'
+        );
         onClose();
-      }
+      },
     },
     {
       name: 'LinkedIn',
@@ -58,10 +61,13 @@ const ShareModal = ({ article, onClose }: ShareModalProps) => {
         </svg>
       ),
       handler: () => {
-        window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(articleUrl)}&title=${encodeURIComponent(article.title)}`, '_blank');
+        window.open(
+          `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(articleUrl)}&title=${encodeURIComponent(article.title)}`,
+          '_blank'
+        );
         onClose();
-      }
-    }
+      },
+    },
   ];
 
   return (
@@ -69,7 +75,10 @@ const ShareModal = ({ article, onClose }: ShareModalProps) => {
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-sm w-full mx-4">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Share Article</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>

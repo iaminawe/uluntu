@@ -15,7 +15,7 @@ const MinimalTiptap = ({
   label,
   required = false,
   id,
-  className = ''
+  className = '',
 }: RichTextEditorProps) => {
   const [showSlashMenu, setShowSlashMenu] = useState(false);
   const [slashPosition, setSlashPosition] = useState<{ top: number; left: number } | null>(null);
@@ -28,7 +28,7 @@ const MinimalTiptap = ({
         },
       }),
       Placeholder.configure({
-        placeholder: placeholder || 'Type \'/\' for commands or start writing...',
+        placeholder: placeholder || "Type '/' for commands or start writing...",
       }),
       Image.configure({
         HTMLAttributes: {
@@ -41,17 +41,17 @@ const MinimalTiptap = ({
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange(html);
-      
+
       // Check for slash command
       const { from } = editor.state.selection;
       const textBefore = editor.state.doc.textBetween(from - 1, from);
-      
+
       if (textBefore === '/') {
         // Show slash menu
         const coords = editor.view.coordsAtPos(from);
         setSlashPosition({
           top: coords.bottom + 5,
-          left: coords.left
+          left: coords.left,
         });
         setShowSlashMenu(true);
       } else {
@@ -70,16 +70,18 @@ const MinimalTiptap = ({
     }
   };
 
-
-
   const handleSlashCommand = (command: string) => {
     if (!editor) return;
-    
+
     const { from } = editor.state.selection;
-    
+
     // Delete the slash
-    editor.chain().focus().deleteRange({ from: from - 1, to: from }).run();
-    
+    editor
+      .chain()
+      .focus()
+      .deleteRange({ from: from - 1, to: from })
+      .run();
+
     // Execute command
     switch (command) {
       case 'heading1':
@@ -106,7 +108,7 @@ const MinimalTiptap = ({
       default:
         editor.chain().focus().setParagraph().run();
     }
-    
+
     setShowSlashMenu(false);
     setSlashPosition(null);
   };
@@ -118,14 +120,10 @@ const MinimalTiptap = ({
     }
   }, [editor, value]);
 
-
-
   if (!editor) {
     return (
       <div className={className}>
-        <div className="bg-yellow-100 p-2 text-sm text-yellow-800 mb-2">
-          Editor is loading...
-        </div>
+        <div className="bg-yellow-100 p-2 text-sm text-yellow-800 mb-2">Editor is loading...</div>
         <div className="w-full h-32 bg-gray-100 border border-gray-300 rounded animate-pulse"></div>
       </div>
     );
@@ -134,24 +132,17 @@ const MinimalTiptap = ({
   return (
     <div className={className}>
       {label && (
-        <label 
-          htmlFor={id} 
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-        >
+        <label htmlFor={id} className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
-      
-      <div 
+
+      <div
         className="border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 relative overflow-visible"
         style={{ minHeight: height }}
       >
-        <EditorContent 
-          editor={editor}
-          className="tiptap-editor"
-        />
-        
+        <EditorContent editor={editor} className="tiptap-editor" />
+
         {/* Selection Toolbar (Bubble Menu) */}
         <BubbleMenu
           editor={editor}
@@ -166,7 +157,7 @@ const MinimalTiptap = ({
           >
             <strong>B</strong>
           </button>
-          
+
           <button
             onClick={() => editor.chain().focus().toggleItalic().run()}
             className={`px-2 py-1 rounded text-sm font-medium hover:bg-gray-700 ${
@@ -175,7 +166,7 @@ const MinimalTiptap = ({
           >
             <em>I</em>
           </button>
-          
+
           <button
             onClick={() => editor.chain().focus().toggleStrike().run()}
             className={`px-2 py-1 rounded text-sm font-medium hover:bg-gray-700 ${
@@ -184,9 +175,9 @@ const MinimalTiptap = ({
           >
             <span style={{ textDecoration: 'line-through' }}>S</span>
           </button>
-          
+
           <div className="w-px h-4 bg-gray-600 mx-1"></div>
-          
+
           <button
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
             className={`px-2 py-1 rounded text-sm font-medium hover:bg-gray-700 ${
@@ -195,7 +186,7 @@ const MinimalTiptap = ({
           >
             H1
           </button>
-          
+
           <button
             onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
             className={`px-2 py-1 rounded text-sm font-medium hover:bg-gray-700 ${
@@ -204,7 +195,7 @@ const MinimalTiptap = ({
           >
             H2
           </button>
-          
+
           <button
             onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
             className={`px-2 py-1 rounded text-sm font-medium hover:bg-gray-700 ${
@@ -213,9 +204,9 @@ const MinimalTiptap = ({
           >
             H3
           </button>
-          
+
           <div className="w-px h-4 bg-gray-600 mx-1"></div>
-          
+
           <button
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             className={`px-2 py-1 rounded text-sm font-medium hover:bg-gray-700 ${
@@ -224,7 +215,7 @@ const MinimalTiptap = ({
           >
             •
           </button>
-          
+
           <button
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
             className={`px-2 py-1 rounded text-sm font-medium hover:bg-gray-700 ${
@@ -233,7 +224,7 @@ const MinimalTiptap = ({
           >
             1.
           </button>
-          
+
           <button
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
             className={`px-2 py-1 rounded text-sm font-medium hover:bg-gray-700 ${
@@ -242,30 +233,27 @@ const MinimalTiptap = ({
           >
             "
           </button>
-          
+
           <div className="w-px h-4 bg-gray-600 mx-1"></div>
-          
-          <button
-            onClick={addImage}
-            className="px-2 py-1 rounded text-sm font-medium hover:bg-gray-700"
-          >
+
+          <button onClick={addImage} className="px-2 py-1 rounded text-sm font-medium hover:bg-gray-700">
             🖼️
           </button>
         </BubbleMenu>
       </div>
-      
+
       {/* Slash Command Menu */}
       {showSlashMenu && slashPosition && (
-        <div 
+        <div
           className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 w-64"
-          style={{ 
-            top: slashPosition.top, 
+          style={{
+            top: slashPosition.top,
             left: slashPosition.left,
-            position: 'fixed'
+            position: 'fixed',
           }}
         >
           <div className="text-xs text-gray-500 mb-2 px-2">Choose a block type:</div>
-          
+
           <button
             className="w-full text-left px-2 py-2 hover:bg-blue-50 rounded flex items-center space-x-3"
             onClick={() => handleSlashCommand('paragraph')}
@@ -276,7 +264,7 @@ const MinimalTiptap = ({
               <div className="text-xs text-gray-500">Plain text paragraph</div>
             </div>
           </button>
-          
+
           <button
             className="w-full text-left px-2 py-2 hover:bg-blue-50 rounded flex items-center space-x-3"
             onClick={() => handleSlashCommand('heading1')}
@@ -287,7 +275,7 @@ const MinimalTiptap = ({
               <div className="text-xs text-gray-500">Large section heading</div>
             </div>
           </button>
-          
+
           <button
             className="w-full text-left px-2 py-2 hover:bg-blue-50 rounded flex items-center space-x-3"
             onClick={() => handleSlashCommand('heading2')}
@@ -298,7 +286,7 @@ const MinimalTiptap = ({
               <div className="text-xs text-gray-500">Medium section heading</div>
             </div>
           </button>
-          
+
           <button
             className="w-full text-left px-2 py-2 hover:bg-blue-50 rounded flex items-center space-x-3"
             onClick={() => handleSlashCommand('bulletList')}
@@ -309,7 +297,7 @@ const MinimalTiptap = ({
               <div className="text-xs text-gray-500">Unordered list with bullets</div>
             </div>
           </button>
-          
+
           <button
             className="w-full text-left px-2 py-2 hover:bg-blue-50 rounded flex items-center space-x-3"
             onClick={() => handleSlashCommand('orderedList')}
@@ -320,7 +308,7 @@ const MinimalTiptap = ({
               <div className="text-xs text-gray-500">Ordered list with numbers</div>
             </div>
           </button>
-          
+
           <button
             className="w-full text-left px-2 py-2 hover:bg-blue-50 rounded flex items-center space-x-3"
             onClick={() => handleSlashCommand('blockquote')}
@@ -331,7 +319,7 @@ const MinimalTiptap = ({
               <div className="text-xs text-gray-500">Block quotation</div>
             </div>
           </button>
-          
+
           <button
             className="w-full text-left px-2 py-2 hover:bg-blue-50 rounded flex items-center space-x-3"
             onClick={() => handleSlashCommand('image')}
@@ -344,7 +332,6 @@ const MinimalTiptap = ({
           </button>
         </div>
       )}
-
 
       <style>{`
         .tiptap-editor {

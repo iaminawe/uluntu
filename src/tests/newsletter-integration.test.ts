@@ -13,9 +13,9 @@ jest.mock('@/lib/supabase', () => ({
         eq: jest.fn(() => ({
           single: jest.fn(() => ({
             data: null,
-            error: { code: 'PGRST116' } // Not found
-          }))
-        }))
+            error: { code: 'PGRST116' }, // Not found
+          })),
+        })),
       })),
       insert: jest.fn(() => ({
         select: jest.fn(() => ({
@@ -29,39 +29,41 @@ jest.mock('@/lib/supabase', () => ({
                 content_types: ['events', 'news'],
                 format: 'digest',
                 location_filter: true,
-                language: 'en'
+                language: 'en',
               },
               subscription_token: 'test-token',
               confirmation_token: 'test-confirm-token',
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
             },
-            error: null
-          }))
-        }))
+            error: null,
+          })),
+        })),
       })),
       update: jest.fn(() => ({
         eq: jest.fn(() => ({
           select: jest.fn(() => ({
-            data: [{
-              id: 'test-sub-id',
-              email: 'test@example.com',
-              status: 'active',
-              confirmed_at: new Date().toISOString()
-            }],
-            error: null
-          }))
-        }))
-      }))
-    }))
-  }
+            data: [
+              {
+                id: 'test-sub-id',
+                email: 'test@example.com',
+                status: 'active',
+                confirmed_at: new Date().toISOString(),
+              },
+            ],
+            error: null,
+          })),
+        })),
+      })),
+    })),
+  },
 }));
 
 // Mock the email service with real implementation test
 jest.mock('@/services/resend', () => ({
   resendService: {
-    sendConfirmationEmail: jest.fn(() => Promise.resolve(true))
-  }
+    sendConfirmationEmail: jest.fn(() => Promise.resolve(true)),
+  },
 }));
 
 describe('Newsletter Integration', () => {
@@ -78,8 +80,8 @@ describe('Newsletter Integration', () => {
           content_types: ['events', 'news'] as const,
           format: 'digest' as const,
           location_filter: true,
-          language: 'en' as const
-        }
+          language: 'en' as const,
+        },
       };
 
       const result = await newsletterSubscriptionApi.subscribe(subscriptionRequest);
@@ -92,9 +94,9 @@ describe('Newsletter Integration', () => {
 
     it('should confirm subscription with valid token', async () => {
       const confirmationToken = 'test-confirm-token';
-      
+
       const result = await newsletterSubscriptionApi.confirmSubscription(confirmationToken);
-      
+
       expect(result).toBe(true);
     });
   });
@@ -109,8 +111,8 @@ describe('Newsletter Integration', () => {
           content_types: ['events', 'news', 'opportunities'] as const,
           format: 'digest' as const,
           location_filter: true,
-          language: 'en' as const
-        }
+          language: 'en' as const,
+        },
       };
 
       const result = await newsletterSubscriptionApi.subscribe(memberSubscriptionRequest);
@@ -122,7 +124,7 @@ describe('Newsletter Integration', () => {
 
     it('should load existing subscription preferences', async () => {
       const existingSubscription = await newsletterSubscriptionApi.getSubscription('test@example.com');
-      
+
       // Should handle case where no subscription exists
       expect(existingSubscription).toBeNull();
     });
@@ -134,18 +136,18 @@ describe('Newsletter Integration', () => {
           content_types: ['events', 'marketplace'] as const,
           format: 'full' as const,
           location_filter: false,
-          language: 'en' as const
-        }
+          language: 'en' as const,
+        },
       };
 
       const result = await newsletterSubscriptionApi.updatePreferences('test-token', updateRequest);
-      
+
       expect(result).toBeDefined();
     });
 
     it('should allow unsubscribing', async () => {
       const result = await newsletterSubscriptionApi.unsubscribe('test-token');
-      
+
       expect(result).toBe(true);
     });
   });
@@ -153,7 +155,7 @@ describe('Newsletter Integration', () => {
   describe('Content Type Preferences', () => {
     it('should handle all available content types', async () => {
       const allContentTypes = ['events', 'news', 'opportunities', 'marketplace', 'members'];
-      
+
       const subscriptionRequest = {
         email: 'all-content@example.com',
         preferences: {
@@ -161,8 +163,8 @@ describe('Newsletter Integration', () => {
           content_types: allContentTypes as any,
           format: 'digest' as const,
           location_filter: true,
-          language: 'en' as const
-        }
+          language: 'en' as const,
+        },
       };
 
       const result = await newsletterSubscriptionApi.subscribe(subscriptionRequest);
@@ -173,7 +175,7 @@ describe('Newsletter Integration', () => {
 
     it('should handle minimal content types', async () => {
       const minimalContentTypes = ['events'];
-      
+
       const subscriptionRequest = {
         email: 'minimal@example.com',
         preferences: {
@@ -181,8 +183,8 @@ describe('Newsletter Integration', () => {
           content_types: minimalContentTypes as any,
           format: 'digest' as const,
           location_filter: true,
-          language: 'en' as const
-        }
+          language: 'en' as const,
+        },
       };
 
       const result = await newsletterSubscriptionApi.subscribe(subscriptionRequest);
@@ -193,7 +195,7 @@ describe('Newsletter Integration', () => {
   });
 
   describe('Frequency Options', () => {
-    it.each(['daily', 'weekly', 'monthly'])('should handle %s frequency', async (frequency) => {
+    it.each(['daily', 'weekly', 'monthly'])('should handle %s frequency', async frequency => {
       const subscriptionRequest = {
         email: `${frequency}@example.com`,
         preferences: {
@@ -201,8 +203,8 @@ describe('Newsletter Integration', () => {
           content_types: ['events', 'news'] as const,
           format: 'digest' as const,
           location_filter: true,
-          language: 'en' as const
-        }
+          language: 'en' as const,
+        },
       };
 
       const result = await newsletterSubscriptionApi.subscribe(subscriptionRequest);

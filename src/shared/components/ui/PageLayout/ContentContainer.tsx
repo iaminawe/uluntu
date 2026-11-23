@@ -13,14 +13,14 @@ const ContentContainer: React.FC<ContentContainerProps> = ({
 }) => {
   // Map the maxWidth prop to corresponding Tailwind classes
   const maxWidthClass = {
-    'sm': 'max-w-sm',
-    'md': 'max-w-md',
-    'lg': 'max-w-lg',
-    'xl': 'max-w-xl',
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-xl',
     '2xl': 'max-w-2xl',
     '3xl': 'max-w-3xl',
     '7xl': 'max-w-7xl',
-    'full': 'max-w-full'
+    full: 'max-w-full',
   }[maxWidth];
 
   // Determine padding classes
@@ -28,9 +28,7 @@ const ContentContainer: React.FC<ContentContainerProps> = ({
 
   return (
     <div className={`container mx-auto ${paddingClass} ${className}`}>
-      <div className={`${maxWidthClass} mx-auto`}>
-        {children}
-      </div>
+      <div className={`${maxWidthClass} mx-auto`}>{children}</div>
     </div>
   );
 };

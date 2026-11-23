@@ -21,22 +21,22 @@ jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
     storage: {
-      from: jest.fn()
-    }
-  }
+      from: jest.fn(),
+    },
+  },
 }));
 
 jest.mock('../utils', () => ({
   validateImageFile: jest.fn(() => ({ valid: true })),
   generateThumbnail: jest.fn(() => Promise.resolve('blob:thumbnail-url')),
-  formatFileSize: jest.fn((size) => `${Math.round(size / 1024)} KB`)
+  formatFileSize: jest.fn(size => `${Math.round(size / 1024)} KB`),
 }));
 
 // Mock store
 const createMockStore = (initialState = {}) => {
   return configureStore({
     reducer: {
-      gallery: galleryReducer
+      gallery: galleryReducer,
     },
     preloadedState: {
       gallery: {
@@ -47,9 +47,9 @@ const createMockStore = (initialState = {}) => {
         filters: {},
         status: 'idle',
         error: null,
-        ...initialState
-      }
-    }
+        ...initialState,
+      },
+    },
   });
 };
 
@@ -72,7 +72,7 @@ const mockPhoto: Photo = {
   height: 1080,
   sort_order: 0,
   visibility: 'visible',
-  created_at: new Date().toISOString()
+  created_at: new Date().toISOString(),
 };
 
 const mockGallery: Gallery = {
@@ -89,17 +89,13 @@ const mockGallery: Gallery = {
   is_featured: false,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
-  photos: [mockPhoto]
+  photos: [mockPhoto],
 };
 
 // Helper to render with Redux store
 const renderWithStore = (component: React.ReactElement, storeState = {}) => {
   const store = createMockStore(storeState);
-  return render(
-    <Provider store={store}>
-      {component}
-    </Provider>
-  );
+  return render(<Provider store={store}>{component}</Provider>);
 };
 
 describe('Gallery Components', () => {
@@ -110,13 +106,8 @@ describe('Gallery Components', () => {
   describe('PhotoUpload Component', () => {
     test('renders upload interface', () => {
       const mockOnUpload = jest.fn();
-      
-      renderWithStore(
-        <PhotoUpload 
-          galleryId="test-gallery" 
-          onUpload={mockOnUpload} 
-        />
-      );
+
+      renderWithStore(<PhotoUpload galleryId="test-gallery" onUpload={mockOnUpload} />);
 
       expect(screen.getByText(/drag and drop photos here/i)).toBeInTheDocument();
       expect(screen.getByText(/select photos/i)).toBeInTheDocument();
@@ -125,20 +116,15 @@ describe('Gallery Components', () => {
     test('handles file selection', async () => {
       const user = userEvent.setup();
       const mockOnUpload = jest.fn();
-      
-      renderWithStore(
-        <PhotoUpload 
-          galleryId="test-gallery" 
-          onUpload={mockOnUpload} 
-        />
-      );
+
+      renderWithStore(<PhotoUpload galleryId="test-gallery" onUpload={mockOnUpload} />);
 
       const fileInput = screen.getByRole('button', { name: /select photos/i });
-      
+
       // Create mock files
       const files = [
         new File(['content1'], 'photo1.jpg', { type: 'image/jpeg' }),
-        new File(['content2'], 'photo2.jpg', { type: 'image/jpeg' })
+        new File(['content2'], 'photo2.jpg', { type: 'image/jpeg' }),
       ];
 
       // Mock the file input change
@@ -148,7 +134,7 @@ describe('Gallery Components', () => {
           value: files,
           writable: false,
         });
-        
+
         fireEvent.change(input);
       }
 
@@ -160,29 +146,24 @@ describe('Gallery Components', () => {
     test('validates file types during upload', async () => {
       const mockOnUpload = jest.fn();
       const { validateImageFile } = require('../utils');
-      
+
       // Mock validation failure
       validateImageFile.mockReturnValue({
         valid: false,
-        error: 'Invalid file type'
+        error: 'Invalid file type',
       });
-      
-      renderWithStore(
-        <PhotoUpload 
-          galleryId="test-gallery" 
-          onUpload={mockOnUpload} 
-        />
-      );
+
+      renderWithStore(<PhotoUpload galleryId="test-gallery" onUpload={mockOnUpload} />);
 
       const input = document.querySelector('input[type="file"]') as HTMLInputElement;
       const invalidFile = new File(['content'], 'document.pdf', { type: 'application/pdf' });
-      
+
       if (input) {
         Object.defineProperty(input, 'files', {
           value: [invalidFile],
           writable: false,
         });
-        
+
         fireEvent.change(input);
       }
 
@@ -199,17 +180,13 @@ describe('Gallery Components', () => {
             photoId: 'photo-1',
             fileName: 'test.jpg',
             progress: 50,
-            status: 'uploading' as const
-          }
-        }
+            status: 'uploading' as const,
+          },
+        },
       };
-      
+
       renderWithStore(
-        <PhotoUpload 
-          galleryId="test-gallery" 
-          onUpload={mockOnUpload}
-          isUploading={true}
-        />,
+        <PhotoUpload galleryId="test-gallery" onUpload={mockOnUpload} isUploading={true} />,
         storeWithProgress
       );
 
@@ -218,19 +195,12 @@ describe('Gallery Components', () => {
 
     test('handles drag and drop', async () => {
       const mockOnUpload = jest.fn();
-      
-      renderWithStore(
-        <PhotoUpload 
-          galleryId="test-gallery" 
-          onUpload={mockOnUpload} 
-        />
-      );
+
+      renderWithStore(<PhotoUpload galleryId="test-gallery" onUpload={mockOnUpload} />);
 
       const dropZone = screen.getByText(/drag and drop photos here/i).closest('div');
-      
-      const files = [
-        new File(['content'], 'dropped.jpg', { type: 'image/jpeg' })
-      ];
+
+      const files = [new File(['content'], 'dropped.jpg', { type: 'image/jpeg' })];
 
       if (dropZone) {
         fireEvent.dragOver(dropZone);
@@ -239,8 +209,8 @@ describe('Gallery Components', () => {
         fireEvent.drop(dropZone, {
           dataTransfer: {
             files,
-            types: ['Files']
-          }
+            types: ['Files'],
+          },
         });
       }
 
@@ -253,14 +223,8 @@ describe('Gallery Components', () => {
   describe('PhotoCard Component', () => {
     test('renders photo information', () => {
       const mockOnSelect = jest.fn();
-      
-      render(
-        <PhotoCard 
-          photo={mockPhoto}
-          isSelected={false}
-          onSelect={mockOnSelect}
-        />
-      );
+
+      render(<PhotoCard photo={mockPhoto} isSelected={false} onSelect={mockOnSelect} />);
 
       expect(screen.getByText(mockPhoto.title!)).toBeInTheDocument();
       expect(screen.getByText(mockPhoto.description!)).toBeInTheDocument();
@@ -270,14 +234,8 @@ describe('Gallery Components', () => {
     test('handles photo selection', async () => {
       const user = userEvent.setup();
       const mockOnSelect = jest.fn();
-      
-      render(
-        <PhotoCard 
-          photo={mockPhoto}
-          isSelected={false}
-          onSelect={mockOnSelect}
-        />
-      );
+
+      render(<PhotoCard photo={mockPhoto} isSelected={false} onSelect={mockOnSelect} />);
 
       const selectButton = screen.getByRole('button', { name: /select/i });
       await user.click(selectButton);
@@ -287,14 +245,8 @@ describe('Gallery Components', () => {
 
     test('shows selected state', () => {
       const mockOnSelect = jest.fn();
-      
-      render(
-        <PhotoCard 
-          photo={mockPhoto}
-          isSelected={true}
-          onSelect={mockOnSelect}
-        />
-      );
+
+      render(<PhotoCard photo={mockPhoto} isSelected={true} onSelect={mockOnSelect} />);
 
       const card = screen.getByRole('article');
       expect(card).toHaveClass(/selected/i);
@@ -305,16 +257,10 @@ describe('Gallery Components', () => {
         ...mockPhoto,
         width: 1920,
         height: 1080,
-        file_size: 2048000
+        file_size: 2048000,
       };
 
-      render(
-        <PhotoCard 
-          photo={photoWithMetadata}
-          isSelected={false}
-          onSelect={() => {}}
-        />
-      );
+      render(<PhotoCard photo={photoWithMetadata} isSelected={false} onSelect={() => {}} />);
 
       expect(screen.getByText(/1920 × 1080/)).toBeInTheDocument();
       expect(screen.getByText(/2 MB/i)).toBeInTheDocument();
@@ -325,21 +271,16 @@ describe('Gallery Components', () => {
     const mockLightboxState = {
       isOpen: true,
       currentPhotoIndex: 0,
-      photos: [mockPhoto]
+      photos: [mockPhoto],
     };
 
     test('renders when open', () => {
       const mockOnClose = jest.fn();
       const mockOnNext = jest.fn();
       const mockOnPrev = jest.fn();
-      
+
       render(
-        <PhotoLightbox 
-          {...mockLightboxState}
-          onClose={mockOnClose}
-          onNext={mockOnNext}
-          onPrevious={mockOnPrev}
-        />
+        <PhotoLightbox {...mockLightboxState} onClose={mockOnClose} onNext={mockOnNext} onPrevious={mockOnPrev} />
       );
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -350,20 +291,13 @@ describe('Gallery Components', () => {
       const user = userEvent.setup();
       const mockOnNext = jest.fn();
       const mockOnPrev = jest.fn();
-      
+
       const multiPhotoState = {
         ...mockLightboxState,
-        photos: [mockPhoto, { ...mockPhoto, id: 'photo-2', title: 'Photo 2' }]
+        photos: [mockPhoto, { ...mockPhoto, id: 'photo-2', title: 'Photo 2' }],
       };
-      
-      render(
-        <PhotoLightbox 
-          {...multiPhotoState}
-          onClose={() => {}}
-          onNext={mockOnNext}
-          onPrevious={mockOnPrev}
-        />
-      );
+
+      render(<PhotoLightbox {...multiPhotoState} onClose={() => {}} onNext={mockOnNext} onPrevious={mockOnPrev} />);
 
       const nextButton = screen.getByRole('button', { name: /next/i });
       const prevButton = screen.getByRole('button', { name: /previous/i });
@@ -378,15 +312,8 @@ describe('Gallery Components', () => {
     test('closes on escape key', async () => {
       const user = userEvent.setup();
       const mockOnClose = jest.fn();
-      
-      render(
-        <PhotoLightbox 
-          {...mockLightboxState}
-          onClose={mockOnClose}
-          onNext={() => {}}
-          onPrevious={() => {}}
-        />
-      );
+
+      render(<PhotoLightbox {...mockLightboxState} onClose={mockOnClose} onNext={() => {}} onPrevious={() => {}} />);
 
       await user.keyboard('{Escape}');
       expect(mockOnClose).toHaveBeenCalled();
@@ -395,15 +322,8 @@ describe('Gallery Components', () => {
     test('closes on backdrop click', async () => {
       const user = userEvent.setup();
       const mockOnClose = jest.fn();
-      
-      render(
-        <PhotoLightbox 
-          {...mockLightboxState}
-          onClose={mockOnClose}
-          onNext={() => {}}
-          onPrevious={() => {}}
-        />
-      );
+
+      render(<PhotoLightbox {...mockLightboxState} onClose={mockOnClose} onNext={() => {}} onPrevious={() => {}} />);
 
       const backdrop = screen.getByRole('dialog');
       await user.click(backdrop);
@@ -412,15 +332,8 @@ describe('Gallery Components', () => {
 
     test('does not render when closed', () => {
       const closedState = { ...mockLightboxState, isOpen: false };
-      
-      render(
-        <PhotoLightbox 
-          {...closedState}
-          onClose={() => {}}
-          onNext={() => {}}
-          onPrevious={() => {}}
-        />
-      );
+
+      render(<PhotoLightbox {...closedState} onClose={() => {}} onNext={() => {}} onPrevious={() => {}} />);
 
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
@@ -430,16 +343,10 @@ describe('Gallery Components', () => {
     test('upload component integrates with gallery state', () => {
       const mockOnUpload = jest.fn();
       const storeWithGallery = {
-        currentGallery: mockGallery
+        currentGallery: mockGallery,
       };
-      
-      renderWithStore(
-        <PhotoUpload 
-          galleryId={mockGallery.id} 
-          onUpload={mockOnUpload} 
-        />,
-        storeWithGallery
-      );
+
+      renderWithStore(<PhotoUpload galleryId={mockGallery.id} onUpload={mockOnUpload} />, storeWithGallery);
 
       // Should render upload interface for existing gallery
       expect(screen.getByText(/select photos/i)).toBeInTheDocument();
@@ -448,17 +355,10 @@ describe('Gallery Components', () => {
     test('photo cards display correctly in gallery context', () => {
       const storeWithPhotos = {
         currentGallery: mockGallery,
-        selectedPhotos: [mockPhoto.id]
+        selectedPhotos: [mockPhoto.id],
       };
-      
-      renderWithStore(
-        <PhotoCard 
-          photo={mockPhoto}
-          isSelected={true}
-          onSelect={() => {}}
-        />,
-        storeWithPhotos
-      );
+
+      renderWithStore(<PhotoCard photo={mockPhoto} isSelected={true} onSelect={() => {}} />, storeWithPhotos);
 
       expect(screen.getByText(mockPhoto.title!)).toBeInTheDocument();
     });
@@ -467,13 +367,8 @@ describe('Gallery Components', () => {
   describe('Accessibility', () => {
     test('upload component has proper ARIA labels', () => {
       const mockOnUpload = jest.fn();
-      
-      renderWithStore(
-        <PhotoUpload 
-          galleryId="test-gallery" 
-          onUpload={mockOnUpload} 
-        />
-      );
+
+      renderWithStore(<PhotoUpload galleryId="test-gallery" onUpload={mockOnUpload} />);
 
       const fileInput = document.querySelector('input[type="file"]');
       expect(fileInput).toHaveAttribute('accept', 'image/*');
@@ -483,31 +378,25 @@ describe('Gallery Components', () => {
     test('photo cards are keyboard accessible', async () => {
       const user = userEvent.setup();
       const mockOnSelect = jest.fn();
-      
-      render(
-        <PhotoCard 
-          photo={mockPhoto}
-          isSelected={false}
-          onSelect={mockOnSelect}
-        />
-      );
+
+      render(<PhotoCard photo={mockPhoto} isSelected={false} onSelect={mockOnSelect} />);
 
       const selectButton = screen.getByRole('button');
       selectButton.focus();
-      
+
       await user.keyboard('{Enter}');
       expect(mockOnSelect).toHaveBeenCalled();
     });
 
     test('lightbox has proper focus management', () => {
       const mockOnClose = jest.fn();
-      
+
       render(
-        <PhotoLightbox 
+        <PhotoLightbox
           {...{
             isOpen: true,
             currentPhotoIndex: 0,
-            photos: [mockPhoto]
+            photos: [mockPhoto],
           }}
           onClose={mockOnClose}
           onNext={() => {}}
@@ -530,18 +419,12 @@ describe('Gallery Components', () => {
             fileName: 'failed.jpg',
             progress: 0,
             status: 'error' as const,
-            error: 'Upload failed'
-          }
-        }
+            error: 'Upload failed',
+          },
+        },
       };
-      
-      renderWithStore(
-        <PhotoUpload 
-          galleryId="test-gallery" 
-          onUpload={mockOnUpload} 
-        />,
-        storeWithError
-      );
+
+      renderWithStore(<PhotoUpload galleryId="test-gallery" onUpload={mockOnUpload} />, storeWithError);
 
       expect(screen.getByText(/upload failed/i)).toBeInTheDocument();
     });
@@ -550,16 +433,10 @@ describe('Gallery Components', () => {
       const photoWithoutImage = {
         ...mockPhoto,
         thumbnail_path: undefined,
-        storage_path: ''
+        storage_path: '',
       };
-      
-      render(
-        <PhotoCard 
-          photo={photoWithoutImage}
-          isSelected={false}
-          onSelect={() => {}}
-        />
-      );
+
+      render(<PhotoCard photo={photoWithoutImage} isSelected={false} onSelect={() => {}} />);
 
       // Should still render card content
       expect(screen.getByText(mockPhoto.title!)).toBeInTheDocument();

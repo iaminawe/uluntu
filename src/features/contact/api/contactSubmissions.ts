@@ -53,7 +53,7 @@ export class ContactSubmissionsAPI {
       if (!request.name || !request.email || !request.subject || !request.message) {
         return {
           success: false,
-          error: 'Missing required fields: name, email, subject, and message are required'
+          error: 'Missing required fields: name, email, subject, and message are required',
         };
       }
 
@@ -62,7 +62,7 @@ export class ContactSubmissionsAPI {
       if (!emailRegex.test(request.email)) {
         return {
           success: false,
-          error: 'Invalid email address format'
+          error: 'Invalid email address format',
         };
       }
 
@@ -71,13 +71,13 @@ export class ContactSubmissionsAPI {
       if (recentSubmissions.length >= 5) {
         return {
           success: false,
-          error: 'Too many submissions in the last 24 hours. Please try again later.'
+          error: 'Too many submissions in the last 24 hours. Please try again later.',
         };
       }
 
       // Auto-detect priority based on keywords
       const autoPriority = this.detectPriority(request.subject, request.message);
-      
+
       // Create submission
       const submissionData = {
         name: request.name.trim(),
@@ -128,14 +128,13 @@ export class ContactSubmissionsAPI {
 
       return {
         success: true,
-        data: submission
+        data: submission,
       };
-
     } catch (error) {
       console.error('Error creating contact submission:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to create submission'
+        error: error instanceof Error ? error.message : 'Failed to create submission',
       };
     }
   }
@@ -155,9 +154,7 @@ export class ContactSubmissionsAPI {
     totalPages: number;
   }> {
     try {
-      let query = supabase
-        .from('contact_submissions')
-        .select('*', { count: 'exact' });
+      let query = supabase.from('contact_submissions').select('*', { count: 'exact' });
 
       // Apply filters
       if (filters.status?.length) {
@@ -187,17 +184,15 @@ export class ContactSubmissionsAPI {
       if (filters.search) {
         query = query.or(
           `name.ilike.%${filters.search}%,` +
-          `email.ilike.%${filters.search}%,` +
-          `subject.ilike.%${filters.search}%,` +
-          `message.ilike.%${filters.search}%`
+            `email.ilike.%${filters.search}%,` +
+            `subject.ilike.%${filters.search}%,` +
+            `message.ilike.%${filters.search}%`
         );
       }
 
       // Pagination
       const offset = (page - 1) * limit;
-      query = query
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
+      query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
 
       const { data, error, count } = await query;
 
@@ -208,9 +203,8 @@ export class ContactSubmissionsAPI {
         total: count || 0,
         page,
         limit,
-        totalPages: Math.ceil((count || 0) / limit)
+        totalPages: Math.ceil((count || 0) / limit),
       };
-
     } catch (error) {
       console.error('Error fetching contact submissions:', error);
       return {
@@ -218,7 +212,7 @@ export class ContactSubmissionsAPI {
         total: 0,
         page,
         limit,
-        totalPages: 0
+        totalPages: 0,
       };
     }
   }
@@ -228,16 +222,11 @@ export class ContactSubmissionsAPI {
    */
   async getSubmissionById(id: string): Promise<ContactSubmission | null> {
     try {
-      const { data, error } = await supabase
-        .from('contact_submissions')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('contact_submissions').select('*').eq('id', id).single();
 
       if (error) throw error;
 
       return data as any as ContactSubmission;
-
     } catch (error) {
       console.error('Error fetching contact submission:', error);
       return null;
@@ -258,7 +247,7 @@ export class ContactSubmissionsAPI {
       if (!currentSubmission) {
         return {
           success: false,
-          error: 'Submission not found'
+          error: 'Submission not found',
         };
       }
 
@@ -316,14 +305,13 @@ export class ContactSubmissionsAPI {
 
       return {
         success: true,
-        data: updatedSubmission
+        data: updatedSubmission,
       };
-
     } catch (error) {
       console.error('Error updating contact submission:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update submission'
+        error: error instanceof Error ? error.message : 'Failed to update submission',
       };
     }
   }
@@ -333,10 +321,7 @@ export class ContactSubmissionsAPI {
    */
   async deleteSubmission(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await supabase
-        .from('contact_submissions')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('contact_submissions').delete().eq('id', id);
 
       if (error) throw error;
 
@@ -346,12 +331,11 @@ export class ContactSubmissionsAPI {
       });
 
       return { success: true };
-
     } catch (error) {
       console.error('Error deleting contact submission:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to delete submission'
+        error: error instanceof Error ? error.message : 'Failed to delete submission',
       };
     }
   }
@@ -361,14 +345,10 @@ export class ContactSubmissionsAPI {
    */
   async getStats(dateRange?: { start: string; end: string }): Promise<ContactSubmissionStats> {
     try {
-      let query = supabase
-        .from('contact_submissions')
-        .select('*');
+      let query = supabase.from('contact_submissions').select('*');
 
       if (dateRange) {
-        query = query
-          .gte('created_at', dateRange.start)
-          .lte('created_at', dateRange.end);
+        query = query.gte('created_at', dateRange.start).lte('created_at', dateRange.end);
       }
 
       const { data, error } = await query;
@@ -412,14 +392,15 @@ export class ContactSubmissionsAPI {
       if (resolvedSubmissions.length > 0) {
         const totalResponseTime = resolvedSubmissions.reduce((sum, submission) => {
           const submissionAny = submission as any;
-          const responseTime = (new Date(submissionAny.updated_at).getTime() - new Date(submissionAny.created_at).getTime()) / (1000 * 60 * 60);
+          const responseTime =
+            (new Date(submissionAny.updated_at).getTime() - new Date(submissionAny.created_at).getTime()) /
+            (1000 * 60 * 60);
           return sum + responseTime;
         }, 0);
         stats.avg_response_time_hours = totalResponseTime / resolvedSubmissions.length;
       }
 
       return stats;
-
     } catch (error) {
       console.error('Error fetching contact submission stats:', error);
       return {
@@ -450,7 +431,6 @@ export class ContactSubmissionsAPI {
       if (error) throw error;
 
       return (data || []) as any as ContactSubmission[];
-
     } catch (error) {
       console.error('Error fetching recent submissions:', error);
       return [];
@@ -465,20 +445,40 @@ export class ContactSubmissionsAPI {
 
     // Urgent keywords
     const urgentKeywords = [
-      'urgent', 'emergency', 'asap', 'immediately', 'critical', 'broken', 'down', 'not working',
-      'security', 'hack', 'breach', 'compromised', 'virus', 'malware'
+      'urgent',
+      'emergency',
+      'asap',
+      'immediately',
+      'critical',
+      'broken',
+      'down',
+      'not working',
+      'security',
+      'hack',
+      'breach',
+      'compromised',
+      'virus',
+      'malware',
     ];
 
     // High priority keywords
     const highKeywords = [
-      'important', 'problem', 'issue', 'error', 'bug', 'unable to', 'cannot', 'failing',
-      'deadline', 'time sensitive', 'payment', 'billing'
+      'important',
+      'problem',
+      'issue',
+      'error',
+      'bug',
+      'unable to',
+      'cannot',
+      'failing',
+      'deadline',
+      'time sensitive',
+      'payment',
+      'billing',
     ];
 
     // Medium priority keywords
-    const mediumKeywords = [
-      'question', 'help', 'support', 'how to', 'guidance', 'clarification', 'feature request'
-    ];
+    const mediumKeywords = ['question', 'help', 'support', 'how to', 'guidance', 'clarification', 'feature request'];
 
     if (urgentKeywords.some(keyword => content.includes(keyword))) {
       return 'urgent';
@@ -504,14 +504,14 @@ export class ContactSubmissionsAPI {
 
     // Define tag patterns
     const tagPatterns = {
-      'technical': ['technical', 'code', 'programming', 'development', 'software', 'api', 'database'],
-      'event': ['event', 'meetup', 'workshop', 'conference', 'speaking', 'presentation'],
-      'partnership': ['partnership', 'collaboration', 'sponsor', 'business', 'corporate'],
-      'membership': ['member', 'join', 'registration', 'account', 'profile'],
-      'volunteer': ['volunteer', 'help', 'contribute', 'organize'],
-      'feedback': ['feedback', 'suggestion', 'improvement', 'complaint'],
-      'billing': ['billing', 'payment', 'invoice', 'subscription', 'fee'],
-      'urgent': ['urgent', 'emergency', 'critical', 'asap'],
+      technical: ['technical', 'code', 'programming', 'development', 'software', 'api', 'database'],
+      event: ['event', 'meetup', 'workshop', 'conference', 'speaking', 'presentation'],
+      partnership: ['partnership', 'collaboration', 'sponsor', 'business', 'corporate'],
+      membership: ['member', 'join', 'registration', 'account', 'profile'],
+      volunteer: ['volunteer', 'help', 'contribute', 'organize'],
+      feedback: ['feedback', 'suggestion', 'improvement', 'complaint'],
+      billing: ['billing', 'payment', 'invoice', 'subscription', 'fee'],
+      urgent: ['urgent', 'emergency', 'critical', 'asap'],
     };
 
     Object.entries(tagPatterns).forEach(([tag, keywords]) => {
@@ -576,8 +576,17 @@ export class ContactSubmissionsAPI {
       const { submissions } = await this.getSubmissions(filters, 1, 10000); // Get all matching submissions
 
       const headers = [
-        'ID', 'Name', 'Email', 'Subject', 'Type', 'Status', 'Priority',
-        'Assigned To', 'Tags', 'Created At', 'Updated At'
+        'ID',
+        'Name',
+        'Email',
+        'Subject',
+        'Type',
+        'Status',
+        'Priority',
+        'Assigned To',
+        'Tags',
+        'Created At',
+        'Updated At',
       ];
 
       const csvRows = submissions.map(submission => [
@@ -591,16 +600,15 @@ export class ContactSubmissionsAPI {
         submission.assigned_to || '',
         (submission.tags || []).join('; '),
         submission.created_at,
-        submission.updated_at
+        submission.updated_at,
       ]);
 
       const csvContent = [
         headers.join(','),
-        ...csvRows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        ...csvRows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')),
       ].join('\n');
 
       return csvContent;
-
     } catch (error) {
       console.error('Error exporting submissions:', error);
       throw error;

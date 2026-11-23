@@ -18,7 +18,7 @@ import {
   HelpCircle,
   FileText,
   Link,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 
 // Icon mapping for consistent icon rendering
@@ -41,7 +41,7 @@ const ICON_COMPONENTS = {
   HelpCircle,
   FileText,
   Link,
-  ExternalLink
+  ExternalLink,
 } as const;
 
 export type IconName = keyof typeof ICON_COMPONENTS;
@@ -52,26 +52,17 @@ interface MenuItemIconProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export const MenuItemIcon: React.FC<MenuItemIconProps> = ({
-  icon,
-  className = '',
-  size = 'md'
-}) => {
+export const MenuItemIcon: React.FC<MenuItemIconProps> = ({ icon, className = '', size = 'md' }) => {
   // Default to Link icon if no icon provided or icon not found
   const IconComponent = (icon && ICON_COMPONENTS[icon as IconName]) || Link;
-  
+
   const sizeClasses = {
     sm: 'h-3 w-3',
     md: 'h-4 w-4',
-    lg: 'h-5 w-5'
+    lg: 'h-5 w-5',
   };
 
-  return (
-    <IconComponent 
-      className={`${sizeClasses[size]} ${className}`}
-      aria-hidden="true"
-    />
-  );
+  return <IconComponent className={`${sizeClasses[size]} ${className}`} aria-hidden="true" />;
 };
 
 export { ICON_COMPONENTS };

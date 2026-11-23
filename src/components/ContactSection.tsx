@@ -12,20 +12,20 @@ const ContactSection: React.FC = () => {
     volunteerType: 'attend',
     name: '',
     email: '',
-    message: ''
+    message: '',
   });
-  
+
   const [submitted, setSubmitted] = useState(false);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  
+
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, volunteerType: e.target.value });
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real implementation, you would submit to a backend service
@@ -38,7 +38,7 @@ const ContactSection: React.FC = () => {
         volunteerType: 'attend',
         name: '',
         email: '',
-        message: ''
+        message: '',
       });
     }, 3000);
   };
@@ -53,14 +53,25 @@ const ContactSection: React.FC = () => {
             Want to attend, present, or help organize our meetups? Let us know!
           </p>
         </div>
-        
+
         <div className="max-w-2xl mx-auto">
           <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-8">
             {submitted ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-8 h-8"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold mb-2 dark:text-white">Thank You!</h3>
@@ -137,7 +148,7 @@ const ContactSection: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="mb-4">
                   <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Name
@@ -152,7 +163,7 @@ const ContactSection: React.FC = () => {
                     required
                   />
                 </div>
-                
+
                 <div className="mb-4">
                   <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Email
@@ -167,9 +178,12 @@ const ContactSection: React.FC = () => {
                     required
                   />
                 </div>
-                
+
                 <div className="mb-6">
-                  <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+                  >
                     Message
                   </label>
                   <textarea
@@ -179,11 +193,13 @@ const ContactSection: React.FC = () => {
                     value={formData.message}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                    placeholder={formData.volunteerType === 'present' ? 'Tell us about your proposed talk' : 'How can we help you?'}
+                    placeholder={
+                      formData.volunteerType === 'present' ? 'Tell us about your proposed talk' : 'How can we help you?'
+                    }
                     required
                   ></textarea>
                 </div>
-                
+
                 <button
                   type="submit"
                   className="w-full px-4 py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors font-medium"
@@ -192,11 +208,13 @@ const ContactSection: React.FC = () => {
                 </button>
               </form>
             )}
-            
+
             <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-600 text-center text-sm text-slate-600 dark:text-slate-400">
               <p>
                 Kootenay AI Collective is supported by the{' '}
-                <a href="#" className="text-orange-600 dark:text-orange-400 hover:underline">Kootenay Association for Science & Technology (KAST)</a>
+                <a href="#" className="text-orange-600 dark:text-orange-400 hover:underline">
+                  Kootenay Association for Science & Technology (KAST)
+                </a>
               </p>
             </div>
           </div>

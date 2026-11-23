@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { performanceMonitor } from '@/utils/performanceMonitor';
 import { queryPerformanceMonitor } from '@/utils/queryPerformance';
-import { 
-  BarChart3, 
-  Activity, 
-  Database, 
-  Zap, 
+import {
+  BarChart3,
+  Activity,
+  Database,
+  Zap,
   Package,
   TrendingUp,
   TrendingDown,
   RefreshCw,
-  Download
+  Download,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
@@ -65,7 +65,7 @@ export default function PerformanceMetricsPage() {
     return {
       value: Math.abs(change).toFixed(1),
       isPositive: change < 0,
-      icon: change < 0 ? TrendingDown : TrendingUp
+      icon: change < 0 ? TrendingDown : TrendingUp,
     };
   };
 
@@ -74,19 +74,11 @@ export default function PerformanceMetricsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            Performance Metrics
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Real-time performance monitoring and analysis
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Performance Metrics</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Real-time performance monitoring and analysis</p>
         </div>
         <div className="flex gap-2">
-          <Button
-            onClick={handleRefresh}
-            variant="secondary"
-            disabled={isRefreshing}
-          >
+          <Button onClick={handleRefresh} variant="secondary" disabled={isRefreshing}>
             <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
@@ -108,9 +100,7 @@ export default function PerformanceMetricsPage() {
           <div className="text-2xl font-bold text-slate-900 dark:text-white">
             {metrics.bundleSize ? formatBytes(metrics.bundleSize) : 'N/A'}
           </div>
-          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Bundle Size
-          </div>
+          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Bundle Size</div>
         </div>
 
         {/* Network Requests */}
@@ -122,9 +112,7 @@ export default function PerformanceMetricsPage() {
           <div className="text-2xl font-bold text-slate-900 dark:text-white">
             {metrics.networkRequests?.length || 0}
           </div>
-          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Network Requests
-          </div>
+          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Network Requests</div>
           <div className="text-xs text-green-600 mt-2">
             {metrics.networkRequests?.filter(r => r.cached).length || 0} cached
           </div>
@@ -139,11 +127,10 @@ export default function PerformanceMetricsPage() {
           <div className="text-2xl font-bold text-slate-900 dark:text-white">
             {queryMetrics.totalQueries > 0
               ? ((queryMetrics.cachedQueries / queryMetrics.totalQueries) * 100).toFixed(1)
-              : 0}%
+              : 0}
+            %
           </div>
-          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Cache Hit Rate
-          </div>
+          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Cache Hit Rate</div>
           <div className="text-xs text-purple-600 mt-2">
             {queryMetrics.cachedQueries} / {queryMetrics.totalQueries} queries
           </div>
@@ -158,9 +145,7 @@ export default function PerformanceMetricsPage() {
           <div className="text-2xl font-bold text-slate-900 dark:text-white">
             {metrics.memoryUsage ? formatBytes(metrics.memoryUsage.usedJSHeapSize) : 'N/A'}
           </div>
-          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Memory Usage
-          </div>
+          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Memory Usage</div>
           <div className="text-xs text-orange-600 mt-2">
             {metrics.memoryUsage
               ? `${((metrics.memoryUsage.usedJSHeapSize / metrics.memoryUsage.jsHeapSizeLimit) * 100).toFixed(1)}% of limit`
@@ -198,9 +183,7 @@ export default function PerformanceMetricsPage() {
               <div className="space-y-1">
                 {queryMetrics.slowestQueries.map((q, i) => (
                   <div key={i} className="text-xs flex justify-between">
-                    <span className="text-slate-600 dark:text-slate-400 truncate max-w-[200px]">
-                      {q.queryKey}
-                    </span>
+                    <span className="text-slate-600 dark:text-slate-400 truncate max-w-[200px]">{q.queryKey}</span>
                     <span className="font-mono">{q.duration?.toFixed(0)}ms</span>
                   </div>
                 ))}
@@ -215,7 +198,9 @@ export default function PerformanceMetricsPage() {
             <BarChart3 className="w-5 h-5" />
             Component Performance
           </h2>
-          {(metrics as any).renderMetrics && Array.isArray((metrics as any).renderMetrics) && (metrics as any).renderMetrics.length > 0 ? (
+          {(metrics as any).renderMetrics &&
+          Array.isArray((metrics as any).renderMetrics) &&
+          (metrics as any).renderMetrics.length > 0 ? (
             <div className="space-y-3">
               {(metrics as any).renderMetrics
                 .sort((a: RenderMetric, b: RenderMetric) => b.renderCount - a.renderCount)
@@ -275,15 +260,9 @@ export default function PerformanceMetricsPage() {
               <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                 {metrics.networkRequests.slice(-10).map((req, i) => (
                   <tr key={i}>
-                    <td className="px-3 py-2 text-sm text-slate-900 dark:text-white truncate max-w-xs">
-                      {req.url}
-                    </td>
-                    <td className="px-3 py-2 text-sm font-mono">
-                      {req.duration.toFixed(0)}ms
-                    </td>
-                    <td className="px-3 py-2 text-sm">
-                      {formatBytes(req.size)}
-                    </td>
+                    <td className="px-3 py-2 text-sm text-slate-900 dark:text-white truncate max-w-xs">{req.url}</td>
+                    <td className="px-3 py-2 text-sm font-mono">{req.duration.toFixed(0)}ms</td>
+                    <td className="px-3 py-2 text-sm">{formatBytes(req.size)}</td>
                     <td className="px-3 py-2 text-sm">
                       {req.cached ? (
                         <span className="text-green-600">Cached</span>

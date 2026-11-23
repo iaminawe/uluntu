@@ -1,13 +1,7 @@
 // Types for MarketplaceList component
 import { MarketplaceItem as MainMarketplaceItem } from '../../types';
-import {
-  ListingType,
-  ListingCondition,
-  ListingPriceRange,
-  FilterOptions
-} from '../../types/marketplace';
+import { ListingType, ListingCondition, ListingPriceRange, FilterOptions } from '../../types/marketplace';
 
- 
 export interface Seller {
   id: string; // Using string ID for consistency
   name: string;
@@ -43,10 +37,10 @@ export const adaptMainMarketplaceItemToListing = (item: MainMarketplaceItem): Li
     seller: {
       id: String(item.seller.id), // Always use string ID
       name: item.seller.name,
-      image: item.seller.image
+      image: item.seller.image,
     },
     location: '', // This field doesn't exist in the main type
-    tags: [item.category] // Using category as a tag
+    tags: [item.category], // Using category as a tag
   };
 };
 
@@ -63,14 +57,13 @@ export const adaptListingToMainMarketplaceItem = (listing: Listing): Partial<Mai
     seller: {
       id: listing.seller.id, // ID is already a string
       name: listing.seller.name,
-      image: listing.seller.image
+      image: listing.seller.image,
     },
     datePosted: listing.createdAt,
-    status: 'published' // Default status
+    status: 'published', // Default status
   };
 };
 
- 
 export interface MarketplaceListProps {
   initialType?: ListingType | 'all';
   initialSearch?: string;
@@ -79,12 +72,7 @@ export interface MarketplaceListProps {
 }
 
 // Re-export types from central marketplace types
-export type {
-  ListingType,
-  ListingCondition,
-  ListingPriceRange,
-  FilterOptions
-};
+export type { ListingType, ListingCondition, ListingPriceRange, FilterOptions };
 
 // Sample marketplace listings
 export const SAMPLE_LISTINGS: Listing[] = [
@@ -100,10 +88,10 @@ export const SAMPLE_LISTINGS: Listing[] = [
     seller: {
       id: '1',
       name: 'Sarah Johnson',
-      image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
+      image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     },
     location: 'Nelson, BC',
-    tags: ['Apple', 'Laptop', 'Development']
+    tags: ['Apple', 'Laptop', 'Development'],
   },
   {
     id: '2',
@@ -116,10 +104,10 @@ export const SAMPLE_LISTINGS: Listing[] = [
     seller: {
       id: '2',
       name: 'Michael Chen',
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
+      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
     },
     location: 'Rossland, BC',
-    tags: ['Web Development', 'React', 'Node.js']
+    tags: ['Web Development', 'React', 'Node.js'],
   },
   {
     id: '3',
@@ -132,10 +120,10 @@ export const SAMPLE_LISTINGS: Listing[] = [
     seller: {
       id: '3',
       name: 'Emma Wilson',
-      image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg'
+      image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg',
     },
     location: 'Nelson, BC',
-    tags: ['AI', 'Machine Learning', 'Consulting']
+    tags: ['AI', 'Machine Learning', 'Consulting'],
   },
   {
     id: '4',
@@ -149,10 +137,10 @@ export const SAMPLE_LISTINGS: Listing[] = [
     seller: {
       id: '4',
       name: 'David Thompson',
-      image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'
+      image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
     },
     location: 'Kelowna, BC',
-    tags: ['Monitor', 'Dell', 'Equipment']
+    tags: ['Monitor', 'Dell', 'Equipment'],
   },
   {
     id: '5',
@@ -165,10 +153,10 @@ export const SAMPLE_LISTINGS: Listing[] = [
     seller: {
       id: '5',
       name: 'Jessica Lee',
-      image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg'
+      image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
     },
     location: 'Remote',
-    tags: ['Design', 'UI/UX', 'Workshop']
+    tags: ['Design', 'UI/UX', 'Workshop'],
   },
   {
     id: '6',
@@ -182,9 +170,9 @@ export const SAMPLE_LISTINGS: Listing[] = [
     seller: {
       id: '6',
       name: 'Robert Clark',
-      image: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg'
+      image: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg',
     },
     location: 'Trail, BC',
-    tags: ['Keyboard', 'Hardware', 'Mechanical']
-  }
+    tags: ['Keyboard', 'Hardware', 'Mechanical'],
+  },
 ];

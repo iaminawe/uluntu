@@ -1,9 +1,7 @@
-import { Outlet } from "react-router-dom"
+import { Outlet } from 'react-router-dom';
 
 const Providers = () => {
-  return (
-    <Outlet />
-  )
-}
+  return <Outlet />;
+};
 
-export default Providers
+export default Providers;

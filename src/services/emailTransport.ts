@@ -74,11 +74,10 @@ export interface EmailTransport {
 export function createEmailTransport(): EmailTransport {
   return {
     emails: {
-      send: (payload) =>
-        post({ email: payload, submissionId: submissionIdOf(payload) }),
+      send: payload => post({ email: payload, submissionId: submissionIdOf(payload) }),
     },
     batch: {
-      send: (payloads) => post({ batch: payloads }),
+      send: payloads => post({ batch: payloads }),
     },
   };
 }

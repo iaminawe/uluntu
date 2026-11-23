@@ -1,12 +1,7 @@
 import { DeleteConfirmProps } from './types';
 import { ConfirmDialog } from '@/shared/components/ui/Dialog';
 
-const DeleteConfirm: React.FC<DeleteConfirmProps> = ({
-  show,
-  setShow,
-  handleDelete,
-  isSubmitting
-}) => {
+const DeleteConfirm: React.FC<DeleteConfirmProps> = ({ show, setShow, handleDelete, isSubmitting }) => {
   return (
     <ConfirmDialog
       title="Delete Resource"

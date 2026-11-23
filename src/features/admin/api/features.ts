@@ -23,7 +23,12 @@ export const adminFeaturesApi = {
   // Create feature - temporarily stub
   async createFeature(feature: Omit<AdminFeature, 'id' | 'created_at' | 'updated_at'>) {
     console.warn('Admin feature creation temporarily disabled');
-    return { id: 'temp-id', ...feature, created_at: new Date().toISOString(), updated_at: new Date().toISOString() } as AdminFeature;
+    return {
+      id: 'temp-id',
+      ...feature,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as AdminFeature;
   },
 
   // Delete feature - temporarily stub
@@ -57,15 +62,19 @@ export const adminFeaturesApi = {
   },
 
   // Upsert feature translation - temporarily stub
-  async upsertFeatureTranslation(featureId: string, languageCode: string, translation: Partial<AdminFeatureTranslation>) {
+  async upsertFeatureTranslation(
+    featureId: string,
+    languageCode: string,
+    translation: Partial<AdminFeatureTranslation>
+  ) {
     console.warn('Admin feature translation upsert temporarily disabled');
-    return { 
-      id: 'temp-id', 
-      feature_id: featureId, 
-      language_code: languageCode, 
+    return {
+      id: 'temp-id',
+      feature_id: featureId,
+      language_code: languageCode,
       ...translation,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     } as AdminFeatureTranslation;
-  }
+  },
 };

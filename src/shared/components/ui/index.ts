@@ -61,17 +61,11 @@ export * from './DataSourceIndicator';
 export * from './CustomSelect';
 
 // Author Components
-export {
-  AuthorLink,
-  AuthorAvatar,
-  AuthorName,
-  AuthorCard,
-  default as AuthorLinkDefault
-} from './AuthorLink';
+export { AuthorLink, AuthorAvatar, AuthorName, AuthorCard, default as AuthorLinkDefault } from './AuthorLink';
 export type {
   AuthorLinkProps,
   BaseAuthorProps,
   AuthorDisplayOptions,
   AuthorData,
-  AuthorSizes
+  AuthorSizes,
 } from './AuthorLink/types';

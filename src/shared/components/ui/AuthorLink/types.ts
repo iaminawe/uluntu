@@ -51,20 +51,20 @@ export const AUTHOR_SIZE_CONFIG: Record<AuthorSizes, SizeConfig> = {
     avatar: 24,
     textSize: 'text-sm',
     titleSize: 'text-xs',
-    gap: 'gap-2'
+    gap: 'gap-2',
   },
   md: {
     avatar: 32,
     textSize: 'text-base',
     titleSize: 'text-sm',
-    gap: 'gap-3'
+    gap: 'gap-3',
   },
   lg: {
     avatar: 40,
     textSize: 'text-lg',
     titleSize: 'text-base',
-    gap: 'gap-4'
-  }
+    gap: 'gap-4',
+  },
 };
 
 /**
@@ -76,5 +76,5 @@ export const AUTHOR_DEFAULTS = {
   showTitle: false,
   noLink: false,
   unknownAuthorText: 'Unknown Author',
-  placeholderImage: '/placeholder-avatar.png'
+  placeholderImage: '/placeholder-avatar.png',
 } as const;

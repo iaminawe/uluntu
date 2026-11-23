@@ -33,7 +33,7 @@ import {
   Phone,
   Globe,
   Activity,
-  Settings
+  Settings,
 } from 'lucide-react';
 import Papa from 'papaparse';
 import { toast } from 'react-hot-toast';
@@ -92,7 +92,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
     twitter: user.twitter || '',
     status: user.status,
     published: user.member_profile?.published || false,
-    featured: user.member_profile?.featured || false
+    featured: user.member_profile?.featured || false,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,18 +108,18 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
           <h2 className="text-2xl font-bold text-white">Edit User Profile</h2>
           <p className="text-blue-100 text-sm mt-1">Update user account and profile information</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Account Information</h3>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
@@ -130,7 +130,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -140,7 +140,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <input
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -149,7 +149,9 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'blocked' | 'archived' })}
+                  onChange={e =>
+                    setFormData({ ...formData, status: e.target.value as 'active' | 'blocked' | 'archived' })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="active">Active</option>
@@ -161,13 +163,13 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
 
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Profile Information</h3>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -177,7 +179,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <input
                   type="text"
                   value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  onChange={e => setFormData({ ...formData, company: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -187,7 +189,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <input
                   type="text"
                   value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  onChange={e => setFormData({ ...formData, location: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -197,7 +199,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <input
                   type="url"
                   value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  onChange={e => setFormData({ ...formData, website: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -209,7 +211,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
               <textarea
                 value={formData.bio}
-                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                onChange={e => setFormData({ ...formData, bio: e.target.value })}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
@@ -221,7 +223,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <input
                   type="url"
                   value={formData.linkedin}
-                  onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                  onChange={e => setFormData({ ...formData, linkedin: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -231,7 +233,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <input
                   type="text"
                   value={formData.twitter}
-                  onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
+                  onChange={e => setFormData({ ...formData, twitter: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -242,7 +244,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <input
                   type="checkbox"
                   checked={formData.published}
-                  onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+                  onChange={e => setFormData({ ...formData, published: e.target.checked })}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="ml-2 text-sm text-gray-700">Published Profile</span>
@@ -252,7 +254,7 @@ const EditUserModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                 <input
                   type="checkbox"
                   checked={formData.featured}
-                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                  onChange={e => setFormData({ ...formData, featured: e.target.checked })}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="ml-2 text-sm text-gray-700">Featured Member</span>
@@ -295,11 +297,18 @@ const UnifiedUsersPage: React.FC = () => {
   const [importData, setImportData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
-  const [sortBy, setSortBy] = useState<{ field: string; direction: 'asc' | 'desc' }>({ field: 'created_at', direction: 'desc' });
+  const [sortBy, setSortBy] = useState<{ field: string; direction: 'asc' | 'desc' }>({
+    field: 'created_at',
+    direction: 'desc',
+  });
   const [showFilters, setShowFilters] = useState(false);
 
   // Fetch unified user data
-  const { data: users, isLoading, refetch } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['unified-users', searchTerm, selectedRole, selectedStatus, currentPage, pageSize, sortBy],
     queryFn: async () => {
       // First try the simple query without join
@@ -316,47 +325,51 @@ const UnifiedUsersPage: React.FC = () => {
 
       console.log('Members data:', profiles);
 
-      const unifiedUsers: UnifiedUser[] = profiles?.map(profile => ({
-        id: profile.user_id || profile.id,
-        email: profile.email || (profile.name ? `${profile.name.toLowerCase().replace(/\s+/g, '.')}@example.com` : 'unknown@example.com'),
-        name: profile.name,
-        avatar_url: profile.avatar_url,
-        location: profile.location,
-        title: profile.title,
-        company: profile.company,
-        bio: profile.bio,
-        phone: profile.phone,
-        website: profile.website,
-        linkedin: profile.linkedin,
-        twitter: profile.twitter,
-        status: profile.status || 'active',
-        created_at: profile.created_at,
-        last_sign_in_at: null, // Will be null since we can't join with auth.users
-        updated_at: profile.updated_at,
-        roles: [],
-        member_profile: {
-          id: profile.id,
-          published: profile.status === 'published',
-          featured: profile.featured || false,
-          topics: profile.topics,
-          skills: profile.skills
-        },
-        activity: {
-          posts_count: 0,
-          events_count: 0,
-          groups_count: 0,
-          last_activity: null
-        }
-      })) || [];
+      const unifiedUsers: UnifiedUser[] =
+        profiles?.map(profile => ({
+          id: profile.user_id || profile.id,
+          email:
+            profile.email ||
+            (profile.name ? `${profile.name.toLowerCase().replace(/\s+/g, '.')}@example.com` : 'unknown@example.com'),
+          name: profile.name,
+          avatar_url: profile.avatar_url,
+          location: profile.location,
+          title: profile.title,
+          company: profile.company,
+          bio: profile.bio,
+          phone: profile.phone,
+          website: profile.website,
+          linkedin: profile.linkedin,
+          twitter: profile.twitter,
+          status: profile.status || 'active',
+          created_at: profile.created_at,
+          last_sign_in_at: null, // Will be null since we can't join with auth.users
+          updated_at: profile.updated_at,
+          roles: [],
+          member_profile: {
+            id: profile.id,
+            published: profile.status === 'published',
+            featured: profile.featured || false,
+            topics: profile.topics,
+            skills: profile.skills,
+          },
+          activity: {
+            posts_count: 0,
+            events_count: 0,
+            groups_count: 0,
+            last_activity: null,
+          },
+        })) || [];
 
       let filteredUsers = unifiedUsers;
 
       if (searchTerm) {
-        filteredUsers = filteredUsers.filter(user =>
-          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.location?.toLowerCase().includes(searchTerm.toLowerCase())
+        filteredUsers = filteredUsers.filter(
+          user =>
+            user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.location?.toLowerCase().includes(searchTerm.toLowerCase())
         );
       }
 
@@ -365,13 +378,13 @@ const UnifiedUsersPage: React.FC = () => {
       }
 
       return filteredUsers;
-    }
+    },
   });
 
   // Fetch available roles
   const { data: roles } = useQuery({
     queryKey: ['admin-roles'],
-    queryFn: () => adminRolesApi.getRoles()
+    queryFn: () => adminRolesApi.getRoles(),
   });
 
   // Handle user actions dropdown
@@ -400,10 +413,7 @@ const UnifiedUsersPage: React.FC = () => {
 
   // Update user status
   const updateUserStatus = async (userId: string, status: string) => {
-    const { error } = await supabase
-      .from('members')
-      .update({ status })
-      .eq('user_id', userId);
+    const { error } = await supabase.from('members').update({ status }).eq('user_id', userId);
 
     if (!error) {
       await adminActivityLogger.logUserAction(
@@ -420,10 +430,7 @@ const UnifiedUsersPage: React.FC = () => {
 
   // Delete user
   const deleteUser = async (userId: string) => {
-    const { error } = await supabase
-      .from('members')
-      .delete()
-      .eq('user_id', userId);
+    const { error } = await supabase.from('members').delete().eq('user_id', userId);
 
     if (!error) {
       await adminActivityLogger.logUserAction('delete', userId);
@@ -448,13 +455,13 @@ const UnifiedUsersPage: React.FC = () => {
         website: updatedUser.website,
         linkedin: updatedUser.linkedin,
         twitter: updatedUser.twitter,
-        status: updatedUser.status === 'active' ? 'published' : updatedUser.status
+        status: updatedUser.status === 'active' ? 'published' : updatedUser.status,
       })
       .eq('user_id', editingUser?.id);
 
     if (!error) {
       await adminActivityLogger.logUserAction('update', editingUser?.id || '', {
-        fields_updated: Object.keys(updatedUser)
+        fields_updated: Object.keys(updatedUser),
       });
       toast.success('User updated successfully');
       refetch();
@@ -501,26 +508,26 @@ const UnifiedUsersPage: React.FC = () => {
 
   // Export users to CSV
   const exportUsers = (userIds?: string[]) => {
-    const dataToExport = userIds 
-      ? users?.filter(u => userIds.includes(u.id))
-      : users;
+    const dataToExport = userIds ? users?.filter(u => userIds.includes(u.id)) : users;
 
     if (!dataToExport) return;
 
-    const csv = Papa.unparse(dataToExport.map(user => ({
-      Email: user.email,
-      Name: user.name,
-      Title: user.title,
-      Company: user.company,
-      Location: user.location,
-      Phone: user.phone,
-      Website: user.website,
-      LinkedIn: user.linkedin,
-      Twitter: user.twitter,
-      Status: user.status,
-      CreatedAt: user.created_at,
-      LastSignIn: user.last_sign_in_at
-    })));
+    const csv = Papa.unparse(
+      dataToExport.map(user => ({
+        Email: user.email,
+        Name: user.name,
+        Title: user.title,
+        Company: user.company,
+        Location: user.location,
+        Phone: user.phone,
+        Website: user.website,
+        LinkedIn: user.linkedin,
+        Twitter: user.twitter,
+        Status: user.status,
+        CreatedAt: user.created_at,
+        LastSignIn: user.last_sign_in_at,
+      }))
+    );
 
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -539,13 +546,13 @@ const UnifiedUsersPage: React.FC = () => {
 
     Papa.parse(file, {
       header: true,
-      complete: (results) => {
+      complete: results => {
         setImportData(results.data);
         setShowImportModal(true);
       },
       error: () => {
         toast.error('Failed to parse CSV file');
-      }
+      },
     });
   };
 
@@ -566,12 +573,10 @@ const UnifiedUsersPage: React.FC = () => {
       bio: row.Bio || row.bio,
       status: 'published',
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     }));
 
-    const { error } = await supabase
-      .from('members')
-      .insert(newMembers);
+    const { error } = await supabase.from('members').insert(newMembers);
 
     if (!error) {
       await adminActivityLogger.logImport('user', newMembers.length, 'csv');
@@ -597,9 +602,7 @@ const UnifiedUsersPage: React.FC = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Unified User Management</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Manage all users and member profiles in one place
-        </p>
+        <p className="mt-2 text-sm text-gray-600">Manage all users and member profiles in one place</p>
       </div>
 
       {/* Action Bar */}
@@ -612,7 +615,7 @@ const UnifiedUsersPage: React.FC = () => {
                 type="text"
                 placeholder="Search by name, email, company, or location..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -635,13 +638,7 @@ const UnifiedUsersPage: React.FC = () => {
               Export
             </button>
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
+            <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
             <button
               onClick={() => fileInputRef.current?.click()}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
@@ -664,18 +661,20 @@ const UnifiedUsersPage: React.FC = () => {
           <div className="mt-4 pt-4 border-t grid grid-cols-1 md:grid-cols-3 gap-4">
             <select
               value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value)}
+              onChange={e => setSelectedRole(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Roles</option>
               {roles?.map(role => (
-                <option key={role.id} value={role.id}>{role.name}</option>
+                <option key={role.id} value={role.id}>
+                  {role.name}
+                </option>
               ))}
             </select>
 
             <select
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
+              onChange={e => setSelectedStatus(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Status</option>
@@ -686,7 +685,7 @@ const UnifiedUsersPage: React.FC = () => {
 
             <select
               value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
+              onChange={e => setPageSize(Number(e.target.value))}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="10">10 per page</option>
@@ -708,7 +707,7 @@ const UnifiedUsersPage: React.FC = () => {
               </span>
               <select
                 value={bulkAction}
-                onChange={(e) => setBulkAction(e.target.value)}
+                onChange={e => setBulkAction(e.target.value)}
                 className="px-3 py-1 border border-blue-300 rounded text-sm bg-white"
               >
                 <option value="">Select bulk action</option>
@@ -748,25 +747,19 @@ const UnifiedUsersPage: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={(users?.length ?? 0) > 0 && selectedUsers.size === (users?.length ?? 0)}
-                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  onChange={e => handleSelectAll(e.target.checked)}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                 />
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Profile
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Activity
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Joined
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -795,7 +788,7 @@ const UnifiedUsersPage: React.FC = () => {
                     <input
                       type="checkbox"
                       checked={selectedUsers.has(user.id)}
-                      onChange={(e) => {
+                      onChange={e => {
                         const newSelected = new Set(selectedUsers);
                         if (e.target.checked) {
                           newSelected.add(user.id);
@@ -819,12 +812,8 @@ const UnifiedUsersPage: React.FC = () => {
                         )}
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {user.name || 'Unnamed User'}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {user.email}
-                        </div>
+                        <div className="text-sm font-medium text-gray-900">{user.name || 'Unnamed User'}</div>
+                        <div className="text-sm text-gray-500">{user.email}</div>
                       </div>
                     </div>
                   </td>
@@ -853,13 +842,15 @@ const UnifiedUsersPage: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      user.status === 'active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : user.status === 'blocked'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        user.status === 'active'
+                          ? 'bg-green-100 text-green-800'
+                          : user.status === 'blocked'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
                       {user.status === 'active' && <CheckCircle className="w-3 h-3 mr-1" />}
                       {user.status === 'blocked' && <Ban className="w-3 h-3 mr-1" />}
                       {user.status === 'archived' && <Archive className="w-3 h-3 mr-1" />}
@@ -872,11 +863,13 @@ const UnifiedUsersPage: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="relative inline-block text-left">
                       <select
-                        onChange={(e) => handleUserAction(user.id, e.target.value)}
+                        onChange={e => handleUserAction(user.id, e.target.value)}
                         className="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-1 pr-8 text-sm hover:bg-gray-50 cursor-pointer"
                         defaultValue=""
                       >
-                        <option value="" disabled>Actions</option>
+                        <option value="" disabled>
+                          Actions
+                        </option>
                         <option value="edit">Edit</option>
                         <option value="view">View</option>
                         <option value="block">Block</option>
@@ -943,13 +936,7 @@ const UnifiedUsersPage: React.FC = () => {
       </div>
 
       {/* Edit User Modal */}
-      {editingUser && (
-        <EditUserModal
-          user={editingUser}
-          onClose={() => setEditingUser(null)}
-          onSave={saveUserEdits}
-        />
-      )}
+      {editingUser && <EditUserModal user={editingUser} onClose={() => setEditingUser(null)} onSave={saveUserEdits} />}
 
       {/* Import Preview Modal */}
       {showImportModal && (
@@ -959,7 +946,7 @@ const UnifiedUsersPage: React.FC = () => {
               <h2 className="text-2xl font-bold text-white">Import Preview</h2>
               <p className="text-green-100 text-sm mt-1">Review {importData.length} records to import</p>
             </div>
-            
+
             <div className="p-6 overflow-y-auto max-h-[calc(80vh-140px)]">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -984,9 +971,7 @@ const UnifiedUsersPage: React.FC = () => {
                 </tbody>
               </table>
               {importData.length > 10 && (
-                <p className="text-sm text-gray-500 mt-4">
-                  ... and {importData.length - 10} more records
-                </p>
+                <p className="text-sm text-gray-500 mt-4">... and {importData.length - 10} more records</p>
               )}
             </div>
 

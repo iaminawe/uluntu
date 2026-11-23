@@ -10,11 +10,7 @@ interface MessageNotificationProps {
   autoHideDuration?: number;
 }
 
-const MessageNotification: React.FC<MessageNotificationProps> = ({
-  message,
-  onDismiss,
-  autoHideDuration = 5000
-}) => {
+const MessageNotification: React.FC<MessageNotificationProps> = ({ message, onDismiss, autoHideDuration = 5000 }) => {
   const { user } = useSession();
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(true);
@@ -60,17 +56,17 @@ const MessageNotification: React.FC<MessageNotificationProps> = ({
         return `📎 ${message.content || 'Sent a file'}`;
       default:
         const content = message.content || '';
-        return content.length > 60 
-          ? `${content.substring(0, 60)}...` 
-          : content;
+        return content.length > 60 ? `${content.substring(0, 60)}...` : content;
     }
   };
 
   return (
-    <div className={`
+    <div
+      className={`
       fixed top-20 right-4 z-50 transition-all duration-300 transform
       ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}
-    `}>
+    `}
+    >
       <div
         onClick={handleClick}
         className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg shadow-lg p-4 max-w-sm cursor-pointer hover:shadow-xl transition-shadow"
@@ -78,7 +74,7 @@ const MessageNotification: React.FC<MessageNotificationProps> = ({
         <div className="flex items-start space-x-3">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            {(message.sender?.avatar || message.sender?.avatar_url) ? (
+            {message.sender?.avatar || message.sender?.avatar_url ? (
               <img
                 src={message.sender.avatar || message.sender.avatar_url}
                 alt={message.sender.name || 'User'}
@@ -90,7 +86,7 @@ const MessageNotification: React.FC<MessageNotificationProps> = ({
               </div>
             )}
           </div>
-          
+
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1">
@@ -104,14 +100,10 @@ const MessageNotification: React.FC<MessageNotificationProps> = ({
                 <X className="h-4 w-4" />
               </button>
             </div>
-            
-            <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-              {renderMessagePreview()}
-            </p>
-            
-            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
-              New message • Click to view
-            </p>
+
+            <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">{renderMessagePreview()}</p>
+
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">New message • Click to view</p>
           </div>
         </div>
       </div>

@@ -33,7 +33,7 @@ export const members: Member[] = [
     social: {
       linkedin: 'https://linkedin.com/in/sarahjohnson',
       twitter: 'https://twitter.com/sarahjohnson',
-      github: 'https://github.com/sarahjohnson'
+      github: 'https://github.com/sarahjohnson',
     },
     featured: true,
   },
@@ -51,7 +51,7 @@ export const members: Member[] = [
     status: 'published' as ContentStatus,
     social: {
       linkedin: 'https://linkedin.com/in/michaelchen',
-      github: 'https://github.com/michaelchen'
+      github: 'https://github.com/michaelchen',
     },
     featured: false,
   },
@@ -69,7 +69,7 @@ export const members: Member[] = [
     status: 'published' as ContentStatus,
     social: {
       linkedin: 'https://linkedin.com/in/emmawilson',
-      twitter: 'https://twitter.com/emmawilson'
+      twitter: 'https://twitter.com/emmawilson',
     },
     featured: true,
   },
@@ -88,7 +88,7 @@ export const members: Member[] = [
     social: {
       linkedin: 'https://linkedin.com/in/davidpark',
       github: 'https://github.com/davidpark',
-      website: 'https://davidpark.dev'
+      website: 'https://davidpark.dev',
     },
     featured: false,
   },
@@ -107,7 +107,7 @@ export const members: Member[] = [
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/in/oliviamartinez',
-      website: 'https://oliviamartinez.design'
-    }
-  }
+      website: 'https://oliviamartinez.design',
+    },
+  },
 ];

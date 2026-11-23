@@ -32,7 +32,7 @@ import {
   Zap,
   Sun,
   Moon,
-  Image
+  Image,
 } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
@@ -67,11 +67,11 @@ const AdminLayout: React.FC = () => {
 
   // Check if user is superadmin or admin
   const hasAdminAccess = userRoles?.includes('superadmin') || userRoles?.includes('admin');
-  
+
   console.log('🔍 Admin Access Check:', {
     hasAdminAccess,
     isSuper: userRoles?.includes('superadmin'),
-    isAdmin: userRoles?.includes('admin')
+    isAdmin: userRoles?.includes('admin'),
   });
 
   if (!hasAdminAccess) {
@@ -84,10 +84,8 @@ const AdminLayout: React.FC = () => {
 
   // Toggle group expansion
   const toggleGroup = (groupName: string) => {
-    setExpandedGroups(prev => 
-      prev.includes(groupName) 
-        ? prev.filter(name => name !== groupName)
-        : [...prev, groupName]
+    setExpandedGroups(prev =>
+      prev.includes(groupName) ? prev.filter(name => name !== groupName) : [...prev, groupName]
     );
   };
 
@@ -95,15 +93,27 @@ const AdminLayout: React.FC = () => {
   const contentManagementChildren = [
     ...(isFeatureEnabled('pages_system') ? [{ name: 'Pages', href: '/admin/pages', icon: FileText }] : []),
     ...(photoGalleriesEnabled ? [{ name: 'Media Gallery', href: '/admin/media', icon: Image }] : []),
-    ...(isFeatureEnabled('members_directory') ? [{ name: 'Members', href: '/admin/entities/members', icon: Users }] : []),
-    ...(isFeatureEnabled('companies_listing') ? [{ name: 'Companies', href: '/admin/entities/companies', icon: Building2 }] : []),
-    ...(isFeatureEnabled('groups_communities') ? [{ name: 'Groups', href: '/admin/entities/groups', icon: UsersRound }] : []),
+    ...(isFeatureEnabled('members_directory')
+      ? [{ name: 'Members', href: '/admin/entities/members', icon: Users }]
+      : []),
+    ...(isFeatureEnabled('companies_listing')
+      ? [{ name: 'Companies', href: '/admin/entities/companies', icon: Building2 }]
+      : []),
+    ...(isFeatureEnabled('groups_communities')
+      ? [{ name: 'Groups', href: '/admin/entities/groups', icon: UsersRound }]
+      : []),
     ...(isFeatureEnabled('events_system') ? [{ name: 'Events', href: '/admin/entities/events', icon: Calendar }] : []),
     ...(isFeatureEnabled('news_blog') ? [{ name: 'News', href: '/admin/entities/news', icon: Newspaper }] : []),
-    ...(isFeatureEnabled('resources_library') ? [{ name: 'Resources', href: '/admin/entities/resources', icon: BookOpen }] : []),
-    ...(isFeatureEnabled('marketplace') ? [{ name: 'Marketplace', href: '/admin/entities/marketplace', icon: ShoppingBag }] : []),
-    ...(isFeatureEnabled('opportunities_board') ? [{ name: 'Opportunities', href: '/admin/entities/opportunities', icon: Briefcase }] : []),
-    ...(isFeatureEnabled('topics_system') ? [{ name: 'Topics', href: '/admin/entities/topics', icon: Tag }] : [])
+    ...(isFeatureEnabled('resources_library')
+      ? [{ name: 'Resources', href: '/admin/entities/resources', icon: BookOpen }]
+      : []),
+    ...(isFeatureEnabled('marketplace')
+      ? [{ name: 'Marketplace', href: '/admin/entities/marketplace', icon: ShoppingBag }]
+      : []),
+    ...(isFeatureEnabled('opportunities_board')
+      ? [{ name: 'Opportunities', href: '/admin/entities/opportunities', icon: Briefcase }]
+      : []),
+    ...(isFeatureEnabled('topics_system') ? [{ name: 'Topics', href: '/admin/entities/topics', icon: Tag }] : []),
   ];
 
   const navigation = [
@@ -111,35 +121,39 @@ const AdminLayout: React.FC = () => {
       name: 'Dashboard',
       href: '/admin',
       icon: LayoutDashboard,
-      current: location.pathname === '/admin'
+      current: location.pathname === '/admin',
     },
     {
       name: 'Content Management',
       icon: FileText,
-      children: contentManagementChildren
+      children: contentManagementChildren,
     },
     {
       name: 'User Management',
       icon: Users,
       children: [
-        ...(isFeatureEnabled('user_management') ? [
-          { name: 'Users', href: '/admin/users', icon: Users },
-          { name: 'Roles', href: '/admin/roles', icon: Shield }
-        ] : [])
-      ]
+        ...(isFeatureEnabled('user_management')
+          ? [
+              { name: 'Users', href: '/admin/users', icon: Users },
+              { name: 'Roles', href: '/admin/roles', icon: Shield },
+            ]
+          : []),
+      ],
     },
     {
       name: 'Communication',
       icon: Mail,
       children: [
         { name: 'Contact Inbox', href: '/admin/contact-inbox', icon: Inbox },
-        ...(isFeatureEnabled('newsletter_system') ? [
-          { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },
-          { name: 'Campaigns', href: '/admin/newsletter/campaigns', icon: Mail },
-          { name: 'Subscribers', href: '/admin/newsletter/subscribers', icon: Users },
-          { name: 'Analytics', href: '/admin/newsletter/analytics', icon: TrendingUp }
-        ] : [])
-      ]
+        ...(isFeatureEnabled('newsletter_system')
+          ? [
+              { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },
+              { name: 'Campaigns', href: '/admin/newsletter/campaigns', icon: Mail },
+              { name: 'Subscribers', href: '/admin/newsletter/subscribers', icon: Users },
+              { name: 'Analytics', href: '/admin/newsletter/analytics', icon: TrendingUp },
+            ]
+          : []),
+      ],
     },
     {
       name: 'System Management',
@@ -149,35 +163,33 @@ const AdminLayout: React.FC = () => {
         { name: 'Settings', href: '/admin/settings', icon: Settings },
         { name: 'Theme', href: '/admin/theme', icon: Palette },
         { name: 'Menu Management', href: '/admin/menu-management', icon: Menu },
-        ...(isFeatureEnabled('content_moderation') ? [
-          { name: 'Moderation', href: '/admin/moderation', icon: FileCheck }
-        ] : [])
-      ]
+        ...(isFeatureEnabled('content_moderation')
+          ? [{ name: 'Moderation', href: '/admin/moderation', icon: FileCheck }]
+          : []),
+      ],
     },
     {
       name: 'Monitoring',
       icon: BarChart3,
       children: [
-        ...(isFeatureEnabled('analytics_dashboard') ? [
-          { name: 'Performance', href: '/admin/performance', icon: BarChart3 }
-        ] : []),
-        ...(isFeatureEnabled('audit_logging') ? [
-          { name: 'Audit Log', href: '/admin/audit', icon: FileSearch }
-        ] : [])
-      ]
-    }
+        ...(isFeatureEnabled('analytics_dashboard')
+          ? [{ name: 'Performance', href: '/admin/performance', icon: BarChart3 }]
+          : []),
+        ...(isFeatureEnabled('audit_logging') ? [{ name: 'Audit Log', href: '/admin/audit', icon: FileSearch }] : []),
+      ],
+    },
   ];
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
+    <div
+      className={`min-h-screen transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}
+    >
       {/* Mobile sidebar toggle */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className={`min-h-[44px] min-w-[44px] p-2 rounded-lg shadow-lg transition-colors flex items-center justify-center ${
-            theme === 'dark' 
-              ? 'bg-gray-800 hover:bg-gray-700 text-white' 
-              : 'bg-white hover:bg-gray-50 text-gray-900'
+            theme === 'dark' ? 'bg-gray-800 hover:bg-gray-700 text-white' : 'bg-white hover:bg-gray-50 text-gray-900'
           }`}
         >
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -185,16 +197,18 @@ const AdminLayout: React.FC = () => {
       </div>
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 ${
-        theme === 'dark' ? 'bg-gray-800' : 'bg-gray-900'
-      }`}>
+      <div
+        className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 ease-in-out ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-900'}`}
+      >
         <div className="flex flex-col h-full">
           {/* Logo and Controls */}
-          <div className={`flex items-center justify-between h-16 px-4 ${
-            theme === 'dark' ? 'bg-gray-900' : 'bg-gray-800'
-          }`}>
+          <div
+            className={`flex items-center justify-between h-16 px-4 ${
+              theme === 'dark' ? 'bg-gray-900' : 'bg-gray-800'
+            }`}
+          >
             <Link
               to="/"
               className="text-xl font-bold text-white hover:text-gray-200 transition-colors"
@@ -206,7 +220,7 @@ const AdminLayout: React.FC = () => {
 
           {/* Navigation */}
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
-            {navigation.map((item) => (
+            {navigation.map(item => (
               <div key={item.name}>
                 {item.children ? (
                   <div>
@@ -226,13 +240,13 @@ const AdminLayout: React.FC = () => {
                     </button>
                     {expandedGroups.includes(item.name) && (
                       <div className="space-y-1 ml-2 mt-1">
-                        {item.children.map((child) => (
+                        {item.children.map(child => (
                           <Link
                             key={child.name}
                             to={child.href}
                             className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-150 ${
                               location.pathname === child.href
-                                ? theme === 'dark' 
+                                ? theme === 'dark'
                                   ? 'bg-gray-700 text-white shadow-sm'
                                   : 'bg-gray-800 text-white shadow-sm'
                                 : 'text-gray-300 hover:bg-gray-700 hover:text-white hover:translate-x-1'
@@ -294,12 +308,12 @@ const AdminLayout: React.FC = () => {
           <button
             onClick={toggleTheme}
             className={`p-2 rounded-md transition-colors ${
-              theme === 'dark' 
-                ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
+              theme === 'dark'
+                ? 'text-gray-300 hover:text-white hover:bg-gray-700'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
             }`}
-            aria-label={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
-            title={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>

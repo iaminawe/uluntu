@@ -51,24 +51,20 @@ const initialState: NewsState = {
   filters: {},
   status: 'idle',
   filteredStatus: 'idle',
-  error: null
+  error: null,
 };
 
 // Async thunks
-export const fetchNewsArticles = createAsyncThunk(
-  'news/fetchNewsArticles',
-  async (_, { rejectWithValue }) => {
-    try {
-      
-      console.log('[NewsSlice] Fetching from Supabase...');
-      const articles = await newsApi.getAll();
-      console.log('[NewsSlice] Received articles:', articles?.length || 0);
-      return articles || [];
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch news articles');
-    }
+export const fetchNewsArticles = createAsyncThunk('news/fetchNewsArticles', async (_, { rejectWithValue }) => {
+  try {
+    console.log('[NewsSlice] Fetching from Supabase...');
+    const articles = await newsApi.getAll();
+    console.log('[NewsSlice] Received articles:', articles?.length || 0);
+    return articles || [];
+  } catch (error) {
+    return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch news articles');
   }
-);
+});
 
 export const fetchNewsArticleById = createAsyncThunk(
   'news/fetchNewsArticleById',
@@ -95,7 +91,9 @@ export const fetchNewsArticleBySlug = createAsyncThunk(
         return article || null;
       }
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch news article with slug: ${slug}`);
+      return rejectWithValue(
+        error instanceof Error ? error.message : `Failed to fetch news article with slug: ${slug}`
+      );
     }
   }
 );
@@ -110,29 +108,30 @@ export const fetchFilteredNewsArticles = createAsyncThunk(
       } else {
         // Mock filtering logic
         let filteredArticles = mockData.newsArticles || [];
-        
+
         if (filters.search) {
           const searchTerm = filters.search.toLowerCase();
-          filteredArticles = filteredArticles.filter(article =>
-            article.title.toLowerCase().includes(searchTerm) ||
-            (article.content && article.content.toLowerCase().includes(searchTerm))
+          filteredArticles = filteredArticles.filter(
+            article =>
+              article.title.toLowerCase().includes(searchTerm) ||
+              (article.content && article.content.toLowerCase().includes(searchTerm))
           );
         }
-        
+
         if (filters.tags && filters.tags.length > 0) {
-          filteredArticles = filteredArticles.filter(article =>
-            article.tags && filters.tags!.some(tag => article.tags!.includes(tag))
+          filteredArticles = filteredArticles.filter(
+            article => article.tags && filters.tags!.some(tag => article.tags!.includes(tag))
           );
         }
-        
+
         if (filters.featured !== undefined) {
           filteredArticles = filteredArticles.filter(article => article.featured === filters.featured);
         }
-        
+
         if (filters.status) {
           filteredArticles = filteredArticles.filter(article => article.status === filters.status);
         }
-        
+
         const articles = filteredArticles;
         return articles;
       }
@@ -151,17 +150,18 @@ export const fetchRelatedNewsArticles = createAsyncThunk(
       } else {
         const article = mockData.newsArticles.find(a => a.id === id);
         if (!article) return [];
-        
+
         // Find related articles based on shared tags
         const relatedArticles = mockData.newsArticles
-          .filter(a => a.id !== id && a.tags && article.tags && 
-            a.tags.some(tag => article.tags!.includes(tag)))
+          .filter(a => a.id !== id && a.tags && article.tags && a.tags.some(tag => article.tags!.includes(tag)))
           .slice(0, limit);
-        
+
         return relatedArticles;
       }
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch related news articles for ID: ${id}`);
+      return rejectWithValue(
+        error instanceof Error ? error.message : `Failed to fetch related news articles for ID: ${id}`
+      );
     }
   }
 );
@@ -204,7 +204,7 @@ export const createNewsArticle = createAsyncThunk(
           status: articleData.status || 'published',
           featured: articleData.featured || false,
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
         return newArticle as any;
       }
@@ -236,25 +236,22 @@ export const updateNewsArticle = createAsyncThunk(
   }
 );
 
-export const deleteNewsArticle = createAsyncThunk(
-  'news/deleteNewsArticle',
-  async (id: string, { rejectWithValue }) => {
-    try {
-      if (getIsSupabaseEnabled()) {
-        const success = await newsApi.delete(id);
-        if (success) {
-          return id;
-        }
-        throw new Error(`Failed to delete news article with ID: ${id}`);
-      } else {
-        // Mock delete - just return the id to indicate success
+export const deleteNewsArticle = createAsyncThunk('news/deleteNewsArticle', async (id: string, { rejectWithValue }) => {
+  try {
+    if (getIsSupabaseEnabled()) {
+      const success = await newsApi.delete(id);
+      if (success) {
         return id;
       }
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : `Failed to delete news article with ID: ${id}`);
+      throw new Error(`Failed to delete news article with ID: ${id}`);
+    } else {
+      // Mock delete - just return the id to indicate success
+      return id;
     }
+  } catch (error) {
+    return rejectWithValue(error instanceof Error ? error.message : `Failed to delete news article with ID: ${id}`);
   }
-);
+});
 
 // Create the slice
 const newsSlice = createSlice({
@@ -278,12 +275,12 @@ const newsSlice = createSlice({
       state.currentArticle = null;
       state.status = 'idle';
       state.filteredStatus = 'idle';
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       // Handle fetchNewsArticles
-      .addCase(fetchNewsArticles.pending, (state) => {
+      .addCase(fetchNewsArticles.pending, state => {
         state.status = 'loading';
       })
       .addCase(fetchNewsArticles.fulfilled, (state, action) => {
@@ -295,9 +292,9 @@ const newsSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      
+
       // Handle fetchNewsArticleById
-      .addCase(fetchNewsArticleById.pending, (state) => {
+      .addCase(fetchNewsArticleById.pending, state => {
         state.status = 'loading';
       })
       .addCase(fetchNewsArticleById.fulfilled, (state, action) => {
@@ -309,9 +306,9 @@ const newsSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      
+
       // Handle fetchNewsArticleBySlug
-      .addCase(fetchNewsArticleBySlug.pending, (state) => {
+      .addCase(fetchNewsArticleBySlug.pending, state => {
         state.status = 'loading';
       })
       .addCase(fetchNewsArticleBySlug.fulfilled, (state, action) => {
@@ -323,9 +320,9 @@ const newsSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      
+
       // Handle fetchFilteredNewsArticles
-      .addCase(fetchFilteredNewsArticles.pending, (state) => {
+      .addCase(fetchFilteredNewsArticles.pending, state => {
         state.filteredStatus = 'loading';
       })
       .addCase(fetchFilteredNewsArticles.fulfilled, (state, action) => {
@@ -337,9 +334,9 @@ const newsSlice = createSlice({
         state.filteredStatus = 'failed';
         state.error = action.payload as string;
       })
-      
+
       // Handle fetchRelatedNewsArticles
-      .addCase(fetchRelatedNewsArticles.pending, (state) => {
+      .addCase(fetchRelatedNewsArticles.pending, state => {
         state.status = 'loading';
       })
       .addCase(fetchRelatedNewsArticles.fulfilled, (state, action) => {
@@ -351,9 +348,9 @@ const newsSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      
+
       // Handle fetchFeaturedNewsArticles
-      .addCase(fetchFeaturedNewsArticles.pending, (state) => {
+      .addCase(fetchFeaturedNewsArticles.pending, state => {
         state.status = 'loading';
       })
       .addCase(fetchFeaturedNewsArticles.fulfilled, (state, action) => {
@@ -365,7 +362,7 @@ const newsSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      
+
       // Handle createNewsArticle
       .addCase(createNewsArticle.fulfilled, (state, action) => {
         if (action.payload) {
@@ -376,7 +373,7 @@ const newsSlice = createSlice({
       .addCase(createNewsArticle.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      
+
       // Handle updateNewsArticle
       .addCase(updateNewsArticle.fulfilled, (state, action) => {
         if (action.payload) {
@@ -384,19 +381,19 @@ const newsSlice = createSlice({
           if (index !== -1) {
             state.articles[index] = action.payload;
           }
-          
+
           // Update in filteredArticles if present
           const filteredIndex = state.filteredArticles.findIndex(article => article.id === action.payload?.id);
           if (filteredIndex !== -1) {
             state.filteredArticles[filteredIndex] = action.payload;
           }
-          
+
           // Update in featuredArticles if present
           const featuredIndex = state.featuredArticles.findIndex(article => article.id === action.payload?.id);
           if (featuredIndex !== -1) {
             state.featuredArticles[featuredIndex] = action.payload;
           }
-          
+
           // Update currentArticle if it's the same as the updated one
           if (state.currentArticle?.id === action.payload.id) {
             state.currentArticle = action.payload as any;
@@ -407,7 +404,7 @@ const newsSlice = createSlice({
       .addCase(updateNewsArticle.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      
+
       // Handle deleteNewsArticle
       .addCase(deleteNewsArticle.fulfilled, (state, action) => {
         const id = action.payload;
@@ -422,7 +419,7 @@ const newsSlice = createSlice({
       .addCase(deleteNewsArticle.rejected, (state, action) => {
         state.error = action.payload as string;
       });
-  }
+  },
 });
 
 // Export actions and reducer

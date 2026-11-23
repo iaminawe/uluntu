@@ -15,11 +15,12 @@ export default function AppLayout() {
   const [showContent, setShowContent] = useState(false);
 
   // Skip onboarding for auth routes and onboarding routes
-  const shouldSkipOnboarding = location.pathname.startsWith('/signin') || 
-                               location.pathname.startsWith('/signup') || 
-                               location.pathname.startsWith('/onboarding') ||
-                               location.pathname.startsWith('/forgot-password') ||
-                               location.pathname.startsWith('/reset-password');
+  const shouldSkipOnboarding =
+    location.pathname.startsWith('/signin') ||
+    location.pathname.startsWith('/signup') ||
+    location.pathname.startsWith('/onboarding') ||
+    location.pathname.startsWith('/forgot-password') ||
+    location.pathname.startsWith('/reset-password');
 
   // Show content after a short delay to prevent flash of loading
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function AppLayout() {
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
         {/* Show header skeleton immediately */}
         <div className="h-16 bg-gradient-to-r from-orange-500 to-red-500"></div>
-        
+
         <div className="flex flex-col justify-center items-center py-16">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500 mb-3"></div>
           <p className="text-slate-600 dark:text-slate-300 text-sm">Initializing...</p>

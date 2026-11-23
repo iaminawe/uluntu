@@ -12,7 +12,7 @@
   "include": [
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
-    "src/**/*.spec.ts", 
+    "src/**/*.spec.ts",
     "src/**/*.spec.tsx",
     "tests/**/*.test.ts",
     "tests/**/*.test.tsx",
@@ -21,10 +21,5 @@
     "src/__mocks__/**/*",
     "src/test-utils/**/*"
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "coverage"
-  ]
+  "exclude": ["node_modules", "dist", "build", "coverage"]
 }

@@ -22,7 +22,7 @@ import {
   X,
   Save,
   Trash2,
-  Eye
+  Eye,
 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import type { ContactSubmission } from '@/features/contact/api/contactSubmissionsApi';
@@ -59,7 +59,7 @@ const ContactInboxDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  
+
   const [newNote, setNewNote] = useState('');
   const [newTag, setNewTag] = useState({ name: '', color: '#6B7280' });
   const [showAddTag, setShowAddTag] = useState(false);
@@ -73,18 +73,20 @@ const ContactInboxDetailPage: React.FC = () => {
       if (!id) throw new Error('Submission ID is required');
       const { data, error } = await (supabase as any)
         .from('contact_submissions')
-        .select(`
+        .select(
+          `
           *,
           assigned_user:assigned_to(email),
           member:member_id(name, image)
-        `)
+        `
+        )
         .eq('id', id)
         .single();
-      
+
       if (error) throw error;
       return data as ContactSubmission;
     },
-    enabled: !!id
+    enabled: !!id,
   });
 
   // Fetch submission notes
@@ -94,17 +96,19 @@ const ContactInboxDetailPage: React.FC = () => {
       if (!id) throw new Error('Submission ID is required');
       const { data, error } = await (supabase as any)
         .from('contact_submission_notes')
-        .select(`
+        .select(
+          `
           *,
           creator:created_by(email)
-        `)
+        `
+        )
         .eq('submission_id', id)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as SubmissionNote[];
     },
-    enabled: !!id
+    enabled: !!id,
   });
 
   // Fetch submission tags
@@ -117,11 +121,11 @@ const ContactInboxDetailPage: React.FC = () => {
         .select('*')
         .eq('submission_id', id)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as SubmissionTag[];
     },
-    enabled: !!id
+    enabled: !!id,
   });
 
   // Fetch admin users for assignment
@@ -130,107 +134,111 @@ const ContactInboxDetailPage: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from('user_roles')
-        .select(`
+        .select(
+          `
           user_id,
           users:user_id(email)
-        `)
+        `
+        )
         .in('role', ['admin', 'superadmin']);
-      
+
       if (error) throw error;
-      return data?.map((item: AdminUser) => ({
-        id: item.user_id,
-        email: item.users?.email
-      })) || [];
-    }
+      return (
+        data?.map((item: AdminUser) => ({
+          id: item.user_id,
+          email: item.users?.email,
+        })) || []
+      );
+    },
   });
 
   // Update submission mutation
   const updateSubmissionMutation = useMutation({
     mutationFn: async (updates: Partial<ContactSubmission>) => {
       if (!id) throw new Error('Submission ID is required');
-      const { error } = await (supabase as any)
-        .from('contact_submissions')
-        .update(updates)
-        .eq('id', id);
+      const { error } = await (supabase as any).from('contact_submissions').update(updates).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submission', id] });
       queryClient.invalidateQueries({ queryKey: ['admin-contact-submissions'] });
-    }
+    },
   });
 
   // Add note mutation
   const addNoteMutation = useMutation({
     mutationFn: async (noteText: string) => {
       if (!id) throw new Error('Submission ID is required');
-      const { error } = await (supabase as any)
-        .from('contact_submission_notes')
-        .insert({
-          submission_id: id,
-          note_text: noteText,
-          note_type: 'internal',
-          is_internal: true
-        });
+      const { error } = await (supabase as any).from('contact_submission_notes').insert({
+        submission_id: id,
+        note_text: noteText,
+        note_type: 'internal',
+        is_internal: true,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submission-notes', id] });
       setNewNote('');
-    }
+    },
   });
 
   // Add tag mutation
   const addTagMutation = useMutation({
     mutationFn: async (tag: { name: string; color: string }) => {
       if (!id) throw new Error('Submission ID is required');
-      const { error } = await (supabase as any)
-        .from('contact_submission_tags')
-        .insert({
-          submission_id: id,
-          tag_name: tag.name,
-          tag_color: tag.color
-        });
+      const { error } = await (supabase as any).from('contact_submission_tags').insert({
+        submission_id: id,
+        tag_name: tag.name,
+        tag_color: tag.color,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submission-tags', id] });
       setNewTag({ name: '', color: '#6B7280' });
       setShowAddTag(false);
-    }
+    },
   });
 
   // Remove tag mutation
   const removeTagMutation = useMutation({
     mutationFn: async (tagId: string) => {
-      const { error } = await (supabase as any)
-        .from('contact_submission_tags')
-        .delete()
-        .eq('id', tagId);
+      const { error } = await (supabase as any).from('contact_submission_tags').delete().eq('id', tagId);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submission-tags', id] });
-    }
+    },
   });
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'open': return <Clock className="h-5 w-5 text-orange-500" />;
-      case 'in_progress': return <Clock3 className="h-5 w-5 text-blue-500" />;
-      case 'closed': return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'spam': return <XCircle className="h-5 w-5 text-red-500" />;
-      default: return <Clock className="h-5 w-5 text-gray-500" />;
+      case 'open':
+        return <Clock className="h-5 w-5 text-orange-500" />;
+      case 'in_progress':
+        return <Clock3 className="h-5 w-5 text-blue-500" />;
+      case 'closed':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'spam':
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      default:
+        return <Clock className="h-5 w-5 text-gray-500" />;
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800 border-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'medium': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'low': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'urgent':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'high':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'medium':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'low':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -243,8 +251,8 @@ const ContactInboxDetailPage: React.FC = () => {
   };
 
   const handleAssignmentSave = () => {
-    updateSubmissionMutation.mutate({ 
-      assigned_to: selectedAssignee || undefined 
+    updateSubmissionMutation.mutate({
+      assigned_to: selectedAssignee || undefined,
     });
     setIsEditingAssignment(false);
   };
@@ -293,7 +301,7 @@ const ContactInboxDetailPage: React.FC = () => {
             <p className="text-gray-600 dark:text-gray-400">#{submission.id.slice(0, 8)}</p>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           {submission.member_id && (
             <Link
@@ -324,9 +332,7 @@ const ContactInboxDetailPage: React.FC = () => {
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900">{submission.name}</h2>
                   <p className="text-gray-600">{submission.email}</p>
-                  {submission.phone && (
-                    <p className="text-gray-600 text-sm">{submission.phone}</p>
-                  )}
+                  {submission.phone && <p className="text-gray-600 text-sm">{submission.phone}</p>}
                 </div>
               </div>
               <div className="text-right">
@@ -334,9 +340,7 @@ const ContactInboxDetailPage: React.FC = () => {
                   <Calendar className="h-4 w-4 mr-1" />
                   {new Date(submission.created_at).toLocaleDateString()}
                 </div>
-                <p className="text-xs text-gray-400">
-                  {new Date(submission.created_at).toLocaleTimeString()}
-                </p>
+                <p className="text-xs text-gray-400">{new Date(submission.created_at).toLocaleTimeString()}</p>
               </div>
             </div>
 
@@ -359,50 +363,45 @@ const ContactInboxDetailPage: React.FC = () => {
                   Add Tag
                 </button>
               </div>
-              
+
               <div className="flex flex-wrap gap-2">
                 {tags?.map(tag => (
                   <span
                     key={tag.id}
                     className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
-                    style={{ backgroundColor: tag.tag_color + '20', color: tag.tag_color, borderColor: tag.tag_color + '40' }}
+                    style={{
+                      backgroundColor: tag.tag_color + '20',
+                      color: tag.tag_color,
+                      borderColor: tag.tag_color + '40',
+                    }}
                   >
                     {tag.tag_name}
-                    <button
-                      onClick={() => removeTagMutation.mutate(tag.id)}
-                      className="ml-1 hover:text-red-500"
-                    >
+                    <button onClick={() => removeTagMutation.mutate(tag.id)} className="ml-1 hover:text-red-500">
                       <X className="h-3 w-3" />
                     </button>
                   </span>
                 ))}
-                
+
                 {showAddTag && (
                   <div className="inline-flex items-center space-x-2 bg-gray-50 rounded-lg px-2 py-1">
                     <input
                       type="text"
                       placeholder="Tag name"
                       value={newTag.name}
-                      onChange={(e) => setNewTag({ ...newTag, name: e.target.value })}
+                      onChange={e => setNewTag({ ...newTag, name: e.target.value })}
                       className="w-20 px-2 py-1 text-xs border-0 bg-transparent focus:ring-0"
-                      onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
+                      onKeyDown={e => e.key === 'Enter' && handleAddTag()}
                     />
                     <input
                       type="color"
                       value={newTag.color}
-                      onChange={(e) => setNewTag({ ...newTag, color: e.target.value })}
+                      onChange={e => setNewTag({ ...newTag, color: e.target.value })}
                       className="w-6 h-6 rounded border-0"
                     />
-                    <button
-                      onClick={handleAddTag}
-                      className="text-green-600 hover:text-green-700"
-                    >
+                    <button onClick={handleAddTag} className="text-green-600 hover:text-green-700">
                       <Save className="h-3 w-3" />
                     </button>
-                    <button
-                      onClick={() => setShowAddTag(false)}
-                      className="text-red-600 hover:text-red-700"
-                    >
+                    <button onClick={() => setShowAddTag(false)} className="text-red-600 hover:text-red-700">
                       <X className="h-3 w-3" />
                     </button>
                   </div>
@@ -414,12 +413,12 @@ const ContactInboxDetailPage: React.FC = () => {
           {/* Notes and Comments */}
           <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Internal Notes</h3>
-            
+
             {/* Add Note Form */}
             <div className="mb-6">
               <textarea
                 value={newNote}
-                onChange={(e) => setNewNote(e.target.value)}
+                onChange={e => setNewNote(e.target.value)}
                 placeholder="Add an internal note..."
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -442,16 +441,10 @@ const ContactInboxDetailPage: React.FC = () => {
                 <div key={note.id} className="border-l-4 border-blue-200 pl-4 py-2">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-gray-900">
-                        {note.creator?.email || 'System'}
-                      </span>
-                      {note.is_important && (
-                        <AlertCircle className="h-4 w-4 text-red-500" />
-                      )}
+                      <span className="text-sm font-medium text-gray-900">{note.creator?.email || 'System'}</span>
+                      {note.is_important && <AlertCircle className="h-4 w-4 text-red-500" />}
                     </div>
-                    <span className="text-xs text-gray-500">
-                      {new Date(note.created_at).toLocaleString()}
-                    </span>
+                    <span className="text-xs text-gray-500">{new Date(note.created_at).toLocaleString()}</span>
                   </div>
                   <p className="text-gray-700 text-sm whitespace-pre-wrap">{note.note_text}</p>
                   {note.note_type !== 'internal' && (
@@ -461,10 +454,8 @@ const ContactInboxDetailPage: React.FC = () => {
                   )}
                 </div>
               ))}
-              
-              {(!notes || notes.length === 0) && (
-                <p className="text-gray-500 text-sm italic">No notes yet</p>
-              )}
+
+              {(!notes || notes.length === 0) && <p className="text-gray-500 text-sm italic">No notes yet</p>}
             </div>
           </div>
         </div>
@@ -474,7 +465,7 @@ const ContactInboxDetailPage: React.FC = () => {
           {/* Status and Priority */}
           <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Status & Priority</h3>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
@@ -482,7 +473,7 @@ const ContactInboxDetailPage: React.FC = () => {
                   {getStatusIcon(submission.status)}
                   <select
                     value={submission.status}
-                    onChange={(e) => handleStatusChange(e.target.value)}
+                    onChange={e => handleStatusChange(e.target.value)}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="open">Open</option>
@@ -497,7 +488,7 @@ const ContactInboxDetailPage: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
                 <select
                   value={submission.priority}
-                  onChange={(e) => handlePriorityChange(e.target.value)}
+                  onChange={e => handlePriorityChange(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="low">Low</option>
@@ -523,17 +514,19 @@ const ContactInboxDetailPage: React.FC = () => {
                 <Edit3 className="h-4 w-4" />
               </button>
             </div>
-            
+
             {isEditingAssignment ? (
               <div className="space-y-3">
                 <select
                   value={selectedAssignee}
-                  onChange={(e) => setSelectedAssignee(e.target.value)}
+                  onChange={e => setSelectedAssignee(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Unassigned</option>
                   {adminUsers?.map((user: MappedAdminUser) => (
-                    <option key={user.id} value={user.id}>{user.email}</option>
+                    <option key={user.id} value={user.id}>
+                      {user.email}
+                    </option>
                   ))}
                 </select>
                 <div className="flex space-x-2">
@@ -571,37 +564,35 @@ const ContactInboxDetailPage: React.FC = () => {
           {/* Submission Info */}
           <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Submission Info</h3>
-            
+
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Type:</span>
                 <span className="text-gray-900 capitalize">{submission.submission_type}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-gray-600">Source:</span>
                 <span className="text-gray-900 capitalize">{submission.source}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-gray-600">Member:</span>
                 <span className="text-gray-900">{submission.is_member ? 'Yes' : 'No'}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-gray-600">Responses:</span>
                 <span className="text-gray-900">{submission.response_count}</span>
               </div>
-              
+
               {submission.first_response_at && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">First Response:</span>
-                  <span className="text-gray-900">
-                    {new Date(submission.first_response_at).toLocaleDateString()}
-                  </span>
+                  <span className="text-gray-900">{new Date(submission.first_response_at).toLocaleDateString()}</span>
                 </div>
               )}
-              
+
               {submission.ip_address && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">IP Address:</span>

@@ -30,29 +30,29 @@ async function createStorageBuckets() {
       name: 'content-images',
       public: true,
       file_size_limit: 10485760, // 10MB
-      allowed_mime_types: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
+      allowed_mime_types: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
     },
     {
       id: 'profile-images',
       name: 'profile-images',
       public: true,
       file_size_limit: 5242880, // 5MB
-      allowed_mime_types: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+      allowed_mime_types: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
     },
     {
       id: 'background-images',
       name: 'background-images',
       public: true,
       file_size_limit: 10485760, // 10MB
-      allowed_mime_types: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
-    }
+      allowed_mime_types: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
+    },
   ];
 
   for (const bucket of buckets) {
     try {
       // Check if bucket exists
       const { data: existingBucket, error: checkError } = await supabase.storage.getBucket(bucket.id);
-      
+
       if (existingBucket) {
         console.log(`✅ Bucket '${bucket.id}' already exists`);
         continue;
@@ -62,7 +62,7 @@ async function createStorageBuckets() {
       const { data, error } = await supabase.storage.createBucket(bucket.id, {
         public: bucket.public,
         fileSizeLimit: bucket.file_size_limit,
-        allowedMimeTypes: bucket.allowed_mime_types
+        allowedMimeTypes: bucket.allowed_mime_types,
       });
 
       if (error) {

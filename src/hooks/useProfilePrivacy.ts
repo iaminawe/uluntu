@@ -29,20 +29,19 @@ export function useProfilePrivacy(member: Member | null) {
   const updatePrivacyMutation = useMutation({
     mutationFn: async (newSettings: Partial<ProfilePrivacySettings>) => {
       if (!member?.id) throw new Error('No member profile found');
-      
-      const status: ContentStatus = newSettings.isPublic !== undefined 
-        ? (newSettings.isPublic ? 'published' : 'draft')
-        : member.status;
+
+      const status: ContentStatus =
+        newSettings.isPublic !== undefined ? (newSettings.isPublic ? 'published' : 'draft') : member.status;
 
       return await membersApi.update(member.id, { status });
     },
     onSuccess: () => {
       // Invalidate member queries to refresh data
       queryClient.invalidateQueries({
-        queryKey: ['member', 'current']
+        queryKey: ['member', 'current'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['members']
+        queryKey: ['members'],
       });
     },
   });
@@ -52,7 +51,7 @@ export function useProfilePrivacy(member: Member | null) {
    */
   const togglePublicVisibility = async () => {
     if (isUpdating) return;
-    
+
     setIsUpdating(true);
     try {
       const newIsPublic = !currentSettings.isPublic;
@@ -67,7 +66,7 @@ export function useProfilePrivacy(member: Member | null) {
    */
   const setProfilePrivate = async () => {
     if (isUpdating) return;
-    
+
     setIsUpdating(true);
     try {
       await updatePrivacyMutation.mutateAsync({ isPublic: false });
@@ -81,7 +80,7 @@ export function useProfilePrivacy(member: Member | null) {
    */
   const setProfilePublic = async () => {
     if (isUpdating) return;
-    
+
     setIsUpdating(true);
     try {
       await updatePrivacyMutation.mutateAsync({ isPublic: true });
@@ -95,7 +94,7 @@ export function useProfilePrivacy(member: Member | null) {
    */
   const updateStatus = async (status: ContentStatus) => {
     if (isUpdating) return;
-    
+
     setIsUpdating(true);
     try {
       const isPublic = status === 'published';

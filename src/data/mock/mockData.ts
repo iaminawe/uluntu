@@ -23,13 +23,7 @@ import { MarketplaceListing } from '../../types/marketplace';
 export type { MarketplaceListing };
 
 // Re-export common types from centralized location
-export type {
-  BaseEntity,
-  ContentStatus,
-  SocialLinks,
-  Location,
-  DateRange
-} from '../../types/common';
+export type { BaseEntity, ContentStatus, SocialLinks, Location, DateRange } from '../../types/common';
 
 // Default export object containing all mock data
 const mockData = {
@@ -40,7 +34,7 @@ const mockData = {
   newsArticles,
   opportunities,
   marketplaceListings,
-  resources
+  resources,
 };
 
 export default mockData;

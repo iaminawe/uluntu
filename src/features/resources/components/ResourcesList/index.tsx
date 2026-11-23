@@ -26,16 +26,16 @@ const ResourcesList = ({ resources }: ResourcesListProps) => {
   // Get pagination details
   const totalItems = filteredResources.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-  
+
   // Get paginated resources
   const paginatedResources = filteredResources.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handlePreviousPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
+    setCurrentPage(prev => Math.max(prev - 1, 1));
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
   return (
@@ -46,9 +46,10 @@ const ResourcesList = ({ resources }: ResourcesListProps) => {
           <button
             onClick={() => setSelectedType('all')}
             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
-              ${selectedType === 'all'
-                ? 'bg-orange-500 text-white'
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              ${
+                selectedType === 'all'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
               }`}
           >
             All Types
@@ -58,9 +59,10 @@ const ResourcesList = ({ resources }: ResourcesListProps) => {
               key={type}
               onClick={() => setSelectedType(type as Resource['type'])}
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors flex items-center
-                ${selectedType === type
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                ${
+                  selectedType === type
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
                 }`}
             >
               {getTypeIcon(type)}
@@ -70,15 +72,15 @@ const ResourcesList = ({ resources }: ResourcesListProps) => {
         </div>
       </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6"> {/* Adjusted grid for potentially 2 items per row with 10 items total for better layout consistency, can be tweaked further if needed */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+        {' '}
+        {/* Adjusted grid for potentially 2 items per row with 10 items total for better layout consistency, can be tweaked further if needed */}
         {paginatedResources.map(resource => (
           <ResourceCard key={resource.id} resource={resource} />
         ))}
       </div>
 
-      {showModal && (
-        <ResourceModal onClose={() => setShowModal(false)} />
-      )}
+      {showModal && <ResourceModal onClose={() => setShowModal(false)} />}
 
       {/* Pagination Controls */}
       {totalPages > 1 && (

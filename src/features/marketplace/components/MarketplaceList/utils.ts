@@ -6,13 +6,13 @@ import { ListingType, ListingCondition, FilterOptions, MarketplaceListing } from
 export const getTypeIcon = (type: ListingType): React.ReactNode => {
   switch (type) {
     case 'product':
-      return React.createElement(ShoppingBag, { className: "h-4 w-4" });
+      return React.createElement(ShoppingBag, { className: 'h-4 w-4' });
     case 'service':
-      return React.createElement(Briefcase, { className: "h-4 w-4" });
+      return React.createElement(Briefcase, { className: 'h-4 w-4' });
     case 'equipment':
-      return React.createElement(Monitor, { className: "h-4 w-4" });
+      return React.createElement(Monitor, { className: 'h-4 w-4' });
     default:
-      return React.createElement(ShoppingBag, { className: "h-4 w-4" });
+      return React.createElement(ShoppingBag, { className: 'h-4 w-4' });
   }
 };
 
@@ -51,7 +51,10 @@ export const getConditionDisplayName = (condition: ListingCondition): string => 
       // This is a type guard to ensure we handle the case properly
       // In reality, this should never happen as we've covered all ListingCondition values
       const unknownCondition = condition as string;
-      return unknownCondition.split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      return unknownCondition
+        .split('-')
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
     }
   }
 };
@@ -67,32 +70,36 @@ export const filterListings = (
     if (sellerId && listing.seller?.id !== sellerId) {
       return false;
     }
-    
+
     // Filter by search term
     if (filters.search && !matchesSearch(listing, filters.search)) {
       return false;
     }
-    
+
     // Filter by type
     if (filters.type !== 'all' && listing.type !== filters.type) {
       return false;
     }
-    
+
     // Filter by condition
     if (filters.condition !== 'all' && listing.condition !== filters.condition) {
       return false;
     }
-    
+
     // Filter by price range
-    if (filters.priceRange !== 'all' && listing.price !== null && !matchesPriceRange(listing.price, filters.priceRange)) {
+    if (
+      filters.priceRange !== 'all' &&
+      listing.price !== null &&
+      !matchesPriceRange(listing.price, filters.priceRange)
+    ) {
       return false;
     }
-    
+
     // Filter by tags
     if (filters.tags.length > 0 && listing.tags && !hasAnyTag(listing.tags, filters.tags)) {
       return false;
     }
-    
+
     return true;
   });
 };

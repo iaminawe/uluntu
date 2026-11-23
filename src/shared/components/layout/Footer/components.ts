@@ -5,7 +5,12 @@ export { default as SocialLinks } from './SocialLinks';
 export { default as DynamicFooterMenu } from './DynamicFooterMenu';
 export { default as FooterMenuProvider, useFooterMenu } from './FooterMenuProvider';
 export { default as FooterPermissionGate, withFooterPermissions, useFooterPermissions } from './FooterPermissionGate';
-export { default as FooterFeatureGate, withFooterFeatureGate, useFooterFeatures, FooterFeatureDebug } from './FooterFeatureGate';
+export {
+  default as FooterFeatureGate,
+  withFooterFeatureGate,
+  useFooterFeatures,
+  FooterFeatureDebug,
+} from './FooterFeatureGate';
 
 // Export types
 export type {
@@ -19,5 +24,5 @@ export type {
   FooterMenuConfig,
   EnhancedFooterLink,
   EnhancedFooterColumn,
-  FeatureKey
+  FeatureKey,
 } from './types';

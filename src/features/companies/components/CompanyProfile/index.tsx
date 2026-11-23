@@ -18,19 +18,11 @@ const CompanyProfile = ({ companyId: _companyId }: CompanyProfileProps) => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <CompanyHeader 
-        company={company}
-        onContactClick={() => setShowContactModal(true)}
-      />
-      
+      <CompanyHeader company={company} onContactClick={() => setShowContactModal(true)} />
+
       <CompanyContent company={company} />
-      
-      {showContactModal && (
-        <ContactModal
-          company={company}
-          onClose={() => setShowContactModal(false)}
-        />
-      )}
+
+      {showContactModal && <ContactModal company={company} onClose={() => setShowContactModal(false)} />}
     </div>
   );
 };

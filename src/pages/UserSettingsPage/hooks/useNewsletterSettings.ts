@@ -9,10 +9,10 @@ const defaultNewsletterPreferences: NewsletterPreferences = {
     news: true,
     opportunities: true,
     marketplace: true,
-    members: false
+    members: false,
   },
   format: 'digest',
-  locationFilter: true
+  locationFilter: true,
 };
 
 /**
@@ -24,48 +24,45 @@ export const useNewsletterSettings = (initialData?: Partial<NewsletterPreference
     ...initialData,
     contentTypes: {
       ...defaultNewsletterPreferences.contentTypes,
-      ...initialData?.contentTypes
-    }
+      ...initialData?.contentTypes,
+    },
   });
 
-  const updateContentType = (
-    key: keyof NewsletterPreferences['contentTypes'],
-    value: boolean
-  ) => {
+  const updateContentType = (key: keyof NewsletterPreferences['contentTypes'], value: boolean) => {
     setNewsletterPreferences(prev => ({
       ...prev,
       contentTypes: {
         ...prev.contentTypes,
-        [key]: value
-      }
+        [key]: value,
+      },
     }));
   };
 
   const toggleSubscription = (subscribed: boolean) => {
     setNewsletterPreferences(prev => ({
       ...prev,
-      subscribed
+      subscribed,
     }));
   };
 
   const updateFrequency = (frequency: NewsletterPreferences['frequency']) => {
     setNewsletterPreferences(prev => ({
       ...prev,
-      frequency
+      frequency,
     }));
   };
 
   const updateFormat = (format: NewsletterPreferences['format']) => {
     setNewsletterPreferences(prev => ({
       ...prev,
-      format
+      format,
     }));
   };
 
   const toggleLocationFilter = (locationFilter: boolean) => {
     setNewsletterPreferences(prev => ({
       ...prev,
-      locationFilter
+      locationFilter,
     }));
   };
 
@@ -76,6 +73,6 @@ export const useNewsletterSettings = (initialData?: Partial<NewsletterPreference
     toggleSubscription,
     updateFrequency,
     updateFormat,
-    toggleLocationFilter
+    toggleLocationFilter,
   };
 };

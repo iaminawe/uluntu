@@ -15,7 +15,7 @@ export const useDragDropMenu = (
   const [hasChanges, setHasChanges] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  
+
   const originalItemsRef = useRef<MenuItem[]>(initialItems);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -27,38 +27,41 @@ export const useDragDropMenu = (
   }, []);
 
   // Auto-save functionality with debouncing
-  const saveChanges = useCallback(async (itemsToSave: MenuItem[]) => {
-    if (isSaving) return;
-    
-    setIsSaving(true);
-    setError(null);
-    
-    try {
-      // Convert to reorder format
-      const updates = itemsToSave.map((item, index) => ({
-        id: item.id,
-        order_index: index,
-        parent_id: item.parent_id || null
-      }));
+  const saveChanges = useCallback(
+    async (itemsToSave: MenuItem[]) => {
+      if (isSaving) return;
 
-      await menuManagementApi.reorderMenuItems(updates);
-      
-      setLastSaved(new Date());
-      setHasChanges(false);
-      originalItemsRef.current = [...itemsToSave];
-      
-      if (autoSave) {
-        toast.success('Menu changes saved automatically', { duration: 2000 });
+      setIsSaving(true);
+      setError(null);
+
+      try {
+        // Convert to reorder format
+        const updates = itemsToSave.map((item, index) => ({
+          id: item.id,
+          order_index: index,
+          parent_id: item.parent_id || null,
+        }));
+
+        await menuManagementApi.reorderMenuItems(updates);
+
+        setLastSaved(new Date());
+        setHasChanges(false);
+        originalItemsRef.current = [...itemsToSave];
+
+        if (autoSave) {
+          toast.success('Menu changes saved automatically', { duration: 2000 });
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to save changes';
+        setError(errorMessage);
+        toast.error(errorMessage);
+        throw err; // Re-throw for caller to handle rollback
+      } finally {
+        setIsSaving(false);
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to save changes';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw err; // Re-throw for caller to handle rollback
-    } finally {
-      setIsSaving(false);
-    }
-  }, [isSaving, autoSave]);
+    },
+    [isSaving, autoSave]
+  );
 
   // Debounced auto-save effect
   useEffect(() => {
@@ -104,142 +107,139 @@ export const useDragDropMenu = (
   }, []);
 
   // Create new item
-  const createItem = useCallback(async (
-    itemData: Omit<MenuItem, 'id' | 'order_index'>,
-    menuType: 'main' | 'footer'
-  ): Promise<MenuItem> => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const newItem = await menuManagementApi.createMenuItem(itemData, menuType);
-      const updatedItems = [...items, newItem].sort((a, b) => 
-        (a.order_index || 0) - (b.order_index || 0)
-      );
-      updateItems(updatedItems);
-      toast.success('Menu item created successfully');
-      return newItem;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create item';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [items, updateItems]);
+  const createItem = useCallback(
+    async (itemData: Omit<MenuItem, 'id' | 'order_index'>, menuType: 'main' | 'footer'): Promise<MenuItem> => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const newItem = await menuManagementApi.createMenuItem(itemData, menuType);
+        const updatedItems = [...items, newItem].sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+        updateItems(updatedItems);
+        toast.success('Menu item created successfully');
+        return newItem;
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to create item';
+        setError(errorMessage);
+        toast.error(errorMessage);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [items, updateItems]
+  );
 
   // Update existing item
-  const updateItem = useCallback(async (updatedItem: MenuItem): Promise<MenuItem> => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const savedItem = await menuManagementApi.updateMenuItem(updatedItem);
-      const updatedItems = items.map(item => 
-        item.id === savedItem.id ? savedItem : item
-      );
-      updateItems(updatedItems);
-      toast.success('Menu item updated successfully');
-      return savedItem;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update item';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [items, updateItems]);
+  const updateItem = useCallback(
+    async (updatedItem: MenuItem): Promise<MenuItem> => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const savedItem = await menuManagementApi.updateMenuItem(updatedItem);
+        const updatedItems = items.map(item => (item.id === savedItem.id ? savedItem : item));
+        updateItems(updatedItems);
+        toast.success('Menu item updated successfully');
+        return savedItem;
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to update item';
+        setError(errorMessage);
+        toast.error(errorMessage);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [items, updateItems]
+  );
 
   // Delete item
-  const deleteItem = useCallback(async (itemId: string): Promise<void> => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      await menuManagementApi.deleteMenuItem(itemId);
-      const updatedItems = items.filter(item => item.id !== itemId);
-      updateItems(updatedItems);
-      toast.success('Menu item deleted successfully');
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete item';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [items, updateItems]);
+  const deleteItem = useCallback(
+    async (itemId: string): Promise<void> => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        await menuManagementApi.deleteMenuItem(itemId);
+        const updatedItems = items.filter(item => item.id !== itemId);
+        updateItems(updatedItems);
+        toast.success('Menu item deleted successfully');
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to delete item';
+        setError(errorMessage);
+        toast.error(errorMessage);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [items, updateItems]
+  );
 
   // Toggle item enabled status
-  const toggleItemEnabled = useCallback(async (
-    itemId: string, 
-    enabled: boolean
-  ): Promise<void> => {
-    setError(null);
-    
-    try {
-      const updatedItem = await menuManagementApi.toggleMenuItemStatus(itemId, enabled);
-      const updatedItems = items.map(item => 
-        item.id === itemId ? updatedItem : item
-      );
-      updateItems(updatedItems);
-      toast.success(`Menu item ${enabled ? 'enabled' : 'disabled'}`);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to toggle item status';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw err;
-    }
-  }, [items, updateItems]);
+  const toggleItemEnabled = useCallback(
+    async (itemId: string, enabled: boolean): Promise<void> => {
+      setError(null);
 
-  // Reorder items (for drag and drop)
-  const reorderItems = useCallback(async (
-    sourceIndex: number, 
-    destinationIndex: number,
-    optimisticUpdate: boolean = true
-  ): Promise<void> => {
-    const newItems = [...items];
-    const [movedItem] = newItems.splice(sourceIndex, 1);
-    newItems.splice(destinationIndex, 0, movedItem);
-
-    // Update order indices
-    const reorderedItems = newItems.map((item, index) => ({
-      ...item,
-      order_index: index
-    }));
-
-    if (optimisticUpdate) {
-      updateItems(reorderedItems);
-    }
-
-    if (autoSave) {
       try {
-        await saveChanges(reorderedItems);
+        const updatedItem = await menuManagementApi.toggleMenuItemStatus(itemId, enabled);
+        const updatedItems = items.map(item => (item.id === itemId ? updatedItem : item));
+        updateItems(updatedItems);
+        toast.success(`Menu item ${enabled ? 'enabled' : 'disabled'}`);
       } catch (err) {
-        // Rollback on error
-        if (optimisticUpdate) {
-          rollbackChanges();
-        }
+        const errorMessage = err instanceof Error ? err.message : 'Failed to toggle item status';
+        setError(errorMessage);
+        toast.error(errorMessage);
         throw err;
       }
-    }
-  }, [items, updateItems, autoSave, saveChanges, rollbackChanges]);
+    },
+    [items, updateItems]
+  );
+
+  // Reorder items (for drag and drop)
+  const reorderItems = useCallback(
+    async (sourceIndex: number, destinationIndex: number, optimisticUpdate: boolean = true): Promise<void> => {
+      const newItems = [...items];
+      const [movedItem] = newItems.splice(sourceIndex, 1);
+      newItems.splice(destinationIndex, 0, movedItem);
+
+      // Update order indices
+      const reorderedItems = newItems.map((item, index) => ({
+        ...item,
+        order_index: index,
+      }));
+
+      if (optimisticUpdate) {
+        updateItems(reorderedItems);
+      }
+
+      if (autoSave) {
+        try {
+          await saveChanges(reorderedItems);
+        } catch (err) {
+          // Rollback on error
+          if (optimisticUpdate) {
+            rollbackChanges();
+          }
+          throw err;
+        }
+      }
+    },
+    [items, updateItems, autoSave, saveChanges, rollbackChanges]
+  );
 
   // Get statistics
   const getStats = useCallback(() => {
     const enabled = items.filter(item => item.is_enabled).length;
     const disabled = items.length - enabled;
-    const hasChildren = items.filter(item => 
-      items.some(child => child.parent_id === item.id)
-    ).length;
+    const hasChildren = items.filter(item => items.some(child => child.parent_id === item.id)).length;
 
     return {
       total: items.length,
       enabled,
       disabled,
-      hasChildren
+      hasChildren,
     };
   }, [items]);
 
@@ -251,7 +251,7 @@ export const useDragDropMenu = (
     hasChanges,
     error,
     lastSaved,
-    
+
     // Actions
     updateItems,
     manualSave,
@@ -262,9 +262,9 @@ export const useDragDropMenu = (
     deleteItem,
     toggleItemEnabled,
     reorderItems,
-    
+
     // Utils
-    getStats
+    getStats,
   };
 };
 

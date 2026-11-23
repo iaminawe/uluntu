@@ -1,15 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Plus, 
-  Camera, 
-  Calendar, 
-  Newspaper, 
-  BookOpen, 
-  Users, 
-  ShoppingBag, 
-  Briefcase 
-} from 'lucide-react';
+import { Plus, Camera, Calendar, Newspaper, BookOpen, Users, ShoppingBag, Briefcase } from 'lucide-react';
 import { Card } from '@/shared/components/ui/Card';
 
 const QUICK_ACTIONS = [
@@ -19,7 +10,7 @@ const QUICK_ACTIONS = [
     icon: Camera,
     href: '/galleries/create',
     description: 'Create a new photo gallery',
-    category: 'content'
+    category: 'content',
   },
   {
     id: 'event',
@@ -27,7 +18,7 @@ const QUICK_ACTIONS = [
     icon: Calendar,
     href: '/events/create',
     description: 'Organize a new event',
-    category: 'content'
+    category: 'content',
   },
   {
     id: 'news',
@@ -35,7 +26,7 @@ const QUICK_ACTIONS = [
     icon: Newspaper,
     href: '/news/create',
     description: 'Share community news',
-    category: 'content'
+    category: 'content',
   },
   {
     id: 'resource',
@@ -43,7 +34,7 @@ const QUICK_ACTIONS = [
     icon: BookOpen,
     href: '/resources/create',
     description: 'Share helpful resources',
-    category: 'content'
+    category: 'content',
   },
   {
     id: 'group',
@@ -51,7 +42,7 @@ const QUICK_ACTIONS = [
     icon: Users,
     href: '/groups/create',
     description: 'Start a new group',
-    category: 'social'
+    category: 'social',
   },
   {
     id: 'marketplace',
@@ -59,7 +50,7 @@ const QUICK_ACTIONS = [
     icon: ShoppingBag,
     href: '/marketplace/create',
     description: 'Post a marketplace item',
-    category: 'content'
+    category: 'content',
   },
   {
     id: 'opportunity',
@@ -67,8 +58,8 @@ const QUICK_ACTIONS = [
     icon: Briefcase,
     href: '/opportunities/create',
     description: 'Share job opportunities',
-    category: 'content'
-  }
+    category: 'content',
+  },
 ];
 
 interface QuickActionsProps {
@@ -76,27 +67,24 @@ interface QuickActionsProps {
   className?: string;
 }
 
-export const QuickActions: React.FC<QuickActionsProps> = ({
-  layout = 'grid',
-  className = ''
-}) => {
+export const QuickActions: React.FC<QuickActionsProps> = ({ layout = 'grid', className = '' }) => {
   return (
     <Card className={`p-4 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium text-slate-900 dark:text-white">
-          Quick Actions
-        </h3>
+        <h3 className="text-lg font-medium text-slate-900 dark:text-white">Quick Actions</h3>
         <Plus className="h-5 w-5 text-slate-400" />
       </div>
-      
-      <div className={`
+
+      <div
+        className={`
         ${layout === 'grid' ? 'grid grid-cols-2 gap-3' : ''}
         ${layout === 'list' ? 'space-y-2' : ''}
         ${layout === 'horizontal' ? 'flex flex-wrap gap-2' : ''}
-      `}>
-        {QUICK_ACTIONS.map((action) => {
+      `}
+      >
+        {QUICK_ACTIONS.map(action => {
           const Icon = action.icon;
-          
+
           if (layout === 'list') {
             return (
               <Link
@@ -108,17 +96,13 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="ml-3 min-w-0 flex-1">
-                  <h4 className="text-sm font-medium text-slate-900 dark:text-white">
-                    {action.label}
-                  </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                    {action.description}
-                  </p>
+                  <h4 className="text-sm font-medium text-slate-900 dark:text-white">{action.label}</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{action.description}</p>
                 </div>
               </Link>
             );
           }
-          
+
           if (layout === 'horizontal') {
             return (
               <Link
@@ -131,7 +115,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
               </Link>
             );
           }
-          
+
           // Grid layout (default)
           return (
             <Link
@@ -142,9 +126,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
               <div className="p-2 bg-orange-500 rounded-lg text-white group-hover:bg-orange-600 transition-colors mb-2">
                 <Icon className="h-5 w-5" />
               </div>
-              <h4 className="text-xs font-medium text-slate-900 dark:text-white">
-                {action.label}
-              </h4>
+              <h4 className="text-xs font-medium text-slate-900 dark:text-white">{action.label}</h4>
             </Link>
           );
         })}

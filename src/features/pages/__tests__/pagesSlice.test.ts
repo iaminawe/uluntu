@@ -13,14 +13,14 @@ import pagesReducer, {
   selectCurrentPage,
   selectPagesStatus,
   selectPagesError,
-  selectPagesFilters
+  selectPagesFilters,
 } from '../store/pagesSlice';
 import type { PagesState } from '../store/pagesSlice';
 import type { Page, PageInput } from '../types';
 
 // Mock the environment config
 jest.mock('@/config/env', () => ({
-  getIsSupabaseEnabled: () => false
+  getIsSupabaseEnabled: () => false,
 }));
 
 // Mock the API
@@ -32,8 +32,8 @@ jest.mock('../api/pagesApi', () => ({
     getHomePage: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
-    delete: jest.fn()
-  }
+    delete: jest.fn(),
+  },
 }));
 
 const mockPage: Page = {
@@ -48,13 +48,13 @@ const mockPage: Page = {
   is_published: true,
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
-  tags: []
+  tags: [],
 };
 
 const mockPageInput: PageInput = {
   title: 'New Page',
   content: '<p>New content</p>',
-  status: 'draft'
+  status: 'draft',
 };
 
 describe('pagesSlice', () => {
@@ -63,15 +63,15 @@ describe('pagesSlice', () => {
   beforeEach(() => {
     store = configureStore({
       reducer: {
-        pages: pagesReducer
-      }
+        pages: pagesReducer,
+      },
     });
   });
 
   describe('initial state', () => {
     it('should have correct initial state', () => {
       const state = store.getState().pages;
-      
+
       expect(state).toEqual({
         pages: [],
         currentPage: null,
@@ -82,7 +82,7 @@ describe('pagesSlice', () => {
         status: 'idle',
         filteredStatus: 'idle',
         currentPageStatus: 'idle',
-        error: null
+        error: null,
       });
     });
   });
@@ -91,7 +91,7 @@ describe('pagesSlice', () => {
     it('should handle setFilters', () => {
       const filters = { search: 'test', status: 'published' as const };
       store.dispatch(setFilters(filters));
-      
+
       const state = store.getState().pages;
       expect(state.filters).toEqual(filters);
     });
@@ -99,10 +99,10 @@ describe('pagesSlice', () => {
     it('should handle clearFilters', () => {
       // First set some filters
       store.dispatch(setFilters({ search: 'test' }));
-      
+
       // Then clear them
       store.dispatch(clearFilters());
-      
+
       const state = store.getState().pages;
       expect(state.filters).toEqual({});
     });
@@ -112,9 +112,9 @@ describe('pagesSlice', () => {
     describe('fetchPages', () => {
       it('should handle fulfilled state', async () => {
         const pages = [mockPage];
-        
+
         await store.dispatch(fetchPages());
-        
+
         const state = store.getState().pages;
         expect(state.status).toBe('succeeded');
         expect(state.pages).toHaveLength(3); // Mock data has 3 pages
@@ -125,7 +125,7 @@ describe('pagesSlice', () => {
     describe('fetchPageById', () => {
       it('should handle fulfilled state with valid page', async () => {
         await store.dispatch(fetchPageById('1'));
-        
+
         const state = store.getState().pages;
         expect(state.currentPageStatus).toBe('succeeded');
         expect(state.currentPage).toBeTruthy();
@@ -134,7 +134,7 @@ describe('pagesSlice', () => {
 
       it('should handle fulfilled state with null result', async () => {
         await store.dispatch(fetchPageById('999'));
-        
+
         const state = store.getState().pages;
         expect(state.currentPageStatus).toBe('succeeded');
         expect(state.currentPage).toBeNull();
@@ -145,7 +145,7 @@ describe('pagesSlice', () => {
     describe('fetchPageBySlug', () => {
       it('should handle fulfilled state with valid slug', async () => {
         await store.dispatch(fetchPageBySlug('home'));
-        
+
         const state = store.getState().pages;
         expect(state.currentPageStatus).toBe('succeeded');
         expect(state.currentPage).toBeTruthy();
@@ -156,7 +156,7 @@ describe('pagesSlice', () => {
     describe('fetchHomePage', () => {
       it('should handle fulfilled state', async () => {
         await store.dispatch(fetchHomePage());
-        
+
         const state = store.getState().pages;
         expect(state.currentPageStatus).toBe('succeeded');
         expect(state.homePage).toBeTruthy();
@@ -167,7 +167,7 @@ describe('pagesSlice', () => {
     describe('createPage', () => {
       it('should handle fulfilled state', async () => {
         await store.dispatch(createPage(mockPageInput));
-        
+
         const state = store.getState().pages;
         expect(state.pages).toHaveLength(4); // 3 initial + 1 new
         expect(state.error).toBeNull();
@@ -178,10 +178,10 @@ describe('pagesSlice', () => {
       it('should handle fulfilled state', async () => {
         // First add a page to the store
         await store.dispatch(createPage(mockPageInput));
-        
+
         const updateData = { title: 'Updated Title' };
         await store.dispatch(updatePage({ id: '1', data: updateData }));
-        
+
         const state = store.getState().pages;
         expect(state.error).toBeNull();
       });
@@ -191,9 +191,9 @@ describe('pagesSlice', () => {
       it('should handle fulfilled state', async () => {
         // First add a page to the store
         await store.dispatch(createPage(mockPageInput));
-        
+
         await store.dispatch(deletePage('1'));
-        
+
         const state = store.getState().pages;
         expect(state.error).toBeNull();
       });

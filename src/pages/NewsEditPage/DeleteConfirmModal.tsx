@@ -5,7 +5,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   showDeleteConfirm,
   setShowDeleteConfirm,
   handleDelete,
-  isSubmitting = false
+  isSubmitting = false,
 }) => {
   return (
     <ConfirmDialog

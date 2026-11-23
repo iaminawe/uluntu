@@ -2,8 +2,30 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Building, Users, Calendar, BookOpen, Newspaper, Send, X, Package, Briefcase, Monitor, Globe, MapPin, Clock, Heart } from 'lucide-react';
-import { getGroupUrl, getEventUrl, getResourceUrl, getMarketplaceListingUrl, getGroupPostUrl } from '@/utils/contentUrlUtils';
+import {
+  Mail,
+  Building,
+  Users,
+  Calendar,
+  BookOpen,
+  Newspaper,
+  Send,
+  X,
+  Package,
+  Briefcase,
+  Monitor,
+  Globe,
+  MapPin,
+  Clock,
+  Heart,
+} from 'lucide-react';
+import {
+  getGroupUrl,
+  getEventUrl,
+  getResourceUrl,
+  getMarketplaceListingUrl,
+  getGroupPostUrl,
+} from '@/utils/contentUrlUtils';
 
 interface MemberGroup {
   id: number;
@@ -91,7 +113,7 @@ const SAMPLE_MEMBER: Member = {
   socialLinks: [
     { platform: 'GitHub', url: 'https://github.com/sarahjohnson' },
     { platform: 'LinkedIn', url: 'https://linkedin.com/in/sarahjohnson' },
-    { platform: 'Twitter', url: 'https://twitter.com/sarahjohnson' }
+    { platform: 'Twitter', url: 'https://twitter.com/sarahjohnson' },
   ],
   employmentStatus: 'freelance',
   openToVolunteering: true,
@@ -100,55 +122,55 @@ const SAMPLE_MEMBER: Member = {
     {
       id: 1,
       name: 'Mountain Tech Solutions',
-      role: 'Senior Developer'
+      role: 'Senior Developer',
     },
     {
       id: 2,
       name: 'Kootenay Code Club',
-      role: 'Mentor'
-    }
+      role: 'Mentor',
+    },
   ],
   groups: [
     {
       id: 1,
       name: 'AI Enthusiasts Kootenay',
       role: 'admin',
-      joinedDate: '2024-01-15'
+      joinedDate: '2024-01-15',
     },
     {
       id: 2,
       name: 'Kootenay Tech Organizers',
       role: 'member',
-      joinedDate: '2024-02-01'
-    }
+      joinedDate: '2024-02-01',
+    },
   ],
   events: [
     {
       id: 1,
       title: 'AI Ethics Workshop',
       date: '2024-02-15',
-      presentation: 'Ethics in Healthcare AI'
+      presentation: 'Ethics in Healthcare AI',
     },
     {
       id: 2,
       title: 'Machine Learning Study Group',
       date: '2024-03-01',
-      presentation: 'Introduction to Neural Networks'
-    }
+      presentation: 'Introduction to Neural Networks',
+    },
   ],
   resources: [
     {
       id: 1,
       title: 'Getting Started with AI',
       type: 'document',
-      date: '2024-02-01'
+      date: '2024-02-01',
     },
     {
       id: 2,
       title: 'ML Workshop Slides',
       type: 'presentation',
-      date: '2024-03-01'
-    }
+      date: '2024-03-01',
+    },
   ],
   posts: [
     {
@@ -156,10 +178,10 @@ const SAMPLE_MEMBER: Member = {
       title: 'Recap: February AI Ethics Workshop',
       group: {
         id: 1,
-        name: 'AI Enthusiasts Kootenay'
+        name: 'AI Enthusiasts Kootenay',
       },
-      date: '2024-02-16'
-    }
+      date: '2024-02-16',
+    },
   ],
   marketplaceListings: [
     {
@@ -168,7 +190,7 @@ const SAMPLE_MEMBER: Member = {
       type: 'service',
       price: 75,
       image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg',
-      createdAt: '2025-03-14'
+      createdAt: '2025-03-14',
     },
     {
       id: 2,
@@ -176,9 +198,9 @@ const SAMPLE_MEMBER: Member = {
       type: 'equipment',
       price: 2000,
       image: 'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg',
-      createdAt: '2025-03-15'
-    }
-  ]
+      createdAt: '2025-03-15',
+    },
+  ],
 };
 
 interface ContactModalProps {
@@ -202,14 +224,14 @@ function EditProfileModal({ member, onClose, onSave }: EditProfileModalProps) {
     employmentStatus: member.employmentStatus,
     openToVolunteering: member.openToVolunteering,
     arrivedInNelson: member.arrivedInNelson,
-    skills: member.skills.join(', ')
+    skills: member.skills.join(', '),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
       ...formData,
-      skills: formData.skills.split(',').map(skill => skill.trim())
+      skills: formData.skills.split(',').map(skill => skill.trim()),
     });
     onClose();
   };
@@ -218,7 +240,7 @@ function EditProfileModal({ member, onClose, onSave }: EditProfileModalProps) {
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
@@ -227,7 +249,10 @@ function EditProfileModal({ member, onClose, onSave }: EditProfileModalProps) {
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Edit Profile</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -317,7 +342,10 @@ function EditProfileModal({ member, onClose, onSave }: EditProfileModalProps) {
           </div>
 
           <div>
-            <label htmlFor="employmentStatus" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label
+              htmlFor="employmentStatus"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+            >
               Employment Status
             </label>
             <select
@@ -337,7 +365,10 @@ function EditProfileModal({ member, onClose, onSave }: EditProfileModalProps) {
           </div>
 
           <div>
-            <label htmlFor="arrivedInNelson" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label
+              htmlFor="arrivedInNelson"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+            >
               Arrived in Nelson
             </label>
             <input
@@ -376,7 +407,7 @@ function EditProfileModal({ member, onClose, onSave }: EditProfileModalProps) {
               id="openToVolunteering"
               name="openToVolunteering"
               checked={formData.openToVolunteering}
-              onChange={(e) => setFormData(prev => ({ ...prev, openToVolunteering: e.target.checked }))}
+              onChange={e => setFormData(prev => ({ ...prev, openToVolunteering: e.target.checked }))}
               className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-slate-300 dark:border-slate-600 rounded"
             />
             <label htmlFor="openToVolunteering" className="ml-2 text-sm text-slate-700 dark:text-slate-300">
@@ -410,7 +441,7 @@ function ContactModal({ member, onClose }: ContactModalProps) {
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -428,10 +459,11 @@ function ContactModal({ member, onClose }: ContactModalProps) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-lg w-full mx-4">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-            Contact {member.name}
-          </h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Contact {member.name}</h3>
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -538,7 +570,7 @@ function getTypeIcon(type: 'product' | 'service' | 'equipment') {
 export default function MemberProfile({ memberId }: { memberId: string }) {
   const [showContactModal, setShowContactModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  
+
   // In a real app, you'd fetch the member data based on the memberId
   const member = SAMPLE_MEMBER;
 
@@ -553,22 +585,14 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
         <div className="md:flex">
           <div className="md:w-1/3">
             <div className="h-64 md:h-full">
-              <img
-                src={member.image}
-                alt={member.name}
-                className="w-full h-full object-cover"
-              />
+              <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
             </div>
           </div>
           <div className="p-6 md:w-2/3">
             <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                  {member.name}
-                </h1>
-                <p className="text-orange-600 dark:text-orange-400 text-lg mb-2">
-                  {member.title}
-                </p>
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{member.name}</h1>
+                <p className="text-orange-600 dark:text-orange-400 text-lg mb-2">{member.title}</p>
                 <div className="flex items-center text-slate-600 dark:text-slate-300 mb-4">
                   <MapPin className="h-4 w-4 mr-1" />
                   {member.location}
@@ -593,9 +617,7 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
 
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">About</h2>
-              <p className="text-slate-600 dark:text-slate-300 whitespace-pre-line">
-                {member.bio}
-              </p>
+              <p className="text-slate-600 dark:text-slate-300 whitespace-pre-line">{member.bio}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -696,8 +718,8 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
                     {group.name}
                   </Link>
                   <p className="text-sm text-slate-600 dark:text-slate-300">
-                    {group.role.charAt(0).toUpperCase() + group.role.slice(1)} • 
-                    Joined {new Date(group.joinedDate).toLocaleDateString()}
+                    {group.role.charAt(0).toUpperCase() + group.role.slice(1)} • Joined{' '}
+                    {new Date(group.joinedDate).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -766,11 +788,7 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
                 className="bg-slate-50 dark:bg-slate-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
               >
                 <div className="h-48">
-                  <img
-                    src={listing.image}
-                    alt={listing.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={listing.image} alt={listing.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-2">
@@ -780,7 +798,8 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
                     </div>
                   </div>
                   <p className="text-orange-600 dark:text-orange-400">
-                    ${listing.price}{listing.type === 'service' && '/hr'}
+                    ${listing.price}
+                    {listing.type === 'service' && '/hr'}
                   </p>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
                     Listed {new Date(listing.createdAt).toLocaleDateString()}
@@ -816,19 +835,10 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
         </div>
       </div>
 
-      {showContactModal && (
-        <ContactModal
-          member={member}
-          onClose={() => setShowContactModal(false)}
-        />
-      )}
+      {showContactModal && <ContactModal member={member} onClose={() => setShowContactModal(false)} />}
 
       {showEditModal && (
-        <EditProfileModal
-          member={member}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleProfileUpdate}
-        />
+        <EditProfileModal member={member} onClose={() => setShowEditModal(false)} onSave={handleProfileUpdate} />
       )}
     </div>
   );

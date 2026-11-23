@@ -8,8 +8,8 @@ import { MarketplaceListing } from '../../../types/marketplace';
 const mockNavigateToListing = vi.fn();
 vi.mock('../../../hooks/useMarketplaceNavigation', () => ({
   useMarketplaceNavigation: () => ({
-    navigateToListing: mockNavigateToListing
-  })
+    navigateToListing: mockNavigateToListing,
+  }),
 }));
 
 const mockListing: MarketplaceListing = {
@@ -25,11 +25,11 @@ const mockListing: MarketplaceListing = {
   seller: {
     id: '1',
     name: 'Test Seller',
-    image: 'https://example.com/seller.jpg'
+    image: 'https://example.com/seller.jpg',
   },
   createdAt: '2025-01-01T00:00:00Z',
   status: 'published',
-  featured: false
+  featured: false,
 };
 
 const renderListingCard = (props = {}) => {
@@ -47,7 +47,7 @@ describe('ListingCard Navigation', () => {
 
   it('renders listing information correctly', () => {
     renderListingCard();
-    
+
     expect(screen.getByText('Test Product')).toBeInTheDocument();
     expect(screen.getByText('$100')).toBeInTheDocument();
     expect(screen.getByText('This is a test product description')).toBeInTheDocument();
@@ -57,7 +57,7 @@ describe('ListingCard Navigation', () => {
 
   it('has correct accessibility attributes', () => {
     renderListingCard();
-    
+
     const cardLink = screen.getByRole('button', { name: /view details for test product/i });
     expect(cardLink).toHaveAttribute('href', '/marketplace/1');
     expect(cardLink).toHaveAttribute('tabindex', '0');
@@ -66,56 +66,44 @@ describe('ListingCard Navigation', () => {
 
   it('navigates to detail page on click', async () => {
     renderListingCard();
-    
+
     const cardLink = screen.getByRole('button', { name: /view details for test product/i });
     fireEvent.click(cardLink);
-    
+
     await waitFor(() => {
-      expect(mockNavigateToListing).toHaveBeenCalledWith(
-        mockListing,
-        'marketplace_card',
-        'click'
-      );
+      expect(mockNavigateToListing).toHaveBeenCalledWith(mockListing, 'marketplace_card', 'click');
     });
   });
 
   it('navigates to detail page on Enter key press', async () => {
     renderListingCard();
-    
+
     const cardLink = screen.getByRole('button', { name: /view details for test product/i });
     fireEvent.keyDown(cardLink, { key: 'Enter' });
-    
+
     await waitFor(() => {
-      expect(mockNavigateToListing).toHaveBeenCalledWith(
-        mockListing,
-        'marketplace_card',
-        'keyboard'
-      );
+      expect(mockNavigateToListing).toHaveBeenCalledWith(mockListing, 'marketplace_card', 'keyboard');
     });
   });
 
   it('navigates to detail page on Space key press', async () => {
     renderListingCard();
-    
+
     const cardLink = screen.getByRole('button', { name: /view details for test product/i });
     fireEvent.keyDown(cardLink, { key: ' ' });
-    
+
     await waitFor(() => {
-      expect(mockNavigateToListing).toHaveBeenCalledWith(
-        mockListing,
-        'marketplace_card',
-        'keyboard'
-      );
+      expect(mockNavigateToListing).toHaveBeenCalledWith(mockListing, 'marketplace_card', 'keyboard');
     });
   });
 
   it('calls custom onClick handler when provided', async () => {
     const mockOnClick = vi.fn();
     renderListingCard({ onClick: mockOnClick });
-    
+
     const cardLink = screen.getByRole('button', { name: /view details for test product/i });
     fireEvent.click(cardLink);
-    
+
     await waitFor(() => {
       expect(mockOnClick).toHaveBeenCalledWith(mockListing);
       expect(mockNavigateToListing).not.toHaveBeenCalled();
@@ -125,15 +113,15 @@ describe('ListingCard Navigation', () => {
   it('displays tags correctly with overflow handling', () => {
     const listingWithManyTags = {
       ...mockListing,
-      tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5']
+      tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
     };
-    
+
     render(
       <BrowserRouter>
         <ListingCard listing={listingWithManyTags} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('tag1')).toBeInTheDocument();
     expect(screen.getByText('tag2')).toBeInTheDocument();
     expect(screen.getByText('+3')).toBeInTheDocument(); // Shows overflow count
@@ -141,7 +129,7 @@ describe('ListingCard Navigation', () => {
 
   it('displays condition badge when condition is present', () => {
     renderListingCard();
-    
+
     expect(screen.getByText('New')).toBeInTheDocument();
   });
 
@@ -150,15 +138,15 @@ describe('ListingCard Navigation', () => {
       ...mockListing,
       condition: undefined,
       tags: [],
-      images: []
+      images: [],
     };
-    
+
     render(
       <BrowserRouter>
         <ListingCard listing={listingWithoutOptionals} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('Test Product')).toBeInTheDocument();
     // Should not crash when optional fields are missing
   });
@@ -167,36 +155,36 @@ describe('ListingCard Navigation', () => {
     const serviceListing = {
       ...mockListing,
       type: 'service' as const,
-      price: 50
+      price: 50,
     };
-    
+
     render(
       <BrowserRouter>
         <ListingCard listing={serviceListing} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('$50/hr')).toBeInTheDocument();
   });
 
   it('displays "Price on request" when price is null', () => {
     const listingWithoutPrice = {
       ...mockListing,
-      price: null
+      price: null,
     };
-    
+
     render(
       <BrowserRouter>
         <ListingCard listing={listingWithoutPrice} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('Price on request')).toBeInTheDocument();
   });
 
   it('has proper hover and focus styles', () => {
     renderListingCard();
-    
+
     const cardLink = screen.getByRole('button', { name: /view details for test product/i });
     expect(cardLink).toHaveClass('hover:shadow-lg');
     expect(cardLink).toHaveClass('focus:ring-2');

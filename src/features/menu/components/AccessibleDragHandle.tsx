@@ -34,7 +34,7 @@ export const AccessibleDragHandle: React.FC<AccessibleDragHandleProps> = ({
   canNest,
   isDragDisabled = false,
   className = '',
-  dragHandleProps
+  dragHandleProps,
 }) => {
   const handleRef = useRef<HTMLButtonElement>(null);
 
@@ -87,9 +87,11 @@ export const AccessibleDragHandle: React.FC<AccessibleDragHandleProps> = ({
       'Use Ctrl+Arrow keys to move:',
       canMoveUp ? 'Ctrl+Up to move up,' : '',
       canMoveDown ? 'Ctrl+Down to move down,' : '',
-      canNest ? 'Ctrl+Right to nest into parent.' : ''
-    ].filter(Boolean).join(' ');
-    
+      canNest ? 'Ctrl+Right to nest into parent.' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
     announceToScreenReader(instructions);
   };
 
@@ -100,9 +102,9 @@ export const AccessibleDragHandle: React.FC<AccessibleDragHandleProps> = ({
     announcement.setAttribute('aria-atomic', 'true');
     announcement.className = 'sr-only';
     announcement.textContent = message;
-    
+
     document.body.appendChild(announcement);
-    
+
     // Remove after announcement
     setTimeout(() => {
       document.body.removeChild(announcement);
@@ -117,15 +119,17 @@ export const AccessibleDragHandle: React.FC<AccessibleDragHandleProps> = ({
       'or use Ctrl+Arrow keys:',
       canMoveUp ? 'Ctrl+Up to move up,' : '',
       canMoveDown ? 'Ctrl+Down to move down,' : '',
-      canNest ? 'Ctrl+Right to nest.' : ''
-    ].filter(Boolean).join(' ');
-    
+      canNest ? 'Ctrl+Right to nest.' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
     return `${itemTitle} drag handle. ${positionText}, ${levelText}. ${instructions}`;
   };
 
   if (isDragDisabled) {
     return (
-      <div 
+      <div
         className={`p-1 text-gray-300 cursor-not-allowed ${className}`}
         aria-label={`${itemTitle} - dragging disabled`}
       >
@@ -151,13 +155,11 @@ export const AccessibleDragHandle: React.FC<AccessibleDragHandleProps> = ({
       tabIndex={0}
     >
       <GripVertical className="h-5 w-5" />
-      
+
       {/* Hidden instructions for screen readers */}
-      <div
-        id={`drag-instructions-${itemTitle.replace(/\s+/g, '-').toLowerCase()}`}
-        className="sr-only"
-      >
-        Use keyboard shortcuts: Ctrl+Up/Down to move, Ctrl+Right to nest. Current position {position} of {totalItems}, level {level + 1}.
+      <div id={`drag-instructions-${itemTitle.replace(/\s+/g, '-').toLowerCase()}`} className="sr-only">
+        Use keyboard shortcuts: Ctrl+Up/Down to move, Ctrl+Right to nest. Current position {position} of {totalItems},
+        level {level + 1}.
       </div>
     </button>
   );

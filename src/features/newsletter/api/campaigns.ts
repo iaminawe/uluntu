@@ -2,9 +2,9 @@ import { supabase } from '@/lib/supabase';
 import { newsletterContentApi } from './content';
 import { newsletterSubscriptionApi } from './subscriptions';
 import { resendService } from '@/services/resend';
-import { 
-  NewsletterCampaign, 
-  CreateCampaignRequest, 
+import {
+  NewsletterCampaign,
+  CreateCampaignRequest,
   UpdateCampaignRequest,
   CampaignFilters,
   PaginatedCampaigns,
@@ -15,7 +15,7 @@ import {
   SendTestEmailRequest,
   ABTest,
   ABTestResults,
-  CreateABTestRequest
+  CreateABTestRequest,
 } from '@/types/newsletter';
 
 class NewsletterCampaignAPI {
@@ -27,7 +27,7 @@ class NewsletterCampaignAPI {
       // Generate content if not provided
       let content = request.content;
       if (!content || Object.keys(content).length === 0) {
-        content = await newsletterContentApi.generateCuratedContent() || undefined;
+        content = (await newsletterContentApi.generateCuratedContent()) || undefined;
         if (!content) {
           throw new Error('Failed to generate newsletter content');
         }
@@ -45,11 +45,11 @@ class NewsletterCampaignAPI {
           header_image: '',
           footer_text: 'Uluntu',
           social_links: [],
-          ...request.branding
+          ...request.branding,
         },
         content,
         scheduled_at: request.scheduled_at,
-        created_by: (await supabase.auth.getUser()).data.user?.id
+        created_by: (await supabase.auth.getUser()).data.user?.id,
       };
 
       const { data, error } = await supabase
@@ -71,9 +71,7 @@ class NewsletterCampaignAPI {
    */
   async getCampaigns(filters: CampaignFilters = {}): Promise<PaginatedCampaigns | null> {
     try {
-      let query = supabase
-        .from('newsletter_campaigns')
-        .select('*', { count: 'exact' });
+      let query = supabase.from('newsletter_campaigns').select('*', { count: 'exact' });
 
       // Apply filters
       if (filters.status) {
@@ -93,9 +91,7 @@ class NewsletterCampaignAPI {
       }
 
       if (filters.date_range) {
-        query = query
-          .gte('created_at', filters.date_range.start)
-          .lte('created_at', filters.date_range.end);
+        query = query.gte('created_at', filters.date_range.start).lte('created_at', filters.date_range.end);
       }
 
       // Apply pagination
@@ -115,7 +111,7 @@ class NewsletterCampaignAPI {
         total: count || 0,
         page: Math.floor(offset / limit) + 1,
         page_size: limit,
-        total_pages: Math.ceil((count || 0) / limit)
+        total_pages: Math.ceil((count || 0) / limit),
       };
     } catch (error) {
       console.error('Error getting campaigns:', error);
@@ -128,11 +124,7 @@ class NewsletterCampaignAPI {
    */
   async getCampaign(id: string): Promise<NewsletterCampaign | null> {
     try {
-      const { data, error } = await supabase
-        .from('newsletter_campaigns')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('newsletter_campaigns').select('*').eq('id', id).single();
 
       if (error) throw error;
       return { ...data, template_id: data.template_id || '' } as any;
@@ -167,10 +159,7 @@ class NewsletterCampaignAPI {
    */
   async deleteCampaign(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('newsletter_campaigns')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('newsletter_campaigns').delete().eq('id', id);
 
       if (error) throw error;
       return true;
@@ -227,9 +216,9 @@ class NewsletterCampaignAPI {
             content_types: ['events', 'news', 'opportunities'],
             format: 'digest',
             location_filter: true,
-            language: 'en'
-          }
-        }
+            language: 'en',
+          },
+        },
       };
 
       // Render template based on type
@@ -244,7 +233,7 @@ class NewsletterCampaignAPI {
         html,
         text: this.htmlToText(html),
         subject: campaign.subject,
-        preview_url: `/admin/newsletter/campaigns/${id}/preview`
+        preview_url: `/admin/newsletter/campaigns/${id}/preview`,
       };
     } catch (error) {
       console.error('Error previewing campaign:', error);
@@ -277,7 +266,7 @@ class NewsletterCampaignAPI {
         .from('newsletter_campaigns')
         .update({
           status: 'scheduled',
-          scheduled_at: scheduledAt.toISOString()
+          scheduled_at: scheduledAt.toISOString(),
         })
         .eq('id', id);
 
@@ -302,14 +291,10 @@ class NewsletterCampaignAPI {
         test_percentage: request.test_percentage,
         winner_metric: request.winner_metric,
         status: 'draft' as const,
-        created_by: (await supabase.auth.getUser()).data.user?.id
+        created_by: (await supabase.auth.getUser()).data.user?.id,
       };
 
-      const { data, error } = await supabase
-        .from('newsletter_ab_tests')
-        .insert(testData)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('newsletter_ab_tests').insert(testData).select().single();
 
       if (error) throw error;
       return data as ABTest;
@@ -335,24 +320,30 @@ class NewsletterCampaignAPI {
       // Get active subscribers for the test
       const subscribers = await newsletterSubscriptionApi.getActiveSubscribers();
       const testSize = Math.floor(subscribers.length * (test.test_percentage / 100));
-      
+
       // Randomly split subscribers
       const shuffled = subscribers.sort(() => 0.5 - Math.random());
       const groupA = shuffled.slice(0, Math.floor(testSize / 2));
       const groupB = shuffled.slice(Math.floor(testSize / 2), testSize);
 
       // Send to group A
-      await this.sendCampaignToSegment(test.campaign_a_id, groupA.map(s => s.id));
-      
+      await this.sendCampaignToSegment(
+        test.campaign_a_id,
+        groupA.map(s => s.id)
+      );
+
       // Send to group B
-      await this.sendCampaignToSegment(test.campaign_b_id, groupB.map(s => s.id));
+      await this.sendCampaignToSegment(
+        test.campaign_b_id,
+        groupB.map(s => s.id)
+      );
 
       // Update test status
       const { error: updateError } = await supabase
         .from('newsletter_ab_tests')
         .update({
           status: 'running',
-          start_date: new Date().toISOString()
+          start_date: new Date().toISOString(),
         })
         .eq('id', testId);
 
@@ -369,18 +360,14 @@ class NewsletterCampaignAPI {
    */
   async getABTestResults(testId: string): Promise<ABTestResults | null> {
     try {
-      const { data: test, error } = await supabase
-        .from('newsletter_ab_tests')
-        .select('*')
-        .eq('id', testId)
-        .single();
+      const { data: test, error } = await supabase.from('newsletter_ab_tests').select('*').eq('id', testId).single();
 
       if (error) throw error;
 
       // Get analytics for both campaigns
       const [campaignAAnalytics, campaignBAnalytics] = await Promise.all([
         this.getCampaignAnalytics(test.campaign_a_id),
-        this.getCampaignAnalytics(test.campaign_b_id)
+        this.getCampaignAnalytics(test.campaign_b_id),
       ]);
 
       if (!campaignAAnalytics || !campaignBAnalytics) return null;
@@ -392,7 +379,7 @@ class NewsletterCampaignAPI {
         conversions: 0, // TODO: Implement conversion tracking
         open_rate: campaignAAnalytics.open_rate,
         click_rate: campaignAAnalytics.click_rate,
-        conversion_rate: 0
+        conversion_rate: 0,
       };
 
       const campaign_b_stats = {
@@ -402,13 +389,13 @@ class NewsletterCampaignAPI {
         conversions: 0,
         open_rate: campaignBAnalytics.open_rate,
         click_rate: campaignBAnalytics.click_rate,
-        conversion_rate: 0
+        conversion_rate: 0,
       };
 
       // Determine winner based on metric
       let winner: 'a' | 'b' | 'tie' | null = null;
       const metric = test.winner_metric;
-      
+
       if (metric === 'open_rate') {
         if (campaign_a_stats.open_rate > campaign_b_stats.open_rate) winner = 'a';
         else if (campaign_b_stats.open_rate > campaign_a_stats.open_rate) winner = 'b';
@@ -426,7 +413,7 @@ class NewsletterCampaignAPI {
         campaign_a_stats,
         campaign_b_stats,
         winner,
-        confidence_level
+        confidence_level,
       };
     } catch (error) {
       console.error('Error getting A/B test results:', error);
@@ -459,7 +446,10 @@ class NewsletterCampaignAPI {
       const sendResult = await resendService.sendNewsletterCampaign(campaign, mappedSubscribers);
 
       // Record analytics
-      await this.recordSentAnalytics(campaignId, mappedSubscribers.map(s => s.id));
+      await this.recordSentAnalytics(
+        campaignId,
+        mappedSubscribers.map(s => s.id)
+      );
 
       return sendResult;
     } catch (error) {
@@ -469,7 +459,7 @@ class NewsletterCampaignAPI {
         error: error instanceof Error ? error.message : 'Unknown error',
         sent_count: 0,
         failed_count: 0,
-        failed_emails: []
+        failed_emails: [],
       };
     }
   }
@@ -493,7 +483,7 @@ class NewsletterCampaignAPI {
 
       // Get active subscribers
       const subscribers = await newsletterSubscriptionApi.getActiveSubscribers();
-      
+
       if (subscribers.length === 0) {
         await this.updateCampaign(id, { status: 'draft' });
         return { success: false, error: 'No active subscribers', sent_count: 0, failed_count: 0, failed_emails: [] };
@@ -501,7 +491,7 @@ class NewsletterCampaignAPI {
 
       // Use Resend service to send the campaign
       const sendResult = await resendService.sendNewsletterCampaign(campaign, subscribers);
-      
+
       if (!sendResult.success) {
         await this.updateCampaign(id, { status: 'draft' });
         return sendResult;
@@ -516,42 +506,40 @@ class NewsletterCampaignAPI {
           delivered: 0, // Will be updated via webhooks
           bounced: 0,
           opened: 0,
-          clicked: 0
-        }
+          clicked: 0,
+        },
       } as UpdateCampaignRequest);
-      
+
       // Update sent_at separately since it's not in UpdateCampaignRequest
-      await supabase
-        .from('newsletter_campaigns')
-        .update({ sent_at: new Date().toISOString() })
-        .eq('id', id);
+      await supabase.from('newsletter_campaigns').update({ sent_at: new Date().toISOString() }).eq('id', id);
 
       // Update subscriber last_sent_at for successfully sent emails
-      const successfulSubscribers = subscribers.filter(s => 
-        !sendResult.failed_emails?.includes(s.email)
-      );
+      const successfulSubscribers = subscribers.filter(s => !sendResult.failed_emails?.includes(s.email));
       if (successfulSubscribers.length > 0) {
         await newsletterSubscriptionApi.updateLastSent(successfulSubscribers.map(s => s.id));
       }
 
       // Record analytics for each sent email
-      await this.recordSentAnalytics(id, successfulSubscribers.map(s => s.id));
+      await this.recordSentAnalytics(
+        id,
+        successfulSubscribers.map(s => s.id)
+      );
 
       console.log(`Campaign ${id} sent to ${sendResult.sent_count} subscribers`);
 
       return sendResult;
     } catch (error) {
       console.error('Error sending campaign:', error);
-      
+
       // Reset campaign status on error
       await this.updateCampaign(id, { status: 'draft' });
-      
-      return { 
-        success: false, 
+
+      return {
+        success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
-        sent_count: 0, 
-        failed_count: 0, 
-        failed_emails: [] 
+        sent_count: 0,
+        failed_count: 0,
+        failed_emails: [],
       };
     }
   }
@@ -565,10 +553,7 @@ class NewsletterCampaignAPI {
       if (!campaign) return null;
 
       // Get analytics data
-      const { data: analytics, error } = await supabase
-        .from('newsletter_analytics')
-        .select('*')
-        .eq('campaign_id', id);
+      const { data: analytics, error } = await supabase.from('newsletter_analytics').select('*').eq('campaign_id', id);
 
       if (error) throw error;
 
@@ -587,9 +572,10 @@ class NewsletterCampaignAPI {
         open_rate: totalSent > 0 ? ((stats.opened || 0) / totalSent) * 100 : 0,
         click_rate: (stats.opened || 0) > 0 ? ((stats.clicked || 0) / (stats.opened || 1)) * 100 : 0,
         bounce_rate: totalSent > 0 ? ((stats.bounced || 0) / totalSent) * 100 : 0,
-        unsubscribe_rate: totalSent > 0 ? ((analytics?.filter(a => a.event_type === 'unsubscribed').length || 0) / totalSent) * 100 : 0,
+        unsubscribe_rate:
+          totalSent > 0 ? ((analytics?.filter(a => a.event_type === 'unsubscribed').length || 0) / totalSent) * 100 : 0,
         top_links: [], // TODO: Implement link tracking
-        engagement_timeline: [] // TODO: Implement timeline tracking
+        engagement_timeline: [], // TODO: Implement timeline tracking
       };
 
       return result;
@@ -617,7 +603,7 @@ class NewsletterCampaignAPI {
         branding: original.branding,
         status: 'draft' as const,
         send_type: original.send_type,
-        created_by: original.created_by
+        created_by: original.created_by,
       };
 
       const { data, error } = await supabase
@@ -647,7 +633,7 @@ class NewsletterCampaignAPI {
         content_types: ['events', 'news', 'opportunities'],
         format: 'digest',
         location_filter: true,
-        language: 'en'
+        language: 'en',
       },
       subscription_token: data.subscription_token,
       confirmation_token: data.confirmation_token || undefined,
@@ -657,7 +643,7 @@ class NewsletterCampaignAPI {
       last_sent_at: data.last_sent_at || undefined,
       bounce_count: data.bounce_count || 0,
       created_at: data.created_at || new Date().toISOString(),
-      updated_at: data.updated_at || new Date().toISOString()
+      updated_at: data.updated_at || new Date().toISOString(),
     };
   }
 
@@ -670,7 +656,7 @@ class NewsletterCampaignAPI {
     // In production, you'd want to use proper statistical tests like z-test or t-test
     const sampleSizeA = statsA.sent;
     const sampleSizeB = statsB.sent;
-    
+
     if (sampleSizeA < 30 || sampleSizeB < 30) {
       return 0; // Not enough data for statistical significance
     }
@@ -678,17 +664,17 @@ class NewsletterCampaignAPI {
     // Statistical confidence calculation based on sample sizes and effect size
     const totalSample = sampleSizeA + sampleSizeB;
     const minSample = Math.min(sampleSizeA, sampleSizeB);
-    
+
     // Calculate effect size difference between A and B variants
     const openRateA = sampleSizeA > 0 ? statsA.opened / sampleSizeA : 0;
     const openRateB = sampleSizeB > 0 ? statsB.opened / sampleSizeB : 0;
     const effectSize = Math.abs(openRateA - openRateB);
-    
+
     // Confidence based on sample size and effect size
     if (totalSample >= 1000 && minSample >= 100 && effectSize > 0.02) return 95;
     if (totalSample >= 500 && minSample >= 50 && effectSize > 0.03) return 90;
     if (totalSample >= 200 && minSample >= 30 && effectSize > 0.05) return 80;
-    if (effectSize > 0.10) return 70;
+    if (effectSize > 0.1) return 70;
     return 60;
   }
 
@@ -702,28 +688,44 @@ class NewsletterCampaignAPI {
           <h1>${data.branding.footer_text} Newsletter</h1>
           <p>${data.custom_message || 'Welcome to our newsletter!'}</p>
           
-          ${data.content.events.length > 0 ? `
+          ${
+            data.content.events.length > 0
+              ? `
             <h2>Upcoming Events</h2>
-            ${data.content.events.map(event => `
+            ${data.content.events
+              .map(
+                event => `
               <div>
                 <h3>${event.title}</h3>
                 <p>${event.description}</p>
                 <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
                 <p>Location: ${event.location}</p>
               </div>
-            `).join('')}
-          ` : ''}
+            `
+              )
+              .join('')}
+          `
+              : ''
+          }
           
-          ${data.content.news.length > 0 ? `
+          ${
+            data.content.news.length > 0
+              ? `
             <h2>Latest News</h2>
-            ${data.content.news.map(article => `
+            ${data.content.news
+              .map(
+                article => `
               <div>
                 <h3>${article.title}</h3>
                 <p>${article.excerpt}</p>
                 <a href="${article.read_more_url}">Read More</a>
               </div>
-            `).join('')}
-          ` : ''}
+            `
+              )
+              .join('')}
+          `
+              : ''
+          }
           
           <p><a href="${data.unsubscribe_url}">Unsubscribe</a> | <a href="${data.web_view_url}">View in browser</a></p>
         </body>
@@ -752,7 +754,7 @@ class NewsletterCampaignAPI {
       const rows = subscriptionIds.slice(i, i + CHUNK).map(subscriptionId => ({
         campaign_id: campaignId,
         subscription_id: subscriptionId,
-        event_type: 'sent'
+        event_type: 'sent',
       }));
       const { error } = await supabase.from('newsletter_analytics').insert(rows);
       if (error) console.error('Error recording analytics:', error);

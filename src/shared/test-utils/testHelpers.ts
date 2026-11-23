@@ -69,7 +69,7 @@ export const createTestUser = (overrides: Partial<TestUser> = {}): TestUser => (
   role: 'member',
   groups: ['general'],
   companies: [],
-  ...overrides
+  ...overrides,
 });
 
 export const createTestContent = (userId: string, overrides: Partial<TestContent> = {}): TestContent => ({
@@ -88,7 +88,7 @@ export const createTestContent = (userId: string, overrides: Partial<TestContent
   url: `/content/${Date.now()}`,
   slug: `content-${Date.now()}`,
   description: 'Test content description',
-  ...overrides
+  ...overrides,
 });
 
 export const createTestGroup = (overrides: Partial<TestGroup> = {}): TestGroup => ({
@@ -98,7 +98,7 @@ export const createTestGroup = (overrides: Partial<TestGroup> = {}): TestGroup =
   visibility: 'public',
   members: [],
   admins: [],
-  ...overrides
+  ...overrides,
 });
 
 export const createTestCompany = (overrides: Partial<TestCompany> = {}): TestCompany => ({
@@ -107,7 +107,7 @@ export const createTestCompany = (overrides: Partial<TestCompany> = {}): TestCom
   description: 'Test company description',
   employees: [],
   admins: [],
-  ...overrides
+  ...overrides,
 });
 
 // Mock store configuration
@@ -124,9 +124,9 @@ export const createMockStore = (initialState: any = {}) => {
         error: null,
         userRoles: [],
         isAdmin: false,
-        ...initialState.auth
-      }
-    }
+        ...initialState.auth,
+      },
+    },
   });
 };
 
@@ -155,44 +155,49 @@ interface TestWrapperOptions {
 }
 
 export const createTestWrapper = (user: TestUser, options: TestWrapperOptions = {}) => {
-  const store = options.store || createMockStore({
-    auth: {
-      user: {
-        id: user.id,
-        email: user.email,
-        user_metadata: {
-          full_name: user.email.split('@')[0],
-        }
-      },
-      session: {
-        access_token: 'test-token',
-        refresh_token: 'test-refresh',
+  const store =
+    options.store ||
+    createMockStore({
+      auth: {
         user: {
           id: user.id,
           email: user.email,
-        }
+          user_metadata: {
+            full_name: user.email.split('@')[0],
+          },
+        },
+        session: {
+          access_token: 'test-token',
+          refresh_token: 'test-refresh',
+          user: {
+            id: user.id,
+            email: user.email,
+          },
+        },
+        isLoading: false,
+        error: null,
+        userRoles: [{ role: user.role }],
+        isAdmin: user.role === 'admin',
       },
-      isLoading: false,
-      error: null,
-      userRoles: [{ role: user.role }],
-      isAdmin: user.role === 'admin'
-    }
-  });
+    });
 
   const queryClient = options.queryClient || createTestQueryClient();
   const initialEntries = options.initialEntries || ['/dashboard'];
 
-  return ({ children }: { children: React.ReactNode }) => (
-    React.createElement(Provider, { store },
-      React.createElement(QueryClientProvider, { client: queryClient },
-        React.createElement(MemoryRouter, { initialEntries },
-          React.createElement(SessionContextWithRedux, null,
-            children
-          )
+  return ({ children }: { children: React.ReactNode }) =>
+    React.createElement(
+      Provider,
+      { store },
+      React.createElement(
+        QueryClientProvider,
+        { client: queryClient },
+        React.createElement(
+          MemoryRouter,
+          { initialEntries },
+          React.createElement(SessionContextWithRedux, null, children)
         )
       )
-    )
-  );
+    );
 };
 
 // Supabase mocking utilities
@@ -218,7 +223,7 @@ export const mockSupabaseFrom = (tableName: string) => {
 export const mockSupabaseResponse = (data: any = null, error: any = null) => ({
   data,
   error,
-  count: data ? (Array.isArray(data) ? data.length : 1) : 0
+  count: data ? (Array.isArray(data) ? data.length : 1) : 0,
 });
 
 // Permission testing utilities
@@ -228,22 +233,22 @@ export const testUserPermissions = {
     canWrite: ['own_content'],
     canDelete: ['own_content'],
     canModerate: [],
-    canAdminister: []
+    canAdminister: [],
   },
   moderator: {
     canRead: ['own_content', 'public_content', 'flagged_content'],
     canWrite: ['own_content'],
     canDelete: ['own_content'],
     canModerate: ['public_content', 'flagged_content'],
-    canAdminister: []
+    canAdminister: [],
   },
   admin: {
     canRead: ['*'],
     canWrite: ['*'],
     canDelete: ['*'],
     canModerate: ['*'],
-    canAdminister: ['*']
-  }
+    canAdminister: ['*'],
+  },
 };
 
 // Content filtering test helpers
@@ -280,7 +285,7 @@ export const checkAccessibility = async (container: HTMLElement) => {
   // This would integrate with jest-axe for accessibility testing
   const { axe, toHaveNoViolations } = require('jest-axe');
   expect.extend(toHaveNoViolations);
-  
+
   const results = await axe(container);
   expect(results).toHaveNoViolations();
 };
@@ -292,7 +297,7 @@ export const mockContentManagementApi = {
   updateContentItem: jest.fn(),
   deleteContentItem: jest.fn(),
   performBulkContentOperation: jest.fn(),
-  getContentPermissions: jest.fn()
+  getContentPermissions: jest.fn(),
 };
 
 export const mockUserPermissionsService = {
@@ -303,7 +308,7 @@ export const mockUserPermissionsService = {
   canViewAnalytics: jest.fn(),
   canModifyContent: jest.fn(),
   validateSession: jest.fn(),
-  checkRateLimit: jest.fn()
+  checkRateLimit: jest.fn(),
 };
 
 export const mockDashboardSecurityService = {
@@ -318,7 +323,7 @@ export const mockDashboardSecurityService = {
   generateSignature: jest.fn(),
   validateSignature: jest.fn(),
   getSecurityHeaders: jest.fn(),
-  validateContentType: jest.fn()
+  validateContentType: jest.fn(),
 };
 
 // Test data sets for common scenarios
@@ -332,42 +337,40 @@ export const testDataSets = {
       createTestContent('member-2', { type: 'news', title: 'User 2 News', status: 'published' }),
       createTestContent('member-2', { type: 'marketplace', title: 'User 2 Listing', status: 'archived' }),
     ],
-    user3: [
-      createTestContent('member-3', { type: 'resource', title: 'User 3 Resource', status: 'pending' }),
-    ]
+    user3: [createTestContent('member-3', { type: 'resource', title: 'User 3 Resource', status: 'pending' })],
   },
-  
+
   groupContent: [
-    createTestContent('member-1', { 
-      type: 'group', 
-      title: 'Public Group Post', 
+    createTestContent('member-1', {
+      type: 'group',
+      title: 'Public Group Post',
       groupId: 'group-public',
-      status: 'published' 
+      status: 'published',
     }),
-    createTestContent('member-2', { 
-      type: 'group', 
-      title: 'Private Group Post', 
+    createTestContent('member-2', {
+      type: 'group',
+      title: 'Private Group Post',
       groupId: 'group-private',
-      status: 'published' 
+      status: 'published',
     }),
   ],
 
   companyContent: [
-    createTestContent('member-1', { 
-      type: 'news', 
-      title: 'Company A News', 
+    createTestContent('member-1', {
+      type: 'news',
+      title: 'Company A News',
       companyId: 'company-a',
-      status: 'published' 
+      status: 'published',
     }),
-    createTestContent('member-2', { 
-      type: 'event', 
-      title: 'Company B Event', 
+    createTestContent('member-2', {
+      type: 'event',
+      title: 'Company B Event',
       companyId: 'company-b',
-      status: 'published' 
+      status: 'published',
     }),
   ],
 
-  performanceTestContent: Array.from({ length: 100 }, (_, i) => 
+  performanceTestContent: Array.from({ length: 100 }, (_, i) =>
     createTestContent('member-1', {
       id: `perf-content-${i}`,
       title: `Performance Test Content ${i}`,
@@ -376,7 +379,7 @@ export const testDataSets = {
       view_count: Math.floor(Math.random() * 1000),
       like_count: Math.floor(Math.random() * 100),
     })
-  )
+  ),
 };
 
 // Mock environment setup

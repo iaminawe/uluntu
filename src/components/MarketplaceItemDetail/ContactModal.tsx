@@ -11,7 +11,7 @@ const ContactModal = ({ listing, onClose }: ContactModalProps) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,10 +29,11 @@ const ContactModal = ({ listing, onClose }: ContactModalProps) => {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-lg w-full mx-4">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-            Contact about {listing.title}
-          </h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Contact about {listing.title}</h3>
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -96,10 +97,7 @@ const ContactModal = ({ listing, onClose }: ContactModalProps) => {
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md"
-              >
+              <button type="submit" className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md">
                 Send Message
               </button>
             </div>

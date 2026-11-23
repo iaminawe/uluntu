@@ -2,14 +2,14 @@
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
-    auth: { getUser: jest.fn() }
+    auth: { getUser: jest.fn() },
   },
-  sessionCache: new WeakMap()
+  sessionCache: new WeakMap(),
 }));
 
 jest.mock('@/config/env', () => ({
   getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
-  IS_SUPABASE_ENABLED: false
+  IS_SUPABASE_ENABLED: false,
 }));
 
 import { render } from '@testing-library/react';
@@ -24,15 +24,16 @@ const mockNewsArticle = {
   id: '123',
   title: 'New Tech Hub Opening in Nelson',
   excerpt: 'A new technology innovation center is opening in downtown Nelson next month.',
-  content: '<p>The Kootenay Technology Innovation Hub will open its doors on June 15th, 2025, providing co-working space, meeting rooms, and resources for local tech professionals and startups.</p><p>The facility will feature high-speed internet, 3D printing capabilities, and regular workshops on emerging technologies.</p>',
+  content:
+    '<p>The Kootenay Technology Innovation Hub will open its doors on June 15th, 2025, providing co-working space, meeting rooms, and resources for local tech professionals and startups.</p><p>The facility will feature high-speed internet, 3D printing capabilities, and regular workshops on emerging technologies.</p>',
   date: '2025-05-20T09:00:00.000Z',
   image: 'https://example.com/images/tech-hub.jpg',
   author: {
     id: '456',
     name: 'Sarah Johnson',
-    image: 'https://example.com/images/sarah.jpg'
+    image: 'https://example.com/images/sarah.jpg',
   },
-  tags: ['technology', 'business', 'community']
+  tags: ['technology', 'business', 'community'],
 };
 
 // Mock auth hook with centralized pattern
@@ -40,9 +41,9 @@ jest.mock('../hooks/useAuth', () => ({
   useAuth: jest.fn().mockReturnValue(
     createMockAuthContext({
       user: { id: '789', name: 'Admin User', role: 'admin' },
-      status: 'authenticated'
+      status: 'authenticated',
     })
-  )
+  ),
 }));
 
 // Convert the file to use jest.mock with inline functions
@@ -53,24 +54,25 @@ jest.mock('../hooks/useNewsQueries', () => {
     id: '123',
     title: 'New Tech Hub Opening in Nelson',
     excerpt: 'A new technology innovation center is opening in downtown Nelson next month.',
-    content: '<p>The Kootenay Technology Innovation Hub will open its doors on June 15th, 2025, providing co-working space, meeting rooms, and resources for local tech professionals and startups.</p><p>The facility will feature high-speed internet, 3D printing capabilities, and regular workshops on emerging technologies.</p>',
+    content:
+      '<p>The Kootenay Technology Innovation Hub will open its doors on June 15th, 2025, providing co-working space, meeting rooms, and resources for local tech professionals and startups.</p><p>The facility will feature high-speed internet, 3D printing capabilities, and regular workshops on emerging technologies.</p>',
     date: '2025-05-20T09:00:00.000Z',
     image: 'https://example.com/images/tech-hub.jpg',
     author: {
       id: '456',
       name: 'Sarah Johnson',
-      image: 'https://example.com/images/sarah.jpg'
+      image: 'https://example.com/images/sarah.jpg',
     },
-    tags: ['technology', 'business', 'community']
+    tags: ['technology', 'business', 'community'],
   };
-  
+
   return {
     useNewsArticles: jest.fn().mockReturnValue(
       createMockQueryResult({
         data: [localMockArticle],
         isLoading: false,
         error: null,
-        refetch: jest.fn()
+        refetch: jest.fn(),
       })
     ),
     useNewsArticle: jest.fn().mockReturnValue(
@@ -78,47 +80,49 @@ jest.mock('../hooks/useNewsQueries', () => {
         data: localMockArticle,
         isLoading: false,
         error: null,
-        refetch: jest.fn()
+        refetch: jest.fn(),
       })
     ),
     useCreateNewsArticle: jest.fn().mockReturnValue({
       mutateAsync: jest.fn().mockResolvedValue(localMockArticle),
       isLoading: false,
       isPending: false,
-      error: null
+      error: null,
     }),
     useUpdateNewsArticle: jest.fn().mockReturnValue({
       mutateAsync: jest.fn().mockResolvedValue(localMockArticle),
       isLoading: false,
       isPending: false,
-      error: null
+      error: null,
     }),
     useDeleteNewsArticle: jest.fn().mockReturnValue({
       mutateAsync: jest.fn().mockResolvedValue({}),
       isLoading: false,
       isPending: false,
-      error: null
+      error: null,
     }),
     useNewsArticlesWithFilters: jest.fn().mockReturnValue(
       createMockQueryResult({
         data: [localMockArticle],
         isLoading: false,
         error: null,
-        refetch: jest.fn()
+        refetch: jest.fn(),
       })
     ),
     useRelatedNewsArticles: jest.fn().mockReturnValue(
       createMockQueryResult({
-        data: [{
-        ...localMockArticle,
-        id: '124',
-        title: 'Local Startups Receive Funding',
-        excerpt: 'Three Kootenay-based tech startups receive provincial innovation grants.'
-      }],
+        data: [
+          {
+            ...localMockArticle,
+            id: '124',
+            title: 'Local Startups Receive Funding',
+            excerpt: 'Three Kootenay-based tech startups receive provincial innovation grants.',
+          },
+        ],
         isLoading: false,
-        error: null
+        error: null,
       })
-    )
+    ),
   };
 });
 
@@ -136,18 +140,18 @@ describe('News Management', () => {
       mutateAsync: createNewsArticleMock,
       isLoading: false,
       isPending: false,
-      error: null
+      error: null,
     });
 
     // Validate hook returns expected structure
     const { useCreateNewsArticle } = require('../hooks/useNewsQueries');
     const result = useCreateNewsArticle();
-    
+
     expect(result.mutateAsync).toBeDefined();
     expect(result.isLoading).toBe(false);
     expect(result.isPending).toBe(false);
     expect(result.error).toBe(null);
-    
+
     // Test mutation call
     await result.mutateAsync(mockNewsArticle);
     expect(createNewsArticleMock).toHaveBeenCalledWith(mockNewsArticle);
@@ -158,15 +162,15 @@ describe('News Management', () => {
     const updatedArticle = {
       ...mockNewsArticle,
       title: 'Updated: Tech Hub Opening Delayed',
-      content: '<p>The opening of the Kootenay Technology Innovation Hub has been delayed until July 15th, 2025.</p>'
+      content: '<p>The opening of the Kootenay Technology Innovation Hub has been delayed until July 15th, 2025.</p>',
     };
-    
+
     const updateNewsArticleMock = jest.fn().mockResolvedValue(updatedArticle);
     (useNewsQueriesModule as any).useUpdateNewsArticle.mockReturnValue({
       mutateAsync: updateNewsArticleMock,
       isLoading: false,
       isPending: false,
-      error: null
+      error: null,
     });
 
     // Test steps would include:
@@ -184,7 +188,7 @@ describe('News Management', () => {
       mutateAsync: deleteNewsArticleMock,
       isLoading: false,
       isPending: false,
-      error: null
+      error: null,
     });
 
     // Test steps would include:
@@ -203,16 +207,16 @@ describe('News Management', () => {
         ...mockNewsArticle,
         id: '124',
         title: 'Local Startups Receive Funding',
-        tags: ['business', 'funding', 'startups']
-      }
+        tags: ['business', 'funding', 'startups'],
+      },
     ];
-    
+
     (useNewsQueriesModule as any).useNewsArticlesWithFilters.mockReturnValue(
       createMockQueryResult({
         data: filteredArticles,
         isLoading: false,
         error: null,
-        refetch: jest.fn()
+        refetch: jest.fn(),
       })
     );
 
@@ -232,16 +236,14 @@ describe('News Management', () => {
 
   it('NEWS-006: As a User, I want to search for news articles by keywords', async () => {
     // Mock implementation for search results
-    const searchResults = [
-      mockNewsArticle
-    ];
-    
+    const searchResults = [mockNewsArticle];
+
     (useNewsQueriesModule as any).useNewsArticlesWithFilters.mockReturnValue(
       createMockQueryResult({
         data: searchResults,
         isLoading: false,
         error: null,
-        refetch: jest.fn()
+        refetch: jest.fn(),
       })
     );
 

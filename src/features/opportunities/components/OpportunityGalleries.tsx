@@ -12,7 +12,7 @@ interface OpportunityGalleriesProps {
 export const OpportunityGalleries: React.FC<OpportunityGalleriesProps> = ({
   opportunityId,
   showViewAll = true,
-  limit
+  limit,
 }) => {
   const [galleries, setGalleries] = useState<OpportunityGallery[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ export const OpportunityGalleries: React.FC<OpportunityGalleriesProps> = ({
     try {
       setLoading(true);
       const galleryData = await opportunitiesApi.getOpportunityGalleries(opportunityId);
-      
+
       // Apply limit if specified
       const limitedGalleries = limit ? galleryData.slice(0, limit) : galleryData;
       setGalleries(limitedGalleries);
@@ -63,17 +63,13 @@ export const OpportunityGalleries: React.FC<OpportunityGalleriesProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Image className="h-5 w-5 text-gray-400 mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">
-              Related Galleries
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900">Related Galleries</h3>
             <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
               {galleries.length}
             </span>
           </div>
           {showViewAll && galleries.length > 3 && (
-            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-              View All
-            </button>
+            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">View All</button>
           )}
         </div>
       </div>
@@ -81,7 +77,7 @@ export const OpportunityGalleries: React.FC<OpportunityGalleriesProps> = ({
       {/* Gallery Grid */}
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {galleries.map((attachment) => (
+          {galleries.map(attachment => (
             <div key={attachment.id} className="group cursor-pointer">
               <a
                 href={`/galleries/${attachment.gallery?.slug}`}
@@ -106,17 +102,11 @@ export const OpportunityGalleries: React.FC<OpportunityGalleriesProps> = ({
 
                 {/* Gallery Info */}
                 <div className="p-3">
-                  <h4 className="font-medium text-gray-900 truncate text-sm">
-                    {attachment.gallery?.title}
-                  </h4>
-                  <p className="text-xs text-gray-600 mt-1">
-                    {attachment.gallery?.photo_count} photos
-                  </p>
-                  
+                  <h4 className="font-medium text-gray-900 truncate text-sm">{attachment.gallery?.title}</h4>
+                  <p className="text-xs text-gray-600 mt-1">{attachment.gallery?.photo_count} photos</p>
+
                   {attachment.caption && (
-                    <p className="text-xs text-gray-700 mt-2 italic line-clamp-2">
-                      "{attachment.caption}"
-                    </p>
+                    <p className="text-xs text-gray-700 mt-2 italic line-clamp-2">"{attachment.caption}"</p>
                   )}
 
                   {/* Owner */}
@@ -128,9 +118,7 @@ export const OpportunityGalleries: React.FC<OpportunityGalleriesProps> = ({
                         className="h-4 w-4 rounded-full"
                       />
                     )}
-                    <span className="ml-1 text-xs text-gray-500 truncate">
-                      {attachment.gallery?.owner_name}
-                    </span>
+                    <span className="ml-1 text-xs text-gray-500 truncate">{attachment.gallery?.owner_name}</span>
                   </div>
                 </div>
               </a>

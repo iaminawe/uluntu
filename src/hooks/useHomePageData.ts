@@ -38,12 +38,12 @@ export function useHomePageData() {
       members: 150,
       companies: 25,
       events: 20,
-      groups: 15
+      groups: 15,
     },
     highlights: {
       upcomingEvents: [],
       featuredGroups: [],
-      latestNews: []
+      latestNews: [],
     },
     isLoading: false,
     isLoadingHighlights: false,

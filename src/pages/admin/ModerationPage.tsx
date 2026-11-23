@@ -13,7 +13,7 @@ import {
   AlertTriangle,
   FileText,
   Calendar,
-  User
+  User,
 } from 'lucide-react';
 import { ModerationItem } from '@/types/admin';
 
@@ -27,18 +27,23 @@ const ModerationPage: React.FC = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
 
   // Fetch moderation queue
-  const { data: moderationData, isLoading, refetch } = useQuery({
+  const {
+    data: moderationData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['moderation-queue', selectedStatus, selectedEntityType],
-    queryFn: () => adminModerationApi.getModerationQueue({
-      status: selectedStatus === 'all' ? undefined : selectedStatus,
-      entityType: selectedEntityType === 'all' ? undefined : selectedEntityType
-    })
+    queryFn: () =>
+      adminModerationApi.getModerationQueue({
+        status: selectedStatus === 'all' ? undefined : selectedStatus,
+        entityType: selectedEntityType === 'all' ? undefined : selectedEntityType,
+      }),
   });
 
   // Fetch moderation stats
   const { data: stats } = useQuery({
     queryKey: ['moderation-stats'],
-    queryFn: () => adminModerationApi.getModerationStats()
+    queryFn: () => adminModerationApi.getModerationStats(),
   });
 
   // Approve mutation
@@ -50,19 +55,18 @@ const ModerationPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['moderation-stats'] });
       setShowDetailModal(false);
       setReviewNotes('');
-    }
+    },
   });
 
   // Reject mutation
   const rejectMutation = useMutation({
-    mutationFn: ({ itemId, notes }: { itemId: string; notes: string }) =>
-      adminModerationApi.rejectItem(itemId, notes),
+    mutationFn: ({ itemId, notes }: { itemId: string; notes: string }) => adminModerationApi.rejectItem(itemId, notes),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['moderation-queue'] });
       queryClient.invalidateQueries({ queryKey: ['moderation-stats'] });
       setShowDetailModal(false);
       setReviewNotes('');
-    }
+    },
   });
 
   const entityTypes = [
@@ -74,7 +78,7 @@ const ModerationPage: React.FC = () => {
     'news',
     'resources',
     'marketplace',
-    'opportunities'
+    'opportunities',
   ];
 
   const getEntityIcon = (type: string) => {
@@ -86,7 +90,7 @@ const ModerationPage: React.FC = () => {
       news: '📰',
       resources: '📚',
       marketplace: '🛍️',
-      opportunities: '💼'
+      opportunities: '💼',
     };
     return icons[type] || '📦';
   };
@@ -95,7 +99,7 @@ const ModerationPage: React.FC = () => {
     const labels: Record<string, string> = {
       create: 'Create',
       update: 'Update',
-      delete: 'Delete'
+      delete: 'Delete',
     };
     return labels[action] || action;
   };
@@ -132,9 +136,7 @@ const ModerationPage: React.FC = () => {
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Content Moderation</h1>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Review and moderate user-submitted content
-        </p>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Review and moderate user-submitted content</p>
       </div>
 
       {/* Stats Overview */}
@@ -165,7 +167,7 @@ const ModerationPage: React.FC = () => {
       <div className="mb-6 flex flex-col sm:flex-row gap-4">
         <select
           value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value as 'all' | 'pending' | 'approved' | 'rejected')}
+          onChange={e => setSelectedStatus(e.target.value as 'all' | 'pending' | 'approved' | 'rejected')}
           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
         >
           <option value="all">All Status</option>
@@ -176,7 +178,7 @@ const ModerationPage: React.FC = () => {
 
         <select
           value={selectedEntityType}
-          onChange={(e) => setSelectedEntityType(e.target.value)}
+          onChange={e => setSelectedEntityType(e.target.value)}
           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
         >
           {entityTypes.map(type => (
@@ -234,7 +236,7 @@ const ModerationPage: React.FC = () => {
                 </td>
               </tr>
             ) : (
-              moderationData?.data.map((item) => (
+              moderationData?.data.map(item => (
                 <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -248,11 +250,11 @@ const ModerationPage: React.FC = () => {
                     <span className="text-sm text-gray-900 dark:text-gray-100">{getActionLabel(item.action_type)}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-gray-100">{item.submitted_by_user?.email || 'Unknown'}</div>
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
+                      {item.submitted_by_user?.email || 'Unknown'}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(item.status)}
-                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(item.status)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {new Date(item.created_at).toLocaleDateString()}
                   </td>
@@ -296,11 +298,15 @@ const ModerationPage: React.FC = () => {
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Action</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">{getActionLabel(selectedItem.action_type)}</dd>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                      {getActionLabel(selectedItem.action_type)}
+                    </dd>
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Submitted By</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedItem.submitted_by_user?.email || 'Unknown'}</dd>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                      {selectedItem.submitted_by_user?.email || 'Unknown'}
+                    </dd>
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Date</dt>
@@ -329,7 +335,7 @@ const ModerationPage: React.FC = () => {
                   </label>
                   <textarea
                     value={reviewNotes}
-                    onChange={(e) => setReviewNotes(e.target.value)}
+                    onChange={e => setReviewNotes(e.target.value)}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="Add any notes about your decision..."
@@ -365,10 +371,12 @@ const ModerationPage: React.FC = () => {
               {selectedItem.status === 'pending' && (
                 <>
                   <button
-                    onClick={() => rejectMutation.mutate({
-                      itemId: selectedItem.id,
-                      notes: reviewNotes || 'Content does not meet guidelines'
-                    })}
+                    onClick={() =>
+                      rejectMutation.mutate({
+                        itemId: selectedItem.id,
+                        notes: reviewNotes || 'Content does not meet guidelines',
+                      })
+                    }
                     disabled={!reviewNotes}
                     className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center transition-colors"
                   >
@@ -376,10 +384,12 @@ const ModerationPage: React.FC = () => {
                     Reject
                   </button>
                   <button
-                    onClick={() => approveMutation.mutate({
-                      itemId: selectedItem.id,
-                      notes: reviewNotes
-                    })}
+                    onClick={() =>
+                      approveMutation.mutate({
+                        itemId: selectedItem.id,
+                        notes: reviewNotes,
+                      })
+                    }
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center transition-colors"
                   >
                     <CheckCircle className="h-4 w-4 mr-2" />

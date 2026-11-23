@@ -25,7 +25,7 @@ export const SocialTab: React.FC<SocialTabProps> = ({
   twitter,
   setTwitter,
   github,
-  setGithub
+  setGithub,
 }) => {
   return (
     <div className="space-y-6">
@@ -41,7 +41,7 @@ export const SocialTab: React.FC<SocialTabProps> = ({
             <input
               type="url"
               value={website}
-              onChange={(e) => setWebsite(e.target.value)}
+              onChange={e => setWebsite(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -50,10 +50,7 @@ export const SocialTab: React.FC<SocialTabProps> = ({
           </div>
         </SettingsField>
 
-        <SettingsField
-          label="LinkedIn Profile"
-          description="Enter your full LinkedIn profile URL"
-        >
+        <SettingsField label="LinkedIn Profile" description="Enter your full LinkedIn profile URL">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <Linkedin className="h-5 w-5 text-slate-400" />
@@ -61,7 +58,7 @@ export const SocialTab: React.FC<SocialTabProps> = ({
             <input
               type="url"
               value={linkedin}
-              onChange={(e) => setLinkedin(e.target.value)}
+              onChange={e => setLinkedin(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -70,10 +67,7 @@ export const SocialTab: React.FC<SocialTabProps> = ({
           </div>
         </SettingsField>
 
-        <SettingsField
-          label="Twitter / X Profile"
-          description="Enter your Twitter/X profile URL"
-        >
+        <SettingsField label="Twitter / X Profile" description="Enter your Twitter/X profile URL">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <Twitter className="h-5 w-5 text-slate-400" />
@@ -81,7 +75,7 @@ export const SocialTab: React.FC<SocialTabProps> = ({
             <input
               type="url"
               value={twitter}
-              onChange={(e) => setTwitter(e.target.value)}
+              onChange={e => setTwitter(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -90,10 +84,7 @@ export const SocialTab: React.FC<SocialTabProps> = ({
           </div>
         </SettingsField>
 
-        <SettingsField
-          label="GitHub Profile"
-          description="Share your GitHub profile to showcase your projects"
-        >
+        <SettingsField label="GitHub Profile" description="Share your GitHub profile to showcase your projects">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <Github className="h-5 w-5 text-slate-400" />
@@ -101,7 +92,7 @@ export const SocialTab: React.FC<SocialTabProps> = ({
             <input
               type="url"
               value={github}
-              onChange={(e) => setGithub(e.target.value)}
+              onChange={e => setGithub(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -113,9 +104,7 @@ export const SocialTab: React.FC<SocialTabProps> = ({
 
       {/* Social Media Tips */}
       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-        <h4 className="font-medium text-green-900 dark:text-green-300 mb-2">
-          Tips for Social Links
-        </h4>
+        <h4 className="font-medium text-green-900 dark:text-green-300 mb-2">Tips for Social Links</h4>
         <ul className="text-sm text-green-700 dark:text-green-400 space-y-1">
           <li>• Use complete URLs including https://</li>
           <li>• Double-check your profile URLs are correct</li>

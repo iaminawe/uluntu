@@ -4,24 +4,24 @@ jest.mock('../../lib/supabase', () => {
     auth: {
       getSession: jest.fn().mockResolvedValue({
         data: { session: null },
-        error: null
+        error: null,
       }),
       onAuthStateChange: jest.fn().mockReturnValue({
         data: {
           subscription: {
             id: 'mock-sub-id',
-            unsubscribe: jest.fn()
-          }
-        }
+            unsubscribe: jest.fn(),
+          },
+        },
       }),
       signInWithPassword: jest.fn(),
-      signOut: jest.fn()
-    }
+      signOut: jest.fn(),
+    },
   };
-  
+
   return {
     supabase: mockSupabaseClient,
-    checkSupabaseConnection: jest.fn().mockResolvedValue(true)
+    checkSupabaseConnection: jest.fn().mockResolvedValue(true),
   };
 });
 
@@ -38,13 +38,11 @@ describe('useAuth Hook with SessionContext and Redux', () => {
   // Create a wrapper with both Redux and SessionContext
   const wrapper = ({ children }: { children: React.ReactNode }) => {
     const store = configureStore({
-      reducer: { auth: authReducer }
+      reducer: { auth: authReducer },
     });
     return (
       <Provider store={store}>
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        <SessionProvider>{children}</SessionProvider>
       </Provider>
     );
   };
@@ -55,7 +53,7 @@ describe('useAuth Hook with SessionContext and Redux', () => {
 
   it('should render the hook without errors', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
-    
+
     // Verify that the hook returns the expected structure
     expect(result.current).toHaveProperty('user');
     expect(result.current).toHaveProperty('session');
@@ -68,7 +66,7 @@ describe('useAuth Hook with SessionContext and Redux', () => {
 
   it('should have expected initial state', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
-    
+
     // Verify initial state
     expect(result.current.user).toBeNull();
     expect(result.current.session).toBeNull();
@@ -78,24 +76,24 @@ describe('useAuth Hook with SessionContext and Redux', () => {
 
   it('should have a signIn method', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
-    
+
     // Verify signIn method exists and is a function
     expect(typeof result.current.signIn).toBe('function');
   });
 
   it('should have a signOut method', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
-    
+
     // Verify signOut method exists and is a function
     expect(typeof result.current.signOut).toBe('function');
   });
 
   it('should have a hasRole method', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
-    
+
     // Verify hasRole method exists and is a function
     expect(typeof result.current.hasRole).toBe('function');
-    
+
     // Test hasRole with no user (should return false)
     expect(result.current.hasRole('admin')).toBe(false);
   });

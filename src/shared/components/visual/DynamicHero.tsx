@@ -12,17 +12,17 @@ const DynamicHero: React.FC<DynamicHeroProps> = ({
   overlay = {
     gradient: {
       colors: ['from-slate-900/80', 'via-slate-900/60', 'to-transparent'],
-      direction: 'to-top'
-    }
+      direction: 'to-top',
+    },
   },
   height = 'large',
-  actions = []
+  actions = [],
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+      setCurrentImageIndex(prev => (prev + 1) % images.length);
     }, interval);
 
     return () => clearInterval(timer);
@@ -32,7 +32,7 @@ const DynamicHero: React.FC<DynamicHeroProps> = ({
     full: 'h-screen',
     large: 'h-[80vh]',
     medium: 'h-[60vh]',
-    small: 'h-[40vh]'
+    small: 'h-[40vh]',
   };
 
   const getGradientClass = () => {
@@ -65,12 +65,12 @@ const DynamicHero: React.FC<DynamicHeroProps> = ({
       {/* Overlay */}
       <div className={`absolute inset-0 ${getGradientClass()}`}>
         {overlay.color && (
-          <div 
-            className="absolute inset-0" 
-            style={{ 
-              backgroundColor: overlay.color, 
-              opacity: overlay.opacity || 0.5 
-            }} 
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundColor: overlay.color,
+              opacity: overlay.opacity || 0.5,
+            }}
           />
         )}
       </div>
@@ -123,11 +123,12 @@ const DynamicHero: React.FC<DynamicHeroProps> = ({
                 className="flex flex-wrap gap-4"
               >
                 {actions.map((action, index) => {
-                  const baseClasses = "px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105";
+                  const baseClasses =
+                    'px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105';
                   const variantClasses = {
-                    primary: "bg-orange-500 text-white hover:bg-orange-600 shadow-lg hover:shadow-xl",
-                    secondary: "bg-white/10 text-white backdrop-blur-sm border border-white/20 hover:bg-white/20",
-                    ghost: "text-white hover:bg-white/10"
+                    primary: 'bg-orange-500 text-white hover:bg-orange-600 shadow-lg hover:shadow-xl',
+                    secondary: 'bg-white/10 text-white backdrop-blur-sm border border-white/20 hover:bg-white/20',
+                    ghost: 'text-white hover:bg-white/10',
                   };
 
                   return (
@@ -153,9 +154,7 @@ const DynamicHero: React.FC<DynamicHeroProps> = ({
             key={index}
             onClick={() => setCurrentImageIndex(index)}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentImageIndex
-                ? 'bg-white w-8'
-                : 'bg-white/50 hover:bg-white/75'
+              index === currentImageIndex ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/75'
             }`}
             aria-label={`Go to image ${index + 1}`}
           />
@@ -166,26 +165,16 @@ const DynamicHero: React.FC<DynamicHeroProps> = ({
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ 
-          duration: 1, 
+        transition={{
+          duration: 1,
           delay: 1,
           repeat: Infinity,
-          repeatType: 'reverse'
+          repeatType: 'reverse',
         }}
         className="absolute bottom-8 right-8 text-white/50"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 14l-7 7m0 0l-7-7m7 7V3"
-          />
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
         </svg>
       </motion.div>
     </section>

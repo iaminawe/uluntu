@@ -33,61 +33,73 @@ const GalleryAttachmentField: React.FC<GalleryAttachmentFieldProps> = ({
   onFeaturedChange,
   editable = true,
   required = false,
-  error
+  error,
 }) => {
   const [showSelector, setShowSelector] = useState(false);
 
   // Handle gallery selection from modal
-  const handleSelectGalleries = useCallback((selectedGalleries: Gallery[]) => {
-    const existingIds = new Set(value.map(g => g.id));
-    const newGalleries = selectedGalleries.filter(g => !existingIds.has(g.id));
-    
-    let updatedGalleries = [...value, ...newGalleries];
-    
-    // Respect max galleries limit
-    if (maxGalleries && updatedGalleries.length > maxGalleries) {
-      updatedGalleries = updatedGalleries.slice(0, maxGalleries);
-    }
-    
-    // Update sort order based on position
-    updatedGalleries = updatedGalleries.map((gallery, index) => ({
-      ...gallery,
-      sort_order: index
-    }));
-    
-    onChange(updatedGalleries);
-    setShowSelector(false);
-  }, [value, onChange, maxGalleries]);
+  const handleSelectGalleries = useCallback(
+    (selectedGalleries: Gallery[]) => {
+      const existingIds = new Set(value.map(g => g.id));
+      const newGalleries = selectedGalleries.filter(g => !existingIds.has(g.id));
+
+      let updatedGalleries = [...value, ...newGalleries];
+
+      // Respect max galleries limit
+      if (maxGalleries && updatedGalleries.length > maxGalleries) {
+        updatedGalleries = updatedGalleries.slice(0, maxGalleries);
+      }
+
+      // Update sort order based on position
+      updatedGalleries = updatedGalleries.map((gallery, index) => ({
+        ...gallery,
+        sort_order: index,
+      }));
+
+      onChange(updatedGalleries);
+      setShowSelector(false);
+    },
+    [value, onChange, maxGalleries]
+  );
 
   // Handle gallery reordering
-  const handleReorder = useCallback((reorderedGalleries: Gallery[]) => {
-    onChange(reorderedGalleries);
-  }, [onChange]);
+  const handleReorder = useCallback(
+    (reorderedGalleries: Gallery[]) => {
+      onChange(reorderedGalleries);
+    },
+    [onChange]
+  );
 
   // Handle setting featured gallery
-  const handleSetFeatured = useCallback((galleryId: string, featured: boolean) => {
-    if (onFeaturedChange) {
-      onFeaturedChange(featured ? galleryId : null);
-    } else {
-      // Update gallery is_featured property if no external handler
-      const updatedGalleries = value.map(gallery => ({
-        ...gallery,
-        is_featured: gallery.id === galleryId ? featured : false
-      }));
-      onChange(updatedGalleries);
-    }
-  }, [value, onChange, onFeaturedChange]);
+  const handleSetFeatured = useCallback(
+    (galleryId: string, featured: boolean) => {
+      if (onFeaturedChange) {
+        onFeaturedChange(featured ? galleryId : null);
+      } else {
+        // Update gallery is_featured property if no external handler
+        const updatedGalleries = value.map(gallery => ({
+          ...gallery,
+          is_featured: gallery.id === galleryId ? featured : false,
+        }));
+        onChange(updatedGalleries);
+      }
+    },
+    [value, onChange, onFeaturedChange]
+  );
 
   // Handle removing gallery
-  const handleRemove = useCallback((galleryId: string) => {
-    const updatedGalleries = value.filter(g => g.id !== galleryId);
-    onChange(updatedGalleries);
-    
-    // Clear featured if it was the removed gallery
-    if (featuredGalleryId === galleryId && onFeaturedChange) {
-      onFeaturedChange(null);
-    }
-  }, [value, onChange, featuredGalleryId, onFeaturedChange]);
+  const handleRemove = useCallback(
+    (galleryId: string) => {
+      const updatedGalleries = value.filter(g => g.id !== galleryId);
+      onChange(updatedGalleries);
+
+      // Clear featured if it was the removed gallery
+      if (featuredGalleryId === galleryId && onFeaturedChange) {
+        onFeaturedChange(null);
+      }
+    },
+    [value, onChange, featuredGalleryId, onFeaturedChange]
+  );
 
   // Check if we can add more galleries
   const canAddMore = !maxGalleries || value.length < maxGalleries;
@@ -101,21 +113,13 @@ const GalleryAttachmentField: React.FC<GalleryAttachmentFieldProps> = ({
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
-        {description && (
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">
-            {description}
-          </p>
-        )}
+        {description && <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">{description}</p>}
       </div>
 
       {/* Add Gallery Button */}
       {editable && canAddMore && (
         <div className="flex items-center justify-between mb-4">
-          <Button
-            onClick={() => setShowSelector(true)}
-            variant="outline"
-            className="border-dashed"
-          >
+          <Button onClick={() => setShowSelector(true)} variant="outline" className="border-dashed">
             <Plus className="w-4 h-4 mr-2" />
             Add Gallery
             {maxGalleries && ` (${value.length}/${maxGalleries})`}
@@ -147,13 +151,9 @@ const GalleryAttachmentField: React.FC<GalleryAttachmentFieldProps> = ({
             <p className="text-slate-400 text-sm mb-4">
               {editable ? 'Click "Add Gallery" to get started' : 'No galleries have been attached to this entity'}
             </p>
-            
+
             {editable && (
-              <Button
-                onClick={() => setShowSelector(true)}
-                variant="outline"
-                size="sm"
-              >
+              <Button onClick={() => setShowSelector(true)} variant="outline" size="sm">
                 <Plus className="w-4 h-4 mr-2" />
                 Add Your First Gallery
               </Button>
@@ -163,17 +163,11 @@ const GalleryAttachmentField: React.FC<GalleryAttachmentFieldProps> = ({
       </div>
 
       {/* Error Message */}
-      {error && (
-        <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{error}</p>}
 
       {/* Validation Info */}
       {required && value.length === 0 && (
-        <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
-          At least one gallery is required
-        </p>
+        <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">At least one gallery is required</p>
       )}
 
       {/* Gallery Selector Modal */}

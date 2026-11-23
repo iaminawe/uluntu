@@ -9,22 +9,17 @@ interface RelatedResourcesProps {
   getTypeIcon: (type: Resource['type']) => JSX.Element;
 }
 
-const RelatedResources: React.FC<RelatedResourcesProps> = ({ 
-  relatedResources, 
-  getTypeIcon 
-}) => {
+const RelatedResources: React.FC<RelatedResourcesProps> = ({ relatedResources, getTypeIcon }) => {
   if (!relatedResources || relatedResources.length === 0) {
     return null;
   }
-  
+
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-        Related Resources
-      </h2>
+      <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Related Resources</h2>
       <div className="space-y-4">
         {relatedResources.map(relatedResource => (
-          <Link 
+          <Link
             key={relatedResource.id}
             to={getResourceUrl(relatedResource)}
             className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 
@@ -35,12 +30,8 @@ const RelatedResources: React.FC<RelatedResourcesProps> = ({
               {getTypeIcon(relatedResource.type)}
             </div>
             <div>
-              <h3 className="font-medium text-slate-900 dark:text-white mb-1">
-                {relatedResource.title}
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                {relatedResource.description}
-              </p>
+              <h3 className="font-medium text-slate-900 dark:text-white mb-1">{relatedResource.title}</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">{relatedResource.description}</p>
               <div className="flex items-center text-xs text-slate-500 dark:text-slate-500">
                 <Calendar className="h-3 w-3 mr-1" />
                 {format(new Date(relatedResource.dateAdded), 'MMM d, yyyy')}

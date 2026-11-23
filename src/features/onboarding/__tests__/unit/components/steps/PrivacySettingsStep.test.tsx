@@ -6,7 +6,7 @@ import { PrivacySettingsStep } from '../../../../components/steps/PrivacySetting
 
 describe('PrivacySettingsStep', () => {
   const mockOnNext = jest.fn();
-  
+
   const defaultProps = {
     settings: {
       profileVisibility: 'members_only',
@@ -109,7 +109,7 @@ describe('PrivacySettingsStep', () => {
 
       // Select public visibility
       fireEvent.click(screen.getByLabelText('Public'));
-      
+
       // Enable email visibility
       fireEvent.click(screen.getByLabelText('Show Email Address'));
 
@@ -210,9 +210,7 @@ describe('PrivacySettingsStep', () => {
       fireEvent.click(screen.getByTestId('next-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('consent-error')).toHaveTextContent(
-          'You must agree to data processing to continue'
-        );
+        expect(screen.getByTestId('consent-error')).toHaveTextContent('You must agree to data processing to continue');
       });
     });
 
@@ -241,7 +239,7 @@ describe('PrivacySettingsStep', () => {
       fireEvent.click(screen.getByLabelText('Public'));
       fireEvent.click(screen.getByLabelText('Show Email Address'));
       fireEvent.click(screen.getByLabelText('Newsletter & Updates')); // Uncheck
-      
+
       // Accept consent
       fireEvent.click(screen.getByLabelText(/I agree to the processing/));
 
@@ -271,7 +269,7 @@ describe('PrivacySettingsStep', () => {
 
       // Set to private
       fireEvent.click(screen.getByLabelText('Private'));
-      
+
       // Accept consent
       fireEvent.click(screen.getByLabelText(/I agree to the processing/));
 
@@ -310,9 +308,7 @@ describe('PrivacySettingsStep', () => {
       fireEvent.click(screen.getByLabelText('Show Email Address'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('privacy-tip')).toHaveTextContent(
-          /Consider using a professional email address/
-        );
+        expect(screen.getByTestId('privacy-tip')).toHaveTextContent(/Consider using a professional email address/);
       });
     });
   });
@@ -380,7 +376,7 @@ describe('PrivacySettingsStep', () => {
   describe('Loading State', () => {
     it('should show loading state during submission', async () => {
       mockOnNext.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
-      
+
       renderComponent();
 
       // Fill required fields

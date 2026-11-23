@@ -23,7 +23,7 @@ function adaptSubmission(data: any): ContactSubmission {
     ip_address: data.ip_address,
     user_agent: data.user_agent,
     created_at: data.created_at,
-    updated_at: data.updated_at
+    updated_at: data.updated_at,
   };
 }
 
@@ -107,7 +107,6 @@ export interface CreateNoteRequest {
  * Contact Submissions API for managing contact form submissions
  */
 export class ContactSubmissionsAPI {
-  
   /**
    * Submit a new contact form (public endpoint)
    */
@@ -217,7 +216,7 @@ export class ContactSubmissionsAPI {
   async updateSubmission(id: string, updates: UpdateContactSubmissionRequest): Promise<ContactSubmission> {
     try {
       const updateData: any = { ...updates };
-      
+
       if (updates.status === 'responded' && updates.response) {
         updateData.responded_at = new Date().toISOString();
       }
@@ -243,8 +242,8 @@ export class ContactSubmissionsAPI {
    */
   async markAsRead(id: string): Promise<boolean> {
     try {
-      const { error } = await contactDb.rpc('mark_submission_as_read', { 
-        submission_id: id 
+      const { error } = await contactDb.rpc('mark_submission_as_read', {
+        submission_id: id,
       });
 
       if (error) throw error;
@@ -260,9 +259,9 @@ export class ContactSubmissionsAPI {
    */
   async assignToUser(id: string, userId: string): Promise<boolean> {
     try {
-      const { error } = await contactDb.rpc('assign_submission', { 
+      const { error } = await contactDb.rpc('assign_submission', {
         submission_id: id,
-        assignee_id: userId
+        assignee_id: userId,
       });
 
       if (error) throw error;
@@ -303,10 +302,7 @@ export class ContactSubmissionsAPI {
    */
   async deleteSubmission(id: string): Promise<boolean> {
     try {
-      const { error } = await contactDb
-        .from('contact_submissions')
-        .delete()
-        .eq('id', id);
+      const { error } = await contactDb.from('contact_submissions').delete().eq('id', id);
 
       if (error) throw error;
       return true;
@@ -345,7 +341,9 @@ export class ContactSubmissionsAPI {
       let dbQuery = supabase
         .from('contact_submissions')
         .select('*, assigned_user:assigned_to(id, full_name, email)', { count: 'exact' })
-        .or(`name.ilike.${searchQuery},email.ilike.${searchQuery},subject.ilike.${searchQuery},message.ilike.${searchQuery}`)
+        .or(
+          `name.ilike.${searchQuery},email.ilike.${searchQuery},subject.ilike.${searchQuery},message.ilike.${searchQuery}`
+        )
         .order('created_at', { ascending: false });
 
       // Apply pagination
@@ -409,16 +407,9 @@ export class ContactSubmissionsAPI {
   /**
    * Export submissions to CSV (admin only)
    */
-  async exportSubmissions(
-    startDate?: string,
-    endDate?: string,
-    status?: string
-  ): Promise<string> {
+  async exportSubmissions(startDate?: string, endDate?: string, status?: string): Promise<string> {
     try {
-      let query = (supabase as any)
-        .from('contact_submissions')
-        .select('*')
-        .order('created_at', { ascending: false });
+      let query = (supabase as any).from('contact_submissions').select('*').order('created_at', { ascending: false });
 
       if (startDate) {
         query = query.gte('created_at', startDate);
@@ -440,25 +431,36 @@ export class ContactSubmissionsAPI {
       }
 
       const headers = [
-        'ID', 'Name', 'Email', 'Subject', 'Message', 'Volunteer Type',
-        'Status', 'Priority', 'Source', 'Created At', 'Updated At'
+        'ID',
+        'Name',
+        'Email',
+        'Subject',
+        'Message',
+        'Volunteer Type',
+        'Status',
+        'Priority',
+        'Source',
+        'Created At',
+        'Updated At',
       ];
 
       const csvRows = [
         headers.join(','),
-        ...data.map((row: any) => [
-          row.id,
-          `"${row.name}"`,
-          row.email,
-          `"${row.subject || ''}"`,
-          `"${row.message.replace(/"/g, '""')}"`,
-          row.volunteer_type || '',
-          row.status,
-          row.priority || 'normal',
-          row.source || 'contact_page',
-          row.created_at || row.submitted_at,
-          row.updated_at || row.submitted_at
-        ].join(','))
+        ...data.map((row: any) =>
+          [
+            row.id,
+            `"${row.name}"`,
+            row.email,
+            `"${row.subject || ''}"`,
+            `"${row.message.replace(/"/g, '""')}"`,
+            row.volunteer_type || '',
+            row.status,
+            row.priority || 'normal',
+            row.source || 'contact_page',
+            row.created_at || row.submitted_at,
+            row.updated_at || row.submitted_at,
+          ].join(',')
+        ),
       ];
 
       return csvRows.join('\n');

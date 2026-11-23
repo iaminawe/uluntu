@@ -29,7 +29,8 @@ const AdminNewsPage: React.FC = () => {
                 News & Blog Feature Disabled
               </h3>
               <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                The news & blog feature is currently disabled. Enable it in System Management → Features to access news management.
+                The news & blog feature is currently disabled. Enable it in System Management → Features to access news
+                management.
               </p>
               <a
                 href="/admin/system/features"
@@ -53,14 +54,10 @@ const AdminNewsPage: React.FC = () => {
             <Newspaper className="w-4 h-4 mr-2 text-gray-500" />
             {value}
           </div>
-          {item.excerpt && (
-            <div className="text-sm text-gray-500 truncate max-w-xs">
-              {item.excerpt}
-            </div>
-          )}
+          {item.excerpt && <div className="text-sm text-gray-500 truncate max-w-xs">{item.excerpt}</div>}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'author_name',
@@ -71,7 +68,7 @@ const AdminNewsPage: React.FC = () => {
           {value}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'view_count',
@@ -82,7 +79,7 @@ const AdminNewsPage: React.FC = () => {
           {value || 0}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'is_published',
@@ -96,11 +93,13 @@ const AdminNewsPage: React.FC = () => {
             </span>
           );
         }
-        
+
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-          }`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}
+          >
             {value ? (
               <>
                 <CheckCircle className="w-3 h-3 mr-1" />
@@ -115,14 +114,14 @@ const AdminNewsPage: React.FC = () => {
           </span>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'published_at',
       label: 'Published',
-      render: (value: string) => value ? new Date(value).toLocaleDateString() : 'Not published',
-      sortable: true
-    }
+      render: (value: string) => (value ? new Date(value).toLocaleDateString() : 'Not published'),
+      sortable: true,
+    },
   ];
 
   return (

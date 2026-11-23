@@ -7,13 +7,13 @@
  */
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-  
+
   return date.toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
     hour: 'numeric',
-    minute: 'numeric'
+    minute: 'numeric',
   });
 };
 
@@ -37,7 +37,7 @@ export const sortEventsByDate = (events: any[]): any[] => {
  */
 export const filterUpcomingEvents = (events: any[]): any[] => {
   const now = new Date();
-  
+
   return events.filter(event => {
     const eventDate = new Date(event.date);
     return eventDate >= now;

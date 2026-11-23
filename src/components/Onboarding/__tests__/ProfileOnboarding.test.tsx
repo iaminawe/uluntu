@@ -25,7 +25,10 @@ jest.mock('../../../hooks/useProfileCompletion', () => ({
 
 // Import the mocked functions
 const { useCurrentMember: mockUseCurrentMember } = require('../../../hooks/useCurrentMember');
-const { useProfilePrivacy: mockUseProfilePrivacy, getPrivacyStatusDisplay } = require('../../../hooks/useProfilePrivacy');
+const {
+  useProfilePrivacy: mockUseProfilePrivacy,
+  getPrivacyStatusDisplay,
+} = require('../../../hooks/useProfilePrivacy');
 const { useProfileCompletion: mockUseProfileCompletion } = require('../../../hooks/useProfileCompletion');
 
 // Test wrapper component
@@ -39,9 +42,7 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
     </QueryClientProvider>
   );
 };
@@ -75,7 +76,7 @@ describe('ProfileOnboarding', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Setup mocks
     mockUseCurrentMember.mockReturnValue(
       createMockQueryResult({
@@ -84,16 +85,16 @@ describe('ProfileOnboarding', () => {
         error: null,
       })
     );
-    
+
     mockUseProfilePrivacy.mockReturnValue(mockPrivacySettings);
-    
+
     getPrivacyStatusDisplay.mockReturnValue({
       label: 'Private',
       description: 'Your profile is hidden from the public directory.',
       color: 'yellow',
       icon: '🔒',
     });
-    
+
     mockUseProfileCompletion.mockReturnValue({
       isComplete: false,
       completionPercentage: 25,
@@ -101,7 +102,7 @@ describe('ProfileOnboarding', () => {
       requiredFields: ['name', 'bio', 'image'],
       suggestedFields: ['title'],
     });
-    
+
     // Mock getFieldDisplayName
     require('../../../hooks/useProfileCompletion').getFieldDisplayName.mockImplementation((field: string) => {
       const names: Record<string, string> = {
@@ -212,7 +213,7 @@ describe('ProfileOnboarding', () => {
       // Find the radio inputs by their checked state
       const radioInputs = screen.getAllByRole('radio');
       expect(radioInputs).toHaveLength(2);
-      
+
       // The second radio (private) should be checked based on mock data
       expect(radioInputs[1]).toBeChecked();
     });

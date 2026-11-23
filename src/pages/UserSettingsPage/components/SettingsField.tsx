@@ -9,7 +9,7 @@ export const SettingsField: React.FC<SettingsFieldProps> = ({
   required = false,
   description,
   error,
-  children
+  children,
 }) => {
   return (
     <div>
@@ -17,16 +17,8 @@ export const SettingsField: React.FC<SettingsFieldProps> = ({
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}
-      {description && !error && (
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {description}
-        </p>
-      )}
-      {error && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      {description && !error && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>}
+      {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 };

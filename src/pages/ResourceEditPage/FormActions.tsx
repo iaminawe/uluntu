@@ -8,16 +8,16 @@ const FormActions: React.FC<FormActionsProps> = ({
   isSubmitting,
   submitSuccess,
   formData,
-  setShowDeleteConfirm
+  setShowDeleteConfirm,
 }) => {
   const navigate = useNavigate();
-  
+
   // Determine the submit button text based on the form state
   const getSubmitText = () => {
     if (submitSuccess) {
       return 'Saved!';
     }
-    
+
     switch (formData.status) {
       case 'draft':
         return 'Save as Draft';
@@ -29,7 +29,7 @@ const FormActions: React.FC<FormActionsProps> = ({
         return 'Save';
     }
   };
-  
+
   return (
     <SharedFormActions
       // No onSubmit handler needed since this is handled by the form's onSubmit

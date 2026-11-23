@@ -27,20 +27,26 @@ export default function PagesManagement() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Fetch pages
-  const { data: pages, isLoading, refetch } = useQuery({
+  const {
+    data: pages,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['admin-pages'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('pages')
-        .select(`
+        .select(
+          `
           *,
           author:members!author_id(name)
-        `)
+        `
+        )
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as Page[];
-    }
+    },
   });
 
   // Delete page
@@ -49,13 +55,10 @@ export default function PagesManagement() {
 
     setDeletingId(id);
     try {
-      const { error } = await supabase
-        .from('pages')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('pages').delete().eq('id', id);
 
       if (error) throw error;
-      
+
       toast.success('Page deleted successfully');
       refetch();
     } catch (error) {
@@ -83,11 +86,13 @@ export default function PagesManagement() {
     const colors = {
       published: 'bg-green-100 text-green-800',
       draft: 'bg-yellow-100 text-yellow-800',
-      archived: 'bg-gray-100 text-gray-800'
+      archived: 'bg-gray-100 text-gray-800',
     };
-    
+
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[status as keyof typeof colors]}`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[status as keyof typeof colors]}`}
+      >
         {getStatusIcon(status)}
         <span className="ml-1 capitalize">{status}</span>
       </span>
@@ -96,33 +101,22 @@ export default function PagesManagement() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <PageHeader 
-        title="Pages Management"
-        description="Create and manage dynamic pages for your site"
-      />
+      <PageHeader title="Pages Management" description="Create and manage dynamic pages for your site" />
 
       {/* Actions Bar */}
       <div className="mb-6 flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <Button
-            onClick={() => navigate('/admin/pages/new')}
-            variant="primary"
-          >
+          <Button onClick={() => navigate('/admin/pages/new')} variant="primary">
             <Plus className="h-4 w-4 mr-2" />
             Create New Page
           </Button>
-          
-          <Button
-            onClick={() => navigate('/test-editor')}
-            variant="ghost"
-          >
+
+          <Button onClick={() => navigate('/test-editor')} variant="ghost">
             Test Editor
           </Button>
         </div>
 
-        <div className="text-sm text-gray-600">
-          {pages?.length || 0} pages total
-        </div>
+        <div className="text-sm text-gray-600">{pages?.length || 0} pages total</div>
       </div>
 
       {/* Pages Table */}
@@ -130,21 +124,11 @@ export default function PagesManagement() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Slug
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Author
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Updated
               </th>
@@ -167,34 +151,22 @@ export default function PagesManagement() {
                 </td>
               </tr>
             ) : (
-              pages?.map((page) => (
+              pages?.map(page => (
                 <tr key={page.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {page.title}
-                        </div>
-                        {page.is_featured && (
-                          <span className="text-xs text-orange-600">Featured</span>
-                        )}
-                        {page.is_system && (
-                          <span className="text-xs text-blue-600 ml-2">System</span>
-                        )}
+                        <div className="text-sm font-medium text-gray-900">{page.title}</div>
+                        {page.is_featured && <span className="text-xs text-orange-600">Featured</span>}
+                        {page.is_system && <span className="text-xs text-blue-600 ml-2">System</span>}
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 font-mono">
-                      /{page.slug}
-                    </div>
+                    <div className="text-sm text-gray-900 font-mono">/{page.slug}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(page.status)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {page.page_type}
-                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(page.status)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{page.page_type}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {page.author?.name || 'Unknown'}
                   </td>
@@ -255,15 +227,11 @@ export default function PagesManagement() {
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <div className="text-sm text-gray-500">System Pages</div>
-          <div className="text-2xl font-bold text-blue-600">
-            {pages?.filter(p => p.is_system).length || 0}
-          </div>
+          <div className="text-2xl font-bold text-blue-600">{pages?.filter(p => p.is_system).length || 0}</div>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <div className="text-sm text-gray-500">Featured</div>
-          <div className="text-2xl font-bold text-orange-600">
-            {pages?.filter(p => p.is_featured).length || 0}
-          </div>
+          <div className="text-2xl font-bold text-orange-600">{pages?.filter(p => p.is_featured).length || 0}</div>
         </div>
       </div>
     </div>

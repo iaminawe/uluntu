@@ -1,0 +1,5 @@
+if [ ! -x node_modules/.bin/lint-staged ]; then
+  echo "pre-commit: lint-staged not installed (run npm ci), skipping"
+  exit 0
+fi
+node_modules/.bin/lint-staged

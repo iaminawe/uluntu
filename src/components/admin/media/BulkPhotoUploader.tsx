@@ -2,26 +2,15 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { galleryApi } from '@/features/gallery/api/galleryApi';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { 
+import {
   selectUploadProgress,
   setUploadProgress,
   updateUploadProgress,
   updateUploadStatus,
   removeUploadProgress,
-  clearAllUploadProgress
+  clearAllUploadProgress,
 } from '@/features/gallery/store/galleryUISlice';
-import {
-  X,
-  Upload,
-  Image,
-  Trash2,
-  CheckCircle,
-  AlertCircle,
-  RefreshCw,
-  Folder,
-  FileImage,
-  Zap
-} from 'lucide-react';
+import { X, Upload, Image, Trash2, CheckCircle, AlertCircle, RefreshCw, Folder, FileImage, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/Badge';
@@ -42,15 +31,10 @@ interface FileWithPreview extends File {
   error?: string;
 }
 
-const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
-  galleryId,
-  isOpen,
-  onClose,
-  onSuccess
-}) => {
+const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({ galleryId, isOpen, onClose, onSuccess }) => {
   const dispatch = useAppDispatch();
   const uploadProgress = useAppSelector(selectUploadProgress);
-  
+
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -58,9 +42,9 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
     total: 0,
     completed: 0,
     failed: 0,
-    inProgress: 0
+    inProgress: 0,
   });
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef(0);
 
@@ -74,13 +58,13 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
   const uploadPhotosMutation = useMutation({
     mutationFn: async (fileData: { file: File; id: string }) => {
       const { file, id } = fileData;
-      
+
       // Update status to uploading
       dispatch(updateUploadStatus({ photoId: id, status: 'uploading' }));
-      
+
       // Simulate image processing (in real app, this would be done on the server)
       const processedImages = await processImage(file);
-      
+
       const uploadInput = {
         file: file,
         title: file.name.replace(/\.[^/.]+$/, ''),
@@ -89,39 +73,35 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
         dimensions: {
           width: processedImages.dimensions?.width || 0,
           height: processedImages.dimensions?.height || 0,
-          aspectRatio: processedImages.dimensions?.aspectRatio || 1
+          aspectRatio: processedImages.dimensions?.aspectRatio || 1,
         },
         placeholder: processedImages.placeholder,
-        dominantColor: processedImages.dominantColor
+        dominantColor: processedImages.dominantColor,
       };
 
       return galleryApi.uploadPhoto(uploadInput);
     },
     onSuccess: (data, variables) => {
       dispatch(updateUploadStatus({ photoId: variables.id, status: 'completed' }));
-      setFiles(prev => prev.map(f => 
-        f.id === variables.id 
-          ? { ...f, status: 'completed', progress: 100 }
-          : f
-      ));
+      setFiles(prev => prev.map(f => (f.id === variables.id ? { ...f, status: 'completed', progress: 100 } : f)));
     },
     onError: (error, variables) => {
       const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-      dispatch(updateUploadStatus({ 
-        photoId: variables.id, 
-        status: 'error',
-        error: errorMessage 
-      }));
-      setFiles(prev => prev.map(f => 
-        f.id === variables.id 
-          ? { ...f, status: 'error', error: errorMessage }
-          : f
-      ));
-    }
+      dispatch(
+        updateUploadStatus({
+          photoId: variables.id,
+          status: 'error',
+          error: errorMessage,
+        })
+      );
+      setFiles(prev => prev.map(f => (f.id === variables.id ? { ...f, status: 'error', error: errorMessage } : f)));
+    },
   });
 
   // Process image to create variants and extract metadata
-  const processImage = async (file: File): Promise<{
+  const processImage = async (
+    file: File
+  ): Promise<{
     processedImages?: {
       thumbnail?: File;
       small?: File;
@@ -136,76 +116,83 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
     placeholder?: string;
     dominantColor?: string;
   }> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const img = new Image();
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      
+
       img.onload = () => {
         const { width, height } = img;
         const aspectRatio = width / height;
-        
+
         // Create thumbnail
         const thumbSize = 200;
         const thumbWidth = width > height ? thumbSize : thumbSize * aspectRatio;
         const thumbHeight = height > width ? thumbSize : thumbSize / aspectRatio;
-        
+
         canvas.width = thumbWidth;
         canvas.height = thumbHeight;
         ctx?.drawImage(img, 0, 0, thumbWidth, thumbHeight);
-        
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const thumbnailFile = new File([blob], `thumb_${file.name}`, {
-              type: file.type,
-              lastModified: Date.now()
-            });
-            
-            resolve({
-              processedImages: {
-                thumbnail: thumbnailFile
-              },
-              dimensions: {
-                width,
-                height,
-                aspectRatio
-              }
-            });
-          } else {
-            resolve({
-              dimensions: { width, height, aspectRatio }
-            });
-          }
-        }, file.type, 0.8);
+
+        canvas.toBlob(
+          blob => {
+            if (blob) {
+              const thumbnailFile = new File([blob], `thumb_${file.name}`, {
+                type: file.type,
+                lastModified: Date.now(),
+              });
+
+              resolve({
+                processedImages: {
+                  thumbnail: thumbnailFile,
+                },
+                dimensions: {
+                  width,
+                  height,
+                  aspectRatio,
+                },
+              });
+            } else {
+              resolve({
+                dimensions: { width, height, aspectRatio },
+              });
+            }
+          },
+          file.type,
+          0.8
+        );
       };
-      
+
       img.onerror = () => {
         resolve({});
       };
-      
+
       img.src = URL.createObjectURL(file);
     });
   };
 
   // Update stats when files change
   useEffect(() => {
-    const stats = files.reduce((acc, file) => {
-      acc.total = files.length;
-      switch (file.status) {
-        case 'completed':
-          acc.completed++;
-          break;
-        case 'error':
-          acc.failed++;
-          break;
-        case 'uploading':
-        case 'processing':
-          acc.inProgress++;
-          break;
-      }
-      return acc;
-    }, { total: 0, completed: 0, failed: 0, inProgress: 0 });
-    
+    const stats = files.reduce(
+      (acc, file) => {
+        acc.total = files.length;
+        switch (file.status) {
+          case 'completed':
+            acc.completed++;
+            break;
+          case 'error':
+            acc.failed++;
+            break;
+          case 'uploading':
+          case 'processing':
+            acc.inProgress++;
+            break;
+        }
+        return acc;
+      },
+      { total: 0, completed: 0, failed: 0, inProgress: 0 }
+    );
+
     setUploadStats(stats);
   }, [files]);
 
@@ -214,76 +201,84 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
     if (!ALLOWED_TYPES.includes(file.type)) {
       return { isValid: false, error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.' };
     }
-    
+
     if (file.size > MAX_FILE_SIZE) {
       return { isValid: false, error: `File too large. Maximum size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.` };
     }
-    
+
     return { isValid: true };
   };
 
   // Add files to upload queue
-  const addFiles = useCallback((newFiles: File[]) => {
-    const validFiles: FileWithPreview[] = [];
-    const errors: string[] = [];
-    
-    for (const file of newFiles) {
-      // Check total file limit
-      if (files.length + validFiles.length >= MAX_FILES) {
-        errors.push(`Maximum ${MAX_FILES} files allowed`);
-        break;
+  const addFiles = useCallback(
+    (newFiles: File[]) => {
+      const validFiles: FileWithPreview[] = [];
+      const errors: string[] = [];
+
+      for (const file of newFiles) {
+        // Check total file limit
+        if (files.length + validFiles.length >= MAX_FILES) {
+          errors.push(`Maximum ${MAX_FILES} files allowed`);
+          break;
+        }
+
+        // Check for duplicates
+        const isDuplicate =
+          files.some(f => f.name === file.name && f.size === file.size) ||
+          validFiles.some(f => f.name === file.name && f.size === file.size);
+
+        if (isDuplicate) {
+          errors.push(`${file.name} is already in the upload queue`);
+          continue;
+        }
+
+        // Validate file
+        const validation = validateFile(file);
+        if (!validation.isValid) {
+          errors.push(`${file.name}: ${validation.error}`);
+          continue;
+        }
+
+        // Create preview
+        const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const preview = URL.createObjectURL(file);
+
+        const fileWithPreview: FileWithPreview = Object.assign(file, {
+          id,
+          preview,
+          status: 'pending' as const,
+          progress: 0,
+        });
+
+        validFiles.push(fileWithPreview);
+
+        // Add to Redux state
+        dispatch(
+          setUploadProgress({
+            photoId: id,
+            fileName: file.name,
+            progress: 0,
+            status: 'pending',
+          })
+        );
       }
-      
-      // Check for duplicates
-      const isDuplicate = files.some(f => f.name === file.name && f.size === file.size) ||
-                         validFiles.some(f => f.name === file.name && f.size === file.size);
-      
-      if (isDuplicate) {
-        errors.push(`${file.name} is already in the upload queue`);
-        continue;
+
+      if (validFiles.length > 0) {
+        setFiles(prev => [...prev, ...validFiles]);
       }
-      
-      // Validate file
-      const validation = validateFile(file);
-      if (!validation.isValid) {
-        errors.push(`${file.name}: ${validation.error}`);
-        continue;
+
+      if (errors.length > 0) {
+        toast.error(
+          `${errors.length} files had errors:\n${errors.slice(0, 3).join('\n')}${errors.length > 3 ? '\n...' : ''}`
+        );
       }
-      
-      // Create preview
-      const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      const preview = URL.createObjectURL(file);
-      
-      const fileWithPreview: FileWithPreview = Object.assign(file, {
-        id,
-        preview,
-        status: 'pending' as const,
-        progress: 0
-      });
-      
-      validFiles.push(fileWithPreview);
-      
-      // Add to Redux state
-      dispatch(setUploadProgress({
-        photoId: id,
-        fileName: file.name,
-        progress: 0,
-        status: 'pending'
-      }));
-    }
-    
-    if (validFiles.length > 0) {
-      setFiles(prev => [...prev, ...validFiles]);
-    }
-    
-    if (errors.length > 0) {
-      toast.error(`${errors.length} files had errors:\n${errors.slice(0, 3).join('\n')}${errors.length > 3 ? '\n...' : ''}`);
-    }
-    
-    if (validFiles.length > 0) {
-      toast.success(`Added ${validFiles.length} files to upload queue`);
-    }
-  }, [files, dispatch]);
+
+      if (validFiles.length > 0) {
+        toast.success(`Added ${validFiles.length} files to upload queue`);
+      }
+    },
+    [files, dispatch]
+  );
 
   // Handle drag and drop
   const handleDragEnter = (e: React.DragEvent) => {
@@ -312,7 +307,7 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
     e.stopPropagation();
     dragCounter.current = 0;
     setIsDragOver(false);
-    
+
     const droppedFiles = Array.from(e.dataTransfer.files);
     addFiles(droppedFiles);
   };
@@ -345,51 +340,51 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
       toast.error('No files to upload');
       return;
     }
-    
+
     setIsUploading(true);
     const pendingFiles = files.filter(f => f.status === 'pending' || f.status === 'error');
-    
+
     if (pendingFiles.length === 0) {
       toast.info('All files are already uploaded or in progress');
       setIsUploading(false);
       return;
     }
-    
+
     // Process files in batches
     const batches: FileWithPreview[][] = [];
     for (let i = 0; i < pendingFiles.length; i += CONCURRENT_UPLOADS) {
       batches.push(pendingFiles.slice(i, i + CONCURRENT_UPLOADS));
     }
-    
+
     try {
       for (const batch of batches) {
         const promises = batch.map(file => {
           // Update file status
-          setFiles(prev => prev.map(f => 
-            f.id === file.id ? { ...f, status: 'uploading', progress: 0 } : f
-          ));
-          
+          setFiles(prev => prev.map(f => (f.id === file.id ? { ...f, status: 'uploading', progress: 0 } : f)));
+
           return uploadPhotosMutation.mutateAsync({ file, id: file.id });
         });
-        
+
         await Promise.allSettled(promises);
       }
-      
+
       toast.success('Upload process completed!');
-      
+
       // Check if all files uploaded successfully
-      const finalStats = files.reduce((acc, file) => {
-        if (file.status === 'completed') acc.completed++;
-        else if (file.status === 'error') acc.failed++;
-        return acc;
-      }, { completed: 0, failed: 0 });
-      
+      const finalStats = files.reduce(
+        (acc, file) => {
+          if (file.status === 'completed') acc.completed++;
+          else if (file.status === 'error') acc.failed++;
+          return acc;
+        },
+        { completed: 0, failed: 0 }
+      );
+
       if (finalStats.failed === 0) {
         setTimeout(() => {
           onSuccess();
         }, 1500);
       }
-      
     } catch (error) {
       toast.error('Upload process encountered errors');
     } finally {
@@ -401,23 +396,23 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
   const retryFailed = () => {
     const failedFiles = files.filter(f => f.status === 'error');
     if (failedFiles.length === 0) return;
-    
+
     // Reset failed files to pending
-    setFiles(prev => prev.map(f => 
-      f.status === 'error' 
-        ? { ...f, status: 'pending', progress: 0, error: undefined }
-        : f
-    ));
-    
+    setFiles(prev =>
+      prev.map(f => (f.status === 'error' ? { ...f, status: 'pending', progress: 0, error: undefined } : f))
+    );
+
     failedFiles.forEach(file => {
-      dispatch(setUploadProgress({
-        photoId: file.id,
-        fileName: file.name,
-        progress: 0,
-        status: 'pending'
-      }));
+      dispatch(
+        setUploadProgress({
+          photoId: file.id,
+          fileName: file.name,
+          progress: 0,
+          status: 'pending',
+        })
+      );
     });
-    
+
     toast.info(`Reset ${failedFiles.length} failed uploads`);
   };
 
@@ -471,9 +466,7 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
                 <Upload className="h-5 w-5" />
                 Bulk Photo Upload
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Upload multiple photos to your gallery
-              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Upload multiple photos to your gallery</p>
             </div>
             <Button variant="ghost" onClick={handleClose}>
               <X className="h-5 w-5" />
@@ -517,10 +510,7 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
                 </div>
               </div>
               {uploadStats.total > 0 && (
-                <Progress 
-                  value={(uploadStats.completed / uploadStats.total) * 100} 
-                  className="h-2"
-                />
+                <Progress value={(uploadStats.completed / uploadStats.total) * 100} className="h-2" />
               )}
             </div>
           )}
@@ -568,11 +558,8 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
           ) : (
             <div className="flex-1 overflow-y-auto p-6">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {files.map((file) => (
-                  <div
-                    key={file.id}
-                    className="relative bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden"
-                  >
+                {files.map(file => (
+                  <div key={file.id} className="relative bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden">
                     {/* Status Badge */}
                     <div className="absolute top-2 right-2 z-10">
                       {file.status === 'completed' && (
@@ -608,11 +595,7 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
 
                     {/* Preview Image */}
                     <div className="aspect-square bg-gray-200 dark:bg-gray-600">
-                      <img
-                        src={file.preview}
-                        alt={file.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
                     </div>
 
                     {/* Progress Bar */}
@@ -624,17 +607,11 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
 
                     {/* File Info */}
                     <div className="p-2">
-                      <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
-                        {file.name}
-                      </p>
+                      <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">{file.name}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         {(file.size / 1024 / 1024).toFixed(1)}MB
                       </p>
-                      {file.error && (
-                        <p className="text-xs text-red-600 mt-1 line-clamp-2">
-                          {file.error}
-                        </p>
-                      )}
+                      {file.error && <p className="text-xs text-red-600 mt-1 line-clamp-2">{file.error}</p>}
                     </div>
                   </div>
                 ))}
@@ -652,7 +629,7 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
                   </p>
                 </div>
               </div>
-              
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -673,16 +650,14 @@ const BulkPhotoUploader: React.FC<BulkPhotoUploaderProps> = ({
                 {files.length} files ready • {uploadStats.completed} completed • {uploadStats.failed} failed
               </div>
               <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={handleClose}
-                  disabled={isUploading}
-                >
+                <Button variant="outline" onClick={handleClose} disabled={isUploading}>
                   {uploadStats.completed > 0 && uploadStats.failed === 0 ? 'Done' : 'Cancel'}
                 </Button>
                 <Button
                   onClick={startUpload}
-                  disabled={isUploading || files.filter(f => f.status === 'pending' || f.status === 'error').length === 0}
+                  disabled={
+                    isUploading || files.filter(f => f.status === 'pending' || f.status === 'error').length === 0
+                  }
                 >
                   {isUploading ? (
                     <>

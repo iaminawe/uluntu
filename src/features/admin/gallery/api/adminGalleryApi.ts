@@ -17,7 +17,7 @@ import {
   GalleryAnalytics,
   AdminDashboardStats,
   AdminGalleryFormData,
-  AdminPhotoFormData
+  AdminPhotoFormData,
 } from '../types';
 
 class AdminGalleryApi {
@@ -34,18 +34,13 @@ class AdminGalleryApi {
     sortOrder?: 'asc' | 'desc';
   }): Promise<AdminGalleriesResponse> {
     try {
-      const {
-        page = 1,
-        limit = 24,
-        filters = {},
-        sortBy = 'created_at',
-        sortOrder = 'desc'
-      } = params || {};
+      const { page = 1, limit = 24, filters = {}, sortBy = 'created_at', sortOrder = 'desc' } = params || {};
 
       // Build the query with all necessary joins
       let query = supabase
         .from('admin_galleries') // Use the admin view
-        .select(`
+        .select(
+          `
           *,
           owner:members!user_galleries_user_id_fkey(
             id,
@@ -59,7 +54,9 @@ class AdminGalleryApi {
             comment_count,
             download_count
           )
-        `, { count: 'exact' });
+        `,
+          { count: 'exact' }
+        );
 
       // Apply filters
       if (filters.search) {
@@ -91,9 +88,7 @@ class AdminGalleryApi {
       }
 
       if (filters.dateRange) {
-        query = query
-          .gte('created_at', filters.dateRange.start)
-          .lte('created_at', filters.dateRange.end);
+        query = query.gte('created_at', filters.dateRange.start).lte('created_at', filters.dateRange.end);
       }
 
       if (filters.lastActivityRange) {
@@ -111,9 +106,7 @@ class AdminGalleryApi {
       }
 
       if (filters.viewCountRange) {
-        query = query
-          .gte('view_count', filters.viewCountRange.min)
-          .lte('view_count', filters.viewCountRange.max);
+        query = query.gte('view_count', filters.viewCountRange.min).lte('view_count', filters.viewCountRange.max);
       }
 
       // Apply sorting
@@ -140,7 +133,7 @@ class AdminGalleryApi {
         totalPages: Math.ceil((count || 0) / limit),
         currentPage: page,
         filters,
-        aggregations
+        aggregations,
       };
     } catch (error) {
       logger.apiError('getAdminGalleries', error);
@@ -152,7 +145,8 @@ class AdminGalleryApi {
     try {
       const { data, error } = await supabase
         .from('admin_galleries')
-        .select(`
+        .select(
+          `
           *,
           owner:members!user_galleries_user_id_fkey(
             id,
@@ -168,7 +162,8 @@ class AdminGalleryApi {
             visibility,
             created_at
           )
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -186,21 +181,21 @@ class AdminGalleryApi {
   }
 
   // Photo Management
-  async getAdminGalleryPhotos(galleryId: string, params?: {
-    page?: number;
-    limit?: number;
-    filters?: AdminPhotoFilters;
-  }): Promise<AdminPhotosResponse> {
+  async getAdminGalleryPhotos(
+    galleryId: string,
+    params?: {
+      page?: number;
+      limit?: number;
+      filters?: AdminPhotoFilters;
+    }
+  ): Promise<AdminPhotosResponse> {
     try {
-      const {
-        page = 1,
-        limit = 50,
-        filters = {}
-      } = params || {};
+      const { page = 1, limit = 50, filters = {} } = params || {};
 
       let query = supabase
         .from('admin_photos') // Use the admin view
-        .select(`
+        .select(
+          `
           *,
           uploader:members!gallery_photos_user_id_fkey(
             id,
@@ -208,7 +203,9 @@ class AdminGalleryApi {
             email,
             avatar_url
           )
-        `, { count: 'exact' })
+        `,
+          { count: 'exact' }
+        )
         .eq('gallery_id', galleryId);
 
       // Apply filters
@@ -233,15 +230,11 @@ class AdminGalleryApi {
       }
 
       if (filters.uploadDateRange) {
-        query = query
-          .gte('created_at', filters.uploadDateRange.start)
-          .lte('created_at', filters.uploadDateRange.end);
+        query = query.gte('created_at', filters.uploadDateRange.start).lte('created_at', filters.uploadDateRange.end);
       }
 
       if (filters.fileSizeRange) {
-        query = query
-          .gte('file_size', filters.fileSizeRange.min)
-          .lte('file_size', filters.fileSizeRange.max);
+        query = query.gte('file_size', filters.fileSizeRange.min).lte('file_size', filters.fileSizeRange.max);
       }
 
       if (filters.dimensionsRange) {
@@ -285,7 +278,7 @@ class AdminGalleryApi {
         totalPages: Math.ceil((count || 0) / limit),
         currentPage: page,
         filters,
-        aggregations
+        aggregations,
       };
     } catch (error) {
       logger.apiError('getAdminGalleryPhotos', error);
@@ -302,7 +295,7 @@ class AdminGalleryApi {
       const { data, error } = await supabase.rpc('admin_bulk_update_galleries', {
         gallery_ids: operation.galleryIds,
         operation_type: operation.type,
-        payload: operation.payload || {}
+        payload: operation.payload || {},
       });
 
       if (error) {
@@ -325,7 +318,7 @@ class AdminGalleryApi {
       const { data, error } = await supabase.rpc('admin_bulk_update_photos', {
         photo_ids: operation.photoIds,
         operation_type: operation.type,
-        payload: operation.payload || {}
+        payload: operation.payload || {},
       });
 
       if (error) {
@@ -353,17 +346,12 @@ class AdminGalleryApi {
     totalPages: number;
   }> {
     try {
-      const {
-        entityType,
-        status = 'pending',
-        priority,
-        page = 1,
-        limit = 25
-      } = params || {};
+      const { entityType, status = 'pending', priority, page = 1, limit = 25 } = params || {};
 
       let query = supabase
         .from(this.moderationTableName)
-        .select(`
+        .select(
+          `
           *,
           submitted_by_user:members!moderation_queue_submitted_by_fkey(
             id,
@@ -377,7 +365,9 @@ class AdminGalleryApi {
             email,
             avatar_url
           )
-        `, { count: 'exact' })
+        `,
+          { count: 'exact' }
+        )
         .eq('status', status)
         .order('created_at', { ascending: false });
 
@@ -404,7 +394,7 @@ class AdminGalleryApi {
       return {
         items: (data || []) as ModerationQueueItem[],
         totalCount: count || 0,
-        totalPages: Math.ceil((count || 0) / limit)
+        totalPages: Math.ceil((count || 0) / limit),
       };
     } catch (error) {
       logger.apiError('getModerationQueue', error);
@@ -418,7 +408,7 @@ class AdminGalleryApi {
         item_id: decision.itemId,
         action: decision.action,
         notes: decision.notes,
-        additional_actions: decision.additionalActions || {}
+        additional_actions: decision.additionalActions || {},
       });
 
       if (error) {
@@ -438,7 +428,7 @@ class AdminGalleryApi {
     try {
       const { data, error } = await supabase.rpc('get_gallery_analytics', {
         gallery_id: galleryId,
-        timeframe
+        timeframe,
       });
 
       if (error) {
@@ -489,14 +479,10 @@ class AdminGalleryApi {
         updated_at: new Date().toISOString(),
         sort_order: 0,
         view_count: 0,
-        photo_count: 0
+        photo_count: 0,
       };
 
-      const { data, error } = await supabase
-        .from(this.baseTableName)
-        .insert([galleryData])
-        .select()
-        .single();
+      const { data, error } = await supabase.from(this.baseTableName).insert([galleryData]).select().single();
 
       if (error) {
         logger.apiError('createAdminGallery', error);
@@ -520,15 +506,10 @@ class AdminGalleryApi {
         visibility: formData.visibility,
         is_featured: formData.featured,
         tags: formData.tags,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await supabase
-        .from(this.baseTableName)
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await supabase.from(this.baseTableName).update(updates).eq('id', id).select().single();
 
       if (error) {
         logger.apiError('updateAdminGallery', error);
@@ -552,18 +533,14 @@ class AdminGalleryApi {
 
       // Delete files from storage
       if (photos && photos.length > 0) {
-        const filePaths = photos.flatMap(photo => [
-          photo.storage_path,
-          photo.thumbnail_path,
-          photo.medium_path,
-          photo.large_path,
-          photo.original_path
-        ].filter(Boolean));
+        const filePaths = photos.flatMap(photo =>
+          [photo.storage_path, photo.thumbnail_path, photo.medium_path, photo.large_path, photo.original_path].filter(
+            Boolean
+          )
+        );
 
         if (filePaths.length > 0) {
-          const { error: storageError } = await supabase.storage
-            .from('gallery-photos')
-            .remove(filePaths);
+          const { error: storageError } = await supabase.storage.from('gallery-photos').remove(filePaths);
 
           if (storageError) {
             logger.warn('Error deleting gallery files from storage', 'ADMIN_GALLERY', storageError);
@@ -572,10 +549,7 @@ class AdminGalleryApi {
       }
 
       // Delete gallery (photos will be cascade deleted)
-      const { error } = await supabase
-        .from(this.baseTableName)
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from(this.baseTableName).delete().eq('id', id);
 
       if (error) {
         logger.apiError('deleteAdminGallery', error);
@@ -600,15 +574,10 @@ class AdminGalleryApi {
         visibility: formData.visibility,
         sort_order: formData.sortOrder,
         metadata: formData.metadata,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await supabase
-        .from(this.photoTableName)
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await supabase.from(this.photoTableName).update(updates).eq('id', id).select().single();
 
       if (error) {
         logger.apiError('updateAdminPhoto', error);
@@ -634,7 +603,7 @@ class AdminGalleryApi {
           byModerationStatus: {},
           byOwnerType: {},
           totalPhotos: 0,
-          totalViews: 0
+          totalViews: 0,
         };
       }
 
@@ -646,16 +615,16 @@ class AdminGalleryApi {
         byModerationStatus: {},
         byOwnerType: {},
         totalPhotos: 0,
-        totalViews: 0
+        totalViews: 0,
       };
     }
   }
 
   private async getPhotoAggregations(galleryId: string, filters: AdminPhotoFilters) {
     try {
-      const { data, error } = await supabase.rpc('get_photo_aggregations', { 
+      const { data, error } = await supabase.rpc('get_photo_aggregations', {
         gallery_id: galleryId,
-        filters 
+        filters,
       });
 
       if (error) {
@@ -664,7 +633,7 @@ class AdminGalleryApi {
           byModerationStatus: {},
           byProcessingStatus: {},
           totalFileSize: 0,
-          averageFileSize: 0
+          averageFileSize: 0,
         };
       }
 
@@ -675,7 +644,7 @@ class AdminGalleryApi {
         byModerationStatus: {},
         byProcessingStatus: {},
         totalFileSize: 0,
-        averageFileSize: 0
+        averageFileSize: 0,
       };
     }
   }

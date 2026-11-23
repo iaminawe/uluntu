@@ -29,7 +29,8 @@ const AdminOpportunitiesPage: React.FC = () => {
                 Opportunities Board Feature Disabled
               </h3>
               <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                The opportunities board feature is currently disabled. Enable it in System Management → Features to access opportunities management.
+                The opportunities board feature is currently disabled. Enable it in System Management → Features to
+                access opportunities management.
               </p>
               <a
                 href="/admin/system/features"
@@ -53,14 +54,10 @@ const AdminOpportunitiesPage: React.FC = () => {
             <Briefcase className="w-4 h-4 mr-2 text-gray-500" />
             {value}
           </div>
-          {item.organization && (
-            <div className="text-sm text-gray-500">
-              {item.organization}
-            </div>
-          )}
+          {item.organization && <div className="text-sm text-gray-500">{item.organization}</div>}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'type',
@@ -71,17 +68,20 @@ const AdminOpportunitiesPage: React.FC = () => {
           volunteer: { text: 'Volunteer', color: 'bg-blue-100 text-blue-800' },
           internship: { text: 'Internship', color: 'bg-purple-100 text-purple-800' },
           contract: { text: 'Contract', color: 'bg-orange-100 text-orange-800' },
-          freelance: { text: 'Freelance', color: 'bg-yellow-100 text-yellow-800' }
+          freelance: { text: 'Freelance', color: 'bg-yellow-100 text-yellow-800' },
         };
-        const config = typeConfig[value as keyof typeof typeConfig] || { text: value, color: 'bg-gray-100 text-gray-800' };
-        
+        const config = typeConfig[value as keyof typeof typeConfig] || {
+          text: value,
+          color: 'bg-gray-100 text-gray-800',
+        };
+
         return (
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
             {config.text}
           </span>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'location',
@@ -94,12 +94,10 @@ const AdminOpportunitiesPage: React.FC = () => {
               {value}
             </div>
           )}
-          {item.remote && (
-            <div className="text-sm text-blue-600">Remote Available</div>
-          )}
+          {item.remote && <div className="text-sm text-blue-600">Remote Available</div>}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'compensation',
@@ -110,7 +108,7 @@ const AdminOpportunitiesPage: React.FC = () => {
           {value || 'Not specified'}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'deadline',
@@ -120,7 +118,7 @@ const AdminOpportunitiesPage: React.FC = () => {
         const deadline = new Date(value);
         const now = new Date();
         const isExpired = deadline < now;
-        
+
         return (
           <div className={`flex items-center ${isExpired ? 'text-red-600' : 'text-gray-900'}`}>
             <Clock className="w-4 h-4 mr-1" />
@@ -129,7 +127,7 @@ const AdminOpportunitiesPage: React.FC = () => {
           </div>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'status',
@@ -138,7 +136,7 @@ const AdminOpportunitiesPage: React.FC = () => {
         const deadline = item.deadline ? new Date(item.deadline) : null;
         const now = new Date();
         const isExpired = deadline && deadline < now;
-        
+
         if (isExpired) {
           return (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -147,12 +145,14 @@ const AdminOpportunitiesPage: React.FC = () => {
             </span>
           );
         }
-        
+
         const isActive = value === 'published';
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            isActive ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-          }`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              isActive ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}
+          >
             {isActive ? (
               <>
                 <CheckCircle className="w-3 h-3 mr-1" />
@@ -167,14 +167,14 @@ const AdminOpportunitiesPage: React.FC = () => {
           </span>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'created_at',
       label: 'Posted',
       render: (value: string) => new Date(value).toLocaleDateString(),
-      sortable: true
-    }
+      sortable: true,
+    },
   ];
 
   return (

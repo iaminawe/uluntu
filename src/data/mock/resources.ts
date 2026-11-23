@@ -25,12 +25,12 @@ export const resources: Resource[] = [
     tags: ['react', 'javascript', 'frontend'],
     contributor: {
       id: '1',
-      name: 'John Doe'
+      name: 'John Doe',
     },
     dateAdded: '2024-01-15T00:00:00Z',
     status: 'published' as ContentStatus,
     featured: false,
-    image: undefined
+    image: undefined,
   },
   {
     id: '2',
@@ -41,11 +41,11 @@ export const resources: Resource[] = [
     tags: ['typescript', 'javascript', 'best-practices'],
     contributor: {
       id: '2',
-      name: 'Jane Smith'
+      name: 'Jane Smith',
     },
     dateAdded: '2024-01-20T00:00:00Z',
     status: 'published' as ContentStatus,
     featured: true,
-    image: undefined
-  }
+    image: undefined,
+  },
 ];

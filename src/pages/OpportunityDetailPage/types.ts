@@ -45,7 +45,7 @@ export const adaptMainOpportunityToDetailPage = (opportunity: MainOpportunity): 
     website: '',
     image: '',
     postedAt: opportunity.postedDate,
-    status: opportunity.status
+    status: opportunity.status,
   };
 };
 
@@ -54,13 +54,13 @@ function mapMainTypeToLocalType(mainType: MainOpportunity['type']): Opportunity[
   const typeMap: Partial<Record<MainOpportunity['type'], Opportunity['type']>> = {
     'full-time': 'job',
     'part-time': 'job',
-    'contract': 'job',
-    'volunteer': 'volunteer',
-    'job': 'job',
-    'funding': 'funding',
-    'community': 'community'
+    contract: 'job',
+    volunteer: 'volunteer',
+    job: 'job',
+    funding: 'funding',
+    community: 'community',
   };
-  
+
   return typeMap[mainType] || 'job';
 }
 

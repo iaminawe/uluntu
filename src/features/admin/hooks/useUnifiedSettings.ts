@@ -10,18 +10,11 @@ import {
   setSidebarCollapsed,
   setMobileMenuOpen,
   clearFilters,
-  selectAdminSettingsUI
+  selectAdminSettingsUI,
 } from '../store/adminSettingsUISlice';
 
-export type UnifiedSettingsSection = 
-  | 'general'
-  | 'users' 
-  | 'features'
-  | 'security'
-  | 'email'
-  | 'performance'
-  | 'contact'
-  | 'audit';
+export type UnifiedSettingsSection =
+  'general' | 'users' | 'features' | 'security' | 'email' | 'performance' | 'contact' | 'audit';
 
 export interface UnifiedSettingsPermissions {
   canViewGeneral: boolean;
@@ -42,7 +35,7 @@ export function useUnifiedSettings() {
   const dispatch = useAppDispatch();
   const { isAdmin, isSuperAdmin, hasAnyRole } = usePermissions();
   const uiState = useAppSelector(selectAdminSettingsUI);
-  
+
   // React Query for server state
   const {
     settings,
@@ -54,7 +47,7 @@ export function useUnifiedSettings() {
     updateFeature,
     deleteSetting,
     deleteFeature,
-    refetch
+    refetch,
   } = useAdminSettings();
 
   // Check permissions using the modern permission system
@@ -66,7 +59,7 @@ export function useUnifiedSettings() {
     canViewEmail: isAdmin(),
     canViewPerformance: isSuperAdmin(),
     canViewContact: isAdmin(),
-    canViewAudit: isSuperAdmin()
+    canViewAudit: isSuperAdmin(),
   };
 
   // Filter settings by category for current section
@@ -79,7 +72,7 @@ export function useUnifiedSettings() {
       email: ['integration'], // Email-related integrations
       performance: [], // Performance metrics only
       contact: ['contact', 'location'],
-      audit: [] // History only
+      audit: [], // History only
     };
 
     const categories = categoryMap[uiState.activeSection] || [];
@@ -108,7 +101,7 @@ export function useUnifiedSettings() {
     },
     clearFilters: () => {
       dispatch(clearFilters());
-    }
+    },
   };
 
   return {
@@ -120,22 +113,22 @@ export function useUnifiedSettings() {
     history,
     isLoading: loading,
     error,
-    
+
     // UI state from Redux
     activeSection: uiState.activeSection,
     searchTerm: uiState.searchTerm,
     sidebarCollapsed: uiState.sidebarCollapsed,
     mobileMenuOpen: uiState.mobileMenuOpen,
-    
+
     // Permissions
     permissions,
-    
+
     // Actions
     ...actions,
     updateSetting,
     updateFeature,
     deleteSetting,
     deleteFeature,
-    refetch
+    refetch,
   };
 }

@@ -2,14 +2,14 @@
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
-    auth: { getUser: jest.fn() }
+    auth: { getUser: jest.fn() },
   },
-  sessionCache: new WeakMap()
+  sessionCache: new WeakMap(),
 }));
 
 jest.mock('@/config/env', () => ({
   getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
-  IS_SUPABASE_ENABLED: false
+  IS_SUPABASE_ENABLED: false,
 }));
 
 // Using CommonJS syntax instead of ES modules
@@ -31,9 +31,9 @@ const mockResourceData = {
   dateAdded: '2025-05-01T08:00:00.000Z',
   contributor: {
     id: '456',
-    name: 'Jane Smith'
+    name: 'Jane Smith',
   },
-  tags: ['tech', 'guide', 'kootenay']
+  tags: ['tech', 'guide', 'kootenay'],
 };
 
 jest.mock('../hooks/useResourceQueries', () => ({
@@ -41,46 +41,42 @@ jest.mock('../hooks/useResourceQueries', () => ({
     data: [mockResourceData],
     isLoading: false,
     error: null,
-    refetch: jest.fn()
+    refetch: jest.fn(),
   }),
   useResource: jest.fn().mockReturnValue({
     data: mockResourceData,
     isLoading: false,
     error: null,
-    refetch: jest.fn()
+    refetch: jest.fn(),
   }),
   useCreateResource: jest.fn().mockReturnValue({
     mutateAsync: jest.fn().mockResolvedValue(mockResourceData),
     isLoading: false,
-    error: null
+    error: null,
   }),
   useUpdateResource: jest.fn().mockReturnValue({
     mutateAsync: jest.fn().mockResolvedValue(mockResourceData),
     isLoading: false,
-    error: null
+    error: null,
   }),
   useDeleteResource: jest.fn().mockReturnValue({
     mutateAsync: jest.fn().mockResolvedValue({}),
     isLoading: false,
-    error: null
-  })
+    error: null,
+  }),
 }));
 
 // Mock the auth hook
 jest.mock('../hooks/useAuth', () => ({
   useAuth: jest.fn().mockReturnValue({
     user: { id: '789', name: 'Admin User', role: 'admin' },
-    status: 'authenticated'
-  })
+    status: 'authenticated',
+  }),
 }));
 
 describe('Resources Management', () => {
-  const renderWithProviders = (component) => {
-    return render(
-      React.createElement(Provider, { store: store },
-        React.createElement(BrowserRouter, null, component)
-      )
-    );
+  const renderWithProviders = component => {
+    return render(React.createElement(Provider, { store: store }, React.createElement(BrowserRouter, null, component)));
   };
 
   beforeEach(() => {
@@ -93,7 +89,7 @@ describe('Resources Management', () => {
     require('../hooks/useResourceQueries').useCreateResource.mockReturnValue({
       mutateAsync: createResourceMock,
       isLoading: false,
-      error: null
+      error: null,
     });
 
     // Render the ResourceEditPage component
@@ -112,12 +108,12 @@ describe('Resources Management', () => {
     const updateResourceMock = jest.fn().mockResolvedValue({
       ...mockResourceData,
       title: 'Updated Resource Title',
-      description: 'Updated description'
+      description: 'Updated description',
     });
     require('../hooks/useResourceQueries').useUpdateResource.mockReturnValue({
       mutateAsync: updateResourceMock,
       isLoading: false,
-      error: null
+      error: null,
     });
 
     // Test steps would include:
@@ -134,7 +130,7 @@ describe('Resources Management', () => {
     require('../hooks/useResourceQueries').useDeleteResource.mockReturnValue({
       mutateAsync: deleteResourceMock,
       isLoading: false,
-      error: null
+      error: null,
     });
 
     // Test steps would include:
@@ -153,15 +149,15 @@ describe('Resources Management', () => {
         ...mockResourceData,
         id: '124',
         title: 'Local Development Tools',
-        type: 'tool'
-      }
+        type: 'tool',
+      },
     ];
-    
+
     require('../hooks/useResourceQueries').useResources.mockReturnValue({
       data: filteredResources,
       isLoading: false,
       error: null,
-      refetch: jest.fn()
+      refetch: jest.fn(),
     });
 
     // Test steps would include:
@@ -179,15 +175,13 @@ describe('Resources Management', () => {
 
   it('RES-006: As a User, I want to search for resources by keywords to quickly find what I need', async () => {
     // Mock implementation for search results
-    const searchResults = [
-      mockResourceData
-    ];
-    
+    const searchResults = [mockResourceData];
+
     require('../hooks/useResourceQueries').useResources.mockReturnValue({
       data: searchResults,
       isLoading: false,
       error: null,
-      refetch: jest.fn()
+      refetch: jest.fn(),
     });
 
     // Test steps would include:

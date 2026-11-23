@@ -2,12 +2,7 @@ import React, { useMemo } from 'react';
 import { useMenuItems } from '@/features/menu/contexts/MenuContext';
 import { filterMenuItemsByFeatures } from '@/features/menu/utils/menuAdapters';
 import { useEnabledFeatures } from '@/hooks/useSettings';
-import type { 
-  FooterColumn, 
-  FooterMenuConfig,
-  FooterGroupingStrategy,
-  DynamicFooterProps 
-} from './types';
+import type { FooterColumn, FooterMenuConfig, FooterGroupingStrategy, DynamicFooterProps } from './types';
 import type { MenuItem } from '@/types/menu';
 import FooterColumnComponent from './FooterColumn';
 import { MenuLoadingSkeleton } from '@/features/menu/components/DynamicMenu';
@@ -31,15 +26,15 @@ export const DynamicFooterMenu: React.FC<DynamicFooterMenuProps> = ({
   columnLayout = 'auto',
   config = {},
   className = '',
-  onError
+  onError,
 }) => {
   const { isFeatureEnabled: checkFeature } = useEnabledFeatures();
   const isFeatureEnabled = (feature: string) => checkFeature(feature as any);
   const { items: rawMenuItems, loading, error } = useMenuItems('footer_links');
-  
+
   // Check if dynamic footer menus are enabled
   const isDynamicEnabled = enableDynamicMenu && isFeatureEnabled(featureFlagKey);
-  
+
   // Default menu configuration
   const menuConfig: FooterMenuConfig = {
     groupingStrategy: 'by-category',
@@ -47,7 +42,7 @@ export const DynamicFooterMenu: React.FC<DynamicFooterMenuProps> = ({
     showIcons: false,
     showDescriptions: false,
     preserveHierarchy: true,
-    ...config
+    ...config,
   };
 
   // Filter menu items based on feature flags and permissions
@@ -57,7 +52,7 @@ export const DynamicFooterMenu: React.FC<DynamicFooterMenuProps> = ({
     }
 
     let filtered = filterMenuItemsByFeatures(rawMenuItems, isFeatureEnabled);
-    
+
     // Apply permission filtering if roles are specified
     if (permissionRoles.length > 0) {
       filtered = filtered.filter(item => {
@@ -77,11 +72,7 @@ export const DynamicFooterMenu: React.FC<DynamicFooterMenuProps> = ({
       return [];
     }
 
-    return convertMenuItemsToFooterColumns(
-      filteredMenuItems,
-      menuConfig,
-      maxColumns
-    );
+    return convertMenuItemsToFooterColumns(filteredMenuItems, menuConfig, maxColumns);
   }, [filteredMenuItems, menuConfig, maxColumns]);
 
   // Determine which columns to render
@@ -108,8 +99,8 @@ export const DynamicFooterMenu: React.FC<DynamicFooterMenuProps> = ({
         {Array.from({ length: maxColumns }, (_, i) => (
           <div key={i} className="flex flex-col">
             <div className="h-5 w-20 bg-slate-200 dark:bg-slate-600 rounded animate-pulse mb-3" />
-            <MenuLoadingSkeleton 
-              count={4} 
+            <MenuLoadingSkeleton
+              count={4}
               className="space-y-2"
               itemClassName="h-4 w-16 bg-slate-200 dark:bg-slate-600 rounded animate-pulse"
             />
@@ -150,19 +141,19 @@ function convertMenuItemsToFooterColumns(
   maxColumns: number
 ): FooterColumn[] {
   const { groupingStrategy, maxItemsPerColumn, preserveHierarchy } = config;
-  
+
   switch (groupingStrategy) {
     case 'by-category':
       return groupByCategory(menuItems, maxColumns, maxItemsPerColumn);
-      
+
     case 'by-section':
       return groupBySection(menuItems, maxColumns, maxItemsPerColumn);
-      
+
     case 'hierarchical':
-      return preserveHierarchy ? 
-        groupHierarchically(menuItems, maxColumns, maxItemsPerColumn) :
-        groupFlat(menuItems, maxColumns, maxItemsPerColumn);
-        
+      return preserveHierarchy
+        ? groupHierarchically(menuItems, maxColumns, maxItemsPerColumn)
+        : groupFlat(menuItems, maxColumns, maxItemsPerColumn);
+
     case 'flat':
     default:
       return groupFlat(menuItems, maxColumns, maxItemsPerColumn);
@@ -172,13 +163,9 @@ function convertMenuItemsToFooterColumns(
 /**
  * Group menu items by category (inferred from URL patterns)
  */
-function groupByCategory(
-  items: MenuItem[], 
-  maxColumns: number, 
-  maxItemsPerColumn: number
-): FooterColumn[] {
+function groupByCategory(items: MenuItem[], maxColumns: number, maxItemsPerColumn: number): FooterColumn[] {
   const categories = new Map<string, MenuItem[]>();
-  
+
   items.forEach(item => {
     const category = inferCategory(item);
     if (!categories.has(category)) {
@@ -189,109 +176,98 @@ function groupByCategory(
 
   const columns: FooterColumn[] = [];
   let columnIndex = 0;
-  
+
   for (const [category, categoryItems] of categories) {
     if (columnIndex >= maxColumns) break;
-    
-    const links = categoryItems
-      .slice(0, maxItemsPerColumn)
-      .map(item => ({
-        text: item.title,
-        href: item.url || '#',
-        isExternal: item.is_external,
-        target: item.target,
-        icon: item.icon,
-        cssClasses: item.css_classes || undefined
-      }));
-    
+
+    const links = categoryItems.slice(0, maxItemsPerColumn).map(item => ({
+      text: item.title,
+      href: item.url || '#',
+      isExternal: item.is_external,
+      target: item.target,
+      icon: item.icon,
+      cssClasses: item.css_classes || undefined,
+    }));
+
     columns.push({
       id: `category-${category}`,
       title: category,
-      links
+      links,
     });
-    
+
     columnIndex++;
   }
-  
+
   return columns;
 }
 
 /**
  * Group menu items by section (parent-child relationships)
  */
-function groupBySection(
-  items: MenuItem[],
-  maxColumns: number,
-  maxItemsPerColumn: number
-): FooterColumn[] {
+function groupBySection(items: MenuItem[], maxColumns: number, maxItemsPerColumn: number): FooterColumn[] {
   const parentItems = items.filter(item => !item.parent_id);
   const childItems = items.filter(item => item.parent_id);
-  
+
   const columns: FooterColumn[] = [];
-  
+
   parentItems.slice(0, maxColumns).forEach(parent => {
-    const children = childItems
-      .filter(child => child.parent_id === parent.id)
-      .slice(0, maxItemsPerColumn - 1);
-    
+    const children = childItems.filter(child => child.parent_id === parent.id).slice(0, maxItemsPerColumn - 1);
+
     const links = [
       {
         text: parent.title,
         href: parent.url || '#',
         isExternal: parent.is_external,
-        target: parent.target
+        target: parent.target,
       },
       ...children.map(child => ({
         text: child.title,
         href: child.url || '#',
         isExternal: child.is_external,
-        target: child.target
-      }))
+        target: child.target,
+      })),
     ];
-    
+
     columns.push({
       id: `section-${parent.id}`,
       title: parent.title,
-      links
+      links,
     });
   });
-  
+
   return columns;
 }
 
 /**
  * Group menu items hierarchically
  */
-function groupHierarchically(
-  items: MenuItem[],
-  maxColumns: number,
-  maxItemsPerColumn: number
-): FooterColumn[] {
+function groupHierarchically(items: MenuItem[], maxColumns: number, maxItemsPerColumn: number): FooterColumn[] {
   const topLevelItems = items.filter(item => !item.parent_id);
-  
+
   return topLevelItems.slice(0, maxColumns).map(topItem => {
-    const children = items
-      .filter(item => item.parent_id === topItem.id)
-      .slice(0, maxItemsPerColumn);
-    
-    const links = children.length > 0 
-      ? children.map(child => ({
-          text: child.title,
-          href: child.url || '#',
-          isExternal: child.is_external,
-          target: child.target
-        }))
-      : [{
-          text: topItem.title,
-          href: topItem.url || '#',
-          isExternal: topItem.is_external,
-          target: topItem.target
-        }];
-    
+    const children = items.filter(item => item.parent_id === topItem.id).slice(0, maxItemsPerColumn);
+
+    const links =
+      children.length > 0
+        ? children.map(child => ({
+            text: child.title,
+            href: child.url || '#',
+            isExternal: child.is_external,
+            target: child.target,
+          }))
+        : [
+            {
+              text: topItem.title,
+              href: topItem.url || '#',
+              isExternal: topItem.is_external,
+              target: topItem.target,
+            },
+          ];
+
     return {
       id: `hierarchical-${topItem.id}`,
       title: topItem.title,
-      links
+      links,
     };
   });
 }
@@ -299,43 +275,36 @@ function groupHierarchically(
 /**
  * Group menu items flat (distribute evenly)
  */
-function groupFlat(
-  items: MenuItem[],
-  maxColumns: number,
-  maxItemsPerColumn: number
-): FooterColumn[] {
+function groupFlat(items: MenuItem[], maxColumns: number, maxItemsPerColumn: number): FooterColumn[] {
   const itemsPerColumn = Math.ceil(items.length / maxColumns);
   const actualItemsPerColumn = Math.min(itemsPerColumn, maxItemsPerColumn);
-  
+
   const columns: FooterColumn[] = [];
-  
+
   for (let i = 0; i < maxColumns && i * actualItemsPerColumn < items.length; i++) {
     const start = i * actualItemsPerColumn;
     const end = Math.min(start + actualItemsPerColumn, items.length);
     const columnItems = items.slice(start, end);
-    
+
     if (columnItems.length === 0) break;
-    
+
     const links = columnItems.map(item => ({
       text: item.title,
       href: item.url || '#',
       isExternal: item.is_external,
-      target: item.target
+      target: item.target,
     }));
-    
+
     // Determine column title based on first item
-    const title = i === 0 ? 'Navigation' :
-                  i === 1 ? 'Resources' :
-                  i === 2 ? 'Community' :
-                  'More';
-    
+    const title = i === 0 ? 'Navigation' : i === 1 ? 'Resources' : i === 2 ? 'Community' : 'More';
+
     columns.push({
       id: `flat-${i}`,
       title,
-      links
+      links,
     });
   }
-  
+
   return columns;
 }
 
@@ -345,7 +314,7 @@ function groupFlat(
 function inferCategory(item: MenuItem): string {
   const url = item.url?.toLowerCase() || '';
   const title = item.title.toLowerCase();
-  
+
   if (url.includes('community') || url.includes('directory') || url.includes('groups')) {
     return 'Community';
   }
@@ -358,7 +327,7 @@ function inferCategory(item: MenuItem): string {
   if (url.includes('about') || url.includes('contact') || url.includes('privacy') || url.includes('terms')) {
     return 'Company';
   }
-  
+
   return 'Links';
 }
 
@@ -367,11 +336,11 @@ function inferCategory(item: MenuItem): string {
  */
 function getGridClassName(columnCount: number, layout: 'auto' | 'equal' | 'custom'): string {
   const baseClass = 'grid';
-  
+
   if (layout === 'equal') {
     return `${baseClass} grid-cols-1 md:grid-cols-2 lg:grid-cols-${Math.min(columnCount, 4)}`;
   }
-  
+
   if (layout === 'auto') {
     if (columnCount <= 2) {
       return `${baseClass} grid-cols-1 md:grid-cols-2`;
@@ -381,7 +350,7 @@ function getGridClassName(columnCount: number, layout: 'auto' | 'equal' | 'custo
     }
     return `${baseClass} grid-cols-1 md:grid-cols-2 lg:grid-cols-4`;
   }
-  
+
   // Custom layout - let parent handle
   return baseClass;
 }

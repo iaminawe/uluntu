@@ -3,7 +3,14 @@ import { Users, Calendar, BookOpen, Newspaper, Package, Briefcase, Award, Extern
 import { Member } from '@/features/directory/components/MemberProfile/types';
 import { getTypeIcon } from '@/features/directory/components/MemberProfile/utils';
 import { MemberContributions } from '../../hooks/useMemberContributions';
-import { getGroupUrl, getResourceUrl, getEventUrl, getMarketplaceListingUrl, getOpportunityUrl, getGroupPostUrl } from '@/utils/contentUrlUtils';
+import {
+  getGroupUrl,
+  getResourceUrl,
+  getEventUrl,
+  getMarketplaceListingUrl,
+  getOpportunityUrl,
+  getGroupPostUrl,
+} from '@/utils/contentUrlUtils';
 
 interface ProfileContentProps {
   member: Member;
@@ -17,30 +24,36 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
   const events = contributions?.events || member.events || [];
   const posts = contributions?.posts || member.posts || [];
   // Create specific types to handle marketplace listings
-  type BaseListing = { id: string; title: string; type: string; price: number; image: string; };
-  type ListingWithCreatedAt = BaseListing & { createdAt: string; };
-  type ListingWithDateAdded = BaseListing & { dateAdded: string; };
-  type MixedListing = BaseListing & Partial<{ createdAt: string; dateAdded: string; }>;
+  type BaseListing = { id: string; title: string; type: string; price: number; image: string };
+  type ListingWithCreatedAt = BaseListing & { createdAt: string };
+  type ListingWithDateAdded = BaseListing & { dateAdded: string };
+  type MixedListing = BaseListing & Partial<{ createdAt: string; dateAdded: string }>;
 
   // Create a type guard for checking if a listing has createdAt property
   const hasCreatedAt = (listing: MixedListing): listing is ListingWithCreatedAt => {
-    return typeof listing === 'object' && listing !== null && 'createdAt' in listing && typeof listing.createdAt === 'string';
+    return (
+      typeof listing === 'object' && listing !== null && 'createdAt' in listing && typeof listing.createdAt === 'string'
+    );
   };
 
   // Create a type guard for checking if a listing has dateAdded property
   const hasDateAdded = (listing: MixedListing): listing is ListingWithDateAdded => {
-    return typeof listing === 'object' && listing !== null && 'dateAdded' in listing && typeof listing.dateAdded === 'string';
+    return (
+      typeof listing === 'object' && listing !== null && 'dateAdded' in listing && typeof listing.dateAdded === 'string'
+    );
   };
 
   // Adapt marketplace listings to match the expected structure with dateAdded
   const marketplaceListings = (contributions?.marketplaceListings || member.marketplaceListings || []).map(listing => ({
     ...listing,
     // Map createdAt to dateAdded if needed
-    dateAdded: hasDateAdded(listing) ? listing.dateAdded : 
-               hasCreatedAt(listing) ? listing.createdAt : 
-               new Date().toISOString(),
+    dateAdded: hasDateAdded(listing)
+      ? listing.dateAdded
+      : hasCreatedAt(listing)
+        ? listing.createdAt
+        : new Date().toISOString(),
     // Ensure type is one of the expected values
-    type: (listing.type as string) || 'service'
+    type: (listing.type as string) || 'service',
   }));
   const opportunities = contributions?.opportunities || member.opportunities || [];
   const achievements = member.achievements || [];
@@ -56,13 +69,16 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             </div>
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Groups</h2>
           </div>
-          
+
           {groups.length === 0 ? (
             <p className="text-slate-500 dark:text-slate-400 text-center py-4">No groups joined yet</p>
           ) : (
             <div className="space-y-5">
               {groups.map(group => (
-                <div key={group.id} className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
+                <div
+                  key={group.id}
+                  className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0"
+                >
                   <div className="flex-1">
                     <Link
                       to={getGroupUrl(group)}
@@ -71,7 +87,9 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                       {group.name}
                     </Link>
                     <div className="flex items-center text-sm text-slate-600 dark:text-slate-300">
-                      <span className={`inline-block px-2 py-1 rounded-full text-xs ${group.role === 'admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'} mr-2`}>
+                      <span
+                        className={`inline-block px-2 py-1 rounded-full text-xs ${group.role === 'admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'} mr-2`}
+                      >
                         {group.role === 'admin' ? 'Admin' : 'Member'}
                       </span>
                       <span>Joined {new Date(group.joinedDate).toLocaleDateString()}</span>
@@ -91,13 +109,16 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             </div>
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Resources</h2>
           </div>
-          
+
           {resources.length === 0 ? (
             <p className="text-slate-500 dark:text-slate-400 text-center py-4">No resources shared yet</p>
           ) : (
             <div className="space-y-5">
               {resources.map(resource => (
-                <div key={resource.id} className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
+                <div
+                  key={resource.id}
+                  className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0"
+                >
                   <div className="flex-1">
                     <Link
                       to={getResourceUrl(resource)}
@@ -114,9 +135,9 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                       </span>
                     </div>
                   </div>
-                  <a 
-                    href={resource.url} 
-                    target="_blank" 
+                  <a
+                    href={resource.url}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 ml-2"
                     aria-label="Open resource"
@@ -137,13 +158,16 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             </div>
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Events & Presentations</h2>
           </div>
-          
+
           {events.length === 0 ? (
             <p className="text-slate-500 dark:text-slate-400 text-center py-4">No events or presentations yet</p>
           ) : (
             <div className="space-y-5">
               {events.map(event => (
-                <div key={event.id} className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
+                <div
+                  key={event.id}
+                  className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0"
+                >
                   <div className="flex-1">
                     <Link
                       to={getEventUrl(event)}
@@ -175,13 +199,16 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
           </div>
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Opportunities</h2>
         </div>
-        
+
         {!member.opportunities || member.opportunities.length === 0 ? (
           <p className="text-slate-500 dark:text-slate-400 text-center py-4">No opportunities posted yet</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {member.opportunities?.map(opportunity => (
-              <div key={opportunity.id} className="bg-slate-50 dark:bg-slate-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600">
+              <div
+                key={opportunity.id}
+                className="bg-slate-50 dark:bg-slate-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600"
+              >
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="font-medium text-slate-900 dark:text-white">{opportunity.title}</h3>
@@ -196,7 +223,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                     <span className="text-sm text-orange-600 dark:text-orange-400">
                       {opportunity.location} {opportunity.remote && '• Remote'}
                     </span>
-                    <Link 
+                    <Link
                       to={getOpportunityUrl(opportunity)}
                       className="text-sm font-medium text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300"
                     >
@@ -219,14 +246,14 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             </div>
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Marketplace Contributions</h2>
           </div>
-          <Link 
-            to="/marketplace" 
+          <Link
+            to="/marketplace"
             className="text-sm font-medium text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300"
           >
             View All
           </Link>
         </div>
-        
+
         {marketplaceListings.length === 0 ? (
           <p className="text-slate-500 dark:text-slate-400 text-center py-4">No marketplace listings yet</p>
         ) : (
@@ -254,13 +281,15 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                     </div>
                   </div>
                   <p className="text-orange-600 dark:text-orange-400 font-medium">
-                    ${listing.price}{listing.type === 'service' && '/hr'}
+                    ${listing.price}
+                    {listing.type === 'service' && '/hr'}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                    Listed {(() => {
+                    Listed{' '}
+                    {(() => {
                       // Get the date string using a safer approach
                       let dateStr = '';
-                      
+
                       if ('dateAdded' in listing && typeof listing.dateAdded === 'string') {
                         dateStr = listing.dateAdded;
                       } else if ('createdAt' in listing && typeof listing.createdAt === 'string') {
@@ -268,7 +297,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                       } else {
                         dateStr = new Date().toISOString();
                       }
-                      
+
                       return new Date(dateStr).toLocaleDateString();
                     })()}
                   </p>
@@ -287,13 +316,16 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
           </div>
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Posts & Contributions</h2>
         </div>
-        
+
         {posts.length === 0 ? (
           <p className="text-slate-500 dark:text-slate-400 text-center py-4">No posts or contributions yet</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {posts.map(post => (
-              <div key={post.id} className="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600">
+              <div
+                key={post.id}
+                className="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600"
+              >
                 <Link
                   to={getGroupPostUrl(post.group, post.id)}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400 block mb-2"
@@ -304,9 +336,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                   {post.excerpt || 'No excerpt available'}
                 </p>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-500 dark:text-slate-400">
-                    {new Date(post.date).toLocaleDateString()}
-                  </span>
+                  <span className="text-slate-500 dark:text-slate-400">{new Date(post.date).toLocaleDateString()}</span>
                   <Link
                     to={getGroupUrl(post.group)}
                     className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300"
@@ -328,16 +358,21 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
           </div>
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Opportunities Posted</h2>
         </div>
-        
+
         {opportunities.length === 0 ? (
           <p className="text-slate-500 dark:text-slate-400 text-center py-4">No opportunities posted yet</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {opportunities.map((opportunity) => (
-              <div key={opportunity.id} className="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600">
+            {opportunities.map(opportunity => (
+              <div
+                key={opportunity.id}
+                className="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600"
+              >
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="font-medium text-slate-900 dark:text-white">{opportunity.title}</h3>
-                  <span className={`inline-block px-2 py-1 rounded-full text-xs ${opportunity.type === 'volunteer' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'}`}>
+                  <span
+                    className={`inline-block px-2 py-1 rounded-full text-xs ${opportunity.type === 'volunteer' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'}`}
+                  >
                     {opportunity.type.charAt(0).toUpperCase() + opportunity.type.slice(1)}
                   </span>
                 </div>
@@ -349,7 +384,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                     {opportunity.location}
                     {opportunity.remote && <span className="ml-1">(Remote)</span>}
                   </span>
-                  <Link 
+                  <Link
                     to={getOpportunityUrl(opportunity)}
                     className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 ml-auto"
                   >
@@ -361,7 +396,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
           </div>
         )}
       </div>
-      
+
       {/* Achievements section - New addition */}
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6">
@@ -370,13 +405,16 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
           </div>
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Achievements & Recognition</h2>
         </div>
-        
+
         {achievements.length === 0 ? (
           <p className="text-slate-500 dark:text-slate-400 text-center py-4">No achievements listed yet</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {achievements.map((achievement, index) => (
-              <div key={index} className="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 border border-slate-100 dark:border-slate-600 flex flex-col items-center text-center">
+              <div
+                key={index}
+                className="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 border border-slate-100 dark:border-slate-600 flex flex-col items-center text-center"
+              >
                 <div className="bg-orange-100 dark:bg-orange-900/20 p-3 rounded-full mb-3">
                   <Award className="h-6 w-6 text-orange-500" />
                 </div>

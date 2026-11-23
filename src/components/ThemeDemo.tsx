@@ -7,17 +7,13 @@ export const ThemeDemo: React.FC = () => {
   return (
     <div className="p-8 space-y-8">
       <h2 className="text-3xl font-bold text-theme mb-4">Theme Integration Demo</h2>
-      
+
       {/* Color Showcase */}
       <div>
         <h3 className="text-xl font-semibold text-theme mb-4">Colors</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-theme-primary p-4 rounded-theme-md text-white text-center">
-            Primary
-          </div>
-          <div className="bg-theme-secondary p-4 rounded-theme-md text-white text-center">
-            Secondary
-          </div>
+          <div className="bg-theme-primary p-4 rounded-theme-md text-white text-center">Primary</div>
+          <div className="bg-theme-secondary p-4 rounded-theme-md text-white text-center">Secondary</div>
           <div className="bg-theme-surface p-4 rounded-theme-md text-theme border border-theme text-center">
             Surface
           </div>
@@ -53,9 +49,7 @@ export const ThemeDemo: React.FC = () => {
             <h4 className="font-semibold mb-2">Large Rounded Box</h4>
             <p className="text-theme-muted">Uses theme border radius</p>
           </div>
-          <div className="bg-theme-primary text-white p-theme-sm rounded-theme-full text-center">
-            Fully Rounded
-          </div>
+          <div className="bg-theme-primary text-white p-theme-sm rounded-theme-full text-center">Fully Rounded</div>
         </div>
       </div>
 
@@ -63,18 +57,10 @@ export const ThemeDemo: React.FC = () => {
       <div>
         <h3 className="text-xl font-semibold text-theme mb-4">Shadows</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-theme-md shadow-theme-sm">
-            Small Shadow
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-theme-md shadow-theme-md">
-            Medium Shadow
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-theme-md shadow-theme-lg">
-            Large Shadow
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-theme-md shadow-theme-xl">
-            XL Shadow
-          </div>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-theme-md shadow-theme-sm">Small Shadow</div>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-theme-md shadow-theme-md">Medium Shadow</div>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-theme-md shadow-theme-lg">Large Shadow</div>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-theme-md shadow-theme-xl">XL Shadow</div>
         </div>
       </div>
 
@@ -82,12 +68,8 @@ export const ThemeDemo: React.FC = () => {
       <div>
         <h3 className="text-xl font-semibold text-theme mb-4">Buttons</h3>
         <div className="flex flex-wrap gap-4">
-          <button className="btn-primary px-6 py-2 rounded-theme-md theme-transition">
-            Primary Button
-          </button>
-          <button className="btn-secondary px-6 py-2 rounded-theme-md theme-transition">
-            Secondary Button
-          </button>
+          <button className="btn-primary px-6 py-2 rounded-theme-md theme-transition">Primary Button</button>
+          <button className="btn-secondary px-6 py-2 rounded-theme-md theme-transition">Secondary Button</button>
           <button className="bg-theme-surface text-theme border border-theme px-6 py-2 rounded-theme-md theme-transition hover:bg-theme-primary hover:text-white hover:border-transparent">
             Outline Button
           </button>
@@ -127,12 +109,18 @@ export const ThemeDemo: React.FC = () => {
             <span className="font-semibold">Mode:</span> {theme === 'dark' ? 'Dark' : 'Light'}
           </div>
           <div>
-            <span className="font-semibold">Primary Color:</span> 
-            <span className="ml-2 inline-block w-6 h-6 rounded align-middle" style={{backgroundColor: currentTheme?.colors?.primary || '#F97316'}}></span>
+            <span className="font-semibold">Primary Color:</span>
+            <span
+              className="ml-2 inline-block w-6 h-6 rounded align-middle"
+              style={{ backgroundColor: currentTheme?.colors?.primary || '#F97316' }}
+            ></span>
           </div>
           <div>
-            <span className="font-semibold">Secondary Color:</span> 
-            <span className="ml-2 inline-block w-6 h-6 rounded align-middle" style={{backgroundColor: currentTheme?.colors?.secondary || '#1F2937'}}></span>
+            <span className="font-semibold">Secondary Color:</span>
+            <span
+              className="ml-2 inline-block w-6 h-6 rounded align-middle"
+              style={{ backgroundColor: currentTheme?.colors?.secondary || '#1F2937' }}
+            ></span>
           </div>
         </div>
       </div>

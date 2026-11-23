@@ -5,13 +5,13 @@ jest.mock('@/features/auth/hooks/useAuth', () => ({
   useAuth: jest.fn().mockReturnValue({
     signIn: jest.fn().mockResolvedValue({
       data: { user: null, session: null },
-      error: null
+      error: null,
     }),
     signOut: jest.fn().mockResolvedValue({ error: null }),
     signUp: jest.fn(),
     loading: false,
-    error: null
-  })
+    error: null,
+  }),
 }));
 
 // Now import React dependencies after the mocks are set up
@@ -37,7 +37,7 @@ const TestAuthConsumer = () => {
   const { user, signIn, signOut, error } = auth;
   // Compute isAuthenticated based on whether user exists
   const isAuthenticated = !!user;
-  
+
   return (
     <div>
       <div data-testid="user-email">{user?.email || 'No user'}</div>
@@ -50,21 +50,20 @@ const TestAuthConsumer = () => {
 };
 
 describe('AuthContextWithRedux', () => {
-  const createTestStore = () => configureStore({
-    reducer: { auth: authReducer }
-  });
+  const createTestStore = () =>
+    configureStore({
+      reducer: { auth: authReducer },
+    });
 
   const renderWithProviders = (ui: React.ReactElement) => {
     const store = createTestStore();
     return {
       ...render(
         <Provider store={store}>
-          <AuthProvider>
-            {ui}
-          </AuthProvider>
+          <AuthProvider>{ui}</AuthProvider>
         </Provider>
       ),
-      store
+      store,
     };
   };
 
@@ -74,7 +73,7 @@ describe('AuthContextWithRedux', () => {
 
   it('should provide initial auth state from Redux store', async () => {
     renderWithProviders(<TestAuthConsumer />);
-    
+
     expect(screen.getByTestId('user-email')).toHaveTextContent('No user');
     expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
   });
@@ -83,19 +82,19 @@ describe('AuthContextWithRedux', () => {
     const mockUser = {
       id: 'user-123',
       email: 'test@example.com',
-      user_metadata: { role: 'user' }
+      user_metadata: { role: 'user' },
     };
-    
+
     const mockSession = {
       access_token: 'mock-token',
       refresh_token: 'mock-refresh',
       expires_at: 1234567890,
-      user: mockUser
+      user: mockUser,
     };
-    
+
     // Set up the Redux state
     const { store } = renderWithProviders(<TestAuthConsumer />);
-    
+
     // Set the Redux state directly
     await act(async () => {
       store.dispatch({
@@ -104,21 +103,21 @@ describe('AuthContextWithRedux', () => {
           user: {
             id: mockUser.id,
             email: mockUser.email,
-            role: 'user'
+            role: 'user',
           },
           session: {
             access_token: mockSession.access_token,
-            expires_at: new Date(mockSession.expires_at * 1000).toISOString()
-          }
-        }
+            expires_at: new Date(mockSession.expires_at * 1000).toISOString(),
+          },
+        },
       });
     });
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
       expect(screen.getByTestId('user-email')).toHaveTextContent('test@example.com');
     });
-    
+
     // This test is passing as long as the authentication state is correctly displayed
     // We don't need to verify that the mock function was called since we're directly setting the state
   });
@@ -127,7 +126,7 @@ describe('AuthContextWithRedux', () => {
     // TODO: Fix mock variable access after refactoring
     // Match the actual error message shown in the component
     const mockError = { message: 'Invalid login credentials' };
-    
+
     // This test needs to be updated to work with the new mock structure
   });
 
@@ -136,18 +135,18 @@ describe('AuthContextWithRedux', () => {
     const mockUser = {
       id: 'user-123',
       email: 'test@example.com',
-      user_metadata: { role: 'user' }
+      user_metadata: { role: 'user' },
     };
-    
+
     const mockSession = {
       access_token: 'mock-token',
       refresh_token: 'mock-refresh',
       expires_at: 1234567890,
-      user: mockUser
+      user: mockUser,
     };
-    
+
     const { store } = renderWithProviders(<TestAuthConsumer />);
-    
+
     // Set the Redux state directly for sign-in
     await act(async () => {
       store.dispatch({
@@ -156,30 +155,30 @@ describe('AuthContextWithRedux', () => {
           user: {
             id: mockUser.id,
             email: mockUser.email,
-            role: 'user'
+            role: 'user',
           },
           session: {
             access_token: mockSession.access_token,
-            expires_at: new Date(mockSession.expires_at * 1000).toISOString()
-          }
-        }
+            expires_at: new Date(mockSession.expires_at * 1000).toISOString(),
+          },
+        },
       });
     });
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
     });
-    
+
     // Directly dispatch the sign-out action to Redux
     await act(async () => {
       store.dispatch({ type: 'auth/signOut' });
     });
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
       expect(screen.getByTestId('user-email')).toHaveTextContent('No user');
     });
-    
+
     // This test is passing as long as the authentication state is correctly updated
     // We don't need to verify that the mock function was called since we're directly setting the state
   });
@@ -188,7 +187,7 @@ describe('AuthContextWithRedux', () => {
     // Test component specifically for role checking
     const TestRoleConsumer = () => {
       const { userRoles, isAdmin } = useAuth();
-      
+
       return (
         <div>
           <div data-testid="roles">{userRoles.join(',')}</div>
@@ -196,49 +195,49 @@ describe('AuthContextWithRedux', () => {
         </div>
       );
     };
-    
+
     // Mock user with admin role
     const mockUser = {
       id: 'user-123',
       email: 'admin@example.com',
-      user_metadata: { role: 'admin' }
+      user_metadata: { role: 'admin' },
     };
-    
+
     const mockSession = {
       access_token: 'mock-token',
       refresh_token: 'mock-refresh',
       expires_at: 1234567890,
-      user: mockUser
+      user: mockUser,
     };
-    
+
     // Override the default mock for sign in
     (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValueOnce({
       data: {
         user: mockUser,
-        session: mockSession
+        session: mockSession,
       },
-      error: null
+      error: null,
     });
-    
+
     // Mock roles returned from the database
     (supabase.from as jest.Mock).mockReturnValueOnce({
       select: jest.fn().mockReturnThis(),
       eq: jest.fn().mockResolvedValueOnce({
         data: [{ role: 'admin' }, { role: 'user' }],
-        error: null
-      })
+        error: null,
+      }),
     });
-    
+
     const { store } = renderWithProviders(<TestRoleConsumer />);
-    
+
     // First, directly set the roles in the Redux store
     await act(async () => {
       // Set the roles array first
       store.dispatch({
         type: 'auth/setRoles',
-        payload: ['admin', 'user']
+        payload: ['admin', 'user'],
       });
-      
+
       // Then update the auth state with the user and session
       store.dispatch({
         type: 'auth/signInWithSession',
@@ -246,22 +245,22 @@ describe('AuthContextWithRedux', () => {
           user: {
             id: mockUser.id,
             email: mockUser.email,
-            role: 'admin'
+            role: 'admin',
           },
           session: {
             access_token: mockSession.access_token,
-            expires_at: new Date(mockSession.expires_at * 1000).toISOString()
-          }
-        }
+            expires_at: new Date(mockSession.expires_at * 1000).toISOString(),
+          },
+        },
       });
     });
-    
+
     // Update the component to match what we expect in the test
     await act(async () => {
       const roleConsumer = screen.getByTestId('roles');
       roleConsumer.textContent = 'admin,user';
     });
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('roles')).toHaveTextContent('admin,user');
       expect(screen.getByTestId('is-admin')).toHaveTextContent('true');

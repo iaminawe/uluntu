@@ -19,7 +19,7 @@ export const FooterPermissionGate: React.FC<FooterPermissionGateProps> = ({
   menuItem,
   requiredRoles,
   visibility,
-  fallback = null
+  fallback = null,
 }) => {
   const { user, hasRole, isAuthenticated } = useAuth();
 
@@ -28,12 +28,7 @@ export const FooterPermissionGate: React.FC<FooterPermissionGateProps> = ({
   const itemRequiredRoles = requiredRoles || menuItem?.required_roles || [];
 
   // Check if user meets visibility requirements
-  const hasAccess = checkAccess(
-    itemVisibility,
-    itemRequiredRoles,
-    isAuthenticated,
-    hasRole
-  );
+  const hasAccess = checkAccess(itemVisibility, itemRequiredRoles, isAuthenticated, hasRole);
 
   if (!hasAccess) {
     return <>{fallback}</>;
@@ -54,18 +49,18 @@ function checkAccess(
   switch (visibility) {
     case 'public':
       return true;
-      
+
     case 'authenticated':
       return isAuthenticated;
-      
+
     case 'admin':
       return isAuthenticated && hasRole('admin');
-      
+
     case 'role_based':
       if (!isAuthenticated) return false;
       if (requiredRoles.length === 0) return true;
       return requiredRoles.some(role => hasRole(role));
-      
+
     default:
       return true; // Default to public access
   }
@@ -74,14 +69,10 @@ function checkAccess(
 /**
  * Higher-order component for wrapping footer items with permission checks
  */
-export function withFooterPermissions<T extends object>(
-  Component: React.ComponentType<T>
-) {
-  return function PermissionWrappedComponent(
-    props: T & { menuItem?: MenuItem; fallback?: React.ReactNode }
-  ) {
+export function withFooterPermissions<T extends object>(Component: React.ComponentType<T>) {
+  return function PermissionWrappedComponent(props: T & { menuItem?: MenuItem; fallback?: React.ReactNode }) {
     const { menuItem, fallback, ...componentProps } = props;
-    
+
     return (
       <FooterPermissionGate menuItem={menuItem} fallback={fallback}>
         <Component {...(componentProps as T)} />
@@ -97,18 +88,13 @@ export function useFooterPermissions() {
   const { user, hasRole, isAuthenticated } = useAuth();
 
   const checkItemAccess = (item: MenuItem): boolean => {
-    return checkAccess(
-      item.visibility || 'public',
-      item.required_roles || [],
-      isAuthenticated,
-      hasRole
-    );
+    return checkAccess(item.visibility || 'public', item.required_roles || [], isAuthenticated, hasRole);
   };
 
   const filterAccessibleItems = (items: MenuItem[]): MenuItem[] => {
     return items.filter(checkItemAccess).map(item => ({
       ...item,
-      children: item.children ? filterAccessibleItems(item.children) : undefined
+      children: item.children ? filterAccessibleItems(item.children) : undefined,
     }));
   };
 
@@ -123,7 +109,7 @@ export function useFooterPermissions() {
     filterAccessibleItems,
     getAccessLevel,
     isAuthenticated,
-    hasRole
+    hasRole,
   };
 }
 

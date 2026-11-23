@@ -14,7 +14,7 @@ export const MenuBulkActions: React.FC<BulkOperationsProps> = ({
   onBulkDisable,
   onBulkDelete,
   onDeselectAll,
-  isLoading
+  isLoading,
 }) => {
   if (selectedItems.length === 0) return null;
 
@@ -48,21 +48,11 @@ export const MenuBulkActions: React.FC<BulkOperationsProps> = ({
             <EyeOff className="h-4 w-4 mr-1" />
             Disable All
           </Button>
-          <Button
-            size="sm"
-            variant="danger"
-            onClick={onBulkDelete}
-            disabled={isLoading}
-          >
+          <Button size="sm" variant="danger" onClick={onBulkDelete} disabled={isLoading}>
             <Trash2 className="h-4 w-4 mr-1" />
             Delete All
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onDeselectAll}
-            disabled={isLoading}
-          >
+          <Button size="sm" variant="outline" onClick={onDeselectAll} disabled={isLoading}>
             <X className="h-4 w-4 mr-1" />
             Clear
           </Button>

@@ -200,7 +200,7 @@ describe('Theme Presets', () => {
 
     it('should handle different shadow styles', () => {
       const testTheme = { ...themePresets[0] };
-      
+
       // Test no shadow
       testTheme.layout.shadowStyle = 'none';
       let css = generateThemeCSS(testTheme);
@@ -241,7 +241,7 @@ describe('Theme Presets', () => {
     it('should have appropriate dark/light variations', () => {
       const darkThemes = themePresets.filter(t => t.isDark);
       const lightThemes = themePresets.filter(t => !t.isDark);
-      
+
       expect(darkThemes.length).toBeGreaterThan(0);
       expect(lightThemes.length).toBeGreaterThan(0);
 
@@ -266,15 +266,15 @@ describe('Theme Presets', () => {
 function getLuminance(hex: string): number {
   const rgb = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!rgb) return 0;
-  
+
   const r = parseInt(rgb[1], 16) / 255;
   const g = parseInt(rgb[2], 16) / 255;
   const b = parseInt(rgb[3], 16) / 255;
-  
+
   const sRGB = [r, g, b].map(val => {
     if (val <= 0.03928) return val / 12.92;
     return Math.pow((val + 0.055) / 1.055, 2.4);
   });
-  
+
   return 0.2126 * sRGB[0] + 0.7152 * sRGB[1] + 0.0722 * sRGB[2];
 }

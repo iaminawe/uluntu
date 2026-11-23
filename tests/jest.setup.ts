@@ -11,21 +11,21 @@ if (typeof globalThis !== 'undefined') {
   globalThis.process = globalThis.process || {};
   // @ts-expect-error - Adding env to process
   globalThis.process.env = globalThis.process.env || {};
-  
+
   // Override environment variables for tests
   Object.assign(globalThis.process.env, {
     VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL,
     VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY,
     VITE_USE_SUPABASE: process.env.VITE_USE_SUPABASE,
     VITE_PROFILE_IMAGES_BUCKET: process.env.VITE_PROFILE_IMAGES_BUCKET,
-    NODE_ENV: 'test'
+    NODE_ENV: 'test',
   });
 }
 
 console.log('Test environment loaded:', {
   SUPABASE_URL: process.env.VITE_SUPABASE_URL,
   USE_SUPABASE: process.env.VITE_USE_SUPABASE,
-  NODE_ENV: process.env.NODE_ENV
+  NODE_ENV: process.env.NODE_ENV,
 });
 
 // jest.setup.ts
@@ -60,7 +60,6 @@ process.env.VITE_SUPABASE_KEY = process.env.VITE_SUPABASE_KEY || 'your-anon-key'
 process.env.VITE_SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 process.env.VITE_USE_SUPABASE = process.env.VITE_USE_SUPABASE || 'false';
 process.env.VITE_PROFILE_IMAGES_BUCKET = 'profile-images';
-
 
 // You might also need to mock other global objects or functions here
 
@@ -100,14 +99,13 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   takeRecords: jest.fn(() => []),
 }));
 
-
 // If you're using Redux and need to clear store or reset mocks between tests:
 // import { store } from './src/redux/store'; // Adjust path as necessary
 
 // afterEach(() => {
 //   jest.clearAllMocks();
-  // If you need to reset Redux store state between tests:
-  // store.dispatch({ type: 'RESET_APP_STATE' }); // Assuming you have such an action
+// If you need to reset Redux store state between tests:
+// store.dispatch({ type: 'RESET_APP_STATE' }); // Assuming you have such an action
 // });
 
 // Fix for "SyntaxError: Cannot use 'import.meta' outside a module"
@@ -126,9 +124,13 @@ const mockReact = require('react'); // Use require to avoid issues with out-of-s
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // Import and retain default behavior
-  Link: jest.fn().mockImplementation(({ to, children, ...rest }: { to: string; children: React.ReactNode; [key: string]: unknown }) => {
-    return mockReact.createElement('a', { href: to, ...rest }, children);
-  }),
+  Link: jest
+    .fn()
+    .mockImplementation(
+      ({ to, children, ...rest }: { to: string; children: React.ReactNode; [key: string]: unknown }) => {
+        return mockReact.createElement('a', { href: to, ...rest }, children);
+      }
+    ),
   useNavigate: jest.fn(() => jest.fn()),
   useParams: jest.fn(() => ({})),
   useLocation: jest.fn(() => ({ pathname: '/', search: '', hash: '', state: null, key: 'testKey' })),
@@ -170,4 +172,3 @@ console.warn = jest.fn(); // Suppress console.warn
 //     createClient: jest.fn(() => mockSupabaseClient),
 //   };
 // });
-

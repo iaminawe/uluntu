@@ -1,6 +1,6 @@
 /**
  * Accessibility Tests for Menu Management System
- * 
+ *
  * Tests WCAG 2.1 compliance, screen reader compatibility,
  * keyboard navigation, focus management, and ARIA attributes.
  */
@@ -42,13 +42,13 @@ const mockAriaLive = {
   },
   clear: () => {
     screenReaderAnnouncements = [];
-  }
+  },
 };
 
 // Mock focus management
 let focusedElement: HTMLElement | null = null;
 const originalFocus = HTMLElement.prototype.focus;
-HTMLElement.prototype.focus = function() {
+HTMLElement.prototype.focus = function () {
   focusedElement = this;
   originalFocus.call(this);
 };
@@ -58,9 +58,7 @@ describe('Menu Management Accessibility Tests', () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
   const mockMenuItems: MenuItem[] = [
@@ -183,14 +181,14 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       const menuLinks = screen.getAllByRole('link');
-      
+
       // Check that text has sufficient contrast
       // This would typically be done with automated tools or manual testing
       menuLinks.forEach(link => {
         const computedStyle = window.getComputedStyle(link);
         expect(computedStyle.color).toBeDefined();
         expect(computedStyle.backgroundColor).toBeDefined();
-        
+
         // Links should be distinguishable
         expect(link).toHaveAttribute('href');
       });
@@ -206,7 +204,7 @@ describe('Menu Management Accessibility Tests', () => {
       // Icons should have proper labels or be decorative
       const homeLink = screen.getByRole('link', { name: /home/i });
       expect(homeLink).toHaveAccessibleName();
-      
+
       // Icon should not interfere with link name
       expect(homeLink.getAttribute('aria-label') || homeLink.textContent).toMatch(/home/i);
     });
@@ -221,15 +219,15 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       const menuLinks = screen.getAllByRole('link');
-      
+
       // First item should be focusable
       await user.tab();
       expect(menuLinks[0]).toHaveFocus();
-      
+
       // Tab to next item
       await user.tab();
       expect(menuLinks[1]).toHaveFocus();
-      
+
       // All menu items should be in tab order
       for (const link of menuLinks) {
         expect(link).toHaveAttribute('tabindex', '0');
@@ -245,7 +243,7 @@ describe('Menu Management Accessibility Tests', () => {
 
       const menuItems = screen.getAllByRole('link');
       const firstItem = menuItems[0];
-      
+
       await user.click(firstItem);
       expect(firstItem).toHaveFocus();
 
@@ -266,16 +264,16 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       const communityItem = screen.getByText('Community');
-      const expandButton = communityItem.closest('[role="button"]') || 
-                          communityItem.parentElement?.querySelector('[role="button"]');
-      
+      const expandButton =
+        communityItem.closest('[role="button"]') || communityItem.parentElement?.querySelector('[role="button"]');
+
       if (expandButton) {
         expandButton.focus();
-        
+
         // Enter or Space should expand/collapse
         await user.keyboard('{Enter}');
         expect(expandButton).toHaveAttribute('aria-expanded', 'true');
-        
+
         await user.keyboard('{Space}');
         expect(expandButton).toHaveAttribute('aria-expanded', 'false');
       }
@@ -293,14 +291,14 @@ describe('Menu Management Accessibility Tests', () => {
       });
 
       const addButton = screen.getByText('Add Item');
-      
+
       // Should be able to navigate to add button
       addButton.focus();
       expect(addButton).toHaveFocus();
-      
+
       // Enter should open modal
       await user.keyboard('{Enter}');
-      
+
       await waitFor(() => {
         expect(screen.getByPlaceholderText('Menu item title')).toBeInTheDocument();
       });
@@ -318,7 +316,7 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       await user.click(screen.getByText('Add Item'));
-      
+
       await waitFor(() => {
         expect(screen.getByPlaceholderText('Menu item title')).toBeInTheDocument();
       });
@@ -327,17 +325,17 @@ describe('Menu Management Accessibility Tests', () => {
       const focusableElements = modal.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       );
-      
+
       const firstFocusable = focusableElements[0] as HTMLElement;
       const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement;
-      
+
       // Focus should start at first element
       expect(firstFocusable).toHaveFocus();
-      
+
       // Shift+Tab from first should go to last
       await user.keyboard('{Shift>}{Tab}{/Shift}');
       expect(lastFocusable).toHaveFocus();
-      
+
       // Tab from last should go to first
       await user.tab();
       expect(firstFocusable).toHaveFocus();
@@ -352,14 +350,14 @@ describe('Menu Management Accessibility Tests', () => {
 
       const addButton = screen.getByText('Add Item');
       await user.click(addButton);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Cancel')).toBeInTheDocument();
       });
 
       const cancelButton = screen.getByText('Cancel');
       await user.click(cancelButton);
-      
+
       // Focus should return to add button
       await waitFor(() => {
         expect(addButton).toHaveFocus();
@@ -378,7 +376,7 @@ describe('Menu Management Accessibility Tests', () => {
       const headings = screen.getAllByRole('heading');
       const h1 = headings.find(h => h.tagName === 'H1');
       const h2s = headings.filter(h => h.tagName === 'H2');
-      
+
       expect(h1).toBeInTheDocument();
       expect(h1).toHaveTextContent('Menu Management');
       expect(h2s.length).toBeGreaterThan(0);
@@ -392,7 +390,7 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       await user.click(screen.getByText('Add Item'));
-      
+
       await waitFor(() => {
         expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
       });
@@ -400,7 +398,7 @@ describe('Menu Management Accessibility Tests', () => {
       const titleInput = screen.getByLabelText(/title/i);
       const urlInput = screen.getByLabelText(/url/i);
       const visibilitySelect = screen.getByLabelText(/visibility/i);
-      
+
       expect(titleInput).toBeRequired();
       expect(urlInput).toBeRequired();
       expect(visibilitySelect).toHaveAccessibleName();
@@ -470,10 +468,10 @@ describe('Menu Management Accessibility Tests', () => {
 
       const dragHandles = screen.getAllByLabelText(/drag.*to reorder/i);
       expect(dragHandles.length).toBeGreaterThan(0);
-      
+
       dragHandles.forEach(handle => {
         expect(handle).toHaveAttribute('aria-describedby');
-        
+
         const descriptionId = handle.getAttribute('aria-describedby');
         if (descriptionId) {
           const description = document.getElementById(descriptionId);
@@ -490,10 +488,10 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       await user.click(screen.getByText('Add Item'));
-      
+
       // Try to submit without required fields
       await user.click(screen.getByText('Create Menu Item'));
-      
+
       await waitFor(() => {
         const errorMessage = screen.getByText(/title and url are required/i);
         expect(errorMessage).toBeInTheDocument();
@@ -521,22 +519,22 @@ describe('Menu Management Accessibility Tests', () => {
 
       const dragHandles = screen.getAllByRole('button', { name: /drag.*to reorder/i });
       const firstHandle = dragHandles[0];
-      
+
       firstHandle.focus();
       expect(firstHandle).toHaveFocus();
-      
+
       // Simulate keyboard drag start
       await user.keyboard('{Space}');
-      
+
       // Should announce drag start and provide instructions
       expect(firstHandle).toHaveAttribute('aria-describedby');
-      
+
       // Arrow keys should move the item
       await user.keyboard('{ArrowDown}');
-      
+
       // Confirm drop
       await user.keyboard('{Space}');
-      
+
       // Focus should remain on the moved item or be managed appropriately
       expect(props.onReorder).toHaveBeenCalled();
     });
@@ -555,20 +553,20 @@ describe('Menu Management Accessibility Tests', () => {
       const deleteButtons = screen.getAllByTitle('Delete item');
       const secondDeleteButton = deleteButtons[1];
       const thirdDeleteButton = deleteButtons[2];
-      
+
       // Focus on second item's delete button
       secondDeleteButton.focus();
       expect(secondDeleteButton).toHaveFocus();
-      
+
       // Delete the item
       await user.click(secondDeleteButton);
       await user.click(screen.getByText('Delete Menu Item'));
-      
+
       // Focus should move to the next logical item or previous item
       await waitFor(() => {
         const remainingDeleteButtons = screen.getAllByTitle('Delete item');
         expect(remainingDeleteButtons.length).toBeLessThan(4);
-        
+
         // Focus should be on a remaining delete button
         const focusedButton = remainingDeleteButtons.find(btn => btn === document.activeElement);
         expect(focusedButton).toBeTruthy();
@@ -583,16 +581,17 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       const menuLinks = screen.getAllByRole('link');
-      
+
       for (const link of menuLinks) {
         link.focus();
-        
+
         // Focused elements should have visible focus indicators
         const computedStyle = window.getComputedStyle(link, ':focus');
-        const hasFocusRing = computedStyle.outline !== 'none' || 
-                            computedStyle.boxShadow !== 'none' ||
-                            link.getAttribute('data-focus-visible') !== null;
-        
+        const hasFocusRing =
+          computedStyle.outline !== 'none' ||
+          computedStyle.boxShadow !== 'none' ||
+          link.getAttribute('data-focus-visible') !== null;
+
         expect(hasFocusRing || link.matches(':focus-visible')).toBeTruthy();
       }
     });
@@ -609,7 +608,7 @@ describe('Menu Management Accessibility Tests', () => {
       // Should have main content area
       const main = screen.getByRole('main') || screen.getByText('Menu Management').closest('main');
       expect(main).toBeInTheDocument();
-      
+
       // Navigation elements should use nav role
       const nav = screen.queryByRole('navigation');
       if (nav) {
@@ -636,10 +635,10 @@ describe('Menu Management Accessibility Tests', () => {
       const tree = screen.getByRole('tree');
       expect(tree).toBeInTheDocument();
       expect(tree).toHaveAccessibleName();
-      
+
       const treeItems = screen.getAllByRole('treeitem');
       expect(treeItems.length).toBeGreaterThan(0);
-      
+
       treeItems.forEach(item => {
         expect(item).toHaveAttribute('aria-level');
         expect(item).toHaveAttribute('aria-selected');
@@ -658,11 +657,11 @@ describe('Menu Management Accessibility Tests', () => {
       buttons.forEach(button => {
         expect(button).toHaveAccessibleName();
       });
-      
+
       // Form controls should be labeled
       const searchInput = screen.getByPlaceholderText('Search menu items...');
       expect(searchInput).toHaveAccessibleName();
-      
+
       // Selects should be labeled
       const selects = screen.getAllByRole('combobox');
       selects.forEach(select => {
@@ -686,7 +685,7 @@ describe('Menu Management Accessibility Tests', () => {
       toggles.forEach(toggle => {
         expect(toggle).toHaveAttribute('aria-checked');
       });
-      
+
       // Expandable elements should have aria-expanded
       const tabs = screen.getAllByRole('tab');
       if (tabs.length > 0) {
@@ -706,7 +705,7 @@ describe('Menu Management Accessibility Tests', () => {
       // Should have aria-live regions for status updates
       const liveRegions = document.querySelectorAll('[aria-live]');
       expect(liveRegions.length).toBeGreaterThan(0);
-      
+
       liveRegions.forEach(region => {
         const liveValue = region.getAttribute('aria-live');
         expect(['polite', 'assertive']).toContain(liveValue);
@@ -727,11 +726,11 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       const buttons = screen.getAllByRole('button');
-      
+
       buttons.forEach(button => {
         const rect = button.getBoundingClientRect();
         const minTouchTarget = 44; // WCAG minimum touch target size
-        
+
         // Touch targets should be at least 44x44 pixels
         expect(Math.max(rect.width, rect.height)).toBeGreaterThanOrEqual(minTouchTarget);
       });
@@ -747,13 +746,13 @@ describe('Menu Management Accessibility Tests', () => {
       // Elements should have clear, speakable names for voice control
       const addButton = screen.getByText('Add Item');
       expect(addButton.textContent).toMatch(/add/i);
-      
+
       const editButtons = screen.getAllByTitle('Edit item');
       editButtons.forEach(button => {
         expect(button).toHaveAccessibleName();
         expect(button.getAttribute('aria-label') || button.textContent).toMatch(/edit/i);
       });
-      
+
       const deleteButtons = screen.getAllByTitle('Delete item');
       deleteButtons.forEach(button => {
         expect(button).toHaveAccessibleName();
@@ -786,7 +785,7 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       const menuLinks = screen.getAllByRole('link');
-      
+
       // Elements should maintain visibility in high contrast
       menuLinks.forEach(link => {
         expect(link).toBeVisible();
@@ -827,7 +826,7 @@ describe('Menu Management Accessibility Tests', () => {
 
       // Animations should be reduced or disabled
       const animatedElements = document.querySelectorAll('[style*="transition"], [class*="animate"]');
-      
+
       // Check that reduced motion is respected
       // This would typically involve checking computed styles or CSS classes
       expect(animatedElements.length).toBeDefined();
@@ -847,14 +846,14 @@ describe('Menu Management Accessibility Tests', () => {
       );
 
       const menu = screen.getByRole('navigation') || screen.getByRole('list');
-      
+
       // Should adapt to RTL layout
       expect(document.dir).toBe('rtl');
-      
+
       // Menu items should still be accessible
       const menuLinks = screen.getAllByRole('link');
       expect(menuLinks.length).toBeGreaterThan(0);
-      
+
       // Cleanup
       document.dir = 'ltr';
       document.documentElement.lang = 'en';
@@ -869,10 +868,10 @@ describe('Menu Management Accessibility Tests', () => {
 
       // Check for lang attributes where needed
       const textElements = screen.getAllByText(/[a-zA-Z]/);
-      
+
       // At minimum, the document should have a lang attribute
       expect(document.documentElement.lang).toBeDefined();
-      
+
       // Foreign language content should be marked up appropriately
       // This would be tested with actual multilingual content
     });

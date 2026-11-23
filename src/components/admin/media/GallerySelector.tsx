@@ -1,19 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  Search, 
-  X, 
-  Plus, 
-  Grid, 
-  Calendar, 
-  Lock, 
-  Globe, 
-  Users,
-  Building,
-  User,
-  Star,
-  CheckCircle
-} from 'lucide-react';
+import { Search, X, Plus, Grid, Calendar, Lock, Globe, Users, Building, User, Star, CheckCircle } from 'lucide-react';
 
 import { Modal } from '@/components/ui/Modal/Modal';
 import { Button } from '@/components/ui/Button';
@@ -40,7 +27,7 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
   multiSelect = true,
   entityType,
   entityId,
-  title = 'Select Galleries'
+  title = 'Select Galleries',
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>(selectedGalleryIds);
@@ -48,7 +35,7 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
   const [filters, setFilters] = useState<GalleryFilters>({
     search: '',
     ownerType: entityType,
-    ownerId: entityId
+    ownerId: entityId,
   });
 
   // Reset selected IDs when modal opens
@@ -62,7 +49,7 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
   const { data: galleries, isLoading } = useQuery({
     queryKey: ['galleries', filters],
     queryFn: () => galleryApi.getGalleries(filters),
-    enabled: isOpen
+    enabled: isOpen,
   });
 
   // Handle search
@@ -72,20 +59,23 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
   }, []);
 
   // Handle gallery selection
-  const handleSelectGallery = useCallback((gallery: Gallery) => {
-    if (multiSelect) {
-      setSelectedIds(prev => {
-        const isSelected = prev.includes(gallery.id);
-        if (isSelected) {
-          return prev.filter(id => id !== gallery.id);
-        } else {
-          return [...prev, gallery.id];
-        }
-      });
-    } else {
-      setSelectedIds([gallery.id]);
-    }
-  }, [multiSelect]);
+  const handleSelectGallery = useCallback(
+    (gallery: Gallery) => {
+      if (multiSelect) {
+        setSelectedIds(prev => {
+          const isSelected = prev.includes(gallery.id);
+          if (isSelected) {
+            return prev.filter(id => id !== gallery.id);
+          } else {
+            return [...prev, gallery.id];
+          }
+        });
+      } else {
+        setSelectedIds([gallery.id]);
+      }
+    },
+    [multiSelect]
+  );
 
   // Handle confirm selection
   const handleConfirm = useCallback(() => {
@@ -127,13 +117,7 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
   }, []);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={title}
-      size="xl"
-      className="max-w-4xl"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title={title} size="xl" className="max-w-4xl">
       <div className="space-y-6">
         {/* Search and Filter Bar */}
         <div className="flex flex-col sm:flex-row gap-4">
@@ -143,14 +127,11 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
               type="text"
               placeholder="Search galleries..."
               value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={e => handleSearch(e.target.value)}
               className="pl-10 pr-4 py-2 w-full border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             />
           </div>
-          <Button
-            onClick={handleCreateNew}
-            className="bg-orange-500 hover:bg-orange-600 text-white"
-          >
+          <Button onClick={handleCreateNew} className="bg-orange-500 hover:bg-orange-600 text-white">
             <Plus className="w-4 h-4 mr-2" />
             Create New
           </Button>
@@ -175,9 +156,9 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-            {galleries?.items?.map((gallery) => {
+            {galleries?.items?.map(gallery => {
               const isSelected = selectedIds.includes(gallery.id);
-              
+
               return (
                 <div
                   key={gallery.id}
@@ -198,11 +179,7 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
                   {/* Gallery thumbnail */}
                   <div className="aspect-video bg-slate-100 dark:bg-slate-800 rounded-lg mb-3 overflow-hidden">
                     {gallery.cover_photo_url ? (
-                      <img
-                        src={gallery.cover_photo_url}
-                        alt={gallery.title}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={gallery.cover_photo_url} alt={gallery.title} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Grid className="w-8 h-8 text-slate-400" />
@@ -212,10 +189,8 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
 
                   {/* Gallery info */}
                   <div className="space-y-2">
-                    <h4 className="font-medium text-slate-900 dark:text-white truncate">
-                      {gallery.title}
-                    </h4>
-                    
+                    <h4 className="font-medium text-slate-900 dark:text-white truncate">{gallery.title}</h4>
+
                     <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                       <div className="flex items-center space-x-1">
                         {getOwnerIcon(gallery.owner_type)}
@@ -223,12 +198,10 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
                       </div>
                       <div className="flex items-center space-x-2">
                         {getPrivacyIcon(gallery.privacy_level)}
-                        {gallery.is_featured && (
-                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                        )}
+                        {gallery.is_featured && <Star className="w-4 h-4 text-yellow-500 fill-current" />}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                       <span>{gallery.photo_count} photos</span>
                       <span>{new Date(gallery.created_at).toLocaleDateString()}</span>
@@ -262,10 +235,8 @@ const GallerySelector: React.FC<GallerySelectorProps> = ({
 
       {/* Footer */}
       <div className="flex justify-between items-center pt-6 border-t border-slate-200 dark:border-slate-700">
-        <div className="text-sm text-slate-500 dark:text-slate-400">
-          {galleries?.total || 0} galleries available
-        </div>
-        
+        <div className="text-sm text-slate-500 dark:text-slate-400">{galleries?.total || 0} galleries available</div>
+
         <div className="flex space-x-3">
           <Button onClick={onClose} variant="outline">
             Cancel

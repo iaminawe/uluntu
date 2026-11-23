@@ -30,7 +30,7 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
   item,
   mode,
   menuType,
-  parentOptions
+  parentOptions,
 }) => {
   const [formData, setFormData] = useState<Partial<MenuItemInput & { id?: string }>>({
     title: '',
@@ -45,7 +45,7 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
     css_classes: null,
     visibility: 'public',
     required_roles: null,
-    is_external: false
+    is_external: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,7 +67,7 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
         css_classes: item.css_classes,
         visibility: item.visibility,
         required_roles: item.required_roles,
-        is_external: item.is_external
+        is_external: item.is_external,
       });
     } else {
       setFormData({
@@ -83,7 +83,7 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
         css_classes: null,
         visibility: 'public',
         required_roles: null,
-        is_external: false
+        is_external: false,
       });
     }
   }, [item, mode, isOpen, menuType]);
@@ -112,7 +112,7 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
           css_classes: formData.css_classes || null,
           visibility: formData.visibility || 'public',
           required_roles: formData.required_roles || null,
-          is_external: formData.is_external || false
+          is_external: formData.is_external || false,
         };
         await onSave(newItem);
       } else {
@@ -129,7 +129,7 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
           css_classes: formData.css_classes,
           visibility: formData.visibility,
           required_roles: formData.required_roles,
-          is_external: formData.is_external
+          is_external: formData.is_external,
         };
         await onSave(updateItem);
       }
@@ -145,13 +145,14 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
     setFormData({
       ...formData,
       url,
-      is_external: isExternalUrl(url)
+      is_external: isExternalUrl(url),
     });
   };
 
-  const IconComponent = formData.icon && ICON_COMPONENTS[formData.icon as keyof typeof ICON_COMPONENTS]
-    ? ICON_COMPONENTS[formData.icon as keyof typeof ICON_COMPONENTS]
-    : null;
+  const IconComponent =
+    formData.icon && ICON_COMPONENTS[formData.icon as keyof typeof ICON_COMPONENTS]
+      ? ICON_COMPONENTS[formData.icon as keyof typeof ICON_COMPONENTS]
+      : null;
 
   return (
     <Modal
@@ -165,13 +166,11 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Title *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title *</label>
             <input
               type="text"
               value={formData.title || ''}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={e => setFormData({ ...formData, title: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="Menu item title"
               required
@@ -181,17 +180,15 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
 
           {/* Parent Item */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Parent Item
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Parent Item</label>
             <select
               value={formData.parent_id || ''}
-              onChange={(e) => setFormData({ ...formData, parent_id: e.target.value || null })}
+              onChange={e => setFormData({ ...formData, parent_id: e.target.value || null })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               disabled={isSubmitting}
             >
               <option value="">No Parent (Top Level)</option>
-              {parentOptions.map((option) => (
+              {parentOptions.map(option => (
                 <option key={option.id} value={option.id}>
                   {option.title}
                 </option>
@@ -201,13 +198,11 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
 
           {/* URL */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              URL *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">URL *</label>
             <input
               type="text"
               value={formData.url || ''}
-              onChange={(e) => handleUrlChange(e.target.value)}
+              onChange={e => handleUrlChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="/page or https://external-site.com"
               required
@@ -223,18 +218,16 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
 
           {/* Icon */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Icon
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Icon</label>
             <div className="relative">
               <select
                 value={formData.icon || ''}
-                onChange={(e) => setFormData({ ...formData, icon: e.target.value || null })}
+                onChange={e => setFormData({ ...formData, icon: e.target.value || null })}
                 className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 disabled={isSubmitting}
               >
                 <option value="">No Icon</option>
-                {ICON_OPTIONS.map((option) => (
+                {ICON_OPTIONS.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -250,12 +243,10 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
 
           {/* Link Target */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Link Target
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Link Target</label>
             <select
               value={formData.target || '_self'}
-              onChange={(e) => setFormData({ ...formData, target: e.target.value as MenuTarget })}
+              onChange={e => setFormData({ ...formData, target: e.target.value as MenuTarget })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               disabled={isSubmitting}
             >
@@ -268,12 +259,10 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
 
           {/* Visibility */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Visibility
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Visibility</label>
             <select
               value={formData.visibility || 'public'}
-              onChange={(e) => setFormData({ ...formData, visibility: e.target.value as MenuVisibility })}
+              onChange={e => setFormData({ ...formData, visibility: e.target.value as MenuVisibility })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               disabled={isSubmitting}
             >
@@ -286,13 +275,11 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
 
           {/* Sort Order */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Sort Order
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sort Order</label>
             <input
               type="number"
               value={formData.sort_order || 0}
-              onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
+              onChange={e => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               min="0"
               disabled={isSubmitting}
@@ -301,13 +288,11 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
 
           {/* CSS Classes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              CSS Classes
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">CSS Classes</label>
             <input
               type="text"
               value={formData.css_classes || ''}
-              onChange={(e) => setFormData({ ...formData, css_classes: e.target.value || null })}
+              onChange={e => setFormData({ ...formData, css_classes: e.target.value || null })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="Custom CSS classes"
               disabled={isSubmitting}
@@ -323,19 +308,17 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
           </div>
           <Switch
             checked={formData.is_enabled ?? true}
-            onCheckedChange={(checked) => setFormData({ ...formData, is_enabled: checked })}
+            onCheckedChange={checked => setFormData({ ...formData, is_enabled: checked })}
             disabled={isSubmitting}
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Description
-          </label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
           <textarea
             value={formData.description || ''}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={e => setFormData({ ...formData, description: e.target.value })}
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             placeholder="Optional description for admin reference"
@@ -346,16 +329,18 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
         {/* Role-based access control */}
         {formData.visibility === 'role_based' && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Required Roles
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Required Roles</label>
             <input
               type="text"
               value={formData.required_roles?.join(', ') || ''}
-              onChange={(e) =>
+              onChange={e =>
                 setFormData({
                   ...formData,
-                  required_roles: e.target.value.split(',').map(role => role.trim()).filter(Boolean) || null
+                  required_roles:
+                    e.target.value
+                      .split(',')
+                      .map(role => role.trim())
+                      .filter(Boolean) || null,
                 })
               }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
@@ -379,8 +364,10 @@ export const MenuItemEditor: React.FC<MenuItemEditorProps> = ({
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 {mode === 'create' ? 'Creating...' : 'Saving...'}
               </>
+            ) : mode === 'create' ? (
+              'Create Menu Item'
             ) : (
-              mode === 'create' ? 'Create Menu Item' : 'Save Changes'
+              'Save Changes'
             )}
           </Button>
         </div>

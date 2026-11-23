@@ -27,7 +27,7 @@ const initialFormData: FormData = {
   visibility: 'open',
   interests: [],
   status: 'draft' as ContentStatus,
-  featured: false
+  featured: false,
 };
 
 export default function GroupEditPage() {
@@ -35,28 +35,25 @@ export default function GroupEditPage() {
   const isEditMode = !!id;
   const groupId = id;
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  
+
   // Image upload state
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
-  
+
   // Topic management
   const { data: entityTopics } = useEntityTopics('group', groupId || '');
   const setEntityTopicsMutation = useSetEntityTopics();
-  
-  const { 
-    data: group, 
-    isLoading: groupLoading
-  } = useGroup(groupId);
-  
+
+  const { data: group, isLoading: groupLoading } = useGroup(groupId);
+
   // Populate form with group data when in edit mode
   useEffect(() => {
     if (isEditMode && group) {
@@ -67,27 +64,27 @@ export default function GroupEditPage() {
         longDescription: group.longDescription || '',
         heroImage: group.heroImage || '',
         coverImage: group.coverImage || '',
-        visibility: (['open', 'closed', 'secret'].includes(group.visibility as string)
+        visibility: ['open', 'closed', 'secret'].includes(group.visibility as string)
           ? (group.visibility as 'open' | 'closed' | 'secret')
-          : 'open'),
+          : 'open',
         interests: [],
         status: (group.status as ContentStatus) || 'draft',
-        featured: group.featured || false
+        featured: group.featured || false,
       });
     }
   }, [isEditMode, group]);
-  
+
   // Effect to populate topics
   useEffect(() => {
     if (entityTopics) {
       setSelectedTopicIds(entityTopics.map(topic => topic.id));
     }
   }, [entityTopics]);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
@@ -115,45 +112,45 @@ export default function GroupEditPage() {
       setFormData(prev => ({ ...prev, coverImage: '' }));
     }
   };
-  
+
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Group name is required';
     }
-    
+
     if (!formData.description.trim()) {
       newErrors.description = 'Short description is required';
     }
-    
+
     if (!formData.heroImage.trim()) {
       newErrors.heroImage = 'Hero image is required';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Upload images if new files are selected
       let finalHeroImageUrl = formData.heroImage;
       let finalCoverImageUrl = formData.coverImage;
-      
+
       if (heroImageFile || coverImageFile) {
         setIsUploadingImages(true);
-        
+
         const tempGroupId = id || `temp-${Date.now()}`;
-        
+
         if (heroImageFile) {
           const { url, error } = await uploadGroupImage(heroImageFile, tempGroupId, 'hero');
           if (error) {
@@ -162,7 +159,7 @@ export default function GroupEditPage() {
           }
           finalHeroImageUrl = url || '';
         }
-        
+
         if (coverImageFile) {
           const { url, error } = await uploadGroupImage(coverImageFile, tempGroupId, 'cover');
           if (error) {
@@ -171,10 +168,10 @@ export default function GroupEditPage() {
           }
           finalCoverImageUrl = url || '';
         }
-        
+
         setIsUploadingImages(false);
       }
-      
+
       // Prepare data for API
       const groupData: GroupInput = {
         name: formData.name,
@@ -185,7 +182,7 @@ export default function GroupEditPage() {
         coverImage: finalCoverImageUrl,
         visibility: formData.visibility,
         status: formData.status,
-        featured: formData.featured
+        featured: formData.featured,
       };
 
       let result;
@@ -204,15 +201,15 @@ export default function GroupEditPage() {
             await setEntityTopicsMutation.mutateAsync({
               entityType: 'group',
               entityId: result.id,
-              topicIds: selectedTopicIds
+              topicIds: selectedTopicIds,
             });
           } catch (topicError) {
             console.error('Error saving topics:', topicError);
           }
         }
-        
+
         setSubmitSuccess(true);
-        
+
         // Navigate back after success
         setTimeout(() => {
           navigate(isEditMode ? `/groups/${id}` : '/groups');
@@ -226,60 +223,52 @@ export default function GroupEditPage() {
       setIsSubmitting(false);
     }
   };
-  
+
   const handleDelete = () => {
     setShowDeleteConfirm(true);
   };
 
   const confirmDelete = async () => {
     if (!id) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const { error } = await supabase
-        .from('groups')
-        .delete()
-        .eq('id', id);
-        
+      const { error } = await supabase.from('groups').delete().eq('id', id);
+
       if (error) {
         throw error;
       }
-      
+
       navigate('/groups');
     } catch (error) {
       console.error('Error deleting group:', error);
-      setErrors(prev => ({ 
-        ...prev, 
-        name: error instanceof Error ? error.message : 'Failed to delete group' 
+      setErrors(prev => ({
+        ...prev,
+        name: error instanceof Error ? error.message : 'Failed to delete group',
       }));
       setShowDeleteConfirm(false);
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   if (groupLoading && isEditMode) {
     return <LoadingState />;
   }
-  
+
   return (
     <React.Fragment>
       <Helmet>
-        <title>
-          {isEditMode ? `Edit Group: ${group?.name || 'Loading...'}` : 'Create New Group'} - Uluntu
-        </title>
-        <meta 
-          name="description" 
-          content={`${isEditMode ? 'Edit' : 'Create'} a group for Uluntu.`} 
-        />
+        <title>{isEditMode ? `Edit Group: ${group?.name || 'Loading...'}` : 'Create New Group'} - Uluntu</title>
+        <meta name="description" content={`${isEditMode ? 'Edit' : 'Create'} a group for Uluntu.`} />
       </Helmet>
-      
+
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12">
         <div className="w-4/5 max-w-[80%] mx-auto bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
           <div className="px-6 py-4 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 flex items-center">
-            <Link 
-              to="/groups" 
+            <Link
+              to="/groups"
               className="mr-3 p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-slate-300" />
@@ -288,7 +277,7 @@ export default function GroupEditPage() {
               {isEditMode ? 'Edit Group' : 'Create New Group'}
             </h1>
           </div>
-          
+
           {submitSuccess ? (
             <div className="p-8 text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
@@ -299,12 +288,7 @@ export default function GroupEditPage() {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <h3 className="mt-4 text-lg font-medium text-slate-900 dark:text-white">
@@ -316,115 +300,104 @@ export default function GroupEditPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="p-6 space-y-8">
-                <GroupInfo 
-                  formData={formData}
-                  handleChange={handleChange}
-                  errors={errors}
+              <GroupInfo formData={formData} handleChange={handleChange} errors={errors} />
+
+              <VisibilitySelect formData={formData} handleChange={handleChange} />
+
+              <ImageUpload
+                formData={formData}
+                handleChange={handleChange}
+                onHeroImageChange={handleHeroImageChange}
+                onCoverImageChange={handleCoverImageChange}
+                errors={errors}
+                isSubmitting={isSubmitting || isUploadingImages}
+              />
+
+              {/* Topics Section */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topics</label>
+                <TopicSelector
+                  selectedTopics={selectedTopicIds}
+                  onTopicsChange={setSelectedTopicIds}
+                  placeholder="Search and select topics for this group..."
+                  maxTopics={5}
+                  className="w-full"
                 />
-                
-                <VisibilitySelect 
-                  formData={formData}
-                  handleChange={handleChange}
-                />
-                
-                <ImageUpload 
-                  formData={formData}
-                  handleChange={handleChange}
-                  onHeroImageChange={handleHeroImageChange}
-                  onCoverImageChange={handleCoverImageChange}
-                  errors={errors}
-                  isSubmitting={isSubmitting || isUploadingImages}
-                />
-                
-                {/* Topics Section */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Topics
-                  </label>
-                  <TopicSelector
-                    selectedTopics={selectedTopicIds}
-                    onTopicsChange={setSelectedTopicIds}
-                    placeholder="Search and select topics for this group..."
-                    maxTopics={5}
-                    className="w-full"
-                  />
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Add topics to help categorize this group and make it discoverable on topic pages.
-                  </p>
-                </div>
-                
-                <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <button
-                    type="button"
-                    onClick={() => navigate(isEditMode ? `/groups/${id}` : '/groups')}
-                    className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Add topics to help categorize this group and make it discoverable on topic pages.
+                </p>
+              </div>
+
+              <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => navigate(isEditMode ? `/groups/${id}` : '/groups')}
+                  className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
                               text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
                               transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  
-                  <div className="flex gap-2">
-                    {isEditMode && (
-                      <button
-                        type="button"
-                        onClick={handleDelete}
-                        disabled={isSubmitting}
-                        className="px-6 py-2 border border-red-300 text-red-600 rounded-lg 
+                >
+                  Cancel
+                </button>
+
+                <div className="flex gap-2">
+                  {isEditMode && (
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      disabled={isSubmitting}
+                      className="px-6 py-2 border border-red-300 text-red-600 rounded-lg 
                                   hover:bg-red-50 transition-colors flex items-center gap-2
                                   disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                        Delete
-                      </button>
-                    )}
-                    
-                    {formData.status === 'published' ? (
-                      <button
-                        type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, status: 'draft' as ContentStatus }))}
-                        className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                    >
+                      <Trash2 className="h-5 w-5" />
+                      Delete
+                    </button>
+                  )}
+
+                  {formData.status === 'published' ? (
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'draft' as ContentStatus }))}
+                      className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
                                   text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
                                   transition-colors flex items-center gap-2"
-                      >
-                        <EyeOff className="h-5 w-5" />
-                        Unpublish
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, status: 'published' as ContentStatus }))}
-                        className="px-6 py-2 border border-green-600 text-green-600 rounded-lg 
-                                  hover:bg-green-50 transition-colors flex items-center gap-2"
-                      >
-                        <Eye className="h-5 w-5" />
-                        Publish
-                      </button>
-                    )}
-                    
+                    >
+                      <EyeOff className="h-5 w-5" />
+                      Unpublish
+                    </button>
+                  ) : (
                     <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className={`px-6 py-2 bg-orange-500 text-white rounded-lg 
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'published' as ContentStatus }))}
+                      className="px-6 py-2 border border-green-600 text-green-600 rounded-lg 
+                                  hover:bg-green-50 transition-colors flex items-center gap-2"
+                    >
+                      <Eye className="h-5 w-5" />
+                      Publish
+                    </button>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`px-6 py-2 bg-orange-500 text-white rounded-lg 
                                 hover:bg-orange-600 transition-colors flex items-center gap-2
                                 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-                    >
-                      <Save className="h-5 w-5" />
-                      {isSubmitting ? 'Saving...' : 'Save Group'}
-                    </button>
-                  </div>
+                  >
+                    <Save className="h-5 w-5" />
+                    {isSubmitting ? 'Saving...' : 'Save Group'}
+                  </button>
                 </div>
-              </form>
+              </div>
+            </form>
           )}
         </div>
       </div>
-      
+
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
-              Confirm Delete
-            </h3>
+            <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Confirm Delete</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-6">
               Are you sure you want to delete this group? This action cannot be undone.
             </p>
@@ -436,10 +409,7 @@ export default function GroupEditPage() {
               >
                 Cancel
               </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-              >
+              <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                 Delete Group
               </button>
             </div>

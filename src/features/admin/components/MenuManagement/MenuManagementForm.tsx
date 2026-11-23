@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import { 
-  MenuItem, 
-  CreateMenuItemInput, 
+import {
+  MenuItem,
+  CreateMenuItemInput,
   UpdateMenuItemInput,
-  menuManagementApi 
+  menuManagementApi,
 } from '@/features/admin/api/menuManagement';
 
 interface MenuManagementFormProps {
@@ -94,9 +94,7 @@ export const MenuManagementForm: React.FC<MenuManagementFormProps> = ({
 
       onSave(result);
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to save menu item'
-      );
+      toast.error(error instanceof Error ? error.message : 'Failed to save menu item');
     } finally {
       setIsLoading(false);
     }
@@ -141,22 +139,18 @@ export const MenuManagementForm: React.FC<MenuManagementFormProps> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6" data-testid="menu-management-form">
-      <h2 className="text-xl font-semibold mb-4">
-        {isEditing ? 'Edit Menu Item' : 'Create Menu Item'}
-      </h2>
+      <h2 className="text-xl font-semibold mb-4">{isEditing ? 'Edit Menu Item' : 'Create Menu Item'}</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Label */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Label *
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Label *</label>
           <input
             type="text"
-            {...register('label', { 
+            {...register('label', {
               required: 'Label is required',
               minLength: { value: 1, message: 'Label must not be empty' },
-              maxLength: { value: 100, message: 'Label must be 100 characters or less' }
+              maxLength: { value: 100, message: 'Label must be 100 characters or less' },
             })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Menu item label"
@@ -171,17 +165,15 @@ export const MenuManagementForm: React.FC<MenuManagementFormProps> = ({
 
         {/* Href */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            URL/Path *
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">URL/Path *</label>
           <input
             type="text"
-            {...register('href', { 
+            {...register('href', {
               required: 'URL/Path is required',
               pattern: {
                 value: /^(\/|https?:\/\/)/,
-                message: 'URL must start with / or http(s)://'
-              }
+                message: 'URL must start with / or http(s)://',
+              },
             })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="/path or https://example.com"
@@ -196,12 +188,10 @@ export const MenuManagementForm: React.FC<MenuManagementFormProps> = ({
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <textarea
             {...register('description', {
-              maxLength: { value: 255, message: 'Description must be 255 characters or less' }
+              maxLength: { value: 255, message: 'Description must be 255 characters or less' },
             })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Optional description for the menu item"
@@ -217,9 +207,7 @@ export const MenuManagementForm: React.FC<MenuManagementFormProps> = ({
 
         {/* Parent Menu */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Parent Menu
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Parent Menu</label>
           <select
             {...register('parent_id')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -238,9 +226,7 @@ export const MenuManagementForm: React.FC<MenuManagementFormProps> = ({
 
         {/* Icon */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Icon
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Icon</label>
           <select
             {...register('icon')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -257,9 +243,7 @@ export const MenuManagementForm: React.FC<MenuManagementFormProps> = ({
 
         {/* Feature Flag */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Feature Flag
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Feature Flag</label>
           <select
             {...register('feature_flag')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -276,14 +260,12 @@ export const MenuManagementForm: React.FC<MenuManagementFormProps> = ({
 
         {/* Order Index */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Order Index
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Order Index</label>
           <input
             type="number"
-            {...register('order_index', { 
+            {...register('order_index', {
               min: { value: 0, message: 'Order index must be 0 or greater' },
-              valueAsNumber: true
+              valueAsNumber: true,
             })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="0"
@@ -304,9 +286,7 @@ export const MenuManagementForm: React.FC<MenuManagementFormProps> = ({
             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             data-testid="enabled-checkbox"
           />
-          <label className="ml-2 block text-sm text-gray-900">
-            Enabled (visible in navigation)
-          </label>
+          <label className="ml-2 block text-sm text-gray-900">Enabled (visible in navigation)</label>
         </div>
 
         {/* Form Actions */}

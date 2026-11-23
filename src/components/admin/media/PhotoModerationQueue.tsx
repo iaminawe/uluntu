@@ -19,17 +19,11 @@ import {
   Calendar,
   Image as ImageIcon,
   MoreHorizontal,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/Badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -63,12 +57,15 @@ const PhotoModerationQueue: React.FC = () => {
   const pageSize = 20;
 
   // Fetch photos for moderation
-  const { data: photosData, isLoading, refetch } = useQuery({
+  const {
+    data: photosData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['moderation-queue', currentPage, searchTerm, statusFilter],
     queryFn: async () => {
-      let query = supabase
-        .from('gallery_photos')
-        .select(`
+      let query = supabase.from('gallery_photos').select(
+        `
           *,
           user_galleries!gallery_photos_gallery_id_fkey(
             title,
@@ -77,7 +74,9 @@ const PhotoModerationQueue: React.FC = () => {
           members:members!gallery_photos_user_id_fkey(
             name
           )
-        `, { count: 'exact' });
+        `,
+        { count: 'exact' }
+      );
 
       // Apply status filter
       if (statusFilter !== 'all') {
@@ -91,45 +90,40 @@ const PhotoModerationQueue: React.FC = () => {
 
       // Pagination
       const from = (currentPage - 1) * pageSize;
-      query = query
-        .order('created_at', { ascending: false })
-        .range(from, from + pageSize - 1);
+      query = query.order('created_at', { ascending: false }).range(from, from + pageSize - 1);
 
       const { data, error, count } = await query;
       if (error) throw error;
 
       return {
         photos: (data || []) as PhotoWithModeration[],
-        total: count || 0
+        total: count || 0,
       };
-    }
+    },
   });
 
   // Moderate photo mutation
   const moderatePhotoMutation = useMutation({
-    mutationFn: async ({ 
-      photoId, 
-      action, 
-      reason 
-    }: { 
-      photoId: string; 
-      action: 'approve' | 'reject' | 'flag'; 
-      reason?: string 
+    mutationFn: async ({
+      photoId,
+      action,
+      reason,
+    }: {
+      photoId: string;
+      action: 'approve' | 'reject' | 'flag';
+      reason?: string;
     }) => {
       const updates: any = {
         moderation_status: action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'flagged',
         reviewed_at: new Date().toISOString(),
-        reviewed_by: (await requireCurrentMember()).memberId
+        reviewed_by: (await requireCurrentMember()).memberId,
       };
 
       if (reason) {
         updates.moderation_notes = reason;
       }
 
-      const { error } = await supabase
-        .from('gallery_photos')
-        .update(updates)
-        .eq('id', photoId);
+      const { error } = await supabase.from('gallery_photos').update(updates).eq('id', photoId);
 
       if (error) throw error;
     },
@@ -139,41 +133,38 @@ const PhotoModerationQueue: React.FC = () => {
       setShowRejectModal(false);
       setRejectionReason('');
       setCurrentPhoto(null);
-    }
+    },
   });
 
   // Batch moderate photos
   const batchModerateMutation = useMutation({
-    mutationFn: async ({ 
-      photoIds, 
-      action, 
-      reason 
-    }: { 
-      photoIds: string[]; 
-      action: 'approve' | 'reject' | 'flag'; 
-      reason?: string 
+    mutationFn: async ({
+      photoIds,
+      action,
+      reason,
+    }: {
+      photoIds: string[];
+      action: 'approve' | 'reject' | 'flag';
+      reason?: string;
     }) => {
       const updates: any = {
         moderation_status: action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'flagged',
         reviewed_at: new Date().toISOString(),
-        reviewed_by: (await requireCurrentMember()).memberId
+        reviewed_by: (await requireCurrentMember()).memberId,
       };
 
       if (reason) {
         updates.moderation_notes = reason;
       }
 
-      const { error } = await supabase
-        .from('gallery_photos')
-        .update(updates)
-        .in('id', photoIds);
+      const { error } = await supabase.from('gallery_photos').update(updates).in('id', photoIds);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['moderation-queue'] });
       setSelectedPhotos([]);
-    }
+    },
   });
 
   const handleBatchAction = (action: 'approve' | 'reject' | 'flag') => {
@@ -201,13 +192,13 @@ const PhotoModerationQueue: React.FC = () => {
       moderatePhotoMutation.mutate({
         photoId: currentPhoto.id,
         action: 'reject',
-        reason: rejectionReason
+        reason: rejectionReason,
       });
     } else if (selectedPhotos.length > 0) {
       batchModerateMutation.mutate({
         photoIds: selectedPhotos,
         action: 'reject',
-        reason: rejectionReason
+        reason: rejectionReason,
       });
     }
   };
@@ -225,13 +216,33 @@ const PhotoModerationQueue: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
+        return (
+          <Badge variant="secondary">
+            <Clock className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
       case 'approved':
-        return <Badge variant="default"><Check className="h-3 w-3 mr-1" />Approved</Badge>;
+        return (
+          <Badge variant="default">
+            <Check className="h-3 w-3 mr-1" />
+            Approved
+          </Badge>
+        );
       case 'rejected':
-        return <Badge variant="destructive"><X className="h-3 w-3 mr-1" />Rejected</Badge>;
+        return (
+          <Badge variant="destructive">
+            <X className="h-3 w-3 mr-1" />
+            Rejected
+          </Badge>
+        );
       case 'flagged':
-        return <Badge variant="outline"><Flag className="h-3 w-3 mr-1" />Flagged</Badge>;
+        return (
+          <Badge variant="outline">
+            <Flag className="h-3 w-3 mr-1" />
+            Flagged
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -242,18 +253,10 @@ const PhotoModerationQueue: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Photo Moderation Queue
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {photosData?.total || 0} photos in queue
-          </p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Photo Moderation Queue</h2>
+          <p className="text-gray-600 dark:text-gray-400">{photosData?.total || 0} photos in queue</p>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => refetch()}
-          disabled={isLoading}
-        >
+        <Button variant="outline" onClick={() => refetch()} disabled={isLoading}>
           <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
@@ -265,9 +268,12 @@ const PhotoModerationQueue: React.FC = () => {
           { label: 'Pending Review', value: '24', icon: Clock, color: 'orange' },
           { label: 'Approved Today', value: '156', icon: Check, color: 'green' },
           { label: 'Rejected Today', value: '8', icon: X, color: 'red' },
-          { label: 'Flagged Content', value: '3', icon: Flag, color: 'yellow' }
-        ].map((stat) => (
-          <div key={stat.label} className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+          { label: 'Flagged Content', value: '3', icon: Flag, color: 'yellow' },
+        ].map(stat => (
+          <div
+            key={stat.label}
+            className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</p>
@@ -286,7 +292,7 @@ const PhotoModerationQueue: React.FC = () => {
           <Input
             placeholder="Search photos..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -307,23 +313,13 @@ const PhotoModerationQueue: React.FC = () => {
       {/* Bulk Actions */}
       {selectedPhotos.length > 0 && (
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 flex items-center justify-between">
-          <span className="text-sm text-blue-700 dark:text-blue-300">
-            {selectedPhotos.length} photos selected
-          </span>
+          <span className="text-sm text-blue-700 dark:text-blue-300">{selectedPhotos.length} photos selected</span>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleBatchAction('approve')}
-            >
+            <Button variant="outline" size="sm" onClick={() => handleBatchAction('approve')}>
               <Check className="h-4 w-4 mr-2" />
               Approve All
             </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => handleBatchAction('reject')}
-            >
+            <Button variant="destructive" size="sm" onClick={() => handleBatchAction('reject')}>
               <X className="h-4 w-4 mr-2" />
               Reject All
             </Button>
@@ -376,12 +372,12 @@ const PhotoModerationQueue: React.FC = () => {
                 </td>
               </tr>
             ) : (
-              photosData?.photos.map((photo) => (
+              photosData?.photos.map(photo => (
                 <tr key={photo.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4">
                     <Checkbox
                       checked={selectedPhotos.includes(photo.id)}
-                      onCheckedChange={(checked) => {
+                      onCheckedChange={checked => {
                         if (checked) {
                           setSelectedPhotos([...selectedPhotos, photo.id]);
                         } else {
@@ -417,9 +413,7 @@ const PhotoModerationQueue: React.FC = () => {
                         {photo.flag_reasons && (
                           <div className="flex items-center mt-1">
                             <AlertTriangle className="h-4 w-4 text-yellow-500 mr-1" />
-                            <span className="text-xs text-yellow-600">
-                              {photo.flag_reasons.join(', ')}
-                            </span>
+                            <span className="text-xs text-yellow-600">{photo.flag_reasons.join(', ')}</span>
                           </div>
                         )}
                       </div>
@@ -438,9 +432,7 @@ const PhotoModerationQueue: React.FC = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    {getStatusBadge(photo.moderation_status)}
-                  </td>
+                  <td className="px-6 py-4">{getStatusBadge(photo.moderation_status)}</td>
                   <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-1 text-gray-400" />
@@ -499,8 +491,7 @@ const PhotoModerationQueue: React.FC = () => {
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-700 dark:text-gray-300">
-            Showing {((currentPage - 1) * pageSize) + 1} to{' '}
-            {Math.min(currentPage * pageSize, photosData?.total || 0)} of{' '}
+            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, photosData?.total || 0)} of{' '}
             {photosData?.total || 0} photos
           </div>
           <div className="flex items-center gap-2">
@@ -542,7 +533,7 @@ const PhotoModerationQueue: React.FC = () => {
             <Textarea
               placeholder="Reason for rejection..."
               value={rejectionReason}
-              onChange={(e) => setRejectionReason(e.target.value)}
+              onChange={e => setRejectionReason(e.target.value)}
               className="mb-4"
               rows={4}
             />
@@ -557,11 +548,7 @@ const PhotoModerationQueue: React.FC = () => {
               >
                 Cancel
               </Button>
-              <Button
-                variant="destructive"
-                onClick={handleRejectSubmit}
-                disabled={!rejectionReason.trim()}
-              >
+              <Button variant="destructive" onClick={handleRejectSubmit} disabled={!rejectionReason.trim()}>
                 Reject
               </Button>
             </div>

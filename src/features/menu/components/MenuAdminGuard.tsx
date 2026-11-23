@@ -27,7 +27,7 @@ export const MenuAdminGuard: React.FC<MenuAdminGuardProps> = ({
   requiredPermissions = [{ resource: 'menu_management', action: 'read' }],
   menuItem,
   fallback,
-  showReason = true
+  showReason = true,
 }) => {
   const menuSecurity = useMenuSecurity();
   const permissions = usePermissions();
@@ -42,9 +42,7 @@ export const MenuAdminGuard: React.FC<MenuAdminGuardProps> = ({
       if (menuSecurity.isLoading) return;
 
       const results = await Promise.all(
-        requiredPermissions.map(({ resource, action }) =>
-          menuSecurity.checkMenuPermission(resource, action, menuItem)
-        )
+        requiredPermissions.map(({ resource, action }) => menuSecurity.checkMenuPermission(resource, action, menuItem))
       );
 
       const allowed = results.every(result => result.allowed);
@@ -63,9 +61,7 @@ export const MenuAdminGuard: React.FC<MenuAdminGuardProps> = ({
     return (
       <div className="flex items-center justify-center p-4">
         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500" />
-        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-          Checking permissions...
-        </span>
+        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Checking permissions...</span>
       </div>
     );
   }
@@ -80,9 +76,7 @@ export const MenuAdminGuard: React.FC<MenuAdminGuardProps> = ({
         <div className="flex items-start">
           <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
-              Access Restricted
-            </h3>
+            <h3 className="text-sm font-medium text-red-800 dark:text-red-200">Access Restricted</h3>
             {showReason && permissionResults.reasons.length > 0 && (
               <div className="mt-2 text-sm text-red-700 dark:text-red-300">
                 <ul className="list-disc pl-5 space-y-1">
@@ -114,11 +108,7 @@ export const MenuItemGuard: React.FC<{
   fallback?: ReactNode;
 }> = ({ children, menuItem, action, fallback }) => {
   return (
-    <MenuAdminGuard
-      requiredPermissions={[{ resource: 'menu_item', action }]}
-      menuItem={menuItem}
-      fallback={fallback}
-    >
+    <MenuAdminGuard requiredPermissions={[{ resource: 'menu_item', action }]} menuItem={menuItem} fallback={fallback}>
       {children}
     </MenuAdminGuard>
   );
@@ -179,7 +169,7 @@ export const MenuVisibilityIndicator: React.FC<{
           label: 'Public',
           description: 'Visible to all users',
           color: 'text-green-600 dark:text-green-400',
-          bgColor: 'bg-green-100 dark:bg-green-900/30'
+          bgColor: 'bg-green-100 dark:bg-green-900/30',
         };
       case 'authenticated':
         return {
@@ -187,7 +177,7 @@ export const MenuVisibilityIndicator: React.FC<{
           label: 'Authenticated',
           description: 'Visible to logged-in users only',
           color: 'text-blue-600 dark:text-blue-400',
-          bgColor: 'bg-blue-100 dark:bg-blue-900/30'
+          bgColor: 'bg-blue-100 dark:bg-blue-900/30',
         };
       case 'admin':
         return {
@@ -195,7 +185,7 @@ export const MenuVisibilityIndicator: React.FC<{
           label: 'Admin Only',
           description: 'Visible to administrators only',
           color: 'text-red-600 dark:text-red-400',
-          bgColor: 'bg-red-100 dark:bg-red-900/30'
+          bgColor: 'bg-red-100 dark:bg-red-900/30',
         };
       case 'role_based':
         return {
@@ -203,7 +193,7 @@ export const MenuVisibilityIndicator: React.FC<{
           label: 'Role Based',
           description: `Requires roles: ${menuItem.required_roles?.join(', ') || 'None'}`,
           color: 'text-purple-600 dark:text-purple-400',
-          bgColor: 'bg-purple-100 dark:bg-purple-900/30'
+          bgColor: 'bg-purple-100 dark:bg-purple-900/30',
         };
       default:
         return {
@@ -211,7 +201,7 @@ export const MenuVisibilityIndicator: React.FC<{
           label: 'Unknown',
           description: 'Unknown visibility setting',
           color: 'text-gray-600 dark:text-gray-400',
-          bgColor: 'bg-gray-100 dark:bg-gray-900/30'
+          bgColor: 'bg-gray-100 dark:bg-gray-900/30',
         };
     }
   };
@@ -223,22 +213,13 @@ export const MenuVisibilityIndicator: React.FC<{
 
   return (
     <div className="flex items-center space-x-2">
-      <div
-        className={`p-1 rounded ${visibilityInfo.bgColor}`}
-        title={visibilityInfo.description}
-      >
+      <div className={`p-1 rounded ${visibilityInfo.bgColor}`} title={visibilityInfo.description}>
         {visibilityInfo.icon}
       </div>
       {showLabel && (
         <div className="flex items-center space-x-2">
-          <span className={`text-sm ${visibilityInfo.color}`}>
-            {visibilityInfo.label}
-          </span>
-          {!isVisibleToUser && (
-            <span className="text-xs text-orange-600 dark:text-orange-400">
-              (Hidden from you)
-            </span>
-          )}
+          <span className={`text-sm ${visibilityInfo.color}`}>{visibilityInfo.label}</span>
+          {!isVisibleToUser && <span className="text-xs text-orange-600 dark:text-orange-400">(Hidden from you)</span>}
         </div>
       )}
     </div>
@@ -268,7 +249,7 @@ export const MenuSecurityAuditButton: React.FC<{
       >
         <Shield className="h-4 w-4" />
       </button>
-      
+
       {showAudit && (
         <MenuAuditLogModal
           menuItemId={menuItem.id}
@@ -290,20 +271,15 @@ export const MenuAuditLogModal: React.FC<{
 }> = ({ menuItemId, menuItemTitle, onClose }) => {
   const { data: auditData, isLoading } = useMenuAuditLogs({
     menuItemId,
-    limit: 20
+    limit: 20,
   });
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Audit Log: {menuItemTitle}
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          >
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Audit Log: {menuItemTitle}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
             ✕
           </button>
         </div>
@@ -316,21 +292,14 @@ export const MenuAuditLogModal: React.FC<{
           <div className="space-y-2">
             {auditData?.logs?.length ? (
               auditData.logs.map((log, index) => (
-                <div
-                  key={index}
-                  className="border border-gray-200 dark:border-gray-700 rounded p-3"
-                >
+                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded p-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
-                      {log.action.toUpperCase()}
-                    </span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{log.action.toUpperCase()}</span>
                     <span className="text-gray-500 dark:text-gray-400">
                       {new Date(log.created_at).toLocaleString()}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    by {log.user_email}
-                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">by {log.user_email}</div>
                   {log.metadata && (
                     <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
                       {Object.entries(log.metadata).map(([key, value]) => (

@@ -51,7 +51,7 @@ export function limitBody(
 ): string | null {
   let body: Record<string, unknown>;
   try {
-    body = (typeof raw === 'string' ? JSON.parse(raw) : raw ?? {}) as Record<string, unknown>;
+    body = (typeof raw === 'string' ? JSON.parse(raw) : (raw ?? {})) as Record<string, unknown>;
   } catch {
     return null;
   }

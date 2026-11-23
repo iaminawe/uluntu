@@ -16,14 +16,14 @@ export interface FilterOptions {
 
 // Common industry options for filter
 export const INDUSTRY_OPTIONS = [
-  'Software Development', 
-  'Web Development', 
-  'Data Science', 
+  'Software Development',
+  'Web Development',
+  'Data Science',
   'AI/ML',
-  'Hardware', 
-  'IoT', 
-  'Design', 
-  'Consulting', 
-  'Education', 
-  'E-commerce'
+  'Hardware',
+  'IoT',
+  'Design',
+  'Consulting',
+  'Education',
+  'E-commerce',
 ];

@@ -1,39 +1,36 @@
 import { supabase } from '@/lib/supabase';
-import type { 
-  Theme, 
-  ThemeConfiguration, 
-  ThemeAsset, 
+import type {
+  Theme,
+  ThemeConfiguration,
+  ThemeAsset,
   ThemeMetadata,
   CompleteTheme,
   ThemeFormData,
   ThemeConfigFormData,
   ThemeMetadataFormData,
   AssetUploadData,
-  ConfigType
+  ConfigType,
 } from '@/types/theme';
 
 // Transform raw database response to CompleteTheme
 function transformThemeData(rawTheme: any): CompleteTheme | null {
   if (!rawTheme) return null;
-  
+
   return {
     ...rawTheme,
     configurations: (rawTheme.configurations || []).map((config: any) => ({
       ...config,
-      config_type: config.config_type as ConfigType
+      config_type: config.config_type as ConfigType,
     })),
     assets: rawTheme.assets || [],
-    metadata: Array.isArray(rawTheme.metadata) ? rawTheme.metadata[0] : rawTheme.metadata
+    metadata: Array.isArray(rawTheme.metadata) ? rawTheme.metadata[0] : rawTheme.metadata,
   };
 }
 
 export const themesApi = {
   // Theme CRUD operations
   async getThemes() {
-    const { data, error } = await supabase
-      .from('themes')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('themes').select('*').order('created_at', { ascending: false });
 
     return { data, error };
   },
@@ -41,12 +38,14 @@ export const themesApi = {
   async getActiveTheme(): Promise<{ data: CompleteTheme | null; error: any }> {
     const { data, error } = await supabase
       .from('themes')
-      .select(`
+      .select(
+        `
         *,
         configurations:theme_configurations(*),
         assets:theme_assets(*),
         metadata:theme_metadata(*)
-      `)
+      `
+      )
       .eq('is_active', true)
       .single();
 
@@ -56,12 +55,14 @@ export const themesApi = {
   async getThemeBySlug(slug: string): Promise<{ data: CompleteTheme | null; error: any }> {
     const { data, error } = await supabase
       .from('themes')
-      .select(`
+      .select(
+        `
         *,
         configurations:theme_configurations(*),
         assets:theme_assets(*),
         metadata:theme_metadata(*)
-      `)
+      `
+      )
       .eq('slug', slug)
       .single();
 
@@ -71,12 +72,14 @@ export const themesApi = {
   async getThemeById(id: string): Promise<{ data: CompleteTheme | null; error: any }> {
     const { data, error } = await supabase
       .from('themes')
-      .select(`
+      .select(
+        `
         *,
         configurations:theme_configurations(*),
         assets:theme_assets(*),
         metadata:theme_metadata(*)
-      `)
+      `
+      )
       .eq('id', id)
       .single();
 
@@ -91,7 +94,7 @@ export const themesApi = {
         slug: data.slug,
         description: data.description,
         is_active: data.is_active || false,
-        created_by: (await supabase.auth.getUser()).data.user?.id
+        created_by: (await supabase.auth.getUser()).data.user?.id,
       })
       .select()
       .single();
@@ -100,33 +103,19 @@ export const themesApi = {
   },
 
   async updateTheme(id: string, data: Partial<ThemeFormData>) {
-    const { data: theme, error } = await supabase
-      .from('themes')
-      .update(data)
-      .eq('id', id)
-      .select()
-      .single();
+    const { data: theme, error } = await supabase.from('themes').update(data).eq('id', id).select().single();
 
     return { data: theme, error };
   },
 
   async deleteTheme(id: string) {
-    const { error } = await supabase
-      .from('themes')
-      .delete()
-      .eq('id', id)
-      .eq('is_preset', false); // Prevent deletion of preset themes
+    const { error } = await supabase.from('themes').delete().eq('id', id).eq('is_preset', false); // Prevent deletion of preset themes
 
     return { error };
   },
 
   async activateTheme(id: string) {
-    const { data, error } = await supabase
-      .from('themes')
-      .update({ is_active: true })
-      .eq('id', id)
-      .select()
-      .single();
+    const { data, error } = await supabase.from('themes').update({ is_active: true }).eq('id', id).select().single();
 
     return { data, error };
   },
@@ -143,17 +132,13 @@ export const themesApi = {
     return { data, error };
   },
 
-  async updateThemeConfiguration(
-    themeId: string, 
-    configType: ConfigType, 
-    configData: Record<string, any>
-  ) {
+  async updateThemeConfiguration(themeId: string, configType: ConfigType, configData: Record<string, any>) {
     const { data, error } = await supabase
       .from('theme_configurations')
       .upsert({
         theme_id: themeId,
         config_type: configType,
-        config_data: configData
+        config_data: configData,
       })
       .select()
       .single();
@@ -163,33 +148,31 @@ export const themesApi = {
 
   async updateAllThemeConfigurations(themeId: string, configurations: ThemeConfigFormData) {
     const updates = [];
-    
+
     for (const [configType, configData] of Object.entries(configurations)) {
       if (configData && Object.keys(configData).length > 0) {
-        updates.push(
-          this.updateThemeConfiguration(themeId, configType as ConfigType, configData)
-        );
+        updates.push(this.updateThemeConfiguration(themeId, configType as ConfigType, configData));
       }
     }
 
     const results = await Promise.all(updates);
     const errors = results.filter(r => r.error).map(r => r.error);
-    
-    return { 
-      success: errors.length === 0, 
-      errors: errors.length > 0 ? errors : null 
+
+    return {
+      success: errors.length === 0,
+      errors: errors.length > 0 ? errors : null,
     };
   },
 
   // Theme asset operations
   async uploadThemeAsset(themeId: string, uploadData: AssetUploadData) {
     const fileName = `${themeId}/${uploadData.asset_type}_${Date.now()}.${uploadData.file.name.split('.').pop()}`;
-    
+
     // Upload file to storage
     const { data: uploadResult, error: uploadError } = await supabase.storage
       .from('theme-assets')
       .upload(fileName, uploadData.file, {
-        upsert: true
+        upsert: true,
       });
 
     if (uploadError) {
@@ -197,9 +180,9 @@ export const themesApi = {
     }
 
     // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('theme-assets')
-      .getPublicUrl(fileName);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('theme-assets').getPublicUrl(fileName);
 
     // Get image dimensions if it's an image
     let width, height;
@@ -221,7 +204,7 @@ export const themesApi = {
         mime_type: uploadData.file.type,
         width,
         height,
-        alt_text: uploadData.alt_text
+        alt_text: uploadData.alt_text,
       })
       .select()
       .single();
@@ -242,19 +225,14 @@ export const themesApi = {
     }
 
     // Delete from storage
-    const { error: storageError } = await supabase.storage
-      .from('theme-assets')
-      .remove([asset.file_path]);
+    const { error: storageError } = await supabase.storage.from('theme-assets').remove([asset.file_path]);
 
     if (storageError) {
       return { error: storageError };
     }
 
     // Delete record
-    const { error } = await supabase
-      .from('theme_assets')
-      .delete()
-      .eq('id', assetId);
+    const { error } = await supabase.from('theme_assets').delete().eq('id', assetId);
 
     return { error };
   },
@@ -265,7 +243,7 @@ export const themesApi = {
       .from('theme_metadata')
       .upsert({
         theme_id: themeId,
-        ...metadata
+        ...metadata,
       })
       .select()
       .single();
@@ -277,7 +255,7 @@ export const themesApi = {
   async duplicateTheme(sourceThemeId: string, newName: string, newSlug: string) {
     // Get source theme with all data
     const { data: sourceTheme, error: fetchError } = await this.getThemeById(sourceThemeId);
-    
+
     if (fetchError || !sourceTheme) {
       return { error: fetchError || 'Theme not found' };
     }
@@ -286,7 +264,7 @@ export const themesApi = {
     const { data: newTheme, error: createError } = await this.createTheme({
       name: newName,
       slug: newSlug,
-      description: `Duplicated from ${sourceTheme.name}`
+      description: `Duplicated from ${sourceTheme.name}`,
     });
 
     if (createError || !newTheme) {
@@ -296,25 +274,21 @@ export const themesApi = {
     // Copy configurations
     if (sourceTheme.configurations) {
       for (const config of sourceTheme.configurations) {
-        await supabase
-          .from('theme_configurations')
-          .insert({
-            theme_id: newTheme.id,
-            config_type: config.config_type,
-            config_data: config.config_data
-          });
+        await supabase.from('theme_configurations').insert({
+          theme_id: newTheme.id,
+          config_type: config.config_type,
+          config_data: config.config_data,
+        });
       }
     }
 
     // Copy metadata
     if (sourceTheme.metadata) {
       const { id, theme_id, created_at, updated_at, ...metadataFields } = sourceTheme.metadata;
-      await supabase
-        .from('theme_metadata')
-        .insert({
-          theme_id: newTheme.id,
-          ...metadataFields
-        });
+      await supabase.from('theme_metadata').insert({
+        theme_id: newTheme.id,
+        ...metadataFields,
+      });
     }
 
     // Note: Assets are not copied as they would need to be duplicated in storage
@@ -325,7 +299,7 @@ export const themesApi = {
   // Export theme configuration
   async exportTheme(themeId: string) {
     const { data: theme, error } = await this.getThemeById(themeId);
-    
+
     if (error || !theme) {
       return { error: error || 'Theme not found' };
     }
@@ -335,21 +309,26 @@ export const themesApi = {
       name: theme.name,
       slug: theme.slug,
       description: theme.description,
-      configurations: theme.configurations.reduce((acc, config) => {
-        acc[config.config_type] = config.config_data;
-        return acc;
-      }, {} as Record<string, any>),
-      metadata: theme.metadata ? {
-        site_name: theme.metadata.site_name,
-        site_tagline: theme.metadata.site_tagline,
-        site_description: theme.metadata.site_description,
-        contact_email: theme.metadata.contact_email,
-        social_links: theme.metadata.social_links,
-        custom_css: theme.metadata.custom_css,
-        custom_head_html: theme.metadata.custom_head_html,
-        custom_body_html: theme.metadata.custom_body_html,
-        meta_tags: theme.metadata.meta_tags
-      } : null
+      configurations: theme.configurations.reduce(
+        (acc, config) => {
+          acc[config.config_type] = config.config_data;
+          return acc;
+        },
+        {} as Record<string, any>
+      ),
+      metadata: theme.metadata
+        ? {
+            site_name: theme.metadata.site_name,
+            site_tagline: theme.metadata.site_tagline,
+            site_description: theme.metadata.site_description,
+            contact_email: theme.metadata.contact_email,
+            social_links: theme.metadata.social_links,
+            custom_css: theme.metadata.custom_css,
+            custom_head_html: theme.metadata.custom_head_html,
+            custom_body_html: theme.metadata.custom_body_html,
+            meta_tags: theme.metadata.meta_tags,
+          }
+        : null,
     };
 
     return { data: exportData, error: null };
@@ -362,7 +341,7 @@ export const themesApi = {
       name: themeData.name,
       slug: themeData.slug,
       description: themeData.description,
-      is_active: activate
+      is_active: activate,
     });
 
     if (createError || !theme) {
@@ -380,12 +359,12 @@ export const themesApi = {
     }
 
     return { data: theme, error: null };
-  }
+  },
 };
 
 // Helper function to get image dimensions
 async function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const img = new Image();
     img.onload = () => {
       resolve({ width: img.width, height: img.height });

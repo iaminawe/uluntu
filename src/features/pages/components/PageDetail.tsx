@@ -8,7 +8,7 @@ import {
   CalendarIcon,
   UserIcon,
   TagIcon,
-  GlobeAltIcon
+  GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import { usePages } from '../hooks/usePages';
 import { Page } from '../types';
@@ -20,9 +20,35 @@ import { Page } from '../types';
  */
 const RICH_CONTENT_CONFIG = {
   ALLOWED_TAGS: [
-    'p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'a', 'img', 'table', 'tr',
-    'td', 'th', 'thead', 'tbody', 'div', 'span', 'hr',
+    'p',
+    'br',
+    'strong',
+    'em',
+    'u',
+    's',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'ul',
+    'ol',
+    'li',
+    'blockquote',
+    'code',
+    'pre',
+    'a',
+    'img',
+    'table',
+    'tr',
+    'td',
+    'th',
+    'thead',
+    'tbody',
+    'div',
+    'span',
+    'hr',
   ],
   ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
   ALLOW_DATA_ATTR: false,
@@ -49,13 +75,7 @@ interface PageHeaderProps {
   onDuplicate?: (page: Page) => void;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({
-  page,
-  showActions = true,
-  onEdit,
-  onDelete,
-  onDuplicate
-}) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ page, showActions = true, onEdit, onDelete, onDuplicate }) => {
   const getStatusBadge = (status: string, isPublished?: boolean) => {
     if (status === 'published' && isPublished) {
       return (
@@ -85,13 +105,15 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       landing: { color: 'blue', label: 'Landing Page' },
       article: { color: 'green', label: 'Article' },
       form: { color: 'purple', label: 'Form' },
-      default: { color: 'gray', label: 'Default' }
+      default: { color: 'gray', label: 'Default' },
     };
-    
+
     const badge = badges[template as keyof typeof badges] || badges.default;
-    
+
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${badge.color}-100 text-${badge.color}-800`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${badge.color}-100 text-${badge.color}-800`}
+      >
         {badge.label}
       </span>
     );
@@ -102,31 +124,28 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-3 mb-2">
-            <h1 className="text-2xl font-bold text-gray-900 truncate">
-              {page.title}
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900 truncate">{page.title}</h1>
             {page.slug === 'home' && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                 Home Page
               </span>
             )}
           </div>
-          
+
           <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
             {page.slug && (
               <div className="flex items-center">
-                <TagIcon className="w-4 h-4 mr-1" />
-                /{page.slug}
+                <TagIcon className="w-4 h-4 mr-1" />/{page.slug}
               </div>
             )}
-            
+
             {page.updated_at && (
               <div className="flex items-center">
                 <CalendarIcon className="w-4 h-4 mr-1" />
                 Updated {new Date(page.updated_at).toLocaleDateString()}
               </div>
             )}
-            
+
             {page.author && (
               <div className="flex items-center">
                 <UserIcon className="w-4 h-4 mr-1" />
@@ -140,11 +159,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             {getTemplateBadge((page as any).template)}
           </div>
 
-          {page.excerpt && (
-            <p className="mt-3 text-gray-600 line-clamp-2">
-              {page.excerpt}
-            </p>
-          )}
+          {page.excerpt && <p className="mt-3 text-gray-600 line-clamp-2">{page.excerpt}</p>}
         </div>
 
         {showActions && (
@@ -156,7 +171,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
               <PencilIcon className="w-4 h-4 mr-1" />
               Edit
             </button>
-            
+
             <button
               onClick={() => window.open(`/pages/${page.slug}`, '_blank')}
               className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -209,18 +224,14 @@ const PageContent: React.FC<PageContentProps> = ({ page }) => {
       <div className="px-6 py-8">
         {page.meta_title && page.meta_title !== page.title && (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              SEO Title
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">SEO Title</label>
             <p className="text-gray-600">{page.meta_title}</p>
           </div>
         )}
 
         {page.meta_description && (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Meta Description
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
             <p className="text-gray-600">{page.meta_description}</p>
           </div>
         )}
@@ -244,9 +255,7 @@ const PageContent: React.FC<PageContentProps> = ({ page }) => {
         {/* SEO Keywords */}
         {(page as any).seo_keywords && (page as any).seo_keywords.length > 0 && (
           <div className="mt-8 pt-6 border-t border-gray-200">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              SEO Keywords
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">SEO Keywords</label>
             <div className="flex flex-wrap gap-2">
               {(page as any).seo_keywords.map((keyword: string, index: number) => (
                 <span
@@ -264,9 +273,7 @@ const PageContent: React.FC<PageContentProps> = ({ page }) => {
         <div className="mt-8 pt-6 border-t border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
-                Page Information
-              </label>
+              <label className="block font-medium text-gray-700 mb-1">Page Information</label>
               <div className="space-y-1 text-gray-600">
                 <div>Template: {(page as any).template || 'default'}</div>
                 <div>Status: {page.status}</div>
@@ -276,15 +283,11 @@ const PageContent: React.FC<PageContentProps> = ({ page }) => {
             </div>
 
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
-                Timestamps
-              </label>
+              <label className="block font-medium text-gray-700 mb-1">Timestamps</label>
               <div className="space-y-1 text-gray-600">
                 <div>Created: {new Date(page.created_at).toLocaleString()}</div>
                 <div>Updated: {new Date(page.updated_at).toLocaleString()}</div>
-                {page.published_at && (
-                  <div>Published: {new Date(page.published_at).toLocaleString()}</div>
-                )}
+                {page.published_at && <div>Published: {new Date(page.published_at).toLocaleString()}</div>}
               </div>
             </div>
           </div>
@@ -301,15 +304,9 @@ export const PageDetail: React.FC<PageDetailProps> = ({
   onEdit,
   onDelete,
   onDuplicate,
-  className = ''
+  className = '',
 }) => {
-  const {
-    currentPage,
-    currentPageStatus,
-    error,
-    loadPageById,
-    loadPageBySlug
-  } = usePages();
+  const { currentPage, currentPageStatus, error, loadPageById, loadPageBySlug } = usePages();
 
   const [loading, setLoading] = useState(false);
 
@@ -355,7 +352,7 @@ export const PageDetail: React.FC<PageDetailProps> = ({
               </div>
             </div>
           </div>
-          
+
           {/* Content skeleton */}
           <div className="px-6 py-8">
             <div className="space-y-4">

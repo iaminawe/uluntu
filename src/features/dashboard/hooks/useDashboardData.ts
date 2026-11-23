@@ -12,9 +12,9 @@ export function useDashboardData(): UseQueryResult<DashboardData> {
       return await dashboardApi.getOverview();
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000,   // 10 minutes (formerly cacheTime)
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
     refetchOnWindowFocus: false,
-    retry: 2
+    retry: 2,
   });
 }
 
@@ -32,8 +32,8 @@ export function useUserContent(
       return await dashboardApi.getUserContent(filters, page, limit);
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000,    // 5 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
-    retry: 2
+    retry: 2,
   });
 }

@@ -9,19 +9,11 @@ interface DesktopNavProps {
   toggleDarkMode: () => void;
 }
 
-const DesktopNav: React.FC<DesktopNavProps> = ({ 
-  navLinks, 
-  isDark, 
-  toggleDarkMode 
-}) => {
+const DesktopNav: React.FC<DesktopNavProps> = ({ navLinks, isDark, toggleDarkMode }) => {
   return (
     <nav className="hidden md:flex items-center space-x-8">
       {navLinks.map((link, index) => (
-        <Link
-          key={index}
-          to={link.href}
-          className="text-white hover:text-orange-100 transition-colors"
-        >
+        <Link key={index} to={link.href} className="text-white hover:text-orange-100 transition-colors">
           {link.text}
         </Link>
       ))}

@@ -8,9 +8,9 @@ const generateUUID = (): string => {
     return window.crypto.randomUUID();
   }
   // Fallback for environments without crypto.randomUUID
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 };
@@ -79,7 +79,15 @@ export interface NewsletterTemplate {
 
 export interface EmailQueueItem {
   id: string;
-  type: 'new_submission' | 'status_change' | 'assignment' | 'auto_reply' | 'newsletter' | 'welcome' | 'password_reset' | 'email_verification';
+  type:
+    | 'new_submission'
+    | 'status_change'
+    | 'assignment'
+    | 'auto_reply'
+    | 'newsletter'
+    | 'welcome'
+    | 'password_reset'
+    | 'email_verification';
   to_emails: string[];
   submission_id?: string;
   campaign_id?: string;
@@ -107,7 +115,7 @@ export interface NotificationPreferences {
   quiet_hours: {
     enabled: boolean;
     start_time: string; // HH:MM format
-    end_time: string;   // HH:MM format
+    end_time: string; // HH:MM format
     timezone: string;
   };
 }
@@ -241,10 +249,10 @@ export class EmailNotificationService {
   ): Promise<boolean> {
     try {
       const batchSize = 50; // Send in batches to avoid overwhelming the API
-      
+
       for (let i = 0; i < subscribers.length; i += batchSize) {
         const batch = subscribers.slice(i, i + batchSize);
-        
+
         for (const subscriber of batch) {
           const queueItem: EmailQueueItem = {
             id: generateUUID(),
@@ -282,7 +290,7 @@ export class EmailNotificationService {
   async sendNewSubmissionNotification(submission: ContactSubmission): Promise<boolean> {
     try {
       const config = await this.getNotificationConfig();
-      
+
       if (!config.enabled || !config.notification_types.new_submission) {
         return false;
       }
@@ -312,7 +320,7 @@ export class EmailNotificationService {
       };
 
       await this.addToQueue(queueItem);
-      
+
       // Send auto-reply using new transactional email system if enabled
       if (config.auto_reply.enabled) {
         try {
@@ -338,20 +346,20 @@ export class EmailNotificationService {
    * Send notification for status change
    */
   async sendStatusChangeNotification(
-    submission: ContactSubmission, 
-    oldStatus: string, 
+    submission: ContactSubmission,
+    oldStatus: string,
     newStatus: string,
     changedBy: string
   ): Promise<boolean> {
     try {
       const config = await this.getNotificationConfig();
-      
+
       if (!config.enabled || !config.notification_types.status_change) {
         return false;
       }
 
       const adminEmails = await this.getAdminEmails();
-      
+
       const queueItem: EmailQueueItem = {
         id: generateUUID(),
         type: 'status_change',
@@ -389,7 +397,7 @@ export class EmailNotificationService {
   ): Promise<boolean> {
     try {
       const config = await this.getNotificationConfig();
-      
+
       if (!config.enabled || !config.notification_types.assignment) {
         return false;
       }
@@ -432,13 +440,12 @@ export class EmailNotificationService {
    */
   async processQueue(): Promise<void> {
     if (this.processing) return;
-    
+
     this.processing = true;
-    
+
     try {
-      const pendingItems = this.queue.filter(item => 
-        item.status === 'pending' && 
-        new Date(item.scheduled_at) <= new Date()
+      const pendingItems = this.queue.filter(
+        item => item.status === 'pending' && new Date(item.scheduled_at) <= new Date()
       );
 
       for (const item of pendingItems) {
@@ -471,7 +478,7 @@ export class EmailNotificationService {
         // Use traditional inline templates
         const config = await this.getNotificationConfig();
         const template = config.templates[item.type as keyof typeof config.templates];
-        
+
         if (!template) {
           throw new Error(`Template not found for type: ${item.type}`);
         }
@@ -502,23 +509,22 @@ export class EmailNotificationService {
           ...(item.submission_id ? [{ name: 'submission_id', value: item.submission_id }] : []),
           ...(item.campaign_id ? [{ name: 'campaign_id', value: item.campaign_id }] : []),
           ...(item.user_id ? [{ name: 'user_id', value: item.user_id }] : []),
-        ]
+        ],
       };
 
       const result = await this.client.emails.send(emailData);
-      
+
       if (result.error) {
         throw new Error(result.error.message);
       }
 
       item.status = 'sent';
       item.sent_at = new Date().toISOString();
-
     } catch (error) {
       console.error(`Error processing queue item ${item.id}:`, error);
-      
+
       item.error_message = error instanceof Error ? error.message : 'Unknown error';
-      
+
       if (item.attempts >= item.max_attempts) {
         item.status = 'failed';
       } else {
@@ -577,7 +583,10 @@ export class EmailNotificationService {
   /**
    * Simple template renderer for newsletter templates
    */
-  private renderSimpleTemplate(template: NewsletterTemplate, data: Record<string, any>): {
+  private renderSimpleTemplate(
+    template: NewsletterTemplate,
+    data: Record<string, any>
+  ): {
     subject: string;
     html: string;
     text: string;
@@ -645,7 +654,10 @@ export class EmailNotificationService {
   /**
    * Render email template with data
    */
-  private renderTemplate(template: EmailTemplate, data: Record<string, any>): {
+  private renderTemplate(
+    template: EmailTemplate,
+    data: Record<string, any>
+  ): {
     subject: string;
     html: string;
     text: string;
@@ -676,7 +688,7 @@ export class EmailNotificationService {
    */
   private async addToQueue(item: EmailQueueItem): Promise<void> {
     this.queue.push(item);
-    
+
     // In production, you would save this to a database
     // For now, we'll process immediately for testing
     if (!this.processing) {
@@ -690,7 +702,7 @@ export class EmailNotificationService {
   private async getNotificationConfig(): Promise<EmailNotificationConfig> {
     try {
       const settings = await settingsApi.getPublicSettings();
-      
+
       // Default configuration
       const defaultConfig: EmailNotificationConfig = {
         enabled: true,
@@ -759,12 +771,12 @@ export class EmailNotificationService {
   private async getAdminEmails(): Promise<string[]> {
     try {
       const settings = await settingsApi.getPublicSettings();
-      
+
       // Try to get from contact settings first
       if (settings.contact?.support_email?.value) {
         return [settings.contact.support_email.value];
       }
-      
+
       if (settings.contact?.email?.value) {
         return [settings.contact.email.value];
       }
@@ -856,9 +868,9 @@ Message:
 
 View ticket: {{ticket_url}}
         `,
-        variables: ['submission', 'ticket_url', 'admin_dashboard_url']
+        variables: ['submission', 'ticket_url', 'admin_dashboard_url'],
       },
-      
+
       status_change: {
         subject: 'Status Update: {{submission.subject}} [{{new_status}}]',
         html_template: `
@@ -906,9 +918,9 @@ From: {{submission.name}} ({{submission.email}})
 
 View ticket: {{ticket_url}}
         `,
-        variables: ['submission', 'old_status', 'new_status', 'changed_by', 'ticket_url']
+        variables: ['submission', 'old_status', 'new_status', 'changed_by', 'ticket_url'],
       },
-      
+
       assignment: {
         subject: 'Ticket Assigned: {{submission.subject}}',
         html_template: `
@@ -963,9 +975,9 @@ Message:
 
 View ticket: {{ticket_url}}
         `,
-        variables: ['submission', 'assigned_to', 'assigned_by', 'ticket_url']
+        variables: ['submission', 'assigned_to', 'assigned_by', 'ticket_url'],
       },
-      
+
       auto_reply: {
         subject: 'We received your message: {{submission.subject}}',
         html_template: `
@@ -1024,8 +1036,8 @@ Visit our support center: {{support_url}}
 Best regards,
 The Uluntu Team
         `,
-        variables: ['submission', 'support_url', 'estimated_response_time']
-      }
+        variables: ['submission', 'support_url', 'estimated_response_time'],
+      },
     };
 
     return templates[type as keyof typeof templates] || templates.new_submission;
@@ -1076,12 +1088,12 @@ The Uluntu Team
    */
   private getEstimatedResponseTime(type: string): string {
     const responseTimes = {
-      'urgent': '2-4 hours',
-      'support': '12-24 hours',
-      'general': '24-48 hours',
-      'partnership': '3-5 business days',
-      'volunteer': '2-3 business days',
-      'speaker_request': '1-2 weeks'
+      urgent: '2-4 hours',
+      support: '12-24 hours',
+      general: '24-48 hours',
+      partnership: '3-5 business days',
+      volunteer: '2-3 business days',
+      speaker_request: '1-2 weeks',
     };
 
     return responseTimes[type as keyof typeof responseTimes] || '24-48 hours';
@@ -1135,7 +1147,7 @@ The Uluntu Team
    */
   async retryFailedEmails(): Promise<void> {
     const failedItems = this.queue.filter(item => item.status === 'failed');
-    
+
     for (const item of failedItems) {
       item.status = 'pending';
       item.attempts = 0;

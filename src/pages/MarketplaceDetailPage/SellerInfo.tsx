@@ -8,11 +8,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
       <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">About the Seller</h2>
       <div className="flex items-start space-x-4">
         <Link to={getMemberProfileUrl(seller)}>
-          <img
-            src={seller.image}
-            alt={seller.name}
-            className="w-12 h-12 rounded-full"
-          />
+          <img src={seller.image} alt={seller.name} className="w-12 h-12 rounded-full" />
         </Link>
         <div>
           <Link
@@ -21,12 +17,8 @@ const SellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
           >
             {seller.name}
           </Link>
-          {seller.title && (
-            <p className="text-slate-600 dark:text-slate-300">{seller.title}</p>
-          )}
-          {seller.bio && (
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{seller.bio}</p>
-          )}
+          {seller.title && <p className="text-slate-600 dark:text-slate-300">{seller.title}</p>}
+          {seller.bio && <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{seller.bio}</p>}
         </div>
       </div>
     </div>

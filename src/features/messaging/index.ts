@@ -12,7 +12,7 @@ export {
   TypingIndicator,
   MessageSellerButton,
   MessageNotification,
-  DirectMessageButton
+  DirectMessageButton,
 } from './components';
 
 export * from './hooks';

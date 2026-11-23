@@ -17,31 +17,31 @@ export interface RoleHierarchy {
  * Roles inherit permissions from all roles they list in 'inherits'
  */
 export const ROLE_HIERARCHY: RoleHierarchy = {
-  'superadmin': {
+  superadmin: {
     inherits: ['admin', 'group_member', 'authenticated'],
     level: 0,
-    description: 'Highest level role with all permissions'
+    description: 'Highest level role with all permissions',
   },
-  'admin': {
+  admin: {
     inherits: ['group_member', 'authenticated'],
     level: 1,
-    description: 'Administrative role with management permissions'
+    description: 'Administrative role with management permissions',
   },
-  'group_member': {
+  group_member: {
     inherits: ['authenticated'],
     level: 2,
-    description: 'Enhanced role for group members'
+    description: 'Enhanced role for group members',
   },
-  'authenticated': {
+  authenticated: {
     inherits: [],
     level: 3,
-    description: 'Basic authenticated user role'
+    description: 'Basic authenticated user role',
   },
-  'guest': {
+  guest: {
     inherits: [],
     level: 4,
-    description: 'Unauthenticated user with limited access'
-  }
+    description: 'Unauthenticated user with limited access',
+  },
 };
 
 /**
@@ -51,15 +51,15 @@ export const ROLE_HIERARCHY: RoleHierarchy = {
  */
 export function getEffectiveRoles(userRoles: string[]): string[] {
   const effectiveRoles = new Set<string>();
-  
+
   // Add all direct roles
   userRoles.forEach(role => {
     effectiveRoles.add(role);
-    
+
     // Add inherited roles recursively
     addInheritedRoles(role, effectiveRoles);
   });
-  
+
   return Array.from(effectiveRoles);
 }
 
@@ -69,7 +69,7 @@ export function getEffectiveRoles(userRoles: string[]): string[] {
 function addInheritedRoles(role: string, effectiveRoles: Set<string>): void {
   const roleConfig = ROLE_HIERARCHY[role];
   if (!roleConfig) return;
-  
+
   roleConfig.inherits.forEach(inheritedRole => {
     if (!effectiveRoles.has(inheritedRole)) {
       effectiveRoles.add(inheritedRole);
@@ -91,7 +91,7 @@ export function getMergedPermissions(
 ): Record<string, string[]> {
   const effectiveRoles = getEffectiveRoles(userRoles);
   const mergedPermissions: Record<string, string[]> = {};
-  
+
   // Get roles sorted by hierarchy level (higher priority first)
   const sortedRoles = roles
     .filter(role => effectiveRoles.includes(role.id))
@@ -100,16 +100,16 @@ export function getMergedPermissions(
       const levelB = ROLE_HIERARCHY[b.id]?.level ?? 999;
       return levelA - levelB;
     });
-  
+
   // Merge permissions, with higher priority roles overriding lower ones
   sortedRoles.forEach(role => {
     if (!role.permissions) return;
-    
+
     Object.entries(role.permissions).forEach(([resource, actions]) => {
       if (!mergedPermissions[resource]) {
         mergedPermissions[resource] = [];
       }
-      
+
       // If this role has wildcard permission, it takes precedence
       if (actions.includes('*')) {
         mergedPermissions[resource] = ['*'];
@@ -123,7 +123,7 @@ export function getMergedPermissions(
       }
     });
   });
-  
+
   return mergedPermissions;
 }
 
@@ -146,7 +146,7 @@ export function hasHigherPriority(roleA: string, roleB: string): boolean {
  */
 export function getHighestPriorityRole(roles: string[]): string | null {
   if (roles.length === 0) return null;
-  
+
   return roles.reduce((highest, current) => {
     if (!highest) return current;
     return hasHigherPriority(current, highest) ? current : highest;
@@ -163,13 +163,13 @@ export function getHighestPriorityRole(roles: string[]): string | null {
 export function canAssignRole(userRoles: string[], targetRole: string): boolean {
   // Super admins can assign any role
   if (userRoles.includes('superadmin')) return true;
-  
+
   // Admins can assign roles below admin level
   if (userRoles.includes('admin')) {
     const targetLevel = ROLE_HIERARCHY[targetRole]?.level ?? 999;
     return targetLevel > 1; // Can't assign superadmin or admin roles
   }
-  
+
   // Regular users can't assign roles
   return false;
 }
@@ -181,13 +181,13 @@ export function canAssignRole(userRoles: string[], targetRole: string): boolean 
  */
 export function getAssignableRoles(userRoles: string[]): string[] {
   const assignable: string[] = [];
-  
+
   Object.keys(ROLE_HIERARCHY).forEach(role => {
     if (canAssignRole(userRoles, role)) {
       assignable.push(role);
     }
   });
-  
+
   return assignable;
 }
 
@@ -197,7 +197,7 @@ export function getAssignableRoles(userRoles: string[]): string[] {
  */
 export function validateRoleHierarchy(): string[] {
   const errors: string[] = [];
-  
+
   Object.entries(ROLE_HIERARCHY).forEach(([role, config]) => {
     // Check for circular dependencies
     const visited = new Set<string>();
@@ -207,7 +207,7 @@ export function validateRoleHierarchy(): string[] {
         errors.push(`Circular dependency detected: ${path.join(' -> ')} -> ${currentRole}`);
         return;
       }
-      
+
       visited.add(currentRole);
       const currentConfig = ROLE_HIERARCHY[currentRole];
       if (currentConfig) {
@@ -216,25 +216,27 @@ export function validateRoleHierarchy(): string[] {
         });
       }
     };
-    
+
     checkCircular(role, []);
-    
+
     // Check if inherited roles exist
     config.inherits.forEach(inheritedRole => {
       if (!ROLE_HIERARCHY[inheritedRole]) {
         errors.push(`Role "${role}" inherits from non-existent role "${inheritedRole}"`);
       }
     });
-    
+
     // Check level consistency (inherited roles should have higher level numbers)
     config.inherits.forEach(inheritedRole => {
       const inheritedConfig = ROLE_HIERARCHY[inheritedRole];
       if (inheritedConfig && inheritedConfig.level <= config.level) {
-        errors.push(`Role "${role}" (level ${config.level}) inherits from "${inheritedRole}" (level ${inheritedConfig.level}) which should have a higher level number`);
+        errors.push(
+          `Role "${role}" (level ${config.level}) inherits from "${inheritedRole}" (level ${inheritedConfig.level}) which should have a higher level number`
+        );
       }
     });
   });
-  
+
   return errors;
 }
 
@@ -246,15 +248,15 @@ export function validateRoleHierarchy(): string[] {
 export function getRoleDescription(userRoles: string[]): string {
   const effectiveRoles = getEffectiveRoles(userRoles);
   const highestRole = getHighestPriorityRole(effectiveRoles);
-  
+
   if (!highestRole) return 'No roles assigned';
-  
+
   const config = ROLE_HIERARCHY[highestRole];
   const roleTitle = config?.description || highestRole;
-  
+
   if (effectiveRoles.length === 1) {
     return roleTitle;
   }
-  
+
   return `${roleTitle} (with ${effectiveRoles.length - 1} inherited role${effectiveRoles.length > 2 ? 's' : ''})`;
 }

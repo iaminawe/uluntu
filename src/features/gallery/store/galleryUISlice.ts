@@ -6,27 +6,27 @@ export interface GalleryUIState {
   // Selection state
   selectedPhotos: string[];
   selectedGalleries: string[];
-  
+
   // Upload progress tracking
   uploadProgress: Record<string, UploadProgress>;
-  
+
   // Filter state
   filters: GalleryFilters;
-  
+
   // View preferences
   viewMode: 'grid' | 'list' | 'masonry';
   photoSize: 'small' | 'medium' | 'large';
-  
+
   // Lightbox state
   lightbox: LightboxState;
-  
+
   // Batch operation state
   isBatchMode: boolean;
   batchOperation: {
     type: 'delete' | 'move' | 'tag' | 'privacy' | null;
     isProcessing: boolean;
   };
-  
+
   // UI state
   sidebarOpen: boolean;
   uploadDialogOpen: boolean;
@@ -43,16 +43,16 @@ const initialState: GalleryUIState = {
   lightbox: {
     isOpen: false,
     currentPhotoIndex: 0,
-    photos: []
+    photos: [],
   },
   isBatchMode: false,
   batchOperation: {
     type: null,
-    isProcessing: false
+    isProcessing: false,
   },
   sidebarOpen: true,
   uploadDialogOpen: false,
-  createGalleryDialogOpen: false
+  createGalleryDialogOpen: false,
 };
 
 const galleryUISlice = createSlice({
@@ -69,15 +69,15 @@ const galleryUISlice = createSlice({
         state.selectedPhotos.push(photoId);
       }
     },
-    
+
     selectAllPhotos: (state, action: PayloadAction<string[]>) => {
       state.selectedPhotos = action.payload;
     },
-    
-    clearPhotoSelection: (state) => {
+
+    clearPhotoSelection: state => {
       state.selectedPhotos = [];
     },
-    
+
     toggleGallerySelection: (state, action: PayloadAction<string>) => {
       const galleryId = action.payload;
       const index = state.selectedGalleries.indexOf(galleryId);
@@ -87,23 +87,26 @@ const galleryUISlice = createSlice({
         state.selectedGalleries.push(galleryId);
       }
     },
-    
-    clearGallerySelection: (state) => {
+
+    clearGallerySelection: state => {
       state.selectedGalleries = [];
     },
-    
+
     // Upload progress actions
     setUploadProgress: (state, action: PayloadAction<UploadProgress>) => {
       state.uploadProgress[action.payload.photoId] = action.payload;
     },
-    
+
     updateUploadProgress: (state, action: PayloadAction<{ photoId: string; progress: number }>) => {
       if (state.uploadProgress[action.payload.photoId]) {
         state.uploadProgress[action.payload.photoId].progress = action.payload.progress;
       }
     },
-    
-    updateUploadStatus: (state, action: PayloadAction<{ photoId: string; status: UploadProgress['status']; error?: string }>) => {
+
+    updateUploadStatus: (
+      state,
+      action: PayloadAction<{ photoId: string; status: UploadProgress['status']; error?: string }>
+    ) => {
       if (state.uploadProgress[action.payload.photoId]) {
         state.uploadProgress[action.payload.photoId].status = action.payload.status;
         if (action.payload.error) {
@@ -111,105 +114,105 @@ const galleryUISlice = createSlice({
         }
       }
     },
-    
+
     removeUploadProgress: (state, action: PayloadAction<string>) => {
       delete state.uploadProgress[action.payload];
     },
-    
-    clearAllUploadProgress: (state) => {
+
+    clearAllUploadProgress: state => {
       state.uploadProgress = {};
     },
-    
+
     // Filter actions
     setFilters: (state, action: PayloadAction<GalleryFilters>) => {
       state.filters = action.payload;
     },
-    
+
     updateFilter: (state, action: PayloadAction<{ key: keyof GalleryFilters; value: any }>) => {
       state.filters[action.payload.key] = action.payload.value;
     },
-    
-    clearFilters: (state) => {
+
+    clearFilters: state => {
       state.filters = {};
     },
-    
+
     // View preference actions
     setViewMode: (state, action: PayloadAction<GalleryUIState['viewMode']>) => {
       state.viewMode = action.payload;
     },
-    
+
     setPhotoSize: (state, action: PayloadAction<GalleryUIState['photoSize']>) => {
       state.photoSize = action.payload;
     },
-    
+
     // Lightbox actions
     openLightbox: (state, action: PayloadAction<{ photos: LightboxState['photos']; startIndex: number }>) => {
       state.lightbox = {
         isOpen: true,
         currentPhotoIndex: action.payload.startIndex,
-        photos: action.payload.photos
+        photos: action.payload.photos,
       };
     },
-    
-    closeLightbox: (state) => {
+
+    closeLightbox: state => {
       state.lightbox.isOpen = false;
     },
-    
+
     setLightboxIndex: (state, action: PayloadAction<number>) => {
       state.lightbox.currentPhotoIndex = action.payload;
     },
-    
-    nextLightboxPhoto: (state) => {
+
+    nextLightboxPhoto: state => {
       if (state.lightbox.currentPhotoIndex < state.lightbox.photos.length - 1) {
         state.lightbox.currentPhotoIndex++;
       }
     },
-    
-    previousLightboxPhoto: (state) => {
+
+    previousLightboxPhoto: state => {
       if (state.lightbox.currentPhotoIndex > 0) {
         state.lightbox.currentPhotoIndex--;
       }
     },
-    
+
     // Batch operation actions
-    toggleBatchMode: (state) => {
+    toggleBatchMode: state => {
       state.isBatchMode = !state.isBatchMode;
       if (!state.isBatchMode) {
         state.selectedPhotos = [];
         state.batchOperation.type = null;
       }
     },
-    
+
     setBatchOperationType: (state, action: PayloadAction<GalleryUIState['batchOperation']['type']>) => {
       state.batchOperation.type = action.payload;
     },
-    
+
     setBatchOperationProcessing: (state, action: PayloadAction<boolean>) => {
       state.batchOperation.isProcessing = action.payload;
     },
-    
+
     // UI state actions
-    toggleSidebar: (state) => {
+    toggleSidebar: state => {
       state.sidebarOpen = !state.sidebarOpen;
     },
-    
+
     setSidebarOpen: (state, action: PayloadAction<boolean>) => {
       state.sidebarOpen = action.payload;
     },
-    
+
     setUploadDialogOpen: (state, action: PayloadAction<boolean>) => {
       state.uploadDialogOpen = action.payload;
     },
-    
+
     setCreateGalleryDialogOpen: (state, action: PayloadAction<boolean>) => {
       state.createGalleryDialogOpen = action.payload;
     },
-    
+
     // Reset UI state
-    resetUIState: (state) => {
+    resetUIState: state => {
       return initialState;
-    }
-  }
+    },
+  },
 });
 
 // Export actions
@@ -241,7 +244,7 @@ export const {
   setSidebarOpen,
   setUploadDialogOpen,
   setCreateGalleryDialogOpen,
-  resetUIState
+  resetUIState,
 } = galleryUISlice.actions;
 
 // Selectors
@@ -261,7 +264,7 @@ export const selectCreateGalleryDialogOpen = (state: RootState) => state.gallery
 // Computed selectors
 export const selectHasSelection = (state: RootState) => state.galleryUI.selectedPhotos.length > 0;
 export const selectSelectionCount = (state: RootState) => state.galleryUI.selectedPhotos.length;
-export const selectActiveUploads = (state: RootState) => 
+export const selectActiveUploads = (state: RootState) =>
   Object.values(state.galleryUI.uploadProgress).filter(p => p.status === 'uploading' || p.status === 'processing');
 
 export default galleryUISlice.reducer;

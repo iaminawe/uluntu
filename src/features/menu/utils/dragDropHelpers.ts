@@ -33,10 +33,7 @@ export interface DropZoneConfig {
 /**
  * Build hierarchical tree structure from flat menu items
  */
-export const buildMenuTree = (
-  items: MenuItem[], 
-  expandedIds: Set<string> = new Set()
-): DragDropMenuItem[] => {
+export const buildMenuTree = (items: MenuItem[], expandedIds: Set<string> = new Set()): DragDropMenuItem[] => {
   const itemMap = new Map<string, DragDropMenuItem>();
   const rootItems: DragDropMenuItem[] = [];
 
@@ -47,14 +44,14 @@ export const buildMenuTree = (
       children: [],
       isExpanded: expandedIds.has(item.id) || expandedIds.size === 0, // Default expanded if none specified
       level: 0,
-      hasChildren: false
+      hasChildren: false,
     });
   });
 
   // Second pass: build hierarchy and calculate levels
   items.forEach(item => {
     const treeItem = itemMap.get(item.id)!;
-    
+
     if (item.parent_id && itemMap.has(item.parent_id)) {
       const parent = itemMap.get(item.parent_id)!;
       parent.children.push(treeItem);
@@ -71,7 +68,7 @@ export const buildMenuTree = (
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
       .map(item => ({
         ...item,
-        children: sortTreeItems(item.children)
+        children: sortTreeItems(item.children),
       }));
   };
 
@@ -81,23 +78,20 @@ export const buildMenuTree = (
 /**
  * Flatten tree structure for linear operations (like drag and drop)
  */
-export const flattenMenuTree = (
-  tree: DragDropMenuItem[], 
-  includeCollapsed: boolean = false
-): DragDropMenuItem[] => {
+export const flattenMenuTree = (tree: DragDropMenuItem[], includeCollapsed: boolean = false): DragDropMenuItem[] => {
   const flattened: DragDropMenuItem[] = [];
-  
+
   const traverse = (items: DragDropMenuItem[]) => {
     items.forEach(item => {
       flattened.push(item);
-      
+
       // Include children if expanded or if we're including collapsed items
       if (item.children.length > 0 && (item.isExpanded || includeCollapsed)) {
         traverse(item.children);
       }
     });
   };
-  
+
   traverse(tree);
   return flattened;
 };
@@ -118,15 +112,13 @@ export const validateDragOperation = (
 
   // Check if target is a descendant of dragged item (would create circular reference)
   const isDescendant = (item: DragDropMenuItem, ancestorId: string): boolean => {
-    return item.children.some(child => 
-      child.id === ancestorId || isDescendant(child, ancestorId)
-    );
+    return item.children.some(child => child.id === ancestorId || isDescendant(child, ancestorId));
   };
 
   if (isDescendant(draggedItem, targetItem.id)) {
-    return { 
-      isValid: false, 
-      reason: 'Cannot drop item into its own descendant' 
+    return {
+      isValid: false,
+      reason: 'Cannot drop item into its own descendant',
     };
   }
 
@@ -134,20 +126,20 @@ export const validateDragOperation = (
   if (dropPosition === 'inside') {
     const newLevel = targetItem.level + 1;
     if (newLevel >= maxDepth) {
-      return { 
-        isValid: false, 
+      return {
+        isValid: false,
         reason: `Maximum nesting depth (${maxDepth}) would be exceeded`,
-        maxDepthReached: true 
+        maxDepthReached: true,
       };
     }
 
     // Check if dragged item's children would exceed depth
     const maxChildDepth = getMaxChildDepth(draggedItem);
     if (newLevel + maxChildDepth >= maxDepth) {
-      return { 
-        isValid: false, 
+      return {
+        isValid: false,
         reason: `Maximum nesting depth (${maxDepth}) would be exceeded by children`,
-        maxDepthReached: true 
+        maxDepthReached: true,
       };
     }
   }
@@ -160,7 +152,7 @@ export const validateDragOperation = (
  */
 export const getMaxChildDepth = (item: DragDropMenuItem): number => {
   if (item.children.length === 0) return 0;
-  
+
   return 1 + Math.max(...item.children.map(child => getMaxChildDepth(child)));
 };
 
@@ -174,10 +166,10 @@ export const calculateDropPosition = (
 ): DropPosition => {
   const relativeY = mouseY - elementRect.top;
   const elementHeight = elementRect.height;
-  
+
   const topThreshold = elementHeight * 0.25;
   const bottomThreshold = elementHeight * 0.75;
-  
+
   if (relativeY < topThreshold) {
     return 'before';
   } else if (relativeY > bottomThreshold) {
@@ -201,7 +193,7 @@ export const applyDragOperation = (
 ): DragDropMenuItem[] => {
   // Deep clone the tree
   const newTree = JSON.parse(JSON.stringify(tree)) as DragDropMenuItem[];
-  
+
   // Find and remove dragged item
   let draggedItem: DragDropMenuItem | null = null;
   const removeDraggedItem = (items: DragDropMenuItem[]): DragDropMenuItem[] => {
@@ -216,49 +208,49 @@ export const applyDragOperation = (
   };
 
   const treeWithoutDragged = removeDraggedItem(newTree);
-  
+
   if (!draggedItem) return tree; // Item not found
 
   // Find target item and insert dragged item
   const insertItem = (items: DragDropMenuItem[]): DragDropMenuItem[] => {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      
+
       if (item.id === targetItemId) {
         switch (dropPosition) {
           case 'before':
             items.splice(i, 0, { ...draggedItem!, level: item.level });
             return items;
-            
+
           case 'after':
             items.splice(i + 1, 0, { ...draggedItem!, level: item.level });
             return items;
-            
+
           case 'inside':
             // Update levels for dragged item and its children
             const updateLevels = (menuItem: DragDropMenuItem, newLevel: number): DragDropMenuItem => ({
               ...menuItem,
               level: newLevel,
-              children: menuItem.children.map(child => updateLevels(child, newLevel + 1))
+              children: menuItem.children.map(child => updateLevels(child, newLevel + 1)),
             });
-            
+
             const updatedDraggedItem = updateLevels(draggedItem!, item.level + 1);
             item.children.push(updatedDraggedItem);
             item.hasChildren = true;
-            
+
             return items;
         }
       }
-      
+
       // Recursively search children
       item.children = insertItem(item.children);
     }
-    
+
     return items;
   };
 
   const finalTree = insertItem(treeWithoutDragged);
-  
+
   // Update order indices
   return updateOrderIndices(finalTree);
 };
@@ -271,7 +263,7 @@ export const updateOrderIndices = (tree: DragDropMenuItem[]): DragDropMenuItem[]
     return items.map((item, index) => ({
       ...item,
       order_index: index,
-      children: updateIndices(item.children, index)
+      children: updateIndices(item.children, index),
     }));
   };
 
@@ -283,23 +275,23 @@ export const updateOrderIndices = (tree: DragDropMenuItem[]): DragDropMenuItem[]
  */
 export const treeToFlatItems = (tree: DragDropMenuItem[]): MenuItem[] => {
   const flatItems: MenuItem[] = [];
-  
+
   const traverse = (items: DragDropMenuItem[], parentId: string | null = null) => {
     items.forEach((item, index) => {
       const { children, isExpanded, level, hasChildren, isDragging, isDraggedOver, ...menuItem } = item;
-      
+
       flatItems.push({
         ...menuItem,
         parent_id: parentId,
-        sort_order: index
+        sort_order: index,
       });
-      
+
       if (children.length > 0) {
         traverse(children, item.id);
       }
     });
   };
-  
+
   traverse(tree);
   return flatItems;
 };
@@ -307,21 +299,18 @@ export const treeToFlatItems = (tree: DragDropMenuItem[]): MenuItem[] => {
 /**
  * Find item in tree by ID
  */
-export const findItemInTree = (
-  tree: DragDropMenuItem[], 
-  itemId: string
-): DragDropMenuItem | null => {
+export const findItemInTree = (tree: DragDropMenuItem[], itemId: string): DragDropMenuItem | null => {
   for (const item of tree) {
     if (item.id === itemId) {
       return item;
     }
-    
+
     const found = findItemInTree(item.children, itemId);
     if (found) {
       return found;
     }
   }
-  
+
   return null;
 };
 
@@ -330,7 +319,7 @@ export const findItemInTree = (
  */
 export const getExpandedIds = (tree: DragDropMenuItem[]): Set<string> => {
   const expanded = new Set<string>();
-  
+
   const traverse = (items: DragDropMenuItem[]) => {
     items.forEach(item => {
       if (item.isExpanded && item.hasChildren) {
@@ -339,7 +328,7 @@ export const getExpandedIds = (tree: DragDropMenuItem[]): Set<string> => {
       traverse(item.children);
     });
   };
-  
+
   traverse(tree);
   return expanded;
 };
@@ -347,18 +336,15 @@ export const getExpandedIds = (tree: DragDropMenuItem[]): Set<string> => {
 /**
  * Toggle expanded state for an item
  */
-export const toggleItemExpanded = (
-  tree: DragDropMenuItem[], 
-  itemId: string
-): DragDropMenuItem[] => {
+export const toggleItemExpanded = (tree: DragDropMenuItem[], itemId: string): DragDropMenuItem[] => {
   return tree.map(item => {
     if (item.id === itemId) {
       return { ...item, isExpanded: !item.isExpanded };
     }
-    
+
     return {
       ...item,
-      children: toggleItemExpanded(item.children, itemId)
+      children: toggleItemExpanded(item.children, itemId),
     };
   });
 };
@@ -382,26 +368,26 @@ export const calculateTreeStats = (tree: DragDropMenuItem[]): MenuTreeStats => {
     disabledItems: 0,
     rootItems: tree.length,
     maxDepth: 0,
-    itemsByLevel: {}
+    itemsByLevel: {},
   };
-  
+
   const traverse = (items: DragDropMenuItem[]) => {
     items.forEach(item => {
       stats.totalItems++;
-      
+
       if (item.is_enabled) {
         stats.enabledItems++;
       } else {
         stats.disabledItems++;
       }
-      
+
       stats.maxDepth = Math.max(stats.maxDepth, item.level + 1);
       stats.itemsByLevel[item.level] = (stats.itemsByLevel[item.level] || 0) + 1;
-      
+
       traverse(item.children);
     });
   };
-  
+
   traverse(tree);
   return stats;
 };

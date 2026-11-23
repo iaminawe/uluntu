@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  BlockNoteEditor,
-  PartialBlock,
-  Block,
-} from '@blocknote/core';
-import {
-  useCreateBlockNote,
-  BlockNoteDefaultUI,
-} from '@blocknote/react';
+import { BlockNoteEditor, PartialBlock, Block } from '@blocknote/core';
+import { useCreateBlockNote, BlockNoteDefaultUI } from '@blocknote/react';
 import '@blocknote/react/style.css';
 import '@blocknote/mantine/style.css';
 
@@ -62,7 +55,7 @@ export const BlockEditorWithAI: React.FC<BlockEditorProps> = ({
   const [showAIMenu, setShowAIMenu] = useState(false);
   const [aiProcessing, setAiProcessing] = useState(false);
   const [selectedText, setSelectedText] = useState('');
-  
+
   const aiConfig = checkAIConfiguration();
 
   // Create the editor instance
@@ -85,7 +78,7 @@ export const BlockEditorWithAI: React.FC<BlockEditorProps> = ({
       // Auto-save logic
       if (autoSave && onSave) {
         const currentContent = JSON.stringify(blocks);
-        
+
         if (currentContent !== lastSavedContentRef.current) {
           if (saveTimeoutRef.current) {
             clearTimeout(saveTimeoutRef.current);
@@ -129,7 +122,7 @@ export const BlockEditorWithAI: React.FC<BlockEditorProps> = ({
   };
 
   // Handle AI command
-  const handleAICommand = async (command: typeof AI_COMMANDS[0]) => {
+  const handleAICommand = async (command: (typeof AI_COMMANDS)[0]) => {
     if (!selectedText && command.id !== 'continue') {
       alert('Please select some text first');
       return;
@@ -138,7 +131,7 @@ export const BlockEditorWithAI: React.FC<BlockEditorProps> = ({
     setAiProcessing(true);
     try {
       const result = await callAI(command.prompt, selectedText);
-      
+
       // Insert the AI-generated text
       if (editor && result) {
         const selection = editor.getSelection();
@@ -147,7 +140,7 @@ export const BlockEditorWithAI: React.FC<BlockEditorProps> = ({
           editor.insertInlineContent([result]);
         }
       }
-      
+
       setShowAIMenu(false);
       setSelectedText('');
     } catch (error) {
@@ -174,10 +167,10 @@ export const BlockEditorWithAI: React.FC<BlockEditorProps> = ({
           >
             ✨ AI Assistant
           </Button>
-          
+
           {showAIMenu && (
             <div className="ai-menu-dropdown">
-              {AI_COMMANDS.map((cmd) => (
+              {AI_COMMANDS.map(cmd => (
                 <button
                   key={cmd.id}
                   className="ai-menu-item"
@@ -205,9 +198,7 @@ export const BlockEditorWithAI: React.FC<BlockEditorProps> = ({
       {enableAI && (
         <div className="ai-status-indicator">
           {aiConfig.isConfigured ? (
-            <span className="ai-available">
-              ✨ AI Ready ({aiConfig.provider})
-            </span>
+            <span className="ai-available">✨ AI Ready ({aiConfig.provider})</span>
           ) : (
             <span className="ai-unavailable">AI not configured</span>
           )}

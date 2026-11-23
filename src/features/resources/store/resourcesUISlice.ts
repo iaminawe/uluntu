@@ -31,7 +31,7 @@ export const resourcesUISlice = createSlice({
     updateFilters: (state, action: PayloadAction<Partial<ResourceFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    clearFilters: (state) => {
+    clearFilters: state => {
       state.filters = {};
     },
     setSelectedResource: (state, action: PayloadAction<string | null>) => {
@@ -49,25 +49,15 @@ export const resourcesUISlice = createSlice({
   },
 });
 
-export const {
-  updateFilters,
-  clearFilters,
-  setSelectedResource,
-  setViewMode,
-  setSortBy,
-  setSortOrder,
-} = resourcesUISlice.actions;
+export const { updateFilters, clearFilters, setSelectedResource, setViewMode, setSortBy, setSortOrder } =
+  resourcesUISlice.actions;
 
 // Selectors
-export const selectResourcesFilters = (state: { resourcesUI: ResourcesUIState }) => 
-  state.resourcesUI.filters;
-export const selectSelectedResourceId = (state: { resourcesUI: ResourcesUIState }) => 
+export const selectResourcesFilters = (state: { resourcesUI: ResourcesUIState }) => state.resourcesUI.filters;
+export const selectSelectedResourceId = (state: { resourcesUI: ResourcesUIState }) =>
   state.resourcesUI.selectedResourceId;
-export const selectResourcesViewMode = (state: { resourcesUI: ResourcesUIState }) => 
-  state.resourcesUI.viewMode;
-export const selectResourcesSortBy = (state: { resourcesUI: ResourcesUIState }) => 
-  state.resourcesUI.sortBy;
-export const selectResourcesSortOrder = (state: { resourcesUI: ResourcesUIState }) => 
-  state.resourcesUI.sortOrder;
+export const selectResourcesViewMode = (state: { resourcesUI: ResourcesUIState }) => state.resourcesUI.viewMode;
+export const selectResourcesSortBy = (state: { resourcesUI: ResourcesUIState }) => state.resourcesUI.sortBy;
+export const selectResourcesSortOrder = (state: { resourcesUI: ResourcesUIState }) => state.resourcesUI.sortOrder;
 
 export default resourcesUISlice.reducer;

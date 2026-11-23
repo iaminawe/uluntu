@@ -12,18 +12,21 @@ const results: Record<string, Result[]> = {};
 function builder(table: string) {
   const entry = { table, ops: [] as [string, unknown[]][] };
   calls.push(entry);
-  const b: any = new Proxy({}, {
-    get(_t, prop: string) {
-      if (prop === 'then') {
-        const next = (results[table] || []).shift() || { data: null, error: null };
-        return (resolve: (r: Result) => void) => resolve(next);
-      }
-      return (...args: unknown[]) => {
-        entry.ops.push([prop, args]);
-        return b;
-      };
-    },
-  });
+  const b: any = new Proxy(
+    {},
+    {
+      get(_t, prop: string) {
+        if (prop === 'then') {
+          const next = (results[table] || []).shift() || { data: null, error: null };
+          return (resolve: (r: Result) => void) => resolve(next);
+        }
+        return (...args: unknown[]) => {
+          entry.ops.push([prop, args]);
+          return b;
+        };
+      },
+    }
+  );
   return b;
 }
 
@@ -75,15 +78,23 @@ describe('messagingApi.findExistingConversation', () => {
 describe('newsletterCampaignApi.sendCampaignToSegment', () => {
   it('records sent analytics in chunks of 500 instead of one insert per subscriber', async () => {
     const subscribers = Array.from({ length: 1200 }, (_, i) => ({
-      id: `s${i}`, email: `s${i}@example.com`, status: 'active',
+      id: `s${i}`,
+      email: `s${i}@example.com`,
+      status: 'active',
     }));
     jest.spyOn(newsletterCampaignApi, 'getCampaign').mockResolvedValue({ id: 'camp' } as never);
     results.newsletter_subscriptions = [{ data: subscribers }];
     (resendService.sendNewsletterCampaign as jest.Mock).mockResolvedValue({
-      success: true, sent_count: 1200, failed_count: 0, failed_emails: [],
+      success: true,
+      sent_count: 1200,
+      failed_count: 0,
+      failed_emails: [],
     });
 
-    await newsletterCampaignApi.sendCampaignToSegment('camp', subscribers.map(s => s.id));
+    await newsletterCampaignApi.sendCampaignToSegment(
+      'camp',
+      subscribers.map(s => s.id)
+    );
 
     const inserts = calls
       .filter(c => c.table === 'newsletter_analytics')

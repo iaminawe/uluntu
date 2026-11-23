@@ -8,12 +8,7 @@ interface ProfilePrivacySettingsProps {
 }
 
 export function ProfilePrivacySettings({ member, className = '' }: ProfilePrivacySettingsProps) {
-  const { 
-    currentSettings, 
-    isUpdating, 
-    error, 
-    togglePublicVisibility 
-  } = useProfilePrivacy(member);
+  const { currentSettings, isUpdating, error, togglePublicVisibility } = useProfilePrivacy(member);
 
   const privacyDisplay = getPrivacyStatusDisplay(currentSettings.status);
 
@@ -21,19 +16,17 @@ export function ProfilePrivacySettings({ member, className = '' }: ProfilePrivac
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-medium text-gray-900">Privacy Settings</h3>
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          currentSettings.isPublic 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-yellow-100 text-yellow-800'
-        }`}>
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            currentSettings.isPublic ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+          }`}
+        >
           <span className="mr-1">{privacyDisplay.icon}</span>
           {privacyDisplay.label}
         </span>
       </div>
 
-      <p className="text-sm text-gray-600 mb-6">
-        {privacyDisplay.description}
-      </p>
+      <p className="text-sm text-gray-600 mb-6">{privacyDisplay.description}</p>
 
       {/* Toggle Switch */}
       <div className="flex items-center justify-between">
@@ -41,9 +34,7 @@ export function ProfilePrivacySettings({ member, className = '' }: ProfilePrivac
           <label htmlFor="public-profile" className="text-sm font-medium text-gray-700">
             Show in Community Directory
           </label>
-          <p className="text-sm text-gray-500">
-            Make your profile discoverable by other community members
-          </p>
+          <p className="text-sm text-gray-500">Make your profile discoverable by other community members</p>
         </div>
         <div className="ml-4">
           <button
@@ -67,31 +58,35 @@ export function ProfilePrivacySettings({ member, className = '' }: ProfilePrivac
 
       {/* Privacy Options */}
       <div className="mt-6 space-y-4">
-        <div className={`border rounded-lg p-4 ${
-          currentSettings.isPublic ? 'border-green-200 bg-green-50' : 'border-gray-200'
-        }`}>
+        <div
+          className={`border rounded-lg p-4 ${
+            currentSettings.isPublic ? 'border-green-200 bg-green-50' : 'border-gray-200'
+          }`}
+        >
           <div className="flex items-center space-x-3">
             <span className="text-lg">👁️</span>
             <div>
               <h4 className="font-medium text-gray-900">Public Profile</h4>
               <p className="text-sm text-gray-600">
-                Your profile appears in the community directory and search results. 
-                Other members can discover and contact you.
+                Your profile appears in the community directory and search results. Other members can discover and
+                contact you.
               </p>
             </div>
           </div>
         </div>
 
-        <div className={`border rounded-lg p-4 ${
-          !currentSettings.isPublic ? 'border-yellow-200 bg-yellow-50' : 'border-gray-200'
-        }`}>
+        <div
+          className={`border rounded-lg p-4 ${
+            !currentSettings.isPublic ? 'border-yellow-200 bg-yellow-50' : 'border-gray-200'
+          }`}
+        >
           <div className="flex items-center space-x-3">
             <span className="text-lg">🔒</span>
             <div>
               <h4 className="font-medium text-gray-900">Private Profile</h4>
               <p className="text-sm text-gray-600">
-                Your profile is hidden from the directory. You can still participate in 
-                groups and events, but others can't find you through search.
+                Your profile is hidden from the directory. You can still participate in groups and events, but others
+                can't find you through search.
               </p>
             </div>
           </div>
@@ -110,9 +105,7 @@ export function ProfilePrivacySettings({ member, className = '' }: ProfilePrivac
 
       {error && (
         <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <span className="text-sm text-red-800">
-            Failed to update privacy settings. Please try again.
-          </span>
+          <span className="text-sm text-red-800">Failed to update privacy settings. Please try again.</span>
         </div>
       )}
 

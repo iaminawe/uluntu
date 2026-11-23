@@ -27,7 +27,7 @@ export const BulkActionsPanel: React.FC<BulkActionsPanelProps> = ({
   isAssigning,
   onRoleChange,
   onBulkAssign,
-  onClearSelection
+  onClearSelection,
 }) => {
   return (
     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
@@ -38,15 +38,18 @@ export const BulkActionsPanel: React.FC<BulkActionsPanelProps> = ({
           </span>
           <select
             value={bulkActionRole}
-            onChange={(e) => onRoleChange(e.target.value)}
+            onChange={e => onRoleChange(e.target.value)}
             className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 dark:focus:ring-blue-500/20"
           >
             <option value="">Select role to assign</option>
-            {roles?.filter(role => role.id !== 'superadmin' || isSuperAdmin).map(role => (
-              <option key={role.id} value={role.id}>{role.name}
-                {role.id === 'superadmin' && !isSuperAdmin ? ' (Not Available)' : ''}
-              </option>
-            ))}
+            {roles
+              ?.filter(role => role.id !== 'superadmin' || isSuperAdmin)
+              .map(role => (
+                <option key={role.id} value={role.id}>
+                  {role.name}
+                  {role.id === 'superadmin' && !isSuperAdmin ? ' (Not Available)' : ''}
+                </option>
+              ))}
           </select>
           <button
             onClick={onBulkAssign}

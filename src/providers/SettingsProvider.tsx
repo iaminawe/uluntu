@@ -2,17 +2,9 @@ import React, { createContext, useContext, useEffect, useCallback, useMemo, Reac
 import { useQueryClient } from '@tanstack/react-query';
 // Use optimized hooks that don't make API calls
 import { useSettings, useEnabledFeatures } from '@/hooks/useSettingsOptimized';
-import type { 
-  SettingsContextValue, 
-  FeatureKey, 
-  PublicSettings,
-  SettingDataType 
-} from '@/types/settings';
+import type { SettingsContextValue, FeatureKey, PublicSettings, SettingDataType } from '@/types/settings';
 import { settingsApi } from '@/features/admin/api/settings';
-import { 
-  SettingsCacheManager, 
-  PersistentSettingsCache 
-} from '@/utils/settingsCache';
+import { SettingsCacheManager, PersistentSettingsCache } from '@/utils/settingsCache';
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
 
@@ -47,8 +39,19 @@ const DEFAULT_SETTINGS: Partial<PublicSettings> = {
  */
 export function SettingsProvider({ children }: SettingsProviderProps) {
   const queryClient = useQueryClient();
-  const { settings: rawSettings, loading: settingsLoading, error: settingsError, refetch: refetchSettings } = useSettings();
-  const { features, isFeatureEnabled: checkFeature, loading: featuresLoading, error: featuresError, refetch: refetchFeatures } = useEnabledFeatures();
+  const {
+    settings: rawSettings,
+    loading: settingsLoading,
+    error: settingsError,
+    refetch: refetchSettings,
+  } = useSettings();
+  const {
+    features,
+    isFeatureEnabled: checkFeature,
+    loading: featuresLoading,
+    error: featuresError,
+    refetch: refetchFeatures,
+  } = useEnabledFeatures();
 
   // Initialize cache with persistent storage
   useEffect(() => {
@@ -77,12 +80,12 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   // Merge default settings with loaded settings, using cache when available
   const settings = useMemo(() => {
     const merged: PublicSettings = {};
-    
+
     // Start with defaults
     Object.entries(DEFAULT_SETTINGS).forEach(([category, categorySettings]) => {
       merged[category] = { ...categorySettings };
     });
-    
+
     // Try to get from cache first if no raw settings yet
     let settingsToUse = rawSettings;
     if (!rawSettings || Object.keys(rawSettings).length === 0) {
@@ -91,7 +94,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         settingsToUse = cachedSettings;
       }
     }
-    
+
     // Override with loaded/cached settings
     if (settingsToUse) {
       Object.entries(settingsToUse).forEach(([category, categorySettings]) => {
@@ -103,7 +106,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         });
       });
     }
-    
+
     return merged;
   }, [rawSettings]);
 
@@ -117,58 +120,57 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   const refreshSettings = useCallback(async () => {
     // Invalidate cache before refetch
     SettingsCacheManager.invalidateAll();
-    
-    await Promise.all([
-      refetchSettings(),
-      refetchFeatures(),
-    ]);
+
+    await Promise.all([refetchSettings(), refetchFeatures()]);
   }, [refetchSettings, refetchFeatures]);
 
   /**
    * Check if a feature is enabled with cache fallback
    */
-  const isFeatureEnabled = useCallback((feature: FeatureKey): boolean => {
-    // Check cache first for faster response
-    const cachedResult = SettingsCacheManager.isFeatureCached(feature);
-    if (cachedResult !== null) {
-      return cachedResult;
-    }
-    
-    // Fall back to real-time check
-    return checkFeature(feature);
-  }, [checkFeature]);
+  const isFeatureEnabled = useCallback(
+    (feature: FeatureKey): boolean => {
+      // Check cache first for faster response
+      const cachedResult = SettingsCacheManager.isFeatureCached(feature);
+      if (cachedResult !== null) {
+        return cachedResult;
+      }
+
+      // Fall back to real-time check
+      return checkFeature(feature);
+    },
+    [checkFeature]
+  );
 
   /**
    * Get a specific setting value with type safety and caching
    */
-  const getSetting = useCallback(<T = any>(
-    category: string, 
-    key: string, 
-    defaultValue?: T
-  ): T => {
-    // Check cache first for faster response
-    const cachedSetting = SettingsCacheManager.getCachedSetting(category, key);
-    if (cachedSetting !== null && cachedSetting !== undefined) {
-      try {
-        return settingsApi.castSettingValue(cachedSetting.value, cachedSetting.type) as T;
-      } catch {
-        // Fall through to main logic if casting fails
+  const getSetting = useCallback(
+    <T = any,>(category: string, key: string, defaultValue?: T): T => {
+      // Check cache first for faster response
+      const cachedSetting = SettingsCacheManager.getCachedSetting(category, key);
+      if (cachedSetting !== null && cachedSetting !== undefined) {
+        try {
+          return settingsApi.castSettingValue(cachedSetting.value, cachedSetting.type) as T;
+        } catch {
+          // Fall through to main logic if casting fails
+        }
       }
-    }
-    
-    const setting = settings[category]?.[key];
-    
-    if (!setting || setting.value === undefined || setting.value === null) {
-      return defaultValue as T;
-    }
-    
-    // Cast value to proper type based on data type
-    try {
-      return settingsApi.castSettingValue(setting.value, setting.type) as T;
-    } catch {
-      return defaultValue as T;
-    }
-  }, [settings]);
+
+      const setting = settings[category]?.[key];
+
+      if (!setting || setting.value === undefined || setting.value === null) {
+        return defaultValue as T;
+      }
+
+      // Cast value to proper type based on data type
+      try {
+        return settingsApi.castSettingValue(setting.value, setting.type) as T;
+      } catch {
+        return defaultValue as T;
+      }
+    },
+    [settings]
+  );
 
   /**
    * Subscribe to settings changes via WebSocket or polling
@@ -207,11 +209,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     getSetting,
   };
 
-  return (
-    <SettingsContext.Provider value={contextValue}>
-      {children}
-    </SettingsContext.Provider>
-  );
+  return <SettingsContext.Provider value={contextValue}>{children}</SettingsContext.Provider>;
 }
 
 /**
@@ -219,22 +217,18 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
  */
 export function useSettingsContext(): SettingsContextValue {
   const context = useContext(SettingsContext);
-  
+
   if (!context) {
     throw new Error('useSettingsContext must be used within a SettingsProvider');
   }
-  
+
   return context;
 }
 
 /**
  * Hook to get a specific setting value
  */
-export function useSettingValue<T = any>(
-  category: string, 
-  key: string, 
-  defaultValue?: T
-): T {
+export function useSettingValue<T = any>(category: string, key: string, defaultValue?: T): T {
   const { getSetting } = useSettingsContext();
   return getSetting(category, key, defaultValue);
 }

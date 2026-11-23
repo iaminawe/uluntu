@@ -3,7 +3,7 @@ import { logger } from './logger';
 // Global error handler for uncaught errors
 export function setupGlobalErrorHandlers() {
   // Handle unhandled promise rejections
-  window.addEventListener('unhandledrejection', (event) => {
+  window.addEventListener('unhandledrejection', event => {
     logger.error('Unhandled promise rejection', 'GLOBAL_ERROR', {
       reason: event.reason,
       promise: event.promise,
@@ -16,7 +16,7 @@ export function setupGlobalErrorHandlers() {
   });
 
   // Handle general JavaScript errors
-  window.addEventListener('error', (event) => {
+  window.addEventListener('error', event => {
     logger.error('Global error', 'GLOBAL_ERROR', {
       message: event.message,
       filename: event.filename,
@@ -29,7 +29,7 @@ export function setupGlobalErrorHandlers() {
     if (event.message.includes('Failed to fetch dynamically imported module')) {
       // This often happens when deploying new versions
       logger.warn('Module loading error detected, might need page refresh', 'GLOBAL_ERROR');
-      
+
       // Show user-friendly message
       if (import.meta.env.PROD) {
         const shouldReload = window.confirm(

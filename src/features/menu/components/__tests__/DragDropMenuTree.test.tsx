@@ -1,6 +1,6 @@
 /**
  * Component Tests for DragDropMenuTree
- * 
+ *
  * Tests drag and drop functionality, reordering,
  * hierarchical changes, and accessibility.
  */
@@ -25,19 +25,24 @@ vi.mock('react-beautiful-dnd', async () => {
       (global as any).mockOnDragEnd = onDragEnd;
       return <div data-testid="drag-drop-context">{children}</div>;
     },
-    Droppable: ({ children, droppableId }: any) => 
+    Droppable: ({ children, droppableId }: any) => (
       <div data-testid={`droppable-${droppableId}`}>
         {children({ innerRef: vi.fn(), droppableProps: {}, placeholder: null })}
-      </div>,
-    Draggable: ({ children, draggableId, index }: any) => 
+      </div>
+    ),
+    Draggable: ({ children, draggableId, index }: any) => (
       <div data-testid={`draggable-${draggableId}`} data-index={index}>
-        {children({ 
-          innerRef: vi.fn(), 
-          draggableProps: { 'data-rbd-draggable-id': draggableId }, 
-          dragHandleProps: { 'data-testid': `drag-handle-${draggableId}` },
-          isDragging: false 
-        }, {})}
-      </div>,
+        {children(
+          {
+            innerRef: vi.fn(),
+            draggableProps: { 'data-rbd-draggable-id': draggableId },
+            dragHandleProps: { 'data-testid': `drag-handle-${draggableId}` },
+            isDragging: false,
+          },
+          {}
+        )}
+      </div>
+    ),
   };
 });
 
@@ -161,7 +166,7 @@ describe('DragDropMenuTree Component', () => {
 
       const communityItem = screen.getByText('Community');
       const expandButton = communityItem.parentElement?.querySelector('[data-testid="chevron-right"]');
-      
+
       expect(expandButton).toBeInTheDocument();
     });
 
@@ -321,9 +326,7 @@ describe('DragDropMenuTree Component', () => {
       const editButtons = screen.getAllByTestId('edit-icon');
       await user.click(editButtons[0]);
 
-      expect(defaultProps.onEdit).toHaveBeenCalledWith(
-        expect.objectContaining({ id: '1', title: 'Home' })
-      );
+      expect(defaultProps.onEdit).toHaveBeenCalledWith(expect.objectContaining({ id: '1', title: 'Home' }));
     });
 
     it('should handle delete button clicks', async () => {
@@ -332,9 +335,7 @@ describe('DragDropMenuTree Component', () => {
       const deleteButtons = screen.getAllByTestId('trash-icon');
       await user.click(deleteButtons[0]);
 
-      expect(defaultProps.onDelete).toHaveBeenCalledWith(
-        expect.objectContaining({ id: '1', title: 'Home' })
-      );
+      expect(defaultProps.onDelete).toHaveBeenCalledWith(expect.objectContaining({ id: '1', title: 'Home' }));
     });
 
     it('should handle toggle enabled button clicks', async () => {
@@ -414,7 +415,7 @@ describe('DragDropMenuTree Component', () => {
 
       const dragHandle = screen.getAllByTestId(/drag-handle-/)[0];
       expect(dragHandle).toHaveAttribute('aria-describedby');
-      
+
       const description = document.getElementById(dragHandle.getAttribute('aria-describedby')!);
       expect(description).toHaveTextContent(/use space or enter to start dragging/i);
     });
@@ -422,7 +423,7 @@ describe('DragDropMenuTree Component', () => {
 
   describe('Performance Optimizations', () => {
     it('should handle large trees efficiently', () => {
-      const largeTree = Array.from({ length: 100 }, (_, i) => 
+      const largeTree = Array.from({ length: 100 }, (_, i) =>
         createMockMenuItem({
           id: `item-${i}`,
           title: `Item ${i}`,
@@ -433,22 +434,17 @@ describe('DragDropMenuTree Component', () => {
       );
 
       const startTime = performance.now();
-      
-      render(
-        <DragDropMenuTree 
-          {...defaultProps} 
-          items={largeTree}
-        />
-      );
+
+      render(<DragDropMenuTree {...defaultProps} items={largeTree} />);
 
       const endTime = performance.now();
-      
+
       // Should render within reasonable time
       expect(endTime - startTime).toBeLessThan(200);
     });
 
     it('should virtualize large lists when enabled', () => {
-      const largeTree = Array.from({ length: 1000 }, (_, i) => 
+      const largeTree = Array.from({ length: 1000 }, (_, i) =>
         createMockMenuItem({
           id: `item-${i}`,
           title: `Item ${i}`,
@@ -457,14 +453,7 @@ describe('DragDropMenuTree Component', () => {
         })
       );
 
-      render(
-        <DragDropMenuTree 
-          {...defaultProps} 
-          items={largeTree}
-          virtualized={true}
-          maxVisibleItems={20}
-        />
-      );
+      render(<DragDropMenuTree {...defaultProps} items={largeTree} virtualized={true} maxVisibleItems={20} />);
 
       // Should only render visible items
       const renderedItems = screen.getAllByRole('treeitem');
@@ -474,16 +463,16 @@ describe('DragDropMenuTree Component', () => {
     it('should memoize drag handlers to prevent unnecessary re-renders', () => {
       const { rerender } = render(<DragDropMenuTree {...defaultProps} />);
 
-      const initialHandlers = screen.getAllByTestId(/drag-handle-/).map(
-        handle => handle.getAttribute('data-handler-id')
-      );
+      const initialHandlers = screen
+        .getAllByTestId(/drag-handle-/)
+        .map(handle => handle.getAttribute('data-handler-id'));
 
       // Re-render with same props
       rerender(<DragDropMenuTree {...defaultProps} />);
 
-      const rerenderedHandlers = screen.getAllByTestId(/drag-handle-/).map(
-        handle => handle.getAttribute('data-handler-id')
-      );
+      const rerenderedHandlers = screen
+        .getAllByTestId(/drag-handle-/)
+        .map(handle => handle.getAttribute('data-handler-id'));
 
       // Handlers should be memoized (same references)
       expect(rerenderedHandlers).toEqual(initialHandlers);
@@ -492,13 +481,7 @@ describe('DragDropMenuTree Component', () => {
 
   describe('Custom Styling and Theming', () => {
     it('should apply custom CSS classes', () => {
-      render(
-        <DragDropMenuTree 
-          {...defaultProps} 
-          className="custom-tree"
-          itemClassName="custom-item"
-        />
-      );
+      render(<DragDropMenuTree {...defaultProps} className="custom-tree" itemClassName="custom-item" />);
 
       const tree = screen.getByRole('tree');
       expect(tree).toHaveClass('custom-tree');
@@ -510,12 +493,7 @@ describe('DragDropMenuTree Component', () => {
     });
 
     it('should support dark theme', () => {
-      render(
-        <DragDropMenuTree 
-          {...defaultProps} 
-          theme="dark"
-        />
-      );
+      render(<DragDropMenuTree {...defaultProps} theme="dark" />);
 
       const tree = screen.getByRole('tree');
       expect(tree).toHaveClass('theme-dark');
@@ -523,17 +501,10 @@ describe('DragDropMenuTree Component', () => {
 
     it('should render custom item templates', () => {
       const customRender = (item: MenuItem) => (
-        <div data-testid={`custom-${item.id}`}>
-          Custom: {item.title.toUpperCase()}
-        </div>
+        <div data-testid={`custom-${item.id}`}>Custom: {item.title.toUpperCase()}</div>
       );
 
-      render(
-        <DragDropMenuTree 
-          {...defaultProps}
-          renderItem={customRender}
-        />
-      );
+      render(<DragDropMenuTree {...defaultProps} renderItem={customRender} />);
 
       expect(screen.getByTestId('custom-1')).toHaveTextContent('Custom: HOME');
       expect(screen.getByTestId('custom-2')).toHaveTextContent('Custom: COMMUNITY');

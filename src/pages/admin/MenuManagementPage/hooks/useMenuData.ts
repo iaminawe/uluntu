@@ -21,19 +21,23 @@ export const useMenuData = () => {
     userEmail: user?.email || '',
     userRoles: userRoles,
     sessionId: sessionStorage.getItem('session_id') || undefined,
-    ipAddress: localStorage.getItem('client_ip') || undefined
+    ipAddress: localStorage.getItem('client_ip') || undefined,
   };
 
   const secureMenuApi = createSecureMenuApi(secureApiContext);
 
   // Permission check
-  const hasAdminAccess = menuSecurity.canReadMenus &&
-    (userRoles?.includes('superadmin') ||
-     userRoles?.includes('admin') ||
-     userRoles?.includes('menu_manager'));
+  const hasAdminAccess =
+    menuSecurity.canReadMenus &&
+    (userRoles?.includes('superadmin') || userRoles?.includes('admin') || userRoles?.includes('menu_manager'));
 
   // Fetch menu items with security
-  const { data: menuResponse, isLoading, error, refetch } = useQuery({
+  const {
+    data: menuResponse,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['secure-menu-items'],
     queryFn: async () => {
       const result = await secureMenuApi.getMenuItems();
@@ -42,7 +46,7 @@ export const useMenuData = () => {
       }
       return result.data || [];
     },
-    enabled: hasAdminAccess
+    enabled: hasAdminAccess,
   });
 
   const allMenuItems = menuResponse || [];
@@ -55,6 +59,6 @@ export const useMenuData = () => {
     hasAdminAccess,
     userRoles,
     menuSecurity,
-    secureMenuApi
+    secureMenuApi,
   };
 };

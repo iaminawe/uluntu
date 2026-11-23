@@ -16,11 +16,11 @@ interface PermissionCheck {
  */
 export const usePermissions = () => {
   const { user, roles: reduxRoles } = useAppSelector(state => state.auth);
-  
+
   // Fetch custom roles for the current user
   const { data: customRoles = [], isLoading: customRolesLoading } = useQuery({
     queryKey: ['user-custom-roles', user?.id],
-    queryFn: () => user ? adminRolesApi.getUserRoles(user.id) : Promise.resolve([]),
+    queryFn: () => (user ? adminRolesApi.getUserRoles(user.id) : Promise.resolve([])),
     enabled: !!user?.id,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -31,7 +31,7 @@ export const usePermissions = () => {
       id: roleId,
       name: formatRoleName(roleId),
       type: 'system' as const,
-      permissions: getSystemRolePermissions(roleId)
+      permissions: getSystemRolePermissions(roleId),
     }));
 
     return [...systemRoles, ...customRoles];
@@ -136,7 +136,7 @@ export const usePermissions = () => {
     customRolesCount: customRoles.length,
     customRolesLoading,
     allRolesCount: allRoles.length,
-    effectiveRoles: effectiveRoles
+    effectiveRoles: effectiveRoles,
   };
 
   // Role assignment helpers
@@ -162,17 +162,17 @@ export const usePermissions = () => {
     isSuperAdmin,
     isAuthenticated,
     isGroupMember,
-    
+
     // Permission checks
     hasPermission,
     hasAllPermissions,
     hasAnyPermission,
     getAllPermissions,
-    
+
     // Role assignment
     canUserAssignRole,
     getAssignableRolesList,
-    
+
     // Data
     roles: allRoles,
     effectiveRoles,
@@ -180,19 +180,19 @@ export const usePermissions = () => {
     systemRoles: reduxRoles.list,
     customRoles,
     user,
-    
+
     // Loading states
-    isLoading: reduxRoles.loading
+    isLoading: reduxRoles.loading,
   };
 };
 
 // Helper function to format system role names
 function formatRoleName(roleId: string): string {
   const roleMap: Record<string, string> = {
-    'authenticated': 'Authenticated User',
-    'group_member': 'Group Member', 
-    'admin': 'Administrator',
-    'superadmin': 'Super Administrator'
+    authenticated: 'Authenticated User',
+    group_member: 'Group Member',
+    admin: 'Administrator',
+    superadmin: 'Super Administrator',
   };
   return roleMap[roleId] || roleId.charAt(0).toUpperCase() + roleId.slice(1).replace(/_/g, ' ');
 }
@@ -200,7 +200,7 @@ function formatRoleName(roleId: string): string {
 // Helper function to get default permissions for system roles
 function getSystemRolePermissions(roleId: string): Record<string, string[]> {
   const systemPermissions: Record<string, Record<string, string[]>> = {
-    'authenticated': {
+    authenticated: {
       members: ['read'],
       companies: ['read'],
       events: ['read'],
@@ -208,9 +208,9 @@ function getSystemRolePermissions(roleId: string): Record<string, string[]> {
       news: ['read'],
       resources: ['read'],
       marketplace: ['read'],
-      opportunities: ['read']
+      opportunities: ['read'],
     },
-    'group_member': {
+    group_member: {
       members: ['read', 'update'],
       companies: ['read'],
       events: ['read', 'create'],
@@ -218,9 +218,9 @@ function getSystemRolePermissions(roleId: string): Record<string, string[]> {
       news: ['read'],
       resources: ['read', 'create'],
       marketplace: ['read', 'create'],
-      opportunities: ['read']
+      opportunities: ['read'],
     },
-    'admin': {
+    admin: {
       members: ['*'],
       companies: ['*'],
       events: ['*'],
@@ -230,11 +230,11 @@ function getSystemRolePermissions(roleId: string): Record<string, string[]> {
       marketplace: ['*'],
       opportunities: ['*'],
       users: ['read', 'update'],
-      moderation: ['*']
+      moderation: ['*'],
     },
-    'superadmin': {
-      '*': ['*']
-    }
+    superadmin: {
+      '*': ['*'],
+    },
   };
 
   return systemPermissions[roleId] || {};

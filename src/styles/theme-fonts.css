@@ -8,7 +8,12 @@ body {
 }
 
 /* Apply theme fonts to headings */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--theme-font-family-heading, var(--theme-font-family, inherit));
 }
 
@@ -44,7 +49,8 @@ h6 {
 }
 
 /* Small text */
-.text-sm, small {
+.text-sm,
+small {
   font-size: var(--theme-font-size-sm, 0.875rem);
   line-height: var(--theme-line-height-normal, 1.5);
 }
@@ -110,6 +116,7 @@ h6 {
   line-height: var(--theme-line-height-normal, 1.5);
 }
 
-.leading-relaxed, .leading-loose {
+.leading-relaxed,
+.leading-loose {
   line-height: var(--theme-line-height-loose, 1.75);
 }

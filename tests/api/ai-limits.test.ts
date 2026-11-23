@@ -10,9 +10,7 @@ describe('limitBody', () => {
   });
 
   it('clamps numeric token fields to the cap', () => {
-    const out = parse(
-      limitBody('openai', { max_tokens: 99999, max_completion_tokens: 100 }, opts)
-    );
+    const out = parse(limitBody('openai', { max_tokens: 99999, max_completion_tokens: 100 }, opts));
     expect(out.max_tokens).toBe(4000);
     expect(out.max_completion_tokens).toBe(100);
   });

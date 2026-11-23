@@ -15,7 +15,7 @@ import {
   clearFilters,
   updateFilters,
   selectCompaniesFilters,
-  CompanyFilters
+  CompanyFilters,
 } from '../store/companiesUISlice';
 import { CompanyInput } from '../api/companiesApi';
 import { queryKeys, invalidationHelpers } from '@/config/queryClient';
@@ -28,42 +28,54 @@ export function useCompaniesHybrid() {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const filters = useAppSelector(selectCompaniesFilters);
-  
+
   // Use React Query for data fetching
   const hasFilters = Object.keys(filters).length > 0;
   const allCompaniesQuery = useCompanies();
   const filteredCompaniesQuery = useCompaniesWithFilters(filters);
-  
+
   // Choose the appropriate query based on whether we have filters
   const companiesQuery = hasFilters ? filteredCompaniesQuery : allCompaniesQuery;
-  
+
   // Create mutation
   const createMutation = useCreateCompany();
-  
+
   // Enhanced createCompany with better success handling
-  const createCompany = useCallback(async (companyData: CompanyInput) => {
-    try {
-      const result = await createMutation.mutateAsync(companyData);
-      // Invalidate related queries
-      invalidationHelpers.invalidateCompanies(queryClient);
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }, [createMutation, queryClient]);
+  const createCompany = useCallback(
+    async (companyData: CompanyInput) => {
+      try {
+        const result = await createMutation.mutateAsync(companyData);
+        // Invalidate related queries
+        invalidationHelpers.invalidateCompanies(queryClient);
+        return result;
+      } catch (error) {
+        throw error;
+      }
+    },
+    [createMutation, queryClient]
+  );
 
   // Filter actions (Redux) - memoized to prevent infinite loops
-  const updateFiltersAction = useCallback((newFilters: Partial<CompanyFilters>) => {
-    dispatch(updateFilters(newFilters));
-  }, [dispatch]);
+  const updateFiltersAction = useCallback(
+    (newFilters: Partial<CompanyFilters>) => {
+      dispatch(updateFilters(newFilters));
+    },
+    [dispatch]
+  );
 
-  const setSearchTerm = useCallback((search?: string) => {
-    updateFiltersAction({ search });
-  }, [updateFiltersAction]);
+  const setSearchTerm = useCallback(
+    (search?: string) => {
+      updateFiltersAction({ search });
+    },
+    [updateFiltersAction]
+  );
 
-  const setIndustries = useCallback((industries?: string[]) => {
-    updateFiltersAction({ industries });
-  }, [updateFiltersAction]);
+  const setIndustries = useCallback(
+    (industries?: string[]) => {
+      updateFiltersAction({ industries });
+    },
+    [updateFiltersAction]
+  );
 
   const clearAllFilters = useCallback(() => {
     dispatch(clearFilters());
@@ -86,21 +98,21 @@ export function useCompaniesHybrid() {
     isError: companiesQuery.isError,
     error: companiesQuery.error,
     refetch: companiesQuery.refetch,
-    
+
     // UI state from Redux
     filters,
-    
+
     // Actions
     createCompany,
     updateFilters: updateFiltersAction,
     setSearchTerm,
     setIndustries,
     clearAllFilters,
-    
+
     // Pagination
     getPaginatedCompanies,
     totalCompanies: companiesQuery.data?.length || 0,
-    
+
     // Mutation states
     isCreating: createMutation.isPending,
     createError: createMutation.error,
@@ -112,10 +124,10 @@ export function useCompaniesHybrid() {
  */
 export function useCompanyHybrid(id?: string) {
   const queryClient = useQueryClient();
-  
+
   // Use React Query for data fetching
   const companyQuery = useCompany(id);
-  
+
   // Mutations
   const updateMutation = useUpdateCompany();
   const deleteMutation = useDeleteCompany();
@@ -123,7 +135,7 @@ export function useCompanyHybrid(id?: string) {
   // Enhanced update with better error handling
   const updateCompany = async (data: Partial<CompanyInput>) => {
     if (!id) throw new Error('Company ID is required');
-    
+
     try {
       const result = await updateMutation.mutateAsync({ id, data });
       // Invalidate related queries
@@ -137,7 +149,7 @@ export function useCompanyHybrid(id?: string) {
   // Enhanced delete with better error handling
   const deleteCompany = async () => {
     if (!id) throw new Error('Company ID is required');
-    
+
     try {
       const result = await deleteMutation.mutateAsync(id);
       // Invalidate related queries
@@ -155,11 +167,11 @@ export function useCompanyHybrid(id?: string) {
     isError: companyQuery.isError,
     error: companyQuery.error,
     refetch: companyQuery.refetch,
-    
+
     // Actions
     updateCompany,
     deleteCompany,
-    
+
     // Mutation states
     isUpdating: updateMutation.isPending,
     updateError: updateMutation.error,
@@ -175,16 +187,16 @@ export function useCompanyHybrid(id?: string) {
 export function useCompanyByIdOrSlugHybrid(idOrSlug?: string) {
   console.log('[useCompanyByIdOrSlugHybrid] Called with:', idOrSlug);
   const queryClient = useQueryClient();
-  
+
   // Use React Query for data fetching
   const companyQuery = useCompanyByIdOrSlug(idOrSlug);
   console.log('[useCompanyByIdOrSlugHybrid] Query result:', {
     data: companyQuery.data,
     isLoading: companyQuery.isLoading,
     isError: companyQuery.isError,
-    error: companyQuery.error
+    error: companyQuery.error,
   });
-  
+
   // Mutations
   const updateMutation = useUpdateCompany();
   const deleteMutation = useDeleteCompany();
@@ -192,9 +204,9 @@ export function useCompanyByIdOrSlugHybrid(idOrSlug?: string) {
   // Enhanced update with better error handling
   const updateCompany = async (data: Partial<CompanyInput>) => {
     if (!idOrSlug || !companyQuery.data) throw new Error('Company not found');
-    
+
     const companyId = companyQuery.data.id;
-    
+
     try {
       const result = await updateMutation.mutateAsync({ id: companyId, data });
       // Invalidate related queries
@@ -208,9 +220,9 @@ export function useCompanyByIdOrSlugHybrid(idOrSlug?: string) {
   // Enhanced delete with better error handling
   const deleteCompany = async () => {
     if (!idOrSlug || !companyQuery.data) throw new Error('Company not found');
-    
+
     const companyId = companyQuery.data.id;
-    
+
     try {
       const result = await deleteMutation.mutateAsync(companyId);
       // Invalidate related queries
@@ -228,11 +240,11 @@ export function useCompanyByIdOrSlugHybrid(idOrSlug?: string) {
     isError: companyQuery.isError,
     error: companyQuery.error,
     refetch: companyQuery.refetch,
-    
+
     // Actions
     updateCompany,
     deleteCompany,
-    
+
     // Mutation states
     isUpdating: updateMutation.isPending,
     updateError: updateMutation.error,

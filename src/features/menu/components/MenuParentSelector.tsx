@@ -32,14 +32,11 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
   // Build hierarchical tree structure
   const menuTree = useMemo(() => {
     // Filter options by menu type and exclude the current item being edited
-    const filteredOptions = options.filter(item => 
-      (!menuType || item.menu_type === menuType) &&
-      item.id !== excludeId
-    );
+    const filteredOptions = options.filter(item => (!menuType || item.menu_type === menuType) && item.id !== excludeId);
 
     // Create a map for quick lookup
     const itemMap = new Map<string, MenuTreeNode>();
-    
+
     // Initialize all items
     filteredOptions.forEach(item => {
       itemMap.set(item.id, {
@@ -51,13 +48,13 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
 
     // Build parent-child relationships and calculate levels
     const rootItems: MenuTreeNode[] = [];
-    
+
     const calculateLevel = (item: MenuTreeNode, visited = new Set<string>()): number => {
       if (visited.has(item.id)) return 0; // Prevent infinite loops
       visited.add(item.id);
-      
+
       if (!item.parent_id) return 0;
-      
+
       const parent = itemMap.get(item.parent_id);
       return parent ? calculateLevel(parent, visited) + 1 : 0;
     };
@@ -65,7 +62,7 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
     filteredOptions.forEach(item => {
       const node = itemMap.get(item.id)!;
       node.level = calculateLevel(node);
-      
+
       if (item.parent_id && itemMap.has(item.parent_id)) {
         itemMap.get(item.parent_id)!.children.push(node);
       } else {
@@ -90,12 +87,12 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
   const buildPath = (itemId: string): MenuItem[] => {
     const path: MenuItem[] = [];
     let current = options.find(item => item.id === itemId);
-    
+
     while (current) {
       path.unshift(current);
       current = current.parent_id ? options.find(item => item.id === current!.parent_id) : undefined;
     }
-    
+
     return path;
   };
 
@@ -122,8 +119,8 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
       <div key={node.id} className="select-none">
         <div
           className={cn(
-            "flex items-center py-2 px-2 hover:bg-gray-50 cursor-pointer rounded-md",
-            isSelected && "bg-blue-50 text-blue-700"
+            'flex items-center py-2 px-2 hover:bg-gray-50 cursor-pointer rounded-md',
+            isSelected && 'bg-blue-50 text-blue-700'
           )}
           style={{ marginLeft: `${node.level * 16}px` }}
           onClick={() => onChange(node.id)}
@@ -133,17 +130,13 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
             {hasChildren ? (
               <button
                 type="button"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   toggleExpanded(node.id);
                 }}
                 className="hover:bg-gray-200 rounded p-0.5"
               >
-                {isExpanded ? (
-                  <ChevronDown className="h-3 w-3" />
-                ) : (
-                  <ChevronRight className="h-3 w-3" />
-                )}
+                {isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
               </button>
             ) : (
               <div className="w-3 h-3" />
@@ -164,31 +157,21 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
           </div>
 
           {/* Item Title */}
-          <span className="text-sm font-medium truncate flex-1">
-            {node.title}
-          </span>
+          <span className="text-sm font-medium truncate flex-1">{node.title}</span>
 
           {/* Level Badge */}
           {node.level > 0 && (
-            <span className="ml-2 px-1.5 py-0.5 bg-gray-200 text-gray-600 text-xs rounded">
-              L{node.level + 1}
-            </span>
+            <span className="ml-2 px-1.5 py-0.5 bg-gray-200 text-gray-600 text-xs rounded">L{node.level + 1}</span>
           )}
 
           {/* Disabled Badge */}
           {!node.is_enabled && (
-            <span className="ml-1 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded">
-              Disabled
-            </span>
+            <span className="ml-1 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded">Disabled</span>
           )}
         </div>
 
         {/* Children */}
-        {hasChildren && isExpanded && (
-          <div>
-            {node.children.map(renderTreeNode)}
-          </div>
-        )}
+        {hasChildren && isExpanded && <div>{node.children.map(renderTreeNode)}</div>}
       </div>
     );
   };
@@ -207,7 +190,7 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
   }, [selectedItem, selectedPath]);
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn('relative', className)}>
       {/* Trigger Button */}
       <button
         type="button"
@@ -223,23 +206,19 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
                   {selectedPath.slice(0, -1).map((pathItem, index) => (
                     <React.Fragment key={pathItem.id}>
                       {index > 0 && <ChevronRight className="h-3 w-3 mx-1" />}
-                      <span className="text-xs truncate max-w-20">
-                        {pathItem.title}
-                      </span>
+                      <span className="text-xs truncate max-w-20">{pathItem.title}</span>
                     </React.Fragment>
                   ))}
                   <ChevronRight className="h-3 w-3 mx-1" />
                 </div>
               )}
-              
+
               {/* Selected Item */}
               <div className="flex items-center min-w-0">
                 <IconPreview iconName={selectedItem.icon} size="sm" className="mr-2 shrink-0" />
                 <span className="text-gray-900 truncate">{selectedItem.title}</span>
                 {!selectedItem.is_enabled && (
-                  <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded shrink-0">
-                    Disabled
-                  </span>
+                  <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded shrink-0">Disabled</span>
                 )}
               </div>
             </div>
@@ -250,10 +229,9 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
             </div>
           )}
         </div>
-        <ChevronDown className={cn(
-          "h-4 w-4 text-gray-400 transition-transform shrink-0 ml-2",
-          isOpen && "rotate-180"
-        )} />
+        <ChevronDown
+          className={cn('h-4 w-4 text-gray-400 transition-transform shrink-0 ml-2', isOpen && 'rotate-180')}
+        />
       </button>
 
       {/* Dropdown */}
@@ -262,8 +240,8 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
           {/* Clear Selection Option */}
           <div
             className={cn(
-              "flex items-center py-2 px-2 hover:bg-gray-50 cursor-pointer border-b border-gray-200",
-              !value && "bg-blue-50 text-blue-700"
+              'flex items-center py-2 px-2 hover:bg-gray-50 cursor-pointer border-b border-gray-200',
+              !value && 'bg-blue-50 text-blue-700'
             )}
             onClick={() => {
               onChange(null);
@@ -279,16 +257,10 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
           {menuTree.length === 0 ? (
             <div className="p-4 text-center text-gray-500 text-sm">
               No parent options available
-              {menuType && (
-                <div className="text-xs mt-1">
-                  Showing only items for "{menuType}" menu
-                </div>
-              )}
+              {menuType && <div className="text-xs mt-1">Showing only items for "{menuType}" menu</div>}
             </div>
           ) : (
-            <div className="py-2">
-              {menuTree.map(renderTreeNode)}
-            </div>
+            <div className="py-2">{menuTree.map(renderTreeNode)}</div>
           )}
 
           {/* Hierarchy Preview Footer */}
@@ -300,9 +272,7 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
                 {selectedPath.map((pathItem, index) => (
                   <React.Fragment key={pathItem.id}>
                     <ChevronRight className="h-3 w-3 mx-1" />
-                    <span className={cn(
-                      index === selectedPath.length - 1 ? "font-medium text-blue-600" : ""
-                    )}>
+                    <span className={cn(index === selectedPath.length - 1 ? 'font-medium text-blue-600' : '')}>
                       {pathItem.title}
                     </span>
                   </React.Fragment>
@@ -310,9 +280,8 @@ export const MenuParentSelector: React.FC<MenuParentSelectorProps> = ({
               </div>
               {selectedItem && (
                 <div className="text-xs text-gray-500 mt-1">
-                  Level: {selectedPath.length} • 
-                  Sort Order: {selectedItem.sort_order} • 
-                  Status: {selectedItem.is_enabled ? 'Enabled' : 'Disabled'}
+                  Level: {selectedPath.length} • Sort Order: {selectedItem.sort_order} • Status:{' '}
+                  {selectedItem.is_enabled ? 'Enabled' : 'Disabled'}
                 </div>
               )}
             </div>

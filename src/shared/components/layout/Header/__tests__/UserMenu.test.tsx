@@ -52,7 +52,7 @@ describe('UserMenu Component', () => {
       renderUserMenu();
       const button = screen.getByRole('button');
       fireEvent.click(button);
-      
+
       expect(screen.getByText('Sign in')).toBeInTheDocument();
       expect(screen.getByText('Sign up')).toBeInTheDocument();
     });
@@ -60,10 +60,10 @@ describe('UserMenu Component', () => {
     it('should have correct ARIA attributes', () => {
       renderUserMenu();
       const button = screen.getByRole('button');
-      
+
       expect(button).toHaveAttribute('aria-expanded', 'false');
       expect(button).toHaveAttribute('aria-haspopup', 'true');
-      
+
       fireEvent.click(button);
       expect(button).toHaveAttribute('aria-expanded', 'true');
     });
@@ -99,14 +99,14 @@ describe('UserMenu Component', () => {
     it('should display user email in dropdown', () => {
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('test@example.com')).toBeInTheDocument();
     });
 
     it('should show profile link when member data is available', () => {
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       const profileLink = screen.getByText('Your Profile');
       expect(profileLink).toBeInTheDocument();
       expect(profileLink.closest('a')).toHaveAttribute('href', '/directory/member123');
@@ -115,7 +115,7 @@ describe('UserMenu Component', () => {
     it('should show edit profile and settings links', () => {
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('Edit Profile')).toBeInTheDocument();
       expect(screen.getByText('Settings')).toBeInTheDocument();
     });
@@ -130,10 +130,10 @@ describe('UserMenu Component', () => {
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       const signOutButton = screen.getByText('Sign out');
       fireEvent.click(signOutButton);
-      
+
       await waitFor(() => {
         expect(mockSignOut).toHaveBeenCalled();
       });
@@ -142,12 +142,12 @@ describe('UserMenu Component', () => {
     it('should close menu when clicking outside', () => {
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('Your Profile')).toBeInTheDocument();
-      
+
       // Click outside
       fireEvent.mouseDown(document.body);
-      
+
       waitFor(() => {
         expect(screen.queryByText('Your Profile')).not.toBeInTheDocument();
       });
@@ -167,7 +167,7 @@ describe('UserMenu Component', () => {
     it('should show admin dashboard link for admin users', () => {
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       const adminLink = screen.getByText('Admin Dashboard');
       expect(adminLink).toBeInTheDocument();
       expect(adminLink.closest('a')).toHaveAttribute('href', '/admin');
@@ -181,14 +181,14 @@ describe('UserMenu Component', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ 
+      mockUseMemberByUserId.mockReturnValue({
         data: null,
         isLoading: true,
       });
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Profile link should not be shown while loading
       expect(screen.queryByText('Your Profile')).not.toBeInTheDocument();
       // But other links should still be available
@@ -200,7 +200,7 @@ describe('UserMenu Component', () => {
     it('should handle sign out errors gracefully', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       const mockSignOut = jest.fn().mockRejectedValue(new Error('Sign out failed'));
-      
+
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
         signOut: mockSignOut,
@@ -210,10 +210,10 @@ describe('UserMenu Component', () => {
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       const signOutButton = screen.getByText('Sign out');
       fireEvent.click(signOutButton);
-      
+
       await waitFor(() => {
         expect(consoleErrorSpy).toHaveBeenCalledWith('Error signing out:', expect.any(Error));
       });
@@ -233,10 +233,10 @@ describe('UserMenu Component', () => {
 
       renderUserMenu();
       const button = screen.getByRole('button');
-      
+
       // Open with Enter key
       fireEvent.keyDown(button, { key: 'Enter' });
-      
+
       waitFor(() => {
         expect(screen.getByText('Edit Profile')).toBeInTheDocument();
       });
@@ -246,7 +246,7 @@ describe('UserMenu Component', () => {
   describe('Performance', () => {
     it('should clean up event listeners on unmount', () => {
       const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
-      
+
       mockUseAuth.mockReturnValue({
         user: null,
         signOut: jest.fn(),
@@ -256,7 +256,7 @@ describe('UserMenu Component', () => {
 
       const { unmount } = renderUserMenu();
       unmount();
-      
+
       expect(removeEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
     });
   });

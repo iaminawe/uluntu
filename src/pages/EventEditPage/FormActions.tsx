@@ -3,26 +3,26 @@ import { Trash2, Eye, EyeOff } from 'lucide-react';
 import { FormActionsProps } from './types';
 import { ConfirmationModal } from '@/shared/components/ui/Modal';
 
-const FormActions: React.FC<FormActionsProps> = ({ 
-  isEditMode, 
-  isSubmitting, 
-  navigate, 
+const FormActions: React.FC<FormActionsProps> = ({
+  isEditMode,
+  isSubmitting,
+  navigate,
   id,
   status = 'draft',
-  onStatusChange
+  onStatusChange,
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  
+
   const handleCancel = () => {
     navigate(isEditMode ? `/events/${id}` : '/events');
   };
-  
+
   const handleDelete = () => {
     // In a real app, would make API call to delete the event
     console.log('Delete event with ID:', id);
     navigate('/events');
   };
-  
+
   return (
     <>
       <div className="flex flex-wrap items-center gap-4 mt-8 justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
@@ -41,7 +41,7 @@ const FormActions: React.FC<FormActionsProps> = ({
             Delete
           </button>
         )}
-        
+
         <div className="flex items-center gap-4 ml-auto">
           {/* Cancel button */}
           <button
@@ -55,10 +55,10 @@ const FormActions: React.FC<FormActionsProps> = ({
           >
             Cancel
           </button>
-          
+
           {/* Publish/Unpublish button */}
-          {onStatusChange && (
-            status === 'published' ? (
+          {onStatusChange &&
+            (status === 'published' ? (
               <button
                 type="button"
                 onClick={() => onStatusChange('draft')}
@@ -84,9 +84,8 @@ const FormActions: React.FC<FormActionsProps> = ({
                 <Eye className="h-5 w-5 mr-2" />
                 Publish
               </button>
-            )
-          )}
-          
+            ))}
+
           {/* Submit button */}
           <button
             type="submit"
@@ -99,7 +98,7 @@ const FormActions: React.FC<FormActionsProps> = ({
           </button>
         </div>
       </div>
-      
+
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteConfirm}

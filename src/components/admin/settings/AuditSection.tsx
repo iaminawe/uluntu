@@ -17,10 +17,14 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
 
   const getChangeTypeColor = (changeType: string) => {
     switch (changeType) {
-      case 'created': return 'success';
-      case 'updated': return 'warning';
-      case 'deleted': return 'destructive';
-      default: return 'secondary';
+      case 'created':
+        return 'success';
+      case 'updated':
+        return 'warning';
+      case 'deleted':
+        return 'destructive';
+      default:
+        return 'secondary';
     }
   };
 
@@ -37,8 +41,11 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
         <CardContent>
           {recentChanges.length > 0 ? (
             <div className="space-y-4">
-              {recentChanges.map((change) => (
-                <div key={change.id} className="border border-gray-100 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
+              {recentChanges.map(change => (
+                <div
+                  key={change.id}
+                  className="border border-gray-100 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
@@ -49,7 +56,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
                           {change.category}.{change.setting_key}
                         </span>
                       </div>
-                      
+
                       {change.change_type === 'updated' && (
                         <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                           {change.old_value && (
@@ -64,35 +71,31 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
                           )}
                         </div>
                       )}
-                      
+
                       {change.change_type === 'created' && change.new_value && (
                         <div className="text-sm text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Value:</span> {String(change.new_value)}
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="text-right text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex items-center space-x-1">
                         <Clock className="h-3 w-3" />
                         <span>
-                          {change.changed_at ? formatDistanceToNow(new Date(change.changed_at), { addSuffix: true }) : 'Unknown time'}
+                          {change.changed_at
+                            ? formatDistanceToNow(new Date(change.changed_at), { addSuffix: true })
+                            : 'Unknown time'}
                         </span>
                       </div>
-                      {change.changed_by && (
-                        <div className="mt-1">
-                          by {change.changed_by}
-                        </div>
-                      )}
+                      {change.changed_by && <div className="mt-1">by {change.changed_by}</div>}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              No settings changes recorded yet.
-            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">No settings changes recorded yet.</p>
           )}
         </CardContent>
       </Card>

@@ -19,8 +19,8 @@ jest.mock('../../api/contentManagementApi', () => ({
     getContentStatistics: jest.fn(),
     updateContentItem: jest.fn(),
     deleteContentItem: jest.fn(),
-    getContentPermissions: jest.fn()
-  }
+    getContentPermissions: jest.fn(),
+  },
 }));
 
 // Mock Supabase
@@ -29,9 +29,9 @@ jest.mock('@/lib/supabase', () => ({
     from: jest.fn(),
     auth: {
       getUser: jest.fn(),
-      getSession: jest.fn()
-    }
-  }
+      getSession: jest.fn(),
+    },
+  },
 }));
 
 const mockApi = contentManagementApi as jest.Mocked<typeof contentManagementApi>;
@@ -44,15 +44,15 @@ describe('User Content Isolation Tests', () => {
       memberId: 'member-1',
       role: 'member',
       groups: ['general'],
-      companies: ['company-a']
+      companies: ['company-a'],
     },
     user2: {
-      id: 'user-2', 
+      id: 'user-2',
       email: 'user2@example.com',
       memberId: 'member-2',
       role: 'member',
       groups: ['general'],
-      companies: ['company-b']
+      companies: ['company-b'],
     },
     moderator: {
       id: 'user-mod',
@@ -60,8 +60,8 @@ describe('User Content Isolation Tests', () => {
       memberId: 'member-mod',
       role: 'moderator',
       groups: ['general', 'moderators'],
-      companies: []
-    }
+      companies: [],
+    },
   };
 
   const testContent = {
@@ -81,7 +81,7 @@ describe('User Content Isolation Tests', () => {
         thumbnail_url: '/thumb1.jpg',
         url: '/gallery/photo/content-1',
         slug: 'content-1',
-        description: 'My photo description'
+        description: 'My photo description',
       },
       {
         id: 'content-2',
@@ -98,8 +98,8 @@ describe('User Content Isolation Tests', () => {
         thumbnail_url: null,
         url: '/events/content-2',
         slug: 'content-2',
-        description: 'My event description'
-      }
+        description: 'My event description',
+      },
     ],
     user2Content: [
       {
@@ -117,14 +117,14 @@ describe('User Content Isolation Tests', () => {
         thumbnail_url: '/thumb2.jpg',
         url: '/news/content-3',
         slug: 'content-3',
-        description: 'User 2 news article'
-      }
-    ]
+        description: 'User 2 news article',
+      },
+    ],
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Default successful API responses
     mockApi.getAllUserContent.mockResolvedValue({
       data: [],
@@ -135,9 +135,9 @@ describe('User Content Isolation Tests', () => {
         limit: 20,
         total: 0,
         total_pages: 0,
-        has_more: false
+        has_more: false,
       },
-      filters_applied: {}
+      filters_applied: {},
     });
 
     mockApi.getContentStatistics.mockResolvedValue({
@@ -146,8 +146,8 @@ describe('User Content Isolation Tests', () => {
         total_content: 0,
         total_views: 0,
         total_engagement: 0,
-        growth_percentage: 0
-      }
+        growth_percentage: 0,
+      },
     });
   });
 
@@ -155,7 +155,7 @@ describe('User Content Isolation Tests', () => {
     test('User 1 sees only their own content', async () => {
       // Mock User 1's session
       const user = userEvent.setup();
-      
+
       // Setup API to return only User 1's content
       mockApi.getAllUserContent.mockResolvedValue({
         data: testContent.user1Content,
@@ -166,16 +166,13 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       // Render dashboard for User 1
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       // Wait for content to load
       await waitFor(() => {
@@ -190,7 +187,7 @@ describe('User Content Isolation Tests', () => {
       expect(mockApi.getAllUserContent).toHaveBeenCalledWith(
         expect.objectContaining({
           // API should automatically filter by current user
-          filters: expect.any(Object)
+          filters: expect.any(Object),
         })
       );
     });
@@ -206,16 +203,13 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 1,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       // Render dashboard for User 2
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user2) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user2) });
 
       // Wait for content to load
       await waitFor(() => {
@@ -238,15 +232,12 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 0,
           total_pages: 0,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       // Should show empty state
       await waitFor(() => {
@@ -269,20 +260,17 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       await waitFor(() => {
         // Published content should be visible
         expect(screen.getByText('User 1 Photo')).toBeInTheDocument();
-        
+
         // Draft content should also be visible to owner
         expect(screen.getByText('User 1 Event')).toBeInTheDocument();
       });
@@ -304,15 +292,12 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       // Wait for initial load
       await waitFor(() => {
@@ -329,8 +314,8 @@ describe('User Content Isolation Tests', () => {
         expect(mockApi.getAllUserContent).toHaveBeenCalledWith(
           expect.objectContaining({
             filters: expect.objectContaining({
-              status: ['published']
-            })
+              status: ['published'],
+            }),
           })
         );
       });
@@ -350,15 +335,12 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       // Find search input
       const searchInput = screen.getByPlaceholderText(/search content/i);
@@ -371,8 +353,8 @@ describe('User Content Isolation Tests', () => {
         expect(mockApi.getAllUserContent).toHaveBeenCalledWith(
           expect.objectContaining({
             filters: expect.objectContaining({
-              search: 'News Article'
-            })
+              search: 'News Article',
+            }),
           })
         );
       });
@@ -385,10 +367,7 @@ describe('User Content Isolation Tests', () => {
       const user = userEvent.setup();
 
       // Setup tab switching scenario
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       // Click on 'All Content' tab and then 'Photo Galleries' sub-tab
       await waitFor(() => {
@@ -411,8 +390,8 @@ describe('User Content Isolation Tests', () => {
         expect(mockApi.getAllUserContent).toHaveBeenCalledWith(
           expect.objectContaining({
             filters: expect.objectContaining({
-              type: ['galleries'] // Should filter by type within user's content
-            })
+              type: ['galleries'], // Should filter by type within user's content
+            }),
           })
         );
       });
@@ -430,9 +409,9 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       mockApi.getContentPermissions.mockResolvedValue({
@@ -440,13 +419,10 @@ describe('User Content Isolation Tests', () => {
         can_delete: true,
         can_publish: true,
         can_feature: false,
-        can_view_analytics: true
+        can_view_analytics: true,
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       await waitFor(() => {
         expect(screen.getByText('User 1 Photo')).toBeInTheDocument();
@@ -492,8 +468,8 @@ describe('User Content Isolation Tests', () => {
         {
           ...testContent.user2Content[0],
           status: 'pending' as const,
-          title: 'Pending Moderation Content'
-        }
+          title: 'Pending Moderation Content',
+        },
       ];
 
       mockApi.getAllUserContent.mockResolvedValue({
@@ -505,15 +481,12 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 3,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.moderator) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.moderator) });
 
       await waitFor(() => {
         // Moderator should see pending content
@@ -530,7 +503,7 @@ describe('User Content Isolation Tests', () => {
     test('URL parameter tampering does not bypass user filtering', async () => {
       // Mock scenario where someone tries to manipulate URL parameters
       // The API should still filter by authenticated user regardless of URL params
-      
+
       mockApi.getAllUserContent.mockResolvedValue({
         data: testContent.user1Content,
         error: null,
@@ -540,16 +513,15 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       // Render with specific route that might contain user parameters
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1, { initialEntries: ['/dashboard?user=member-2'] }) }
-      );
+      render(<UserDashboard />, {
+        wrapper: createTestWrapper(testUsers.user1, { initialEntries: ['/dashboard?user=member-2'] }),
+      });
 
       await waitFor(() => {
         // Should still see only User 1's content despite URL param
@@ -579,7 +551,7 @@ describe('User Content Isolation Tests', () => {
         thumbnail_url: `/thumb${i}.jpg`,
         url: `/gallery/photo/content-${i}`,
         slug: `content-${i}`,
-        description: `Photo ${i} description`
+        description: `Photo ${i} description`,
       }));
 
       mockApi.getAllUserContent.mockResolvedValue({
@@ -591,17 +563,14 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 100,
           total_pages: 5,
-          has_more: true
+          has_more: true,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       const startTime = performance.now();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       await waitFor(() => {
         expect(screen.getAllByTestId(/content-card/)).toHaveLength(20);
@@ -620,10 +589,7 @@ describe('User Content Isolation Tests', () => {
       // Mock API error
       mockApi.getAllUserContent.mockRejectedValue(new Error('Database connection failed'));
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       await waitFor(() => {
         // Should show error state
@@ -645,15 +611,12 @@ describe('User Content Isolation Tests', () => {
           limit: 20,
           total: 0,
           total_pages: 0,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUsers.user1) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUsers.user1) });
 
       await waitFor(() => {
         expect(screen.getByText(/no content found/i)).toBeInTheDocument();

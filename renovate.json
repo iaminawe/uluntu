@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Weekly, grouped dependency PRs. Every PR used to get its own Vercel build on a Turbo machine; Vercel now only builds main, and CI (ci.yml) checks each PR.",
+  "description": "Weekly, grouped dependency PRs. Vercel only builds main; CI (ci.yml) checks each PR. Minor and patch updates to devDependencies merge themselves once every CI check passes; runtime dependencies, GitHub Actions, lockfile maintenance and majors wait for a human.",
   "extends": ["config:recommended", ":semanticCommits", ":semanticCommitTypeAll(chore)"],
   "timezone": "America/Vancouver",
   "schedule": ["before 6am on monday"],
@@ -9,8 +9,13 @@
   "prConcurrentLimit": 4,
   "prHourlyLimit": 2,
   "dependencyDashboard": true,
+  "platformAutomerge": false,
+  "automergeType": "pr",
+  "automergeStrategy": "merge-commit",
+  "automergeSchedule": ["after 9am and before 5pm every weekday"],
   "lockFileMaintenance": {
     "enabled": true,
+    "automerge": false,
     "schedule": ["before 6am on the first day of the month"]
   },
   "vulnerabilityAlerts": {
@@ -21,20 +26,37 @@
   },
   "packageRules": [
     {
-      "description": "All non-major npm updates arrive as one weekly PR.",
+      "description": "Non-major updates to runtime npm dependencies arrive as one weekly PR, merged by a human.",
       "matchManagers": ["npm"],
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "groupName": "npm non-major"
     },
     {
-      "description": "GitHub Actions updates arrive as one PR.",
+      "description": "Non-major updates to devDependencies arrive as their own weekly PR and merge themselves once every CI check passes.",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "npm dev non-major",
+      "automerge": true
+    },
+    {
+      "description": "react-hook-form and redux-logger sit in devDependencies but ship in the app bundle, so they are runtime code: update them with the runtime group and merge by hand.",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["react-hook-form", "redux-logger"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "npm non-major",
+      "automerge": false
+    },
+    {
+      "description": "GitHub Actions updates arrive as one PR, merged by a human.",
       "matchManagers": ["github-actions"],
       "groupName": "GitHub Actions"
     },
     {
-      "description": "Majors wait for approval on the Dependency Dashboard.",
+      "description": "Majors wait for approval on the Dependency Dashboard and never merge themselves.",
       "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "automerge": false
     },
     {
       "description": "@types/node follows the Node runtime major (Vercel runs Node 24). Bump it deliberately.",

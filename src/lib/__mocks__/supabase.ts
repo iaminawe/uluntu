@@ -6,21 +6,27 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 const mockSupabaseClient = {
   auth: {
     signUp: jest.fn().mockResolvedValue({
-      data: { user: { id: 'mock-user-id', email: 'test@example.com' }, session: { access_token: 'mock-token', expires_at: new Date().toISOString() } },
-      error: null
+      data: {
+        user: { id: 'mock-user-id', email: 'test@example.com' },
+        session: { access_token: 'mock-token', expires_at: new Date().toISOString() },
+      },
+      error: null,
     }),
     signInWithPassword: jest.fn().mockResolvedValue({
-      data: { user: { id: 'mock-user-id', email: 'test@example.com' }, session: { access_token: 'mock-token', expires_at: new Date().toISOString() } },
-      error: null
+      data: {
+        user: { id: 'mock-user-id', email: 'test@example.com' },
+        session: { access_token: 'mock-token', expires_at: new Date().toISOString() },
+      },
+      error: null,
     }),
     signOut: jest.fn().mockResolvedValue({ error: null }),
     getUser: jest.fn().mockResolvedValue({
       data: { user: { id: 'mock-user-id', email: 'test@example.com' } },
-      error: null
+      error: null,
     }),
     getSession: jest.fn().mockResolvedValue({
       data: { session: { access_token: 'mock-token', expires_at: new Date().toISOString() } },
-      error: null
+      error: null,
     }),
   },
   from: jest.fn().mockReturnValue({
@@ -69,26 +75,22 @@ export const getSession = jest.fn().mockImplementation(async () => {
   return mockSupabaseClient.auth.getSession();
 });
 
-export const uploadProfileImage = jest.fn().mockImplementation(
-  async (_file: File, userId: string) => ({
-    url: `https://mock-storage.com/${userId}/profile.jpg`,
-    error: null
-  })
-);
+export const uploadProfileImage = jest.fn().mockImplementation(async (_file: File, userId: string) => ({
+  url: `https://mock-storage.com/${userId}/profile.jpg`,
+  error: null,
+}));
 
-export const uploadCoverImage = jest.fn().mockImplementation(
-  async (_file: File, userId: string) => ({
-    url: `https://mock-storage.com/${userId}/cover.jpg`,
-    error: null
-  })
-);
+export const uploadCoverImage = jest.fn().mockImplementation(async (_file: File, userId: string) => ({
+  url: `https://mock-storage.com/${userId}/cover.jpg`,
+  error: null,
+}));
 
 export const forgotPassword = jest.fn().mockImplementation(async (_email: string) => ({
   success: true,
-  error: null
+  error: null,
 }));
 
 export const resetPassword = jest.fn().mockImplementation(async (_newPassword: string) => ({
   success: true,
-  error: null
+  error: null,
 }));

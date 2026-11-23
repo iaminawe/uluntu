@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { ApplicationSetting, FeatureToggle, UpdateSettingRequest, SettingDataType, SettingCategory } from '@/types/settings';
+import {
+  ApplicationSetting,
+  FeatureToggle,
+  UpdateSettingRequest,
+  SettingDataType,
+  SettingCategory,
+} from '@/types/settings';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
@@ -19,7 +25,7 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
   features,
   onUpdateSetting,
   onRefresh,
-  isLoading
+  isLoading,
 }) => {
   const [updatingSettings, setUpdatingSettings] = useState<Set<string>>(new Set());
   const [localSettings, setLocalSettings] = useState<Record<string, any>>({});
@@ -27,29 +33,29 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
   const handleSettingChange = (settingId: string, value: any) => {
     setLocalSettings(prev => ({
       ...prev,
-      [settingId]: value
+      [settingId]: value,
     }));
   };
 
   const handleSaveSetting = async (setting: ApplicationSetting) => {
     const newValue = localSettings[setting.id] ?? setting.setting_value;
-    
+
     setUpdatingSettings(prev => new Set(prev).add(setting.id));
-    
+
     try {
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
         category: setting.category as SettingCategory,
-        data_type: setting.data_type as SettingDataType
+        data_type: setting.data_type as SettingDataType,
       });
-      
+
       setLocalSettings(prev => {
         const updated = { ...prev };
         delete updated[setting.id];
         return updated;
       });
-      
+
       toast.success('Performance setting saved successfully');
     } catch (error) {
       toast.error('Failed to save performance setting');
@@ -80,17 +86,18 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
   };
 
   // Filter settings by performance subcategories
-  const cacheSettings = settings.filter(s => 
-    s.setting_key.includes('cache') || s.setting_key.includes('redis') || s.setting_key.includes('memory')
+  const cacheSettings = settings.filter(
+    s => s.setting_key.includes('cache') || s.setting_key.includes('redis') || s.setting_key.includes('memory')
   );
-  const dbSettings = settings.filter(s => 
-    s.setting_key.includes('db') || s.setting_key.includes('database') || s.setting_key.includes('query')
+  const dbSettings = settings.filter(
+    s => s.setting_key.includes('db') || s.setting_key.includes('database') || s.setting_key.includes('query')
   );
-  const optimizationSettings = settings.filter(s => 
-    s.setting_key.includes('optimize') || s.setting_key.includes('compress') || s.setting_key.includes('minify')
+  const optimizationSettings = settings.filter(
+    s => s.setting_key.includes('optimize') || s.setting_key.includes('compress') || s.setting_key.includes('minify')
   );
-  const performanceFeatures = features.filter(f => 
-    f.feature_key.includes('performance') || f.feature_key.includes('cache') || f.feature_key.includes('optimization')
+  const performanceFeatures = features.filter(
+    f =>
+      f.feature_key.includes('performance') || f.feature_key.includes('cache') || f.feature_key.includes('optimization')
   );
 
   const settingsSections = [
@@ -99,21 +106,21 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
       description: 'Cache configuration and memory optimization settings',
       icon: Database,
       settings: cacheSettings,
-      color: 'blue'
+      color: 'blue',
     },
     {
       title: 'Database Performance',
       description: 'Database query optimization and connection settings',
       icon: Monitor,
       settings: dbSettings,
-      color: 'green'
+      color: 'green',
     },
     {
       title: 'Optimization Settings',
       description: 'Code and asset optimization configurations',
       icon: Zap,
       settings: optimizationSettings,
-      color: 'purple'
+      color: 'purple',
     },
     {
       title: 'Performance Features',
@@ -121,18 +128,18 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
       icon: TrendingUp,
       settings: [],
       features: performanceFeatures,
-      color: 'orange'
-    }
+      color: 'orange',
+    },
   ];
 
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-8">
-        {settingsSections.map((section) => {
+        {settingsSections.map(section => {
           const Icon = section.icon;
           const sectionSettings = section.settings || [];
           const sectionFeatures = section.features || [];
-          
+
           return (
             <Card key={section.title} className="w-full">
               <CardHeader>
@@ -147,7 +154,7 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
                 {sectionSettings.length > 0 && (
                   <div className="space-y-4 mb-6">
                     <h4 className="font-medium text-gray-900">Configuration Settings</h4>
-                    {sectionSettings.map((setting) => {
+                    {sectionSettings.map(setting => {
                       const currentValue = getSettingValue(setting);
                       const isUpdating = updatingSettings.has(setting.id);
                       const hasChanged = hasChanges(setting.id);
@@ -161,24 +168,27 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
                                 <p className="text-sm text-gray-500 mt-1">{setting.description}</p>
                               )}
                             </div>
-                            
+
                             <div className="flex items-center space-x-3">
                               {/* Interactive Control */}
                               {typeof setting.setting_value === 'boolean' ? (
                                 <Switch
                                   checked={currentValue || false}
-                                  onCheckedChange={(checked) => handleSettingChange(setting.id, checked)}
+                                  onCheckedChange={checked => handleSettingChange(setting.id, checked)}
                                   disabled={isUpdating}
                                 />
                               ) : (
                                 <input
                                   type={typeof setting.setting_value === 'number' ? 'number' : 'text'}
                                   value={String(currentValue)}
-                                  onChange={(e) => handleSettingChange(setting.id, 
-                                    typeof setting.setting_value === 'number' 
-                                      ? parseFloat(e.target.value) || 0
-                                      : e.target.value
-                                  )}
+                                  onChange={e =>
+                                    handleSettingChange(
+                                      setting.id,
+                                      typeof setting.setting_value === 'number'
+                                        ? parseFloat(e.target.value) || 0
+                                        : e.target.value
+                                    )
+                                  }
                                   disabled={isUpdating}
                                   className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent min-w-[200px]"
                                   placeholder={setting.setting_key.includes('timeout') ? 'seconds' : ''}
@@ -213,7 +223,7 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
                               )}
                             </div>
                           </div>
-                          
+
                           {hasChanged && (
                             <div className="mt-2 text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
                               Unsaved changes
@@ -229,19 +239,17 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
                 {sectionFeatures.length > 0 && (
                   <div className="space-y-4">
                     <h4 className="font-medium text-gray-900">Performance Features</h4>
-                    {sectionFeatures.map((feature) => (
+                    {sectionFeatures.map(feature => (
                       <div key={feature.id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0 mr-4">
                             <h4 className="font-medium text-gray-900">{feature.feature_key}</h4>
-                            {feature.description && (
-                              <p className="text-sm text-gray-500 mt-1">{feature.description}</p>
-                            )}
+                            {feature.description && <p className="text-sm text-gray-500 mt-1">{feature.description}</p>}
                           </div>
-                          
+
                           <Switch
                             checked={feature.enabled || false}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={checked => {
                               toast.success('Performance feature toggle functionality coming soon');
                             }}
                             disabled={isLoading}
@@ -254,9 +262,7 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
 
                 {/* Empty State */}
                 {sectionSettings.length === 0 && sectionFeatures.length === 0 && (
-                  <p className="text-sm text-gray-500 italic">
-                    No {section.title.toLowerCase()} configured yet.
-                  </p>
+                  <p className="text-sm text-gray-500 italic">No {section.title.toLowerCase()} configured yet.</p>
                 )}
               </CardContent>
             </Card>
@@ -306,7 +312,9 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
               <div className="text-sm text-gray-600">Optimizations</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{performanceFeatures.filter(f => f.enabled).length}</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {performanceFeatures.filter(f => f.enabled).length}
+              </div>
               <div className="text-sm text-gray-600">Active Features</div>
             </div>
           </div>

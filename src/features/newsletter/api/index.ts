@@ -27,5 +27,5 @@ export type {
   ImportResult,
   ExportFormat,
   BulkOperation,
-  BulkOperationResult
+  BulkOperationResult,
 } from '@/types/newsletter';

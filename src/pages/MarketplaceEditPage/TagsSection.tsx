@@ -1,17 +1,11 @@
 import { TagsInput } from '@/shared/components/ui/Form';
 import { TagsSectionProps } from './types';
 
-const TagsSection = ({
-  tags,
-  handleTagsChange,
-  isSubmitting
-}: TagsSectionProps) => {
+const TagsSection = ({ tags, handleTagsChange, isSubmitting }: TagsSectionProps) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-slate-800 dark:text-white">
-        Tags
-      </h3>
-      
+      <h3 className="text-lg font-medium text-slate-800 dark:text-white">Tags</h3>
+
       <TagsInput
         tags={tags}
         onChange={handleTagsChange}

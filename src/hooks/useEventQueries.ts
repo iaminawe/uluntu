@@ -1,4 +1,10 @@
-import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationResult,
+  type UseQueryResult,
+} from '@tanstack/react-query';
 import { eventsApi, EventInput as EventsApiEventInput } from '@/features/events/api/eventsApi';
 import { Database } from '../types/supabase';
 import { Event as FrontendEvent } from '../types'; // Renamed to avoid conflict with mock Event
@@ -42,15 +48,13 @@ export function useEventsWithFilters(filters?: EventFilters): UseQueryResult<Fro
       } else {
         // Ensure we have a valid array, even if mockEvents is undefined
         let filteredEvents = mockEvents || [];
-        
+
         // Apply search filter
         if (filters?.search) {
           const searchTerm = filters.search.toLowerCase();
-          filteredEvents = filteredEvents.filter((e: MockEvent) =>
-            (e.title || '').toLowerCase().includes(searchTerm)
-          );
+          filteredEvents = filteredEvents.filter((e: MockEvent) => (e.title || '').toLowerCase().includes(searchTerm));
         }
-        
+
         // Apply types filter
         if (filters?.types && filters.types.length > 0) {
           filteredEvents = filteredEvents.filter((e: MockEvent) => {
@@ -61,16 +65,17 @@ export function useEventsWithFilters(filters?: EventFilters): UseQueryResult<Fro
             return filters.types?.some(type => type === eventType) ?? false;
           });
         }
-        
+
         // Apply date range filter
         if (filters?.dateRange === 'upcoming') {
           const now = new Date().toISOString();
-          filteredEvents = filteredEvents.filter((e: MockEvent) => 
-            // Safely handle date comparison
-            e.date && e.date >= now
+          filteredEvents = filteredEvents.filter(
+            (e: MockEvent) =>
+              // Safely handle date comparison
+              e.date && e.date >= now
           );
         }
-        
+
         return Promise.resolve(filteredEvents as FrontendEvent[]);
       }
     },
@@ -166,7 +171,7 @@ export function useCreateEvent(): UseMutationResult<
         return Promise.resolve(newMockEvent);
       }
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       const queryPrefix = useSupabase ? 'supabase' : 'mock';
       queryClient.invalidateQueries({ queryKey: ['events', 'all', queryPrefix] });
       if (data && data.id) {
@@ -185,7 +190,11 @@ export function useUpdateEvent(): UseMutationResult<
   const queryClient = useQueryClient();
   const useSupabase = IS_SUPABASE_ENABLED;
 
-  return useMutation<FrontendEvent | null, Error, { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }>({
+  return useMutation<
+    FrontendEvent | null,
+    Error,
+    { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }
+  >({
     mutationFn: ({ id, data }: { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }) => {
       if (useSupabase) {
         return eventsApi.update(id, data as EventsApiEventInput); // Cast because eventsApi.update expects Partial<EventInput>
@@ -204,9 +213,13 @@ export function useUpdateEvent(): UseMutationResult<
             ...(data.image && { image: data.image }),
             ...(data.type && { type: data.type as FrontendEvent['type'] }),
             ...(data.url !== undefined && { url: data.url === null ? undefined : data.url }),
-            ...(data.organizer_id && { organizer: { ...(mockEvents[eventIndex] as FrontendEvent).organizer, id: data.organizer_id } }),
+            ...(data.organizer_id && {
+              organizer: { ...(mockEvents[eventIndex] as FrontendEvent).organizer, id: data.organizer_id },
+            }),
             ...(data.group_id !== undefined && { group_id: data.group_id === null ? undefined : data.group_id }),
-            ...(data.max_attendees !== undefined && { max_attendees: data.max_attendees === null ? undefined : data.max_attendees }),
+            ...(data.max_attendees !== undefined && {
+              max_attendees: data.max_attendees === null ? undefined : data.max_attendees,
+            }),
             ...(data.status && { status: data.status as FrontendEvent['status'] }),
             ...(data.featured !== undefined && { featured: data.featured === null ? undefined : data.featured }),
           };
@@ -225,7 +238,7 @@ export function useUpdateEvent(): UseMutationResult<
 }
 
 export function useDeleteEvent(): UseMutationResult<
-  void, 
+  void,
   Error,
   string // ID
 > {
@@ -257,7 +270,7 @@ export function useDeleteEvent(): UseMutationResult<
 // Event registration hooks
 export function useEventRegistrationStatus(eventId?: string, memberId?: string): UseQueryResult<boolean, Error> {
   const useSupabase = IS_SUPABASE_ENABLED;
-  
+
   return useQuery<boolean, Error>({
     queryKey: ['event-registration', eventId, memberId, useSupabase ? 'supabase' : 'mock'],
     queryFn: async () => {
@@ -277,11 +290,7 @@ export function useEventRegistrationStatus(eventId?: string, memberId?: string):
   });
 }
 
-export function useRegisterForEvent(): UseMutationResult<
-  boolean,
-  Error,
-  { eventId: string; memberId: string }
-> {
+export function useRegisterForEvent(): UseMutationResult<boolean, Error, { eventId: string; memberId: string }> {
   const queryClient = useQueryClient();
   const useSupabase = IS_SUPABASE_ENABLED;
 
@@ -296,26 +305,22 @@ export function useRegisterForEvent(): UseMutationResult<
     onSuccess: (_data, { eventId, memberId }) => {
       const queryPrefix = useSupabase ? 'supabase' : 'mock';
       // Invalidate registration status query
-      queryClient.invalidateQueries({ 
-        queryKey: ['event-registration', eventId, memberId, queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['event-registration', eventId, memberId, queryPrefix],
       });
       // Invalidate event data to update attendee count
-      queryClient.invalidateQueries({ 
-        queryKey: ['events', eventId, queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['events', eventId, queryPrefix],
       });
       // Invalidate events list to update attendee counts
-      queryClient.invalidateQueries({ 
-        queryKey: ['events', 'all', queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['events', 'all', queryPrefix],
       });
     },
   });
 }
 
-export function useUnregisterFromEvent(): UseMutationResult<
-  boolean,
-  Error,
-  { eventId: string; memberId: string }
-> {
+export function useUnregisterFromEvent(): UseMutationResult<boolean, Error, { eventId: string; memberId: string }> {
   const queryClient = useQueryClient();
   const useSupabase = IS_SUPABASE_ENABLED;
 
@@ -330,20 +335,20 @@ export function useUnregisterFromEvent(): UseMutationResult<
     onSuccess: (_data, { eventId, memberId }) => {
       const queryPrefix = useSupabase ? 'supabase' : 'mock';
       // Invalidate registration status query
-      queryClient.invalidateQueries({ 
-        queryKey: ['event-registration', eventId, memberId, queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['event-registration', eventId, memberId, queryPrefix],
       });
       // Invalidate event data to update attendee count
-      queryClient.invalidateQueries({ 
-        queryKey: ['events', eventId, queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['events', eventId, queryPrefix],
       });
       // Invalidate events list to update attendee counts
-      queryClient.invalidateQueries({ 
-        queryKey: ['events', 'all', queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['events', 'all', queryPrefix],
       });
       // Invalidate attendees list
-      queryClient.invalidateQueries({ 
-        queryKey: ['event-attendees', eventId, queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['event-attendees', eventId, queryPrefix],
       });
     },
   });
@@ -352,7 +357,7 @@ export function useUnregisterFromEvent(): UseMutationResult<
 // Event attendee management hooks
 export function useEventAttendees(eventId?: string): UseQueryResult<any[], Error> {
   const useSupabase = IS_SUPABASE_ENABLED;
-  
+
   return useQuery<any[], Error>({
     queryKey: ['event-attendees', eventId, useSupabase ? 'supabase' : 'mock'],
     queryFn: async () => {
@@ -375,8 +380,8 @@ export function useEventAttendees(eventId?: string): UseQueryResult<any[], Error
               name: 'John Doe',
               image: '',
               title: 'Software Developer',
-              company: 'Tech Corp'
-            }
+              company: 'Tech Corp',
+            },
           },
           {
             event_id: eventId,
@@ -388,9 +393,9 @@ export function useEventAttendees(eventId?: string): UseQueryResult<any[], Error
               name: 'Jane Smith',
               image: '',
               title: 'Product Manager',
-              company: 'Innovation Inc'
-            }
-          }
+              company: 'Innovation Inc',
+            },
+          },
         ];
       }
     },
@@ -418,16 +423,16 @@ export function useUpdateAttendeeStatus(): UseMutationResult<
     onSuccess: (_data, { eventId, memberId }) => {
       const queryPrefix = useSupabase ? 'supabase' : 'mock';
       // Invalidate attendees list
-      queryClient.invalidateQueries({ 
-        queryKey: ['event-attendees', eventId, queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['event-attendees', eventId, queryPrefix],
       });
       // Invalidate registration status if it's the current user
-      queryClient.invalidateQueries({ 
-        queryKey: ['event-registration', eventId, memberId, queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['event-registration', eventId, memberId, queryPrefix],
       });
       // Invalidate event data to update attendee count
-      queryClient.invalidateQueries({ 
-        queryKey: ['events', eventId, queryPrefix] 
+      queryClient.invalidateQueries({
+        queryKey: ['events', eventId, queryPrefix],
       });
     },
   });

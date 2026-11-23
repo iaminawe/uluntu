@@ -15,9 +15,9 @@ export function useActivity(filters: ActivityFilter = {}): UseQueryResult<Activi
       }
       return response.data;
     },
-    staleTime: 30 * 1000,     // 30 seconds
-    gcTime: 2 * 60 * 1000,    // 2 minutes
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 2 * 60 * 1000, // 2 minutes
     refetchInterval: 60 * 1000, // Auto-refetch every minute
-    retry: 2
+    retry: 2,
   });
 }

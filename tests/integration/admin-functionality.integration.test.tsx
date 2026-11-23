@@ -28,14 +28,14 @@ const mockGroup = {
   description: 'Test group description',
   visibility: 'public',
   coverImage: '/test-cover.jpg',
-  memberCount: 15
+  memberCount: 15,
 };
 
 const mockCurrentMember = {
   id: 'member-123',
   userId: 'user-123',
   email: 'admin@example.com',
-  role: 'admin'
+  role: 'admin',
 };
 
 const mockGroupMembers = [
@@ -46,17 +46,17 @@ const mockGroupMembers = [
     role: 'admin',
     firstName: 'Admin',
     lastName: 'User',
-    avatarUrl: '/admin-avatar.jpg'
+    avatarUrl: '/admin-avatar.jpg',
   },
   {
     id: 'member-456',
-    userId: 'user-456', 
+    userId: 'user-456',
     email: 'member@example.com',
     role: 'member',
     firstName: 'Regular',
     lastName: 'Member',
-    avatarUrl: '/member-avatar.jpg'
-  }
+    avatarUrl: '/member-avatar.jpg',
+  },
 ];
 
 const mockInvitations = [
@@ -65,8 +65,8 @@ const mockInvitations = [
     email: 'pending@example.com',
     status: 'pending',
     inviterName: 'Admin User',
-    createdAt: '2025-01-01T10:00:00Z'
-  }
+    createdAt: '2025-01-01T10:00:00Z',
+  },
 ];
 
 // Test utilities
@@ -85,15 +85,13 @@ const createTestProviders = () => {
       mutations: { retry: false },
     },
   });
-  
+
   const store = createTestStore();
 
   const TestProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
+        <BrowserRouter>{children}</BrowserRouter>
       </QueryClientProvider>
     </Provider>
   );
@@ -114,32 +112,30 @@ describe('Group Admin Functionality Integration Tests', () => {
     jest.clearAllMocks();
 
     // Mock permission hooks
-    mockUseIsGroupAdmin = jest.spyOn(useEntityPermissions, 'useIsGroupAdmin')
+    mockUseIsGroupAdmin = jest
+      .spyOn(useEntityPermissions, 'useIsGroupAdmin')
       .mockReturnValue({ data: true, isLoading: false });
 
     // Mock member queries
-    mockUseGroupMembers = jest.spyOn(useMemberQueries, 'useGroupMembers')
-      .mockReturnValue({
-        data: mockGroupMembers,
-        isLoading: false,
-        error: null
-      });
+    mockUseGroupMembers = jest.spyOn(useMemberQueries, 'useGroupMembers').mockReturnValue({
+      data: mockGroupMembers,
+      isLoading: false,
+      error: null,
+    });
 
-    mockUseGroupInvitations = jest.spyOn(useGroupQueries, 'useGroupInvitations')
-      .mockReturnValue({
-        data: mockInvitations,
-        isLoading: false,
-        error: null
-      });
+    mockUseGroupInvitations = jest.spyOn(useGroupQueries, 'useGroupInvitations').mockReturnValue({
+      data: mockInvitations,
+      isLoading: false,
+      error: null,
+    });
 
     // Mock API functions
-    mockUpdateMemberRole = jest.spyOn(memberManagementApi, 'updateMemberRole')
-      .mockResolvedValue({ success: true });
+    mockUpdateMemberRole = jest.spyOn(memberManagementApi, 'updateMemberRole').mockResolvedValue({ success: true });
 
-    mockRemoveMember = jest.spyOn(memberManagementApi, 'removeMember')
-      .mockResolvedValue({ success: true });
+    mockRemoveMember = jest.spyOn(memberManagementApi, 'removeMember').mockResolvedValue({ success: true });
 
-    mockCreateInvitation = jest.spyOn(memberManagementApi, 'createInvitation')
+    mockCreateInvitation = jest
+      .spyOn(memberManagementApi, 'createInvitation')
       .mockResolvedValue({ id: 'new-inv-123', token: 'invite-token-123' });
   });
 
@@ -192,7 +188,7 @@ describe('Group Admin Functionality Integration Tests', () => {
         expect(mockUpdateMemberRole).toHaveBeenCalledWith({
           group_id: 'group-123',
           member_id: 'member-456',
-          role: 'admin'
+          role: 'admin',
         });
       });
     });
@@ -202,7 +198,7 @@ describe('Group Admin Functionality Integration Tests', () => {
       mockUseGroupMembers.mockReturnValue({
         data: [mockGroupMembers[0]], // Only admin user
         isLoading: false,
-        error: null
+        error: null,
       });
 
       const { TestProviders } = createTestProviders();
@@ -239,7 +235,7 @@ describe('Group Admin Functionality Integration Tests', () => {
       // Find member to remove
       const memberCard = screen.getByText('Regular Member').closest('.member-card');
       const removeButton = within(memberCard!).getByRole('button', { name: /remove/i });
-      
+
       await user.click(removeButton);
 
       await waitFor(() => {
@@ -325,11 +321,7 @@ describe('Group Admin Functionality Integration Tests', () => {
 
       render(
         <TestProviders>
-          <InviteMembersModal 
-            group={mockGroup} 
-            isOpen={true} 
-            onClose={jest.fn()}
-          />
+          <InviteMembersModal group={mockGroup} isOpen={true} onClose={jest.fn()} />
         </TestProviders>
       );
 
@@ -367,7 +359,8 @@ describe('Group Admin Functionality Integration Tests', () => {
     });
 
     test('should handle invitation cancellation', async () => {
-      const mockCancelInvitation = jest.spyOn(memberManagementApi, 'cancelInvitation')
+      const mockCancelInvitation = jest
+        .spyOn(memberManagementApi, 'cancelInvitation')
         .mockResolvedValue({ success: true });
 
       const { TestProviders } = createTestProviders();
@@ -416,7 +409,8 @@ describe('Group Admin Functionality Integration Tests', () => {
     });
 
     test('should prevent admin from leaving group', async () => {
-      const mockUseGroupMembership = jest.spyOn(useGroupQueries, 'useGroupMembership')
+      const mockUseGroupMembership = jest
+        .spyOn(useGroupQueries, 'useGroupMembership')
         .mockReturnValue({ data: true, isLoading: false });
 
       const { TestProviders } = createTestProviders();
@@ -442,10 +436,7 @@ describe('Group Admin Functionality Integration Tests', () => {
 
       render(
         <TestProviders>
-          <PageHeader 
-            group={{ ...mockGroup, visibility: 'private' }} 
-            setShowJoinModal={jest.fn()} 
-          />
+          <PageHeader group={{ ...mockGroup, visibility: 'private' }} setShowJoinModal={jest.fn()} />
         </TestProviders>
       );
 
@@ -489,10 +480,10 @@ describe('Group Admin Functionality Integration Tests', () => {
 
     test('should handle permission errors gracefully', async () => {
       // Mock permission error
-      mockUseIsGroupAdmin.mockReturnValue({ 
-        data: undefined, 
-        isLoading: false, 
-        error: new Error('Permission check failed') 
+      mockUseIsGroupAdmin.mockReturnValue({
+        data: undefined,
+        isLoading: false,
+        error: new Error('Permission check failed'),
       });
 
       const { TestProviders } = createTestProviders();
@@ -521,11 +512,11 @@ describe('Group Admin Functionality Integration Tests', () => {
 
       // Mock successful member removal
       const mockConfirm = jest.spyOn(window, 'confirm').mockReturnValue(true);
-      
+
       // Remove a member
       const memberCard = screen.getByText('Regular Member').closest('.member-card');
       const removeButton = within(memberCard!).getByRole('button', { name: /remove/i });
-      
+
       await user.click(removeButton);
 
       // Should trigger member list refresh
@@ -549,7 +540,7 @@ describe('Group Admin Functionality Integration Tests', () => {
       // Test optimistic update for role change
       const memberCard = screen.getByText('Regular Member').closest('.member-card');
       const promoteButton = within(memberCard!).getByRole('button', { name: /promote/i });
-      
+
       await user.click(promoteButton);
 
       // Should show loading state during operation

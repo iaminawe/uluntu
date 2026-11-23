@@ -17,121 +17,126 @@ export function PhotoUploadNew({
   onUploadComplete,
   onUploadProgress,
   maxFiles = 10,
-  className = ''
+  className = '',
 }: PhotoUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<UploadProgress[]>([]);
   const [uploadedPhotos, setUploadedPhotos] = useState<any[]>([]);
 
-  const updateProgress = useCallback((photoId: string, progress: Partial<UploadProgress>) => {
-    setUploadProgress(prev => {
-      const updated = prev.map(p => 
-        p.photoId === photoId ? { ...p, ...progress } : p
-      );
-      onUploadProgress?.(updated);
-      return updated;
-    });
-  }, [onUploadProgress]);
-
-  const processFile = useCallback(async (file: File): Promise<void> => {
-    const photoId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Add to progress tracking
-    const initialProgress: UploadProgress = {
-      photoId,
-      fileName: file.name,
-      progress: 0,
-      status: 'pending'
-    };
-    
-    setUploadProgress(prev => [...prev, initialProgress]);
-
-    try {
-      // Validate file
-      const validation = storageService.validateFile(file);
-      if (!validation.valid) {
-        updateProgress(photoId, {
-          status: 'error',
-          error: validation.error
-        });
-        return;
-      }
-
-      updateProgress(photoId, {
-        status: 'uploading',
-        progress: 10
+  const updateProgress = useCallback(
+    (photoId: string, progress: Partial<UploadProgress>) => {
+      setUploadProgress(prev => {
+        const updated = prev.map(p => (p.photoId === photoId ? { ...p, ...progress } : p));
+        onUploadProgress?.(updated);
+        return updated;
       });
+    },
+    [onUploadProgress]
+  );
 
-      // Create upload input
-      const uploadInput: PhotoUploadInput = {
-        file,
-        galleryId,
-        title: file.name.split('.')[0],
-        tags: []
+  const processFile = useCallback(
+    async (file: File): Promise<void> => {
+      const photoId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+      // Add to progress tracking
+      const initialProgress: UploadProgress = {
+        photoId,
+        fileName: file.name,
+        progress: 0,
+        status: 'pending',
       };
 
-      updateProgress(photoId, {
-        progress: 30
-      });
+      setUploadProgress(prev => [...prev, initialProgress]);
 
-      // Upload photo
-      const photo = await galleryApiNew.uploadPhoto(uploadInput);
+      try {
+        // Validate file
+        const validation = storageService.validateFile(file);
+        if (!validation.valid) {
+          updateProgress(photoId, {
+            status: 'error',
+            error: validation.error,
+          });
+          return;
+        }
 
-      updateProgress(photoId, {
-        status: 'processing',
-        progress: 80
-      });
+        updateProgress(photoId, {
+          status: 'uploading',
+          progress: 10,
+        });
 
-      // Simulate processing time for thumbnails
-      await new Promise(resolve => setTimeout(resolve, 1000));
+        // Create upload input
+        const uploadInput: PhotoUploadInput = {
+          file,
+          galleryId,
+          title: file.name.split('.')[0],
+          tags: [],
+        };
 
-      updateProgress(photoId, {
-        status: 'completed',
-        progress: 100
-      });
+        updateProgress(photoId, {
+          progress: 30,
+        });
 
-      setUploadedPhotos(prev => [...prev, photo]);
+        // Upload photo
+        const photo = await galleryApiNew.uploadPhoto(uploadInput);
 
-    } catch (error: any) {
-      console.error('Upload failed:', error);
-      updateProgress(photoId, {
-        status: 'error',
-        error: error.message || 'Upload failed'
-      });
-    }
-  }, [galleryId, updateProgress]);
+        updateProgress(photoId, {
+          status: 'processing',
+          progress: 80,
+        });
 
-  const handleDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (uploading) return;
+        // Simulate processing time for thumbnails
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const filesToUpload = acceptedFiles.slice(0, maxFiles);
-    
-    setUploading(true);
-    setUploadProgress([]);
-    setUploadedPhotos([]);
+        updateProgress(photoId, {
+          status: 'completed',
+          progress: 100,
+        });
 
-    try {
-      // Process files in parallel (with limit)
-      const uploadPromises = filesToUpload.map(processFile);
-      await Promise.all(uploadPromises);
+        setUploadedPhotos(prev => [...prev, photo]);
+      } catch (error: any) {
+        console.error('Upload failed:', error);
+        updateProgress(photoId, {
+          status: 'error',
+          error: error.message || 'Upload failed',
+        });
+      }
+    },
+    [galleryId, updateProgress]
+  );
 
-      // Wait a moment for UI updates
-      setTimeout(() => {
-        onUploadComplete?.(uploadedPhotos);
+  const handleDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      if (uploading) return;
+
+      const filesToUpload = acceptedFiles.slice(0, maxFiles);
+
+      setUploading(true);
+      setUploadProgress([]);
+      setUploadedPhotos([]);
+
+      try {
+        // Process files in parallel (with limit)
+        const uploadPromises = filesToUpload.map(processFile);
+        await Promise.all(uploadPromises);
+
+        // Wait a moment for UI updates
+        setTimeout(() => {
+          onUploadComplete?.(uploadedPhotos);
+          setUploading(false);
+        }, 500);
+      } catch (error) {
+        console.error('Batch upload failed:', error);
         setUploading(false);
-      }, 500);
-
-    } catch (error) {
-      console.error('Batch upload failed:', error);
-      setUploading(false);
-    }
-  }, [uploading, maxFiles, processFile, uploadedPhotos, onUploadComplete]);
+      }
+    },
+    [uploading, maxFiles, processFile, uploadedPhotos, onUploadComplete]
+  );
 
   // TODO: Implement proper dropzone once react-dropzone is added
   const getRootProps = () => ({});
   const getInputProps = () => ({});
   const isDragActive = false;
-  
+
   /* const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
     accept: {
@@ -158,15 +163,12 @@ export function PhotoUploadNew({
         className={`
           relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
           transition-colors duration-200
-          ${isDragActive 
-            ? 'border-blue-400 bg-blue-50' 
-            : 'border-gray-300 hover:border-gray-400'
-          }
+          ${isDragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
           ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
         `}
       >
         <input {...getInputProps()} />
-        
+
         {!uploading ? (
           <div>
             <div className="mx-auto w-12 h-12 mb-4 text-gray-400">
@@ -182,12 +184,8 @@ export function PhotoUploadNew({
             <p className="text-lg font-medium text-gray-900 mb-2">
               {isDragActive ? 'Drop your photos here' : 'Upload photos'}
             </p>
-            <p className="text-sm text-gray-500 mb-4">
-              Drag and drop up to {maxFiles} photos, or click to browse
-            </p>
-            <p className="text-xs text-gray-400">
-              Supported formats: JPEG, PNG, WebP, GIF, BMP, TIFF (max 50MB each)
-            </p>
+            <p className="text-sm text-gray-500 mb-4">Drag and drop up to {maxFiles} photos, or click to browse</p>
+            <p className="text-xs text-gray-400">Supported formats: JPEG, PNG, WebP, GIF, BMP, TIFF (max 50MB each)</p>
           </div>
         ) : (
           <div>
@@ -201,9 +199,7 @@ export function PhotoUploadNew({
                 />
               </svg>
             </div>
-            <p className="text-lg font-medium text-gray-900 mb-2">
-              Uploading photos...
-            </p>
+            <p className="text-lg font-medium text-gray-900 mb-2">Uploading photos...</p>
             <p className="text-sm text-gray-500">
               {completedUploads} of {totalFiles} completed
               {failedUploads > 0 && `, ${failedUploads} failed`}
@@ -221,13 +217,11 @@ export function PhotoUploadNew({
               {completedUploads}/{totalFiles} completed
             </span>
           </div>
-          
-          {uploadProgress.map((progress) => (
+
+          {uploadProgress.map(progress => (
             <div key={progress.photoId} className="bg-white rounded-lg border p-3">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-900 truncate">
-                  {progress.fileName}
-                </span>
+                <span className="text-sm font-medium text-gray-900 truncate">{progress.fileName}</span>
                 <div className="flex items-center space-x-2">
                   {progress.status === 'completed' && (
                     <div className="w-5 h-5 text-green-500">
@@ -272,7 +266,7 @@ export function PhotoUploadNew({
                   </span>
                 </div>
               </div>
-              
+
               {progress.status !== 'completed' && progress.status !== 'error' && (
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -281,10 +275,8 @@ export function PhotoUploadNew({
                   />
                 </div>
               )}
-              
-              {progress.error && (
-                <p className="text-sm text-red-600 mt-1">{progress.error}</p>
-              )}
+
+              {progress.error && <p className="text-sm text-red-600 mt-1">{progress.error}</p>}
             </div>
           ))}
         </div>

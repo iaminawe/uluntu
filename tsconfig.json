@@ -2,23 +2,19 @@
   "compilerOptions": {
     /* Language and Environment */
     "target": "ES2020",
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
-    
+
     /* Modules */
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    
+
     /* JavaScript Support */
     "allowJs": true,
     "checkJs": false,
-    
+
     /* Emit */
     "noEmit": true,
     "sourceMap": true,
@@ -27,13 +23,13 @@
     "removeComments": true,
     "importHelpers": true,
     "downlevelIteration": true,
-    
+
     /* Interop Constraints */
     "isolatedModules": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    
+
     /* Type Checking */
     "strict": true,
     "noUnusedLocals": false,
@@ -44,22 +40,22 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": false,
     "exactOptionalPropertyTypes": false,
-    
+
     /* Completeness */
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    
+
     /* Projects */
     "incremental": true,
     "composite": false,
     "tsBuildInfoFile": "./.tsbuildinfo",
-    
+
     /* Path Mapping */
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
-    
+
     /* Advanced */
     "useDefineForClassFields": true,
     "preserveConstEnums": true,
@@ -75,12 +71,7 @@
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "coverage"
-  ],
+  "exclude": ["node_modules", "dist", "build", "coverage"],
   "ts-node": {
     "compilerOptions": {
       "module": "commonjs"

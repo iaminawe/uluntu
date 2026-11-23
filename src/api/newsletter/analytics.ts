@@ -37,15 +37,13 @@ class NewsletterAnalyticsApi {
     eventData?: any
   ): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('newsletter_analytics')
-        .insert({
-          campaign_id: campaignId,
-          subscription_id: subscriptionId,
-          event_type: eventType,
-          event_data: eventData,
-          occurred_at: new Date().toISOString()
-        });
+      const { error } = await supabase.from('newsletter_analytics').insert({
+        campaign_id: campaignId,
+        subscription_id: subscriptionId,
+        event_type: eventType,
+        event_data: eventData,
+        occurred_at: new Date().toISOString(),
+      });
 
       if (error) throw error;
     } catch (error) {
@@ -77,7 +75,7 @@ class NewsletterAnalyticsApi {
           complained_count: (data as any).complained_count || 0,
           open_rate: (data as any).open_rate || 0,
           click_rate: (data as any).click_rate || 0,
-          bounce_rate: (data as any).bounce_rate || 0
+          bounce_rate: (data as any).bounce_rate || 0,
         };
       }
 
@@ -92,7 +90,7 @@ class NewsletterAnalyticsApi {
         complained_count: 0,
         open_rate: 0,
         click_rate: 0,
-        bounce_rate: 0
+        bounce_rate: 0,
       };
     } catch (error) {
       console.error('Error fetching campaign analytics:', error);
@@ -105,9 +103,7 @@ class NewsletterAnalyticsApi {
    */
   async getCampaignsAnalytics(campaignIds: string[]): Promise<CampaignAnalytics[]> {
     try {
-      const analytics = await Promise.all(
-        campaignIds.map(id => this.getCampaignAnalytics(id))
-      );
+      const analytics = await Promise.all(campaignIds.map(id => this.getCampaignAnalytics(id)));
       return analytics;
     } catch (error) {
       console.error('Error fetching campaigns analytics:', error);
@@ -133,7 +129,7 @@ class NewsletterAnalyticsApi {
         events: data || [],
         total_opens: data?.filter(e => e.event_type === 'opened').length || 0,
         total_clicks: data?.filter(e => e.event_type === 'clicked').length || 0,
-        last_engagement: data?.[0]?.occurred_at || null
+        last_engagement: data?.[0]?.occurred_at || null,
       };
     } catch (error) {
       console.error('Error fetching subscriber engagement:', error);
@@ -162,7 +158,7 @@ class NewsletterAnalyticsApi {
         clicked: data?.filter(e => e.event_type === 'clicked').length || 0,
         bounced: data?.filter(e => e.event_type === 'bounced').length || 0,
         unsubscribed: data?.filter(e => e.event_type === 'unsubscribed').length || 0,
-        complained: data?.filter(e => e.event_type === 'complained').length || 0
+        complained: data?.filter(e => e.event_type === 'complained').length || 0,
       };
 
       return summary;

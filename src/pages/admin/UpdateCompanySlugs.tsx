@@ -33,7 +33,11 @@ export default function UpdateCompanySlugs() {
   const queryClient = useQueryClient();
 
   // Fetch companies without slugs or with invalid slugs
-  const { data: companies, isLoading, error } = useQuery({
+  const {
+    data: companies,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['companies', 'missing-slugs'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -50,9 +54,7 @@ export default function UpdateCompanySlugs() {
   const generateSlugUpdates = () => {
     if (!companies) return;
 
-    const existingSlugs = companies
-      .filter(c => c.slug && isValidSlug(c.slug))
-      .map(c => c.slug!);
+    const existingSlugs = companies.filter(c => c.slug && isValidSlug(c.slug)).map(c => c.slug!);
 
     const updatesNeeded: SlugUpdate[] = [];
 
@@ -80,24 +82,21 @@ export default function UpdateCompanySlugs() {
   const updateSlugsMutation = useMutation({
     mutationFn: async (updates: SlugUpdate[]) => {
       const results: SlugUpdate[] = [];
-      
+
       for (const update of updates) {
-        const { error } = await supabase
-          .from('companies')
-          .update({ slug: update.newSlug })
-          .eq('id', update.id);
+        const { error } = await supabase.from('companies').update({ slug: update.newSlug }).eq('id', update.id);
 
         if (error) {
           console.error(`Failed to update company ${update.id}:`, error);
           throw error;
         }
-        
+
         results.push(update);
       }
-      
+
       return results;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       setCompletedUpdates(data);
       setUpdates([]);
       queryClient.invalidateQueries({ queryKey: ['companies'] });
@@ -164,9 +163,7 @@ export default function UpdateCompanySlugs() {
             <Alert variant="error">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                Failed to load companies: {error.message}
-              </AlertDescription>
+              <AlertDescription>Failed to load companies: {error.message}</AlertDescription>
             </Alert>
           )}
 
@@ -186,18 +183,15 @@ export default function UpdateCompanySlugs() {
               </div>
 
               <div className="flex items-center gap-4">
-                <Button
-                  onClick={handleGenerateSlugs}
-                  disabled={updateSlugsMutation.isPending}
-                >
+                <Button onClick={handleGenerateSlugs} disabled={updateSlugsMutation.isPending}>
                   Generate Slugs
                 </Button>
-                
+
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={dryRun}
-                    onChange={(e) => setDryRun(e.target.checked)}
+                    onChange={e => setDryRun(e.target.checked)}
                     className="rounded border-gray-300"
                   />
                   <span className="text-sm">Dry run (preview only)</span>
@@ -222,11 +216,7 @@ export default function UpdateCompanySlugs() {
               </div>
 
               {!dryRun && (
-                <Button
-                  onClick={handleUpdateSlugs}
-                  disabled={updateSlugsMutation.isPending}
-                  className="w-full"
-                >
+                <Button onClick={handleUpdateSlugs} disabled={updateSlugsMutation.isPending} className="w-full">
                   {updateSlugsMutation.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -256,9 +246,7 @@ export default function UpdateCompanySlugs() {
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertTitle>All Good!</AlertTitle>
-              <AlertDescription>
-                All companies already have valid URL slugs.
-              </AlertDescription>
+              <AlertDescription>All companies already have valid URL slugs.</AlertDescription>
             </Alert>
           )}
         </CardContent>

@@ -2,7 +2,7 @@ import { Database } from '../types/supabase';
 import { NewsArticle, ContentStatus } from '../types';
 
 type SupabaseNewsArticleRow = Database['public']['Tables']['news']['Row'];
-export type SupabaseNewsArticleWithAuthor = SupabaseNewsArticleRow & { 
+export type SupabaseNewsArticleWithAuthor = SupabaseNewsArticleRow & {
   members?: Database['public']['Tables']['members']['Row'] | null;
 };
 
@@ -19,12 +19,12 @@ export function adaptNewsArticleFromDatabase(dbArticle: SupabaseNewsArticleWithA
     author: {
       id: dbArticle.members?.id || dbArticle.author_id || 'UNKNOWN_AUTHOR_ID',
       name: dbArticle.members?.name || 'Unknown Author',
-      image: dbArticle.members?.image || '/placeholder-avatar.png'
+      image: dbArticle.members?.image || '/placeholder-avatar.png',
     },
     tags: dbArticle.tags || undefined,
     status: (dbArticle.status || 'draft') as ContentStatus,
     featured: dbArticle.featured || false,
-    created_at: dbArticle.created_at || new Date().toISOString()
+    created_at: dbArticle.created_at || new Date().toISOString(),
   };
 }
 
@@ -40,6 +40,6 @@ export function adaptNewsArticleToDatabase(article: Partial<NewsArticle>): Parti
     author_id: article.author?.id || undefined,
     tags: article.tags || undefined,
     status: article.status || 'draft',
-    featured: article.featured || undefined
+    featured: article.featured || undefined,
   };
 }

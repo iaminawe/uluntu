@@ -19,7 +19,7 @@ const initialState: AdminSettingsUIState = {
   mobileMenuOpen: false,
   selectedItems: [],
   sortBy: 'name',
-  sortOrder: 'asc'
+  sortOrder: 'asc',
 };
 
 const adminSettingsUISlice = createSlice({
@@ -52,7 +52,7 @@ const adminSettingsUISlice = createSlice({
         state.selectedItems.push(id);
       }
     },
-    clearSelection: (state) => {
+    clearSelection: state => {
       state.selectedItems = [];
     },
     setSortBy: (state, action: PayloadAction<'name' | 'category' | 'updated'>) => {
@@ -61,13 +61,13 @@ const adminSettingsUISlice = createSlice({
     setSortOrder: (state, action: PayloadAction<'asc' | 'desc'>) => {
       state.sortOrder = action.payload;
     },
-    clearFilters: (state) => {
+    clearFilters: state => {
       state.searchTerm = '';
       state.selectedItems = [];
       state.sortBy = 'name';
       state.sortOrder = 'asc';
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -80,7 +80,7 @@ export const {
   clearSelection,
   setSortBy,
   setSortOrder,
-  clearFilters
+  clearFilters,
 } = adminSettingsUISlice.actions;
 
 // Selectors

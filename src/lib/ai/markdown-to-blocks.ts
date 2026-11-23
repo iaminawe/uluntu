@@ -1,5 +1,8 @@
 // Convert markdown text to BlockNote blocks
-export function markdownToBlocks(markdown: string, images?: Array<{ url: string; caption: string; placement: string }>): any[] {
+export function markdownToBlocks(
+  markdown: string,
+  images?: Array<{ url: string; caption: string; placement: string }>
+): any[] {
   const blocks: any[] = [];
   const lines = markdown.split('\n');
   let currentParagraph = '';
@@ -13,7 +16,7 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
     if (currentParagraph.trim()) {
       blocks.push({
         type: 'paragraph',
-        content: currentParagraph.trim()
+        content: currentParagraph.trim(),
       });
       currentParagraph = '';
     }
@@ -24,7 +27,7 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
       listItems.forEach(item => {
         blocks.push({
           type: 'bulletListItem',
-          content: item
+          content: item,
         });
       });
       listItems = [];
@@ -42,7 +45,7 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
         blocks.push({
           type: 'codeBlock',
           props: { language: codeLanguage || 'text' },
-          content: codeContent.trim()
+          content: codeContent.trim(),
         });
         codeContent = '';
         codeLanguage = '';
@@ -69,7 +72,7 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
       blocks.push({
         type: 'heading',
         props: { level: 1 },
-        content: line.slice(2).trim()
+        content: line.slice(2).trim(),
       });
       continue;
     }
@@ -79,7 +82,7 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
       blocks.push({
         type: 'heading',
         props: { level: 2 },
-        content: line.slice(3).trim()
+        content: line.slice(3).trim(),
       });
       continue;
     }
@@ -89,7 +92,7 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
       blocks.push({
         type: 'heading',
         props: { level: 3 },
-        content: line.slice(4).trim()
+        content: line.slice(4).trim(),
       });
       continue;
     }
@@ -97,17 +100,17 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
     // Lists
     if (line.match(/^[\*\-\+]\s+/) || line.match(/^\d+\.\s+/)) {
       flushParagraph();
-      
+
       const isNumbered = line.match(/^\d+\.\s+/);
       const content = line.replace(/^[\*\-\+]\s+/, '').replace(/^\d+\.\s+/, '');
-      
+
       if (!inList) {
         inList = true;
       }
-      
+
       blocks.push({
         type: isNumbered ? 'numberedListItem' : 'bulletListItem',
-        content: processInlineMarkdown(content)
+        content: processInlineMarkdown(content),
       });
       continue;
     } else if (inList && line.trim() === '') {
@@ -133,7 +136,7 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
       blocks.push({
         type: 'paragraph',
         props: { backgroundColor: 'gray' },
-        content: processInlineMarkdown(fullQuote)
+        content: processInlineMarkdown(fullQuote),
       });
       continue;
     }
@@ -144,7 +147,7 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
       flushList();
       blocks.push({
         type: 'paragraph',
-        content: '---'
+        content: '---',
       });
       continue;
     }
@@ -167,10 +170,10 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
   if (images && images.length > 0) {
     const finalBlocks: any[] = [];
     let imageIndex = 0;
-    
+
     for (let i = 0; i < blocks.length; i++) {
       const block = blocks[i];
-      
+
       // Add hero image after first heading or at the beginning
       if (imageIndex === 0 && images[imageIndex]?.placement === 'hero') {
         if (block.type === 'heading' && block.props?.level === 1) {
@@ -187,9 +190,9 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
       }
       // Add section images after h2 headings
       else if (
-        imageIndex < images.length && 
+        imageIndex < images.length &&
         images[imageIndex]?.placement === 'section' &&
-        block.type === 'heading' && 
+        block.type === 'heading' &&
         block.props?.level === 2
       ) {
         finalBlocks.push(block);
@@ -205,18 +208,17 @@ export function markdownToBlocks(markdown: string, images?: Array<{ url: string;
         finalBlocks.push(createImageBlock(images[imageIndex]));
         imageIndex++;
         finalBlocks.push(block);
-      }
-      else {
+      } else {
         finalBlocks.push(block);
       }
     }
-    
+
     // Add any remaining images at the end
     while (imageIndex < images.length) {
       finalBlocks.push(createImageBlock(images[imageIndex]));
       imageIndex++;
     }
-    
+
     return finalBlocks.length > 0 ? finalBlocks : [{ type: 'paragraph', content: markdown }];
   }
 
@@ -231,8 +233,8 @@ function createImageBlock(imageData: { url: string; caption: string; placement: 
       url: imageData.url,
       caption: imageData.caption,
       width: 'auto',
-      previewWidth: 1200
-    }
+      previewWidth: 1200,
+    },
   };
 }
 
@@ -240,20 +242,20 @@ function createImageBlock(imageData: { url: string; caption: string; placement: 
 function processInlineMarkdown(text: string): string {
   // For now, strip markdown formatting
   // In a full implementation, you'd convert to BlockNote inline content format
-  
+
   // Remove bold
   text = text.replace(/\*\*([^*]+)\*\*/g, '$1');
   text = text.replace(/__([^_]+)__/g, '$1');
-  
+
   // Remove italic
   text = text.replace(/\*([^*]+)\*/g, '$1');
   text = text.replace(/_([^_]+)_/g, '$1');
-  
+
   // Remove inline code
   text = text.replace(/`([^`]+)`/g, '$1');
-  
+
   // Convert links to text
   text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-  
+
   return text;
 }

@@ -1,15 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Eye, 
-  EyeOff, 
-  Smartphone, 
-  Tablet, 
-  Monitor,
-  Check,
-  AlertTriangle,
-  Info
-} from 'lucide-react';
+import { Eye, EyeOff, Smartphone, Tablet, Monitor, Check, AlertTriangle, Info } from 'lucide-react';
 import { ThemePreset } from '@/lib/themes/presets';
 import { ColorUtils, ScreenReaderUtils, AriaUtils, KeyboardNav } from '@/lib/utils/accessibility';
 
@@ -37,16 +28,19 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
     buttonContrast: number;
     passes: boolean;
   } | null>(null);
-  
+
   const previewRef = useRef<HTMLDivElement>(null);
   const labelId = AriaUtils.generateId('theme-preview');
   const descriptionId = AriaUtils.generateId('theme-description');
 
   // Calculate contrast ratios
   useEffect(() => {
-    const textContrast = ColorUtils.getContrastRatio(theme.configurations.colors.text, theme.configurations.colors.background);
+    const textContrast = ColorUtils.getContrastRatio(
+      theme.configurations.colors.text,
+      theme.configurations.colors.background
+    );
     const buttonContrast = ColorUtils.getContrastRatio('#FFFFFF', theme.configurations.colors.primary);
-    
+
     const passesTextContrast = ColorUtils.meetsWCAG(
       theme.configurations.colors.text,
       theme.configurations.colors.background,
@@ -54,9 +48,9 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
       parseInt(theme.configurations.typography.font_size_base),
       400 // Normal font weight
     );
-    
+
     const passesButtonContrast = buttonContrast >= 4.5;
-    
+
     setContrastResults({
       textContrast,
       buttonContrast,
@@ -73,7 +67,7 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
         onSelect?.();
         ScreenReaderUtils.announce(`Selected ${theme.name} theme`);
         break;
-        
+
       case 'd':
       case 'D':
         // Quick device switching
@@ -83,7 +77,7 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
         setDevice(nextDevice);
         ScreenReaderUtils.announce(`Switched to ${nextDevice} preview`);
         break;
-        
+
       case 'v':
       case 'V':
         // Toggle preview visibility
@@ -108,9 +102,10 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
       transition={{ duration: 0.3, delay: animationDelay }}
       className={`
         relative rounded-lg border-2 transition-all duration-300
-        ${isActive 
-          ? 'border-blue-500 shadow-lg ring-2 ring-blue-500 ring-offset-2' 
-          : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+        ${
+          isActive
+            ? 'border-blue-500 shadow-lg ring-2 ring-blue-500 ring-offset-2'
+            : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
         }
         ${onSelect ? 'cursor-pointer' : ''}
       `}
@@ -130,11 +125,7 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
             <h3 id={labelId} className="font-semibold text-gray-900 flex items-center gap-2">
               {theme.name}
               {isActive && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="inline-flex"
-                >
+                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="inline-flex">
                   <Check className="h-4 w-4 text-blue-600" aria-label="Currently selected" />
                 </motion.span>
               )}
@@ -143,9 +134,9 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
               {theme.description}
             </p>
           </div>
-          
+
           <button
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               setShowPreview(!showPreview);
               ScreenReaderUtils.announce(`Preview ${!showPreview ? 'shown' : 'hidden'}`);
@@ -165,18 +156,15 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
             Success: theme.configurations.colors.success,
             Background: theme.configurations.colors.background,
           }).map(([name, color]) => (
-            <div
-              key={name}
-              className="group relative"
-              role="img"
-              aria-label={`${name} color: ${color}`}
-            >
+            <div key={name} className="group relative" role="img" aria-label={`${name} color: ${color}`}>
               <div
                 className="w-10 h-10 rounded-lg border border-gray-300 shadow-sm transition-transform group-hover:scale-110"
                 style={{ backgroundColor: color }}
               />
-              <span className="sr-only">{name}: {color}</span>
-              
+              <span className="sr-only">
+                {name}: {color}
+              </span>
+
               {/* Tooltip on hover */}
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                 {name}
@@ -199,21 +187,22 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
             <div className="p-4">
               {/* Device Selector */}
               <div className="flex justify-center gap-2 mb-4" role="group" aria-label="Device preview options">
-                {(['mobile', 'tablet', 'desktop'] as const).map((deviceType) => {
+                {(['mobile', 'tablet', 'desktop'] as const).map(deviceType => {
                   const Icon = deviceType === 'mobile' ? Smartphone : deviceType === 'tablet' ? Tablet : Monitor;
                   return (
                     <button
                       key={deviceType}
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         setDevice(deviceType);
                         ScreenReaderUtils.announce(`Switched to ${deviceType} preview`);
                       }}
                       className={`
                         p-2 rounded-lg transition-all
-                        ${device === deviceType
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ${
+                          device === deviceType
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }
                       `}
                       aria-label={`View ${deviceType} preview`}
@@ -245,9 +234,9 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
                   style={{ backgroundColor: theme.configurations.colors.background }}
                 >
                   {/* Mini UI Preview */}
-                  <div 
+                  <div
                     className="h-full flex flex-col p-3"
-                    style={{ 
+                    style={{
                       transform: `scale(${currentDeviceSize.scale})`,
                       transformOrigin: 'top left',
                       width: `${100 / currentDeviceSize.scale}%`,
@@ -255,49 +244,37 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
                     }}
                   >
                     {/* Header */}
-                    <header 
-                      className="p-4 -m-3 mb-4"
-                      style={{ backgroundColor: theme.configurations.colors.surface }}
-                    >
+                    <header className="p-4 -m-3 mb-4" style={{ backgroundColor: theme.configurations.colors.surface }}>
                       <div className="flex items-center justify-between">
-                        <div 
-                          className="font-bold text-lg"
-                          style={{ color: theme.configurations.colors.primary }}
-                        >
+                        <div className="font-bold text-lg" style={{ color: theme.configurations.colors.primary }}>
                           Logo
                         </div>
                         <button
                           className="px-4 py-2 rounded text-white text-sm"
-                          style={{ 
+                          style={{
                             backgroundColor: theme.configurations.colors.primary,
-                            borderRadius: theme.configurations.borders.radius_md
+                            borderRadius: theme.configurations.borders.radius_md,
                           }}
                         >
                           Sign In
                         </button>
                       </div>
                     </header>
-                    
+
                     {/* Content */}
                     <main className="flex-1 space-y-4">
-                      <div 
+                      <div
                         className="p-4 rounded-lg"
-                        style={{ 
+                        style={{
                           backgroundColor: theme.configurations.colors.surface,
                           borderRadius: theme.configurations.borders.radius_lg,
-                          boxShadow: theme.configurations.shadows.shadow_md
+                          boxShadow: theme.configurations.shadows.shadow_md,
                         }}
                       >
-                        <h2 
-                          className="font-semibold text-lg mb-2"
-                          style={{ color: theme.configurations.colors.text }}
-                        >
+                        <h2 className="font-semibold text-lg mb-2" style={{ color: theme.configurations.colors.text }}>
                           Welcome
                         </h2>
-                        <p 
-                          className="text-sm"
-                          style={{ color: theme.configurations.colors.text_muted }}
-                        >
+                        <p className="text-sm" style={{ color: theme.configurations.colors.text_muted }}>
                           Experience our beautiful theme system
                         </p>
                       </div>
@@ -315,13 +292,16 @@ export const AccessibleThemePreview: React.FC<AccessibleThemePreviewProps> = ({
                 transition={{ delay: 0.2 }}
                 className="px-4 pb-4"
               >
-                <div className={`
+                <div
+                  className={`
                   rounded-lg p-3 text-sm
-                  ${contrastResults.passes 
-                    ? 'bg-green-50 border border-green-200' 
-                    : 'bg-amber-50 border border-amber-200'
+                  ${
+                    contrastResults.passes
+                      ? 'bg-green-50 border border-green-200'
+                      : 'bg-amber-50 border border-amber-200'
                   }
-                `}>
+                `}
+                >
                   <div className="flex items-start gap-2">
                     {contrastResults.passes ? (
                       <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />

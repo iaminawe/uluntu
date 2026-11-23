@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Settings, 
-  Globe, 
-  Palette, 
-  Users, 
-  MapPin, 
-  Mail, 
-  Shield, 
+import {
+  Settings,
+  Globe,
+  Palette,
+  Users,
+  MapPin,
+  Mail,
+  Shield,
   Sliders,
   Save,
   RefreshCw,
@@ -17,7 +17,7 @@ import {
   ChevronRight,
   Menu,
   X,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { settingsApi } from '@/features/admin/api/settings';
@@ -33,15 +33,7 @@ import { SettingsHistoryPanel } from '@/components/admin/settings/SettingsHistor
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { SuperAdminOnly } from '@/components/auth/PermissionGuard';
 
-type SettingsTab = 
-  | 'features' 
-  | 'site' 
-  | 'appearance' 
-  | 'community' 
-  | 'location' 
-  | 'contact' 
-  | 'security' 
-  | 'history';
+type SettingsTab = 'features' | 'site' | 'appearance' | 'community' | 'location' | 'contact' | 'security' | 'history';
 
 interface SettingsNavItem {
   id: SettingsTab;
@@ -122,9 +114,9 @@ const SettingsPage: React.FC = () => {
   const handleExportSettings = async () => {
     try {
       const exportData = await settingsApi.exportSettings();
-      
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { 
-        type: 'application/json' 
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: 'application/json',
       });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -134,7 +126,7 @@ const SettingsPage: React.FC = () => {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      
+
       toast.success('Settings exported successfully');
     } catch (error) {
       console.error('Error exporting settings:', error);
@@ -147,21 +139,21 @@ const SettingsPage: React.FC = () => {
     fileInput.type = 'file';
     fileInput.accept = '.json';
     fileInput.style.display = 'none';
-    
-    fileInput.onchange = async (e) => {
+
+    fileInput.onchange = async e => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
-      
+
       try {
         const text = await file.text();
         const importData = JSON.parse(text);
-        
+
         if (!importData.settings || !importData.feature_toggles) {
           throw new Error('Invalid settings file format');
         }
-        
+
         const result = await settingsApi.importSettings(importData);
-        
+
         if (result.success) {
           toast.success('Settings imported successfully');
           refetch();
@@ -175,7 +167,7 @@ const SettingsPage: React.FC = () => {
         document.body.removeChild(fileInput);
       }
     };
-    
+
     document.body.appendChild(fileInput);
     fileInput.click();
   };
@@ -219,15 +211,17 @@ const SettingsPage: React.FC = () => {
   }
 
   return (
-    <SuperAdminOnly fallback={
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="text-4xl mb-4">🔒</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Super Admin Access Required</h2>
-          <p className="text-gray-600">This area is restricted to super administrators only.</p>
+    <SuperAdminOnly
+      fallback={
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-4xl mb-4">🔒</div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Super Admin Access Required</h2>
+            <p className="text-gray-600">This area is restricted to super administrators only.</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <div className="flex min-h-screen bg-gray-50">
         {/* Mobile menu button */}
         <button
@@ -239,19 +233,18 @@ const SettingsPage: React.FC = () => {
 
         {/* Backdrop for mobile */}
         {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
         )}
 
         {/* Sidebar */}
-        <div className={`
+        <div
+          className={`
           fixed inset-y-0 left-0 z-40 bg-white shadow-sm border-r border-gray-200 transition-all duration-300
           w-64 sm:w-72 lg:w-80
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           ${sidebarCollapsed && 'lg:w-16'}
-        `}>
+        `}
+        >
           {/* Header */}
           <div className="p-4 sm:p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
@@ -271,21 +264,17 @@ const SettingsPage: React.FC = () => {
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                 className="hidden lg:block p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                {sidebarCollapsed ? (
-                  <ChevronRight className="h-4 w-4" />
-                ) : (
-                  <ChevronLeft className="h-4 w-4" />
-                )}
+                {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
               </button>
             </div>
           </div>
 
           {/* Navigation */}
           <nav className="p-4 space-y-1 overflow-y-auto">
-            {navigationItems.map((item) => {
+            {navigationItems.map(item => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
-              
+
               return (
                 <button
                   key={item.id}
@@ -296,24 +285,21 @@ const SettingsPage: React.FC = () => {
                   className={`
                     w-full flex items-center px-3 py-2.5 sm:py-2 rounded-lg text-left transition-colors
                     min-h-[44px]
-                    ${isActive
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
+                    ${isActive ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-gray-700 hover:bg-gray-50'}
                   `}
                   title={sidebarCollapsed ? item.title : undefined}
                 >
-                  <Icon className={`
+                  <Icon
+                    className={`
                     h-5 w-5 flex-shrink-0
                     ${sidebarCollapsed ? 'mx-auto' : 'mr-3'}
                     ${isActive ? 'text-blue-600' : 'text-gray-500'}
-                  `} />
+                  `}
+                  />
                   {!sidebarCollapsed && (
                     <div className="flex-1 min-w-0">
                       <div className="text-sm sm:text-base font-medium">{item.title}</div>
-                      <div className="text-xs text-gray-500 truncate hidden sm:block">
-                        {item.description}
-                      </div>
+                      <div className="text-xs text-gray-500 truncate hidden sm:block">{item.description}</div>
                     </div>
                   )}
                 </button>
@@ -350,11 +336,13 @@ const SettingsPage: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className={`
+        <div
+          className={`
           flex-1 flex flex-col
           lg:ml-80
           ${sidebarCollapsed && 'lg:ml-16'}
-        `}>
+        `}
+        >
           {/* Content Header */}
           <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -362,11 +350,9 @@ const SettingsPage: React.FC = () => {
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {currentItem?.title}
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {currentItem?.description}
-                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{currentItem?.description}</p>
               </div>
-              
+
               {/* Quick Stats - Hidden on mobile */}
               <div className="hidden sm:flex items-center space-x-4 sm:space-x-6 text-sm">
                 <div className="text-center">
@@ -378,9 +364,7 @@ const SettingsPage: React.FC = () => {
                   <div className="text-gray-500">Features</div>
                 </div>
                 <div className="text-center">
-                  <div className="font-semibold text-gray-900">
-                    {features.filter(f => f.enabled).length}
-                  </div>
+                  <div className="font-semibold text-gray-900">{features.filter(f => f.enabled).length}</div>
                   <div className="text-gray-500">Enabled</div>
                 </div>
               </div>
@@ -390,12 +374,7 @@ const SettingsPage: React.FC = () => {
           {/* Content Body */}
           <div className="flex-1 overflow-auto px-4 sm:px-6 py-4 sm:py-6">
             {CurrentComponent && (
-              <CurrentComponent
-                settings={settings}
-                features={features}
-                history={history}
-                onRefresh={refetch}
-              />
+              <CurrentComponent settings={settings} features={features} history={history} onRefresh={refetch} />
             )}
           </div>
         </div>
@@ -403,6 +382,5 @@ const SettingsPage: React.FC = () => {
     </SuperAdminOnly>
   );
 };
-
 
 export default SettingsPage;

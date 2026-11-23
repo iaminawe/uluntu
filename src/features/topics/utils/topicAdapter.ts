@@ -11,13 +11,13 @@ export function adaptTopicFromDatabase(row: TopicRow): Topic {
     sortOrder: row.sort_order || 0,
     isActive: row.is_active ?? true,
     createdAt: row.created_at,
-    updatedAt: row.updated_at
+    updatedAt: row.updated_at,
   };
 }
 
 export function adaptTopicToDatabase(topic: Partial<Topic>): Partial<TopicRow> {
   const dbTopic: Partial<TopicRow> = {};
-  
+
   if (topic.name !== undefined) dbTopic.name = topic.name;
   if (topic.slug !== undefined) dbTopic.slug = topic.slug;
   if (topic.description !== undefined) dbTopic.description = topic.description || null;
@@ -25,7 +25,7 @@ export function adaptTopicToDatabase(topic: Partial<Topic>): Partial<TopicRow> {
   if (topic.color !== undefined) dbTopic.color = topic.color;
   if (topic.sortOrder !== undefined) dbTopic.sort_order = topic.sortOrder;
   if (topic.isActive !== undefined) dbTopic.is_active = topic.isActive;
-  
+
   return dbTopic;
 }
 
@@ -50,7 +50,7 @@ export function adaptTopicWithAnalyticsFromDatabase(row: TopicAnalyticsRow): Top
     groupCount: row.group_count || 0,
     companyCount: row.company_count || 0,
     memberCount: row.member_count || 0,
-    popularityPercentage: row.popularity_percentage || 0
+    popularityPercentage: row.popularity_percentage || 0,
   };
 }
 
@@ -63,7 +63,7 @@ export function generateTopicSlug(name: string): string {
 
 export function validateTopicData(topic: Partial<Topic>): string[] {
   const errors: string[] = [];
-  
+
   if (topic.name !== undefined) {
     if (!topic.name || topic.name.trim().length === 0) {
       errors.push('Topic name is required');
@@ -71,15 +71,15 @@ export function validateTopicData(topic: Partial<Topic>): string[] {
       errors.push('Topic name must be less than 100 characters');
     }
   }
-  
+
   if (topic.description !== undefined && topic.description && topic.description.length > 500) {
     errors.push('Topic description must be less than 500 characters');
   }
-  
+
   if (topic.color !== undefined && topic.color && !/^#[0-9A-Fa-f]{6}$/.test(topic.color)) {
     errors.push('Topic color must be a valid hex color code');
   }
-  
+
   return errors;
 }
 
@@ -104,11 +104,12 @@ export function filterTopics(topics: Topic[], search?: string): Topic[] {
   if (!search || search.trim().length === 0) {
     return topics;
   }
-  
+
   const searchLower = search.toLowerCase();
-  return topics.filter(topic => 
-    topic.name.toLowerCase().includes(searchLower) ||
-    (topic.description && topic.description.toLowerCase().includes(searchLower))
+  return topics.filter(
+    topic =>
+      topic.name.toLowerCase().includes(searchLower) ||
+      (topic.description && topic.description.toLowerCase().includes(searchLower))
   );
 }
 
@@ -124,15 +125,13 @@ export function getTopicStats(topics: TopicWithAnalytics[]): {
   emptyTopics: TopicWithAnalytics[];
 } {
   const totalContent = topics.reduce((sum, topic) => sum + topic.totalContentCount, 0);
-  const topTopics = [...topics]
-    .sort((a, b) => b.totalContentCount - a.totalContentCount)
-    .slice(0, 10);
+  const topTopics = [...topics].sort((a, b) => b.totalContentCount - a.totalContentCount).slice(0, 10);
   const emptyTopics = topics.filter(topic => topic.totalContentCount === 0);
-  
+
   return {
     totalTopics: topics.length,
     totalContent,
     topTopics,
-    emptyTopics
+    emptyTopics,
   };
 }

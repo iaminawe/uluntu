@@ -20,30 +20,28 @@ const ImageSection: React.FC<ImageSectionProps> = ({
   overlay = {
     gradient: {
       colors: ['from-slate-900/70', 'to-slate-900/30'],
-      direction: 'to-top'
-    }
+      direction: 'to-top',
+    },
   },
   padding = 'lg',
   fullWidth = false,
   align = 'center',
-  theme = 'dark'
+  theme = 'dark',
 }) => {
   const paddingClasses = {
     sm: 'py-12',
     md: 'py-16',
     lg: 'py-20',
-    xl: 'py-24'
+    xl: 'py-24',
   };
 
   const alignClasses = {
     left: 'text-left',
     center: 'text-center mx-auto',
-    right: 'text-right ml-auto'
+    right: 'text-right ml-auto',
   };
 
-  const textColorClasses = theme === 'dark' 
-    ? 'text-white' 
-    : 'text-slate-900 dark:text-white';
+  const textColorClasses = theme === 'dark' ? 'text-white' : 'text-slate-900 dark:text-white';
 
   const getGradientClass = () => {
     if (!overlay?.gradient) return '';
@@ -78,19 +76,16 @@ const ImageSection: React.FC<ImageSectionProps> = ({
       {overlay && (
         <div className={`absolute inset-0 ${getGradientClass()}`}>
           {overlay.color && (
-            <div 
-              className="absolute inset-0" 
-              style={{ 
-                backgroundColor: overlay.color, 
-                opacity: overlay.opacity || 0.5 
-              }} 
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundColor: overlay.color,
+                opacity: overlay.opacity || 0.5,
+              }}
             />
           )}
           {overlay.blur && (
-            <div 
-              className="absolute inset-0 backdrop-blur"
-              style={{ backdropFilter: `blur(${overlay.blur}px)` }}
-            />
+            <div className="absolute inset-0 backdrop-blur" style={{ backdropFilter: `blur(${overlay.blur}px)` }} />
           )}
         </div>
       )}

@@ -1,18 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Palette, 
-  Type, 
-  Image, 
-  Layout, 
-  Save, 
-  RefreshCw,
-  Eye,
-  Download,
-  Upload,
-  Moon,
-  Sun,
-  Monitor
-} from 'lucide-react';
+import { Palette, Type, Image, Layout, Save, RefreshCw, Eye, Download, Upload, Moon, Sun, Monitor } from 'lucide-react';
 import ColorSchemeEditor from './ColorSchemeEditor';
 import FontSelector from './FontSelector';
 import ImageUploader from './ImageUploader';
@@ -44,7 +31,7 @@ const defaultTheme: Theme = {
     error: '#EF4444',
     success: '#10B981',
     warning: '#F59E0B',
-    info: '#3B82F6'
+    info: '#3B82F6',
   },
   typography: {
     fontFamily: 'Inter',
@@ -58,20 +45,20 @@ const defaultTheme: Theme = {
       xl: '20px',
       '2xl': '24px',
       '3xl': '30px',
-      '4xl': '36px'
+      '4xl': '36px',
     },
     fontWeight: {
       light: 300,
       normal: 400,
       medium: 500,
       semibold: 600,
-      bold: 700
+      bold: 700,
     },
     lineHeight: {
       tight: 1.25,
       normal: 1.5,
-      relaxed: 1.75
-    }
+      relaxed: 1.75,
+    },
   },
   spacing: {
     unit: 4,
@@ -82,8 +69,8 @@ const defaultTheme: Theme = {
       lg: 8,
       xl: 12,
       '2xl': 16,
-      '3xl': 20
-    }
+      '3xl': 20,
+    },
   },
   layout: {
     borderRadius: {
@@ -92,43 +79,43 @@ const defaultTheme: Theme = {
       md: '8px',
       lg: '12px',
       xl: '16px',
-      full: '9999px'
+      full: '9999px',
     },
     shadow: {
       none: 'none',
       sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
       md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
       lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-      xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+      xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
     },
     containerWidth: '1280px',
-    sidebarWidth: '280px'
+    sidebarWidth: '280px',
   },
   images: {
     logo: null,
     favicon: null,
     backgroundImage: null,
-    backgroundPattern: null
+    backgroundPattern: null,
   },
   animations: {
     duration: {
       fast: '150ms',
       normal: '300ms',
-      slow: '500ms'
+      slow: '500ms',
     },
     easing: {
       linear: 'linear',
       ease: 'ease',
       easeIn: 'ease-in',
       easeOut: 'ease-out',
-      easeInOut: 'ease-in-out'
-    }
+      easeInOut: 'ease-in-out',
+    },
   },
   darkMode: false,
   customCSS: '',
   version: '1.0.0',
   createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString()
+  updatedAt: new Date().toISOString(),
 };
 
 export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
@@ -147,10 +134,12 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
     duplicateTheme,
     updateThemeMetadata,
     updateThemeConfigurations,
-    uploadThemeAsset
+    uploadThemeAsset,
   } = useTheme();
-  
-  const [activeTab, setActiveTab] = useState<'colors' | 'typography' | 'images' | 'layout' | 'presets' | 'preview'>('colors');
+
+  const [activeTab, setActiveTab] = useState<'colors' | 'typography' | 'images' | 'layout' | 'presets' | 'preview'>(
+    'colors'
+  );
   const [currentTheme, setCurrentTheme] = useState<Theme>(defaultTheme);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -167,10 +156,12 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
         name: activeTheme.name,
         colors: {
           ...defaultTheme.colors,
-          ...(activeTheme.colors || {})
+          ...(activeTheme.colors || {}),
         },
         typography: {
-          fontFamily: activeTheme.typography?.font_family?.split(',')[0]?.trim()?.replace(/['"]/g, '') || defaultTheme.typography.fontFamily,
+          fontFamily:
+            activeTheme.typography?.font_family?.split(',')[0]?.trim()?.replace(/['"]/g, '') ||
+            defaultTheme.typography.fontFamily,
           fontFallback: activeTheme.typography?.font_family || defaultTheme.typography.fontFallback,
           fontSize: {
             base: activeTheme.typography?.font_size_base || defaultTheme.typography.fontSize.base,
@@ -181,48 +172,54 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
             xl: activeTheme.typography?.font_size_xl || defaultTheme.typography.fontSize.xl,
             '2xl': activeTheme.typography?.font_size_2xl || defaultTheme.typography.fontSize['2xl'],
             '3xl': activeTheme.typography?.font_size_3xl || defaultTheme.typography.fontSize['3xl'],
-            '4xl': activeTheme.typography?.font_size_4xl || defaultTheme.typography.fontSize['4xl']
+            '4xl': activeTheme.typography?.font_size_4xl || defaultTheme.typography.fontSize['4xl'],
           },
           fontWeight: defaultTheme.typography.fontWeight,
           lineHeight: {
             tight: parseFloat(activeTheme.typography?.line_height_tight || '1.25'),
             normal: parseFloat(activeTheme.typography?.line_height_base || '1.5'),
-            relaxed: parseFloat(activeTheme.typography?.line_height_loose || '1.75')
-          }
+            relaxed: parseFloat(activeTheme.typography?.line_height_loose || '1.75'),
+          },
         },
-        spacing: activeTheme.spacing ? {
-          unit: 4,
-          scale: {
-            xs: parseInt(activeTheme.spacing.spacing_xs || '2') / 4,
-            sm: parseInt(activeTheme.spacing.spacing_sm || '4') / 4,
-            md: parseInt(activeTheme.spacing.spacing_md || '6') / 4,
-            lg: parseInt(activeTheme.spacing.spacing_lg || '8') / 4,
-            xl: parseInt(activeTheme.spacing.spacing_xl || '12') / 4,
-            '2xl': parseInt(activeTheme.spacing.spacing_2xl || '16') / 4,
-            '3xl': parseInt(activeTheme.spacing.spacing_3xl || '24') / 4
-          }
-        } : defaultTheme.spacing,
+        spacing: activeTheme.spacing
+          ? {
+              unit: 4,
+              scale: {
+                xs: parseInt(activeTheme.spacing.spacing_xs || '2') / 4,
+                sm: parseInt(activeTheme.spacing.spacing_sm || '4') / 4,
+                md: parseInt(activeTheme.spacing.spacing_md || '6') / 4,
+                lg: parseInt(activeTheme.spacing.spacing_lg || '8') / 4,
+                xl: parseInt(activeTheme.spacing.spacing_xl || '12') / 4,
+                '2xl': parseInt(activeTheme.spacing.spacing_2xl || '16') / 4,
+                '3xl': parseInt(activeTheme.spacing.spacing_3xl || '24') / 4,
+              },
+            }
+          : defaultTheme.spacing,
         layout: {
-          borderRadius: activeTheme.borders ? {
-            none: '0px',
-            sm: activeTheme.borders.radius_sm || '0.125rem',
-            md: activeTheme.borders.radius_md || '0.375rem',
-            lg: activeTheme.borders.radius_lg || '0.5rem',
-            xl: activeTheme.borders.radius_xl || '0.75rem',
-            full: activeTheme.borders.radius_full || '9999px'
-          } : defaultTheme.layout.borderRadius,
-          shadow: activeTheme.shadows ? {
-            none: 'none',
-            sm: activeTheme.shadows.shadow_sm || '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-            md: activeTheme.shadows.shadow_md || '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            lg: activeTheme.shadows.shadow_lg || '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-            xl: activeTheme.shadows.shadow_xl || '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-          } : defaultTheme.layout.shadow,
+          borderRadius: activeTheme.borders
+            ? {
+                none: '0px',
+                sm: activeTheme.borders.radius_sm || '0.125rem',
+                md: activeTheme.borders.radius_md || '0.375rem',
+                lg: activeTheme.borders.radius_lg || '0.5rem',
+                xl: activeTheme.borders.radius_xl || '0.75rem',
+                full: activeTheme.borders.radius_full || '9999px',
+              }
+            : defaultTheme.layout.borderRadius,
+          shadow: activeTheme.shadows
+            ? {
+                none: 'none',
+                sm: activeTheme.shadows.shadow_sm || '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                md: activeTheme.shadows.shadow_md || '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                lg: activeTheme.shadows.shadow_lg || '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                xl: activeTheme.shadows.shadow_xl || '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+              }
+            : defaultTheme.layout.shadow,
           containerWidth: activeTheme.spacing?.container_max_width || defaultTheme.layout.containerWidth,
-          sidebarWidth: defaultTheme.layout.sidebarWidth
+          sidebarWidth: defaultTheme.layout.sidebarWidth,
         },
         darkMode: activeTheme.slug === 'dark-mode',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       });
       setIsDarkMode(activeTheme.slug === 'dark-mode');
     }
@@ -232,201 +229,224 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
     setCurrentTheme(prev => ({
       ...prev,
       ...updates,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     }));
     setHasChanges(true);
   }, []);
 
-  const handleColorChange = useCallback((colors: Partial<Theme['colors']>) => {
-    handleThemeChange({
-      colors: { ...currentTheme.colors, ...colors }
-    });
-  }, [currentTheme.colors, handleThemeChange]);
-
-  const handleTypographyChange = useCallback((typography: Partial<Theme['typography']>) => {
-    handleThemeChange({
-      typography: { ...currentTheme.typography, ...typography }
-    });
-  }, [currentTheme.typography, handleThemeChange]);
-
-  const handleLayoutChange = useCallback((layout: Partial<Theme['layout']>) => {
-    handleThemeChange({
-      layout: { ...currentTheme.layout, ...layout }
-    });
-  }, [currentTheme.layout, handleThemeChange]);
-
-  const handleImagesChange = useCallback((images: Partial<Theme['images']>) => {
-    handleThemeChange({
-      images: { ...currentTheme.images, ...images }
-    });
-  }, [currentTheme.images, handleThemeChange]);
-
-  const handlePresetSelect = useCallback(async (preset: PresetTheme) => {
-    // Find the preset theme in the database
-    const dbTheme = themes.find(t => t.slug === preset.slug);
-    
-    if (dbTheme) {
-      // Activate the preset theme
-      await setTheme(dbTheme.id);
-      toast.success(`Activated theme: ${preset.name}`);
-      
-      // Update local state to match
-      setCurrentTheme({
-        ...defaultTheme,
-        name: preset.name,
-        colors: {
-          ...defaultTheme.colors,
-          ...(dbTheme.colors || {})
-        },
-        typography: {
-          fontFamily: dbTheme.typography?.font_family?.split(',')[0]?.trim()?.replace(/['"]/g, '') || defaultTheme.typography.fontFamily,
-          fontFallback: dbTheme.typography?.font_family || defaultTheme.typography.fontFallback,
-          fontSize: {
-            base: dbTheme.typography?.font_size_base || defaultTheme.typography.fontSize.base,
-            xs: dbTheme.typography?.font_size_sm || defaultTheme.typography.fontSize.xs,
-            sm: dbTheme.typography?.font_size_sm || defaultTheme.typography.fontSize.sm,
-            md: dbTheme.typography?.font_size_base || defaultTheme.typography.fontSize.md,
-            lg: dbTheme.typography?.font_size_lg || defaultTheme.typography.fontSize.lg,
-            xl: dbTheme.typography?.font_size_xl || defaultTheme.typography.fontSize.xl,
-            '2xl': dbTheme.typography?.font_size_2xl || defaultTheme.typography.fontSize['2xl'],
-            '3xl': dbTheme.typography?.font_size_3xl || defaultTheme.typography.fontSize['3xl'],
-            '4xl': dbTheme.typography?.font_size_4xl || defaultTheme.typography.fontSize['4xl']
-          },
-          fontWeight: defaultTheme.typography.fontWeight,
-          lineHeight: {
-            tight: parseFloat(dbTheme.typography?.line_height_tight || '1.25'),
-            normal: parseFloat(dbTheme.typography?.line_height_base || '1.5'),
-            relaxed: parseFloat(dbTheme.typography?.line_height_loose || '1.75')
-          }
-        },
-        layout: {
-          borderRadius: dbTheme.borders ? {
-            none: '0px',
-            sm: dbTheme.borders.radius_sm || '0.125rem',
-            md: dbTheme.borders.radius_md || '0.375rem',
-            lg: dbTheme.borders.radius_lg || '0.5rem',
-            xl: dbTheme.borders.radius_xl || '0.75rem',
-            full: dbTheme.borders.radius_full || '9999px'
-          } : defaultTheme.layout.borderRadius,
-          shadow: dbTheme.shadows ? {
-            none: 'none',
-            sm: dbTheme.shadows.shadow_sm || '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-            md: dbTheme.shadows.shadow_md || '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            lg: dbTheme.shadows.shadow_lg || '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-            xl: dbTheme.shadows.shadow_xl || '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-          } : defaultTheme.layout.shadow,
-          containerWidth: dbTheme.spacing?.container_max_width || defaultTheme.layout.containerWidth,
-          sidebarWidth: defaultTheme.layout.sidebarWidth
-        },
-        spacing: dbTheme.spacing ? {
-          unit: 4,
-          scale: {
-            xs: parseInt(dbTheme.spacing.spacing_xs || '2') / 4,
-            sm: parseInt(dbTheme.spacing.spacing_sm || '4') / 4,
-            md: parseInt(dbTheme.spacing.spacing_md || '6') / 4,
-            lg: parseInt(dbTheme.spacing.spacing_lg || '8') / 4,
-            xl: parseInt(dbTheme.spacing.spacing_xl || '12') / 4,
-            '2xl': parseInt(dbTheme.spacing.spacing_2xl || '16') / 4,
-            '3xl': parseInt(dbTheme.spacing.spacing_3xl || '24') / 4
-          }
-        } : defaultTheme.spacing,
-        darkMode: preset.name.toLowerCase().includes('dark'),
-        updatedAt: new Date().toISOString()
+  const handleColorChange = useCallback(
+    (colors: Partial<Theme['colors']>) => {
+      handleThemeChange({
+        colors: { ...currentTheme.colors, ...colors },
       });
-      setHasChanges(false); // No changes needed since we just activated a preset
-    } else {
-      // If not found in database, just update local state for editing
-      toast('Preset theme not found in database. You can customize and save it.', {
-        icon: '💡',
+    },
+    [currentTheme.colors, handleThemeChange]
+  );
+
+  const handleTypographyChange = useCallback(
+    (typography: Partial<Theme['typography']>) => {
+      handleThemeChange({
+        typography: { ...currentTheme.typography, ...typography },
       });
-      
-      const { colors, typography, spacing, borders, shadows } = preset.configurations;
-      
-      setCurrentTheme({
-        ...defaultTheme,
-        name: preset.name,
-        colors: {
-          ...defaultTheme.colors,
-          ...colors
-        },
-        typography: {
-          fontFamily: typography.font_family.split(',')[0].trim(),
-          fontFallback: typography.font_family,
-          fontSize: {
-            base: typography.font_size_base,
-            xs: typography.font_size_sm,
-            sm: typography.font_size_sm,
-            md: typography.font_size_base,
-            lg: typography.font_size_lg,
-            xl: typography.font_size_xl,
-            '2xl': typography.font_size_2xl,
-            '3xl': typography.font_size_3xl,
-            '4xl': typography.font_size_4xl
-          },
-          fontWeight: {
-            light: 300,
-            normal: 400,
-            medium: 500,
-            semibold: 600,
-            bold: 700
-          },
-          lineHeight: {
-            tight: parseFloat(typography.line_height_tight),
-            normal: parseFloat(typography.line_height_base),
-            relaxed: parseFloat(typography.line_height_loose)
-          }
-        },
-        layout: {
-          borderRadius: {
-            none: borders.radius_sm,
-            sm: borders.radius_sm,
-            md: borders.radius_md,
-            lg: borders.radius_lg,
-            xl: borders.radius_xl,
-            full: borders.radius_full
-          },
-          shadow: {
-            none: 'none',
-            sm: shadows.shadow_sm,
-            md: shadows.shadow_md,
-            lg: shadows.shadow_lg,
-            xl: shadows.shadow_xl
-          },
-          containerWidth: spacing.container_max_width,
-          sidebarWidth: '256px'
-        },
-        spacing: {
-          unit: 4,
-          scale: {
-            xs: parseInt(spacing.spacing_xs) / 4,
-            sm: parseInt(spacing.spacing_sm) / 4,
-            md: parseInt(spacing.spacing_md) / 4,
-            lg: parseInt(spacing.spacing_lg) / 4,
-            xl: parseInt(spacing.spacing_xl) / 4,
-            '2xl': parseInt(spacing.spacing_2xl) / 4,
-            '3xl': parseInt(spacing.spacing_3xl) / 4
-          }
-        },
-        darkMode: preset.name.toLowerCase().includes('dark'),
-        updatedAt: new Date().toISOString()
+    },
+    [currentTheme.typography, handleThemeChange]
+  );
+
+  const handleLayoutChange = useCallback(
+    (layout: Partial<Theme['layout']>) => {
+      handleThemeChange({
+        layout: { ...currentTheme.layout, ...layout },
       });
-      setHasChanges(true);
-    }
-  }, [themes, setTheme]);
+    },
+    [currentTheme.layout, handleThemeChange]
+  );
+
+  const handleImagesChange = useCallback(
+    (images: Partial<Theme['images']>) => {
+      handleThemeChange({
+        images: { ...currentTheme.images, ...images },
+      });
+    },
+    [currentTheme.images, handleThemeChange]
+  );
+
+  const handlePresetSelect = useCallback(
+    async (preset: PresetTheme) => {
+      // Find the preset theme in the database
+      const dbTheme = themes.find(t => t.slug === preset.slug);
+
+      if (dbTheme) {
+        // Activate the preset theme
+        await setTheme(dbTheme.id);
+        toast.success(`Activated theme: ${preset.name}`);
+
+        // Update local state to match
+        setCurrentTheme({
+          ...defaultTheme,
+          name: preset.name,
+          colors: {
+            ...defaultTheme.colors,
+            ...(dbTheme.colors || {}),
+          },
+          typography: {
+            fontFamily:
+              dbTheme.typography?.font_family?.split(',')[0]?.trim()?.replace(/['"]/g, '') ||
+              defaultTheme.typography.fontFamily,
+            fontFallback: dbTheme.typography?.font_family || defaultTheme.typography.fontFallback,
+            fontSize: {
+              base: dbTheme.typography?.font_size_base || defaultTheme.typography.fontSize.base,
+              xs: dbTheme.typography?.font_size_sm || defaultTheme.typography.fontSize.xs,
+              sm: dbTheme.typography?.font_size_sm || defaultTheme.typography.fontSize.sm,
+              md: dbTheme.typography?.font_size_base || defaultTheme.typography.fontSize.md,
+              lg: dbTheme.typography?.font_size_lg || defaultTheme.typography.fontSize.lg,
+              xl: dbTheme.typography?.font_size_xl || defaultTheme.typography.fontSize.xl,
+              '2xl': dbTheme.typography?.font_size_2xl || defaultTheme.typography.fontSize['2xl'],
+              '3xl': dbTheme.typography?.font_size_3xl || defaultTheme.typography.fontSize['3xl'],
+              '4xl': dbTheme.typography?.font_size_4xl || defaultTheme.typography.fontSize['4xl'],
+            },
+            fontWeight: defaultTheme.typography.fontWeight,
+            lineHeight: {
+              tight: parseFloat(dbTheme.typography?.line_height_tight || '1.25'),
+              normal: parseFloat(dbTheme.typography?.line_height_base || '1.5'),
+              relaxed: parseFloat(dbTheme.typography?.line_height_loose || '1.75'),
+            },
+          },
+          layout: {
+            borderRadius: dbTheme.borders
+              ? {
+                  none: '0px',
+                  sm: dbTheme.borders.radius_sm || '0.125rem',
+                  md: dbTheme.borders.radius_md || '0.375rem',
+                  lg: dbTheme.borders.radius_lg || '0.5rem',
+                  xl: dbTheme.borders.radius_xl || '0.75rem',
+                  full: dbTheme.borders.radius_full || '9999px',
+                }
+              : defaultTheme.layout.borderRadius,
+            shadow: dbTheme.shadows
+              ? {
+                  none: 'none',
+                  sm: dbTheme.shadows.shadow_sm || '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                  md: dbTheme.shadows.shadow_md || '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  lg: dbTheme.shadows.shadow_lg || '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                  xl: dbTheme.shadows.shadow_xl || '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                }
+              : defaultTheme.layout.shadow,
+            containerWidth: dbTheme.spacing?.container_max_width || defaultTheme.layout.containerWidth,
+            sidebarWidth: defaultTheme.layout.sidebarWidth,
+          },
+          spacing: dbTheme.spacing
+            ? {
+                unit: 4,
+                scale: {
+                  xs: parseInt(dbTheme.spacing.spacing_xs || '2') / 4,
+                  sm: parseInt(dbTheme.spacing.spacing_sm || '4') / 4,
+                  md: parseInt(dbTheme.spacing.spacing_md || '6') / 4,
+                  lg: parseInt(dbTheme.spacing.spacing_lg || '8') / 4,
+                  xl: parseInt(dbTheme.spacing.spacing_xl || '12') / 4,
+                  '2xl': parseInt(dbTheme.spacing.spacing_2xl || '16') / 4,
+                  '3xl': parseInt(dbTheme.spacing.spacing_3xl || '24') / 4,
+                },
+              }
+            : defaultTheme.spacing,
+          darkMode: preset.name.toLowerCase().includes('dark'),
+          updatedAt: new Date().toISOString(),
+        });
+        setHasChanges(false); // No changes needed since we just activated a preset
+      } else {
+        // If not found in database, just update local state for editing
+        toast('Preset theme not found in database. You can customize and save it.', {
+          icon: '💡',
+        });
+
+        const { colors, typography, spacing, borders, shadows } = preset.configurations;
+
+        setCurrentTheme({
+          ...defaultTheme,
+          name: preset.name,
+          colors: {
+            ...defaultTheme.colors,
+            ...colors,
+          },
+          typography: {
+            fontFamily: typography.font_family.split(',')[0].trim(),
+            fontFallback: typography.font_family,
+            fontSize: {
+              base: typography.font_size_base,
+              xs: typography.font_size_sm,
+              sm: typography.font_size_sm,
+              md: typography.font_size_base,
+              lg: typography.font_size_lg,
+              xl: typography.font_size_xl,
+              '2xl': typography.font_size_2xl,
+              '3xl': typography.font_size_3xl,
+              '4xl': typography.font_size_4xl,
+            },
+            fontWeight: {
+              light: 300,
+              normal: 400,
+              medium: 500,
+              semibold: 600,
+              bold: 700,
+            },
+            lineHeight: {
+              tight: parseFloat(typography.line_height_tight),
+              normal: parseFloat(typography.line_height_base),
+              relaxed: parseFloat(typography.line_height_loose),
+            },
+          },
+          layout: {
+            borderRadius: {
+              none: borders.radius_sm,
+              sm: borders.radius_sm,
+              md: borders.radius_md,
+              lg: borders.radius_lg,
+              xl: borders.radius_xl,
+              full: borders.radius_full,
+            },
+            shadow: {
+              none: 'none',
+              sm: shadows.shadow_sm,
+              md: shadows.shadow_md,
+              lg: shadows.shadow_lg,
+              xl: shadows.shadow_xl,
+            },
+            containerWidth: spacing.container_max_width,
+            sidebarWidth: '256px',
+          },
+          spacing: {
+            unit: 4,
+            scale: {
+              xs: parseInt(spacing.spacing_xs) / 4,
+              sm: parseInt(spacing.spacing_sm) / 4,
+              md: parseInt(spacing.spacing_md) / 4,
+              lg: parseInt(spacing.spacing_lg) / 4,
+              xl: parseInt(spacing.spacing_xl) / 4,
+              '2xl': parseInt(spacing.spacing_2xl) / 4,
+              '3xl': parseInt(spacing.spacing_3xl) / 4,
+            },
+          },
+          darkMode: preset.name.toLowerCase().includes('dark'),
+          updatedAt: new Date().toISOString(),
+        });
+        setHasChanges(true);
+      }
+    },
+    [themes, setTheme]
+  );
 
   const handleSaveTheme = useCallback(async () => {
     if (!activeTheme) {
       toast.error('No active theme selected. Please select a theme first.');
       return;
     }
-    
+
     setLoading(true);
     try {
       // Convert the local theme format to the database format
       const success = await updateTheme(activeTheme.id, {
-        name: currentTheme.name
+        name: currentTheme.name,
       });
-      
+
       if (success) {
         const fontFamily = currentTheme.typography.fontFamily;
         const fallback = currentTheme.typography.fontFallback || 'system-ui, -apple-system, sans-serif';
@@ -448,7 +468,7 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
             font_size_4xl: currentTheme.typography.fontSize['4xl'],
             line_height_base: currentTheme.typography.lineHeight.normal.toString(),
             line_height_tight: currentTheme.typography.lineHeight.tight.toString(),
-            line_height_loose: currentTheme.typography.lineHeight.relaxed.toString()
+            line_height_loose: currentTheme.typography.lineHeight.relaxed.toString(),
           },
           spacing: {
             spacing_xs: `${scale.xs * unit}px`,
@@ -459,7 +479,7 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
             spacing_2xl: `${scale['2xl'] * unit}px`,
             spacing_3xl: `${scale['3xl'] * unit}px`,
             container_max_width: currentTheme.layout.containerWidth,
-            container_padding: '1rem'
+            container_padding: '1rem',
           },
           borders: {
             radius_sm: currentTheme.layout.borderRadius.sm,
@@ -469,14 +489,14 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
             radius_full: currentTheme.layout.borderRadius.full,
             width_thin: '1px',
             width_medium: '2px',
-            width_thick: '4px'
+            width_thick: '4px',
           },
           shadows: {
             shadow_sm: currentTheme.layout.shadow.sm,
             shadow_md: currentTheme.layout.shadow.md,
             shadow_lg: currentTheme.layout.shadow.lg,
-            shadow_xl: currentTheme.layout.shadow.xl
-          }
+            shadow_xl: currentTheme.layout.shadow.xl,
+          },
         });
         if (!saved) throw new Error('Theme configuration was not saved');
 
@@ -498,10 +518,10 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
 
   const handleExportTheme = useCallback(() => {
     const dataStr = JSON.stringify(currentTheme, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
     const exportFileDefaultName = `theme-${currentTheme.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.json`;
-    
+
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
@@ -513,13 +533,13 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       try {
         const importedTheme = JSON.parse(e.target?.result as string);
         setCurrentTheme({
           ...defaultTheme,
           ...importedTheme,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         });
         setHasChanges(true);
       } catch (error) {
@@ -532,7 +552,7 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
 
   const generateCSSVariables = (theme: Theme, darkMode: boolean) => {
     const colors = darkMode ? generateDarkModeColors(theme.colors) : theme.colors;
-    
+
     return `
 :root {
   /* Colors */
@@ -623,7 +643,7 @@ ${theme.customCSS}
       background: '#0F172A',
       surface: '#1E293B',
       text: '#F1F5F9',
-      border: '#334155'
+      border: '#334155',
     };
   };
 
@@ -633,7 +653,7 @@ ${theme.customCSS}
     { id: 'images', label: 'Images & Logos', icon: Image },
     { id: 'layout', label: 'Layout', icon: Layout },
     { id: 'presets', label: 'Presets', icon: Monitor },
-    { id: 'preview', label: 'Preview', icon: Eye }
+    { id: 'preview', label: 'Preview', icon: Eye },
   ];
 
   return (
@@ -651,7 +671,7 @@ ${theme.customCSS}
             <div className="flex items-center gap-2">
               <select
                 value={activeTheme?.id || ''}
-                onChange={(e) => {
+                onChange={e => {
                   if (e.target.value) {
                     setTheme(e.target.value);
                   }
@@ -670,7 +690,7 @@ ${theme.customCSS}
                   const newTheme = await createTheme({
                     name: 'Custom Theme ' + new Date().toLocaleString(),
                     slug: 'custom-theme-' + Date.now(),
-                    description: 'A custom theme'
+                    description: 'A custom theme',
                   });
                   if (newTheme) {
                     await setTheme(newTheme.id);
@@ -690,19 +710,15 @@ ${theme.customCSS}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-gray-900">Advanced Theme Editor</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Customize every aspect of your platform's appearance
-          </p>
+          <p className="text-sm text-gray-500 mt-1">Customize every aspect of your platform's appearance</p>
         </div>
-        
+
         <div className="flex items-center flex-wrap gap-3">
           {/* Dark Mode Toggle */}
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
             className={`p-2 rounded-lg transition-colors ${
-              isDarkMode 
-                ? 'bg-gray-800 text-yellow-400' 
-                : 'bg-gray-100 text-gray-600'
+              isDarkMode ? 'bg-gray-800 text-yellow-400' : 'bg-gray-100 text-gray-600'
             }`}
             title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
           >
@@ -712,17 +728,12 @@ ${theme.customCSS}
           {/* Import/Export */}
           <div className="flex items-center gap-2">
             <label className="cursor-pointer">
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleImportTheme}
-                className="hidden"
-              />
+              <input type="file" accept=".json" onChange={handleImportTheme} className="hidden" />
               <div className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
                 <Upload className="h-5 w-5" />
               </div>
             </label>
-            
+
             <button
               onClick={handleExportTheme}
               className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
@@ -743,7 +754,7 @@ ${theme.customCSS}
                 <RefreshCw className="h-4 w-4 mr-1 inline" />
                 Reset
               </button>
-              
+
               <button
                 onClick={handleSaveTheme}
                 disabled={loading}
@@ -760,7 +771,7 @@ ${theme.customCSS}
       {/* Tabs */}
       <div className="border-b border-gray-200">
         <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto">
-          {tabs.map((tab) => {
+          {tabs.map(tab => {
             const Icon = tab.icon;
             return (
               <button
@@ -783,27 +794,15 @@ ${theme.customCSS}
       {/* Tab Content */}
       <div className="min-h-[500px]">
         {activeTab === 'colors' && (
-          <ColorSchemeEditor
-            colors={currentTheme.colors}
-            onChange={handleColorChange}
-            isDarkMode={isDarkMode}
-          />
+          <ColorSchemeEditor colors={currentTheme.colors} onChange={handleColorChange} isDarkMode={isDarkMode} />
         )}
-        
+
         {activeTab === 'typography' && (
-          <FontSelector
-            typography={currentTheme.typography}
-            onChange={handleTypographyChange}
-          />
+          <FontSelector typography={currentTheme.typography} onChange={handleTypographyChange} />
         )}
-        
-        {activeTab === 'images' && (
-          <ImageUploader
-            images={currentTheme.images}
-            onChange={handleImagesChange}
-          />
-        )}
-        
+
+        {activeTab === 'images' && <ImageUploader images={currentTheme.images} onChange={handleImagesChange} />}
+
         {activeTab === 'layout' && (
           <div className="space-y-6">
             {/* Layout controls would go here */}
@@ -812,17 +811,17 @@ ${theme.customCSS}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Border Radius */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Default Border Radius
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Default Border Radius</label>
                   <select
                     value={currentTheme.layout.borderRadius.md}
-                    onChange={(e) => handleLayoutChange({
-                      borderRadius: {
-                        ...currentTheme.layout.borderRadius,
-                        md: e.target.value
-                      }
-                    })}
+                    onChange={e =>
+                      handleLayoutChange({
+                        borderRadius: {
+                          ...currentTheme.layout.borderRadius,
+                          md: e.target.value,
+                        },
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="0px">None (0px)</option>
@@ -835,17 +834,17 @@ ${theme.customCSS}
 
                 {/* Shadow Style */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Default Shadow
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Default Shadow</label>
                   <select
                     value={currentTheme.layout.shadow.md}
-                    onChange={(e) => handleLayoutChange({
-                      shadow: {
-                        ...currentTheme.layout.shadow,
-                        md: e.target.value
-                      }
-                    })}
+                    onChange={e =>
+                      handleLayoutChange({
+                        shadow: {
+                          ...currentTheme.layout.shadow,
+                          md: e.target.value,
+                        },
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="none">None</option>
@@ -858,15 +857,15 @@ ${theme.customCSS}
 
                 {/* Container Width */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Container Max Width
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Container Max Width</label>
                   <input
                     type="text"
                     value={currentTheme.layout.containerWidth}
-                    onChange={(e) => handleLayoutChange({
-                      containerWidth: e.target.value
-                    })}
+                    onChange={e =>
+                      handleLayoutChange({
+                        containerWidth: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                     placeholder="1280px"
                   />
@@ -874,15 +873,15 @@ ${theme.customCSS}
 
                 {/* Sidebar Width */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sidebar Width
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Sidebar Width</label>
                   <input
                     type="text"
                     value={currentTheme.layout.sidebarWidth}
-                    onChange={(e) => handleLayoutChange({
-                      sidebarWidth: e.target.value
-                    })}
+                    onChange={e =>
+                      handleLayoutChange({
+                        sidebarWidth: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                     placeholder="280px"
                   />
@@ -895,21 +894,18 @@ ${theme.customCSS}
               <h4 className="font-medium text-gray-900 mb-4">Custom CSS</h4>
               <textarea
                 value={currentTheme.customCSS}
-                onChange={(e) => handleThemeChange({ customCSS: e.target.value })}
+                onChange={e => handleThemeChange({ customCSS: e.target.value })}
                 className="w-full h-64 px-3 py-2 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                 placeholder="/* Add your custom CSS here */"
               />
             </div>
           </div>
         )}
-        
+
         {activeTab === 'presets' && (
-          <PresetThemes
-            onSelectPreset={handlePresetSelect}
-            currentThemeName={currentTheme.name}
-          />
+          <PresetThemes onSelectPreset={handlePresetSelect} currentThemeName={currentTheme.name} />
         )}
-        
+
         {activeTab === 'preview' && (
           <ThemePreview
             theme={currentTheme}
@@ -924,16 +920,16 @@ ${theme.customCSS}
       <ThemeManager
         currentTheme={currentTheme}
         savedThemes={savedThemes}
-        onSaveTheme={(theme) => {
+        onSaveTheme={theme => {
           const newSavedThemes = [...savedThemes, theme];
           setSavedThemes(newSavedThemes);
           localStorage.setItem('saved_themes', JSON.stringify(newSavedThemes));
         }}
-        onLoadTheme={(theme) => {
+        onLoadTheme={theme => {
           setCurrentTheme(theme);
           setHasChanges(true);
         }}
-        onDeleteTheme={(themeName) => {
+        onDeleteTheme={themeName => {
           const newSavedThemes = savedThemes.filter(t => t.name !== themeName);
           setSavedThemes(newSavedThemes);
           localStorage.setItem('saved_themes', JSON.stringify(newSavedThemes));

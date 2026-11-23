@@ -53,7 +53,7 @@ export interface MockMarketplaceListing {
   status: ContentStatus;
   featured: boolean;
   seller_id?: string;
-  seller?: { 
+  seller?: {
     id: string | number;
     name?: string;
     image?: string;

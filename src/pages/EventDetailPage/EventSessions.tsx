@@ -9,19 +9,19 @@ const getEmbedUrl = (url: string): string => {
   // YouTube URL patterns
   const youtubeRegex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
   const youtubeMatch = url.match(youtubeRegex);
-  
+
   if (youtubeMatch && youtubeMatch[1]) {
     return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
   }
-  
+
   // Vimeo URL patterns
   const vimeoRegex = /(?:vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|)(\d+)(?:|\/?))/;
   const vimeoMatch = url.match(vimeoRegex);
-  
+
   if (vimeoMatch && vimeoMatch[1]) {
     return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
   }
-  
+
   // If no match, return the original URL
   return url;
 };
@@ -37,12 +37,10 @@ const EventSessions: React.FC<EventSessionsProps> = ({ event }) => {
 
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">
-        Event Schedule
-      </h2>
-      
+      <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">Event Schedule</h2>
+
       <div className="space-y-6">
-        {event.sessions.map((session) => (
+        {event.sessions.map(session => (
           <SessionCard key={session.id} session={session} />
         ))}
       </div>
@@ -53,14 +51,12 @@ const EventSessions: React.FC<EventSessionsProps> = ({ event }) => {
 const SessionCard: React.FC<{ session: EventSession }> = ({ session }) => {
   const startTime = parseISO(session.startTime);
   const endTime = parseISO(session.endTime);
-  
+
   return (
     <div className="bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
       <div className="bg-slate-100 dark:bg-slate-700 px-6 py-4">
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-          {session.title}
-        </h3>
-        
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{session.title}</h3>
+
         <div className="flex flex-wrap gap-4 mt-2 text-sm text-slate-600 dark:text-slate-300">
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1 text-orange-500" />
@@ -68,7 +64,7 @@ const SessionCard: React.FC<{ session: EventSession }> = ({ session }) => {
               {format(startTime, 'h:mm a')} - {format(endTime, 'h:mm a')}
             </span>
           </div>
-          
+
           {session.videoUrl && (
             <div className="flex items-center">
               <Video className="h-4 w-4 mr-1 text-orange-500" />
@@ -78,23 +74,21 @@ const SessionCard: React.FC<{ session: EventSession }> = ({ session }) => {
           {session.resources && session.resources.length > 0 && (
             <div className="flex items-center">
               <Link className="h-4 w-4 mr-1 text-orange-500" />
-              <span>{session.resources.length} {session.resources.length === 1 ? 'Resource' : 'Resources'}</span>
+              <span>
+                {session.resources.length} {session.resources.length === 1 ? 'Resource' : 'Resources'}
+              </span>
             </div>
           )}
         </div>
       </div>
-      
+
       <div className="p-6">
-        <p className="text-slate-600 dark:text-slate-300 mb-6">
-          {session.description}
-        </p>
+        <p className="text-slate-600 dark:text-slate-300 mb-6">{session.description}</p>
 
         {/* Video Embedding */}
         {session.videoUrl && (
           <div className="mb-6">
-            <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-4">
-              Session Video
-            </h4>
+            <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Session Video</h4>
             <div className="aspect-w-16 aspect-h-9 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
               <iframe
                 src={getEmbedUrl(session.videoUrl)}
@@ -110,26 +104,24 @@ const SessionCard: React.FC<{ session: EventSession }> = ({ session }) => {
         {/* Resources */}
         {session.resources && session.resources.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-4">
-              Session Resources
-            </h4>
+            <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Session Resources</h4>
             <div className="space-y-2">
-              {session.resources.map((resource) => (
+              {session.resources.map(resource => (
                 <ResourceLink key={resource.id} resource={resource} />
               ))}
             </div>
           </div>
         )}
-        
+
         {/* Presenters */}
         {session.presenters && session.presenters.length > 0 && (
           <div>
             <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-4">
               {session.presenters.length === 1 ? 'Presenter' : 'Presenters'}
             </h4>
-            
+
             <div className="space-y-4">
-              {session.presenters.map((presenter) => (
+              {session.presenters.map(presenter => (
                 <PresenterCard key={presenter.id} presenter={presenter} />
               ))}
             </div>
@@ -158,16 +150,14 @@ const ResourceLink: React.FC<{ resource: EventSessionResource }> = ({ resource }
   };
 
   return (
-    <a 
-      href={resource.url} 
-      target="_blank" 
+    <a
+      href={resource.url}
+      target="_blank"
       rel="noopener noreferrer"
       className="flex items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
     >
       {getResourceIcon(resource.type)}
-      <span className="font-medium text-slate-900 dark:text-white">
-        {resource.title}
-      </span>
+      <span className="font-medium text-slate-900 dark:text-white">{resource.title}</span>
     </a>
   );
 };
@@ -175,16 +165,10 @@ const ResourceLink: React.FC<{ resource: EventSessionResource }> = ({ resource }
 const PresenterCard: React.FC<{ presenter: EventPresenter }> = ({ presenter }) => {
   return (
     <div className="flex items-start">
-      <img 
-        src={presenter.image} 
-        alt={presenter.name} 
-        className="w-12 h-12 rounded-full mr-4 object-cover"
-      />
+      <img src={presenter.image} alt={presenter.name} className="w-12 h-12 rounded-full mr-4 object-cover" />
       <div>
-        <h5 className="font-medium text-slate-900 dark:text-white">
-          {presenter.name}
-        </h5>
-        
+        <h5 className="font-medium text-slate-900 dark:text-white">{presenter.name}</h5>
+
         {(presenter.title || presenter.company) && (
           <p className="text-sm text-orange-600 dark:text-orange-400">
             {presenter.title}
@@ -192,12 +176,8 @@ const PresenterCard: React.FC<{ presenter: EventPresenter }> = ({ presenter }) =
             {presenter.company}
           </p>
         )}
-        
-        {presenter.bio && (
-          <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-            {presenter.bio}
-          </p>
-        )}
+
+        {presenter.bio && <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">{presenter.bio}</p>}
       </div>
     </div>
   );

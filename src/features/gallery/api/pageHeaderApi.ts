@@ -48,17 +48,10 @@ class PageHeaderAssignmentApi {
     photoId?: string;
   }): Promise<PageHeaderAssignmentsResponse> {
     try {
-      const {
-        page = 1,
-        limit = 20,
-        pagePath,
-        isActive,
-        photoId,
-      } = params || {};
+      const { page = 1, limit = 20, pagePath, isActive, photoId } = params || {};
 
-      let query = (supabase as any)
-        .from(this.tableName)
-        .select(`
+      let query = (supabase as any).from(this.tableName).select(
+        `
           *,
           photo:photos!page_header_assignments_photo_id_fkey(
             id,
@@ -82,7 +75,9 @@ class PageHeaderAssignmentApi {
             name,
             image
           )
-        `, { count: 'exact' });
+        `,
+        { count: 'exact' }
+      );
 
       // Apply filters
       if (pagePath) {
@@ -91,12 +86,11 @@ class PageHeaderAssignmentApi {
 
       if (isActive !== undefined) {
         query = query.eq('is_active', isActive);
-        
+
         // If looking for active assignments, also check date range
         if (isActive) {
           const now = new Date().toISOString();
-          query = query.or(`start_date.is.null,start_date.lte.${now}`)
-                       .or(`end_date.is.null,end_date.gte.${now}`);
+          query = query.or(`start_date.is.null,start_date.lte.${now}`).or(`end_date.is.null,end_date.gte.${now}`);
         }
       }
 
@@ -105,8 +99,7 @@ class PageHeaderAssignmentApi {
       }
 
       // Apply sorting (by priority desc, then created date desc)
-      query = query.order('priority', { ascending: false })
-                   .order('created_at', { ascending: false });
+      query = query.order('priority', { ascending: false }).order('created_at', { ascending: false });
 
       // Apply pagination
       const from = (page - 1) * limit;
@@ -140,7 +133,8 @@ class PageHeaderAssignmentApi {
     try {
       const { data, error } = await (supabase as any)
         .from(this.tableName)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!page_header_assignments_photo_id_fkey(
             id,
@@ -164,7 +158,8 @@ class PageHeaderAssignmentApi {
             name,
             image
           )
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -185,7 +180,8 @@ class PageHeaderAssignmentApi {
 
       const { data, error } = await (supabase as any)
         .from(this.tableName)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!page_header_assignments_photo_id_fkey(
             id,
@@ -199,7 +195,8 @@ class PageHeaderAssignmentApi {
               slug
             )
           )
-        `)
+        `
+        )
         .eq('page_path', pagePath)
         .eq('is_active', true)
         .or(`start_date.is.null,start_date.lte.${now}`)
@@ -225,14 +222,18 @@ class PageHeaderAssignmentApi {
   async createAssignment(assignmentData: CreatePageHeaderAssignmentData): Promise<PageHeaderAssignment> {
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
 
       // Check if there's already an active assignment for this page with higher priority
-      const existingAssignment = await this.getActiveAssignmentForPage(assignmentData.page_path || assignmentData.pagePath || '');
-      
+      const existingAssignment = await this.getActiveAssignmentForPage(
+        assignmentData.page_path || assignmentData.pagePath || ''
+      );
+
       let priority = assignmentData.priority || 1;
       if (existingAssignment && existingAssignment.priority >= priority) {
         priority = existingAssignment.priority + 1;
@@ -252,7 +253,8 @@ class PageHeaderAssignmentApi {
       const { data, error } = await (supabase as any)
         .from(this.tableName)
         .insert(newAssignment)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!page_header_assignments_photo_id_fkey(
             id,
@@ -266,7 +268,8 @@ class PageHeaderAssignmentApi {
             name,
             image
           )
-        `)
+        `
+        )
         .single();
 
       if (error) {
@@ -295,7 +298,8 @@ class PageHeaderAssignmentApi {
           updated_at: new Date().toISOString(),
         })
         .eq('id', id)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!page_header_assignments_photo_id_fkey(
             id,
@@ -309,7 +313,8 @@ class PageHeaderAssignmentApi {
             name,
             image
           )
-        `)
+        `
+        )
         .single();
 
       if (error) {
@@ -325,10 +330,7 @@ class PageHeaderAssignmentApi {
 
   async deleteAssignment(id: string): Promise<boolean> {
     try {
-      const { error } = await (supabase as any)
-        .from(this.tableName)
-        .delete()
-        .eq('id', id);
+      const { error } = await (supabase as any).from(this.tableName).delete().eq('id', id);
 
       if (error) {
         throw handleSupabaseError(error);
@@ -349,11 +351,7 @@ class PageHeaderAssignmentApi {
     return this.updateAssignment(id, { is_active: false } as any);
   }
 
-  async scheduleAssignment(
-    id: string,
-    startDate: string,
-    endDate?: string
-  ): Promise<PageHeaderAssignment> {
+  async scheduleAssignment(id: string, startDate: string, endDate?: string): Promise<PageHeaderAssignment> {
     return this.updateAssignment(id, {
       start_date: startDate,
       end_date: endDate,
@@ -361,14 +359,12 @@ class PageHeaderAssignmentApi {
     } as any);
   }
 
-  async getScheduledAssignments(
-    startDate?: string,
-    endDate?: string
-  ): Promise<PageHeaderAssignment[]> {
+  async getScheduledAssignments(startDate?: string, endDate?: string): Promise<PageHeaderAssignment[]> {
     try {
       let query = (supabase as any)
         .from(this.tableName)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!page_header_assignments_photo_id_fkey(
             id,
@@ -382,7 +378,8 @@ class PageHeaderAssignmentApi {
             name,
             image
           )
-        `)
+        `
+        )
         .not('start_date', 'is', null);
 
       if (startDate) {
@@ -411,14 +408,11 @@ class PageHeaderAssignmentApi {
   async updatePriorities(assignments: Array<{ id: string; priority: number }>): Promise<boolean> {
     try {
       const updates = assignments.map(({ id, priority }) =>
-        (supabase as any)
-          .from(this.tableName)
-          .update({ priority })
-          .eq('id', id)
+        (supabase as any).from(this.tableName).update({ priority }).eq('id', id)
       );
 
       const results = await Promise.all(updates);
-      
+
       const hasErrors = results.some(result => result.error);
       if (hasErrors) {
         console.error('Some priority updates failed');
@@ -445,7 +439,7 @@ class PageHeaderAssignmentApi {
 
       // Group by page path and count active assignments
       const pageMap = new Map<string, { title: string; activeCount: number }>();
-      
+
       (data as any[]).forEach((assignment: any) => {
         const existing = pageMap.get(assignment.page_path);
         if (existing) {

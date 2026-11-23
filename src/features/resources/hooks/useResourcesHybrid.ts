@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { resourcesApi, ResourceInput } from '../api/resourcesApi';
-import { 
+import {
   selectResourcesFilters,
   selectSelectedResourceId,
   selectResourcesViewMode,
@@ -21,27 +21,27 @@ import { queryKeys } from '@/config/queryClient';
 export function useResourcesHybrid() {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-  
+
   // UI state from Redux
   const filters = useAppSelector(selectResourcesFilters);
   const selectedResourceId = useAppSelector(selectSelectedResourceId);
   const viewMode = useAppSelector(selectResourcesViewMode);
   const sortBy = useAppSelector(selectResourcesSortBy);
   const sortOrder = useAppSelector(selectResourcesSortOrder);
-  
+
   // React Query for server state
   const resourcesQuery = useQuery({
     queryKey: [...queryKeys.resources.list(filters)],
     queryFn: () => resourcesApi.getAll(filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-  
+
   const featuredQuery = useQuery({
     queryKey: [...queryKeys.resources.list({ featured: true })],
     queryFn: () => resourcesApi.getAll({ featured: true }),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
-  
+
   // Get single resource by ID
   const getResource = (id: string) => {
     return useQuery({
@@ -50,7 +50,7 @@ export function useResourcesHybrid() {
       enabled: !!id,
     });
   };
-  
+
   // Get related resources
   const getRelatedResources = (resourceId: string, limit: number = 3) => {
     return useQuery({
@@ -59,7 +59,7 @@ export function useResourcesHybrid() {
       enabled: !!resourceId,
     });
   };
-  
+
   // Mutations
   const createResource = useMutation({
     mutationFn: (data: ResourceInput) => resourcesApi.create(data),
@@ -67,52 +67,62 @@ export function useResourcesHybrid() {
       queryClient.invalidateQueries({ queryKey: [...queryKeys.resources.all] });
     },
   });
-  
+
   const updateResource = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Resource> }) => 
-      resourcesApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<Resource> }) => resourcesApi.update(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [...queryKeys.resources.all] });
       queryClient.invalidateQueries({ queryKey: [...queryKeys.resources.detail(id)] });
     },
   });
-  
+
   const deleteResource = useMutation({
     mutationFn: (id: string) => resourcesApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...queryKeys.resources.all] });
     },
   });
-  
+
   // UI actions
-  const setSearchTerm = useCallback((search?: string) => {
-    dispatch(updateFilters({ search }));
-  }, [dispatch]);
-  
-  const setTypes = useCallback((types?: string[]) => {
-    dispatch(updateFilters({ types }));
-  }, [dispatch]);
-  
-  const setCategory = useCallback((category?: string) => {
-    dispatch(updateFilters({ category }));
-  }, [dispatch]);
-  
-  const setFeaturedFilter = useCallback((featured?: boolean) => {
-    dispatch(updateFilters({ featured }));
-  }, [dispatch]);
-  
+  const setSearchTerm = useCallback(
+    (search?: string) => {
+      dispatch(updateFilters({ search }));
+    },
+    [dispatch]
+  );
+
+  const setTypes = useCallback(
+    (types?: string[]) => {
+      dispatch(updateFilters({ types }));
+    },
+    [dispatch]
+  );
+
+  const setCategory = useCallback(
+    (category?: string) => {
+      dispatch(updateFilters({ category }));
+    },
+    [dispatch]
+  );
+
+  const setFeaturedFilter = useCallback(
+    (featured?: boolean) => {
+      dispatch(updateFilters({ featured }));
+    },
+    [dispatch]
+  );
+
   const resetFilters = useCallback(() => {
     dispatch(clearFilters());
   }, [dispatch]);
-  
+
   // Sort and filter resources
   const sortedResources = [...(resourcesQuery.data || [])].sort((a, b) => {
     let comparison = 0;
-    
+
     switch (sortBy) {
       case 'date':
-        comparison = new Date(a.created_at || '').getTime() - 
-                    new Date(b.created_at || '').getTime();
+        comparison = new Date(a.created_at || '').getTime() - new Date(b.created_at || '').getTime();
         break;
       case 'title':
         comparison = (a.title || '').localeCompare(b.title || '');
@@ -121,10 +131,10 @@ export function useResourcesHybrid() {
         comparison = (a.type || '').localeCompare(b.type || '');
         break;
     }
-    
+
     return sortOrder === 'asc' ? comparison : -comparison;
   });
-  
+
   return {
     // Data
     resources: sortedResources,
@@ -132,14 +142,14 @@ export function useResourcesHybrid() {
     isLoading: resourcesQuery.isLoading,
     isFeaturedLoading: featuredQuery.isLoading,
     error: resourcesQuery.error,
-    
+
     // UI state
     filters,
     selectedResourceId,
     viewMode,
     sortBy,
     sortOrder,
-    
+
     // Actions
     setSearchTerm,
     setTypes,
@@ -150,12 +160,12 @@ export function useResourcesHybrid() {
     setViewMode: useCallback((mode: 'grid' | 'list') => dispatch(setViewMode(mode)), [dispatch]),
     setSortBy: useCallback((by: 'date' | 'title' | 'type') => dispatch(setSortBy(by)), [dispatch]),
     setSortOrder: useCallback((order: 'asc' | 'desc') => dispatch(setSortOrder(order)), [dispatch]),
-    
+
     // Queries
     getResource,
     getRelatedResources,
     refetch: resourcesQuery.refetch,
-    
+
     // Mutations
     createResource,
     updateResource,

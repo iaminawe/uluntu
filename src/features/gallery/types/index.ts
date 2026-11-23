@@ -94,7 +94,7 @@ export interface Gallery {
   created_at: string;
   updated_at: string;
   createdAt?: string; // Alias for created_at
-  updatedAt?: string; // Alias for updated_at  
+  updatedAt?: string; // Alias for updated_at
   ownerId?: string; // Alias for user_id
   owner?: {
     id: string;
@@ -411,7 +411,6 @@ export interface PromotionRequestsResponse {
   totalPages?: number;
   data?: PhotoPromotionRequest[]; // Compatibility
 }
-
 
 export interface PageHeaderAssignmentsResponse {
   assignments: any[];

@@ -30,7 +30,7 @@ export function PerformanceProvider({ children, showDevTools = false }: Performa
     enableNetworkTracking: true,
     enableRenderTracking: true,
     enableMemoryTracking: true,
-    enableQueryTracking: true
+    enableQueryTracking: true,
   });
 
   // Add performance monitoring to window for debugging
@@ -40,7 +40,7 @@ export function PerformanceProvider({ children, showDevTools = false }: Performa
       getMetrics: performanceHooks.getMetrics,
       generateReport: performanceHooks.generateReport,
       mark: performanceHooks.markPerformance,
-      measure: performanceHooks.measurePerformance
+      measure: performanceHooks.measurePerformance,
     };
   }
 

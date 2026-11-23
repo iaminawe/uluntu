@@ -31,7 +31,7 @@ export const interactionsApi = {
       .insert({
         user_id: userId,
         entity_type: entityType,
-        entity_id: entityId
+        entity_id: entityId,
       })
       .select()
       .single();
@@ -54,9 +54,11 @@ export const interactionsApi = {
   async getComments(entityType: EntityType, entityId: string, parentId?: string) {
     let query = supabase
       .from('comments')
-      .select(`
+      .select(
+        `
         *
-      `)
+      `
+      )
       .eq('entity_type', entityType)
       .eq('entity_id', entityId)
       .eq('is_deleted', false);
@@ -71,13 +73,7 @@ export const interactionsApi = {
     return { data, error };
   },
 
-  async createComment(
-    userId: string,
-    entityType: EntityType,
-    entityId: string,
-    content: string,
-    parentId?: string
-  ) {
+  async createComment(userId: string, entityType: EntityType, entityId: string, content: string, parentId?: string) {
     const { data, error } = await supabase
       .from('comments')
       .insert({
@@ -85,11 +81,13 @@ export const interactionsApi = {
         entity_type: entityType,
         entity_id: entityId,
         content: content.trim(),
-        parent_id: parentId
+        parent_id: parentId,
       })
-      .select(`
+      .select(
+        `
         *
-      `)
+      `
+      )
       .single();
 
     return { data, error };
@@ -100,13 +98,15 @@ export const interactionsApi = {
       .from('comments')
       .update({
         content: content.trim(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', commentId)
       .eq('user_id', userId)
-      .select(`
+      .select(
+        `
         *
-      `)
+      `
+      )
       .single();
 
     return { data, error };
@@ -124,10 +124,7 @@ export const interactionsApi = {
 
   // Admin functions
   async deleteCommentAsAdmin(commentId: string) {
-    const { error } = await supabase
-      .from('comments')
-      .update({ is_deleted: true })
-      .eq('id', commentId);
+    const { error } = await supabase.from('comments').update({ is_deleted: true }).eq('id', commentId);
 
     return { error };
   },
@@ -167,9 +164,9 @@ export const interactionsApi = {
       data: entityIds.map(id => ({
         entity_id: id,
         like_count: likeCounts[id] || 0,
-        comment_count: commentCounts[id] || 0
+        comment_count: commentCounts[id] || 0,
       })),
-      error: null
+      error: null,
     };
-  }
+  },
 };

@@ -33,18 +33,16 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Initialize theme from localStorage, settings, or system preference
   useEffect(() => {
     if (loading) return; // Wait for settings to load
-    
+
     const savedTheme = localStorage.getItem('theme');
     const settingsDarkMode = appearance.darkMode;
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
+
     // Priority: saved theme > settings > system preference
-    const initialTheme = savedTheme || 
-      (settingsDarkMode ? 'dark' : null) || 
-      (systemPrefersDark ? 'dark' : 'light');
-    
+    const initialTheme = savedTheme || (settingsDarkMode ? 'dark' : null) || (systemPrefersDark ? 'dark' : 'light');
+
     setTheme(initialTheme as 'light' | 'dark');
-    
+
     // Apply theme to document
     if (initialTheme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -56,7 +54,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Apply custom CSS variables for dynamic colors
   useEffect(() => {
     const root = document.documentElement;
-    
+
     // Convert hex to RGB for CSS variables
     const hexToRgb = (hex: string) => {
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -75,7 +73,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
-    
+
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {

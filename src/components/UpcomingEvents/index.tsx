@@ -18,10 +18,10 @@ const SAMPLE_EVENTS: Event[] = [
     organizer: {
       id: '1',
       name: 'Uluntu Collective',
-      image: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg'
+      image: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg',
     },
     type: 'in-person',
-    status: 'published'
+    status: 'published',
   },
   {
     id: '2',
@@ -33,34 +33,34 @@ const SAMPLE_EVENTS: Event[] = [
     organizer: {
       id: '2',
       name: 'Kootenay Data Science Network',
-      image: 'https://images.pexels.com/photos/3184603/pexels-photo-3184603.jpeg'
+      image: 'https://images.pexels.com/photos/3184603/pexels-photo-3184603.jpeg',
     },
     type: 'online',
-    status: 'published'
-  }
+    status: 'published',
+  },
 ];
 
 const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
-  title = "Upcoming Events",
+  title = 'Upcoming Events',
   events = SAMPLE_EVENTS,
   maxEvents = 3,
   showViewAll = true,
-  className = "bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg p-6"
+  className = 'bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg p-6',
 }) => {
   // Filter and sort events
   const upcomingEvents = filterUpcomingEvents(events);
   const sortedEvents = sortEventsByDate(upcomingEvents);
-  
+
   // Limit the number of events to display
   const displayedEvents = sortedEvents.slice(0, maxEvents);
-  
+
   return (
     <div className={className}>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">{title}</h2>
         {showViewAll && (
-          <Link 
-            to="/events" 
+          <Link
+            to="/events"
             className="flex items-center text-white/90 hover:text-white transition-colors text-sm font-medium"
           >
             View all
@@ -68,12 +68,10 @@ const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
           </Link>
         )}
       </div>
-      
+
       <div className="grid gap-4">
         {displayedEvents.length > 0 ? (
-          displayedEvents.map(event => (
-            <EventCard key={event.id} event={event} />
-          ))
+          displayedEvents.map(event => <EventCard key={event.id} event={event} />)
         ) : (
           <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
             <p>No upcoming events at the moment.</p>

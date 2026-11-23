@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Plus, 
-  Image as ImageIcon, 
-  Lock, 
-  Users, 
-  Globe,
-  Edit,
-  Trash2,
-  MoreVertical,
-  Eye,
-  EyeOff
-} from 'lucide-react';
+import { Plus, Image as ImageIcon, Lock, Users, Globe, Edit, Trash2, MoreVertical, Eye, EyeOff } from 'lucide-react';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { useAppSelector } from '@/store/hooks';
 import { selectCurrentUser } from '@/features/auth/store/authSlice';
@@ -23,10 +12,10 @@ import type { Gallery } from '@/features/gallery/types';
 const MyGalleriesPage: React.FC = () => {
   const navigate = useNavigate();
   const user = useAppSelector(selectCurrentUser);
-  const { galleries, loading, error, refetch } = useGalleries({ 
-    ownerId: user?.id 
+  const { galleries, loading, error, refetch } = useGalleries({
+    ownerId: user?.id,
   });
-  
+
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'public' | 'members_only' | 'private'>('all');
 
@@ -52,11 +41,11 @@ const MyGalleriesPage: React.FC = () => {
 
   const handleDeleteGallery = async (e: React.MouseEvent, gallery: Gallery) => {
     e.stopPropagation();
-    
+
     if (!confirm(`Are you sure you want to delete "${gallery.title}"? This action cannot be undone.`)) {
       return;
     }
-    
+
     try {
       await galleryApi.deleteGallery(gallery.id);
       refetch();
@@ -68,7 +57,7 @@ const MyGalleriesPage: React.FC = () => {
 
   const handleToggleVisibility = async (e: React.MouseEvent, gallery: Gallery) => {
     e.stopPropagation();
-    
+
     try {
       const newVisibility = gallery.visibility === 'visible' ? 'hidden' : 'visible';
       await galleryApi.updateGallery(gallery.id, { visibility: newVisibility });
@@ -105,9 +94,7 @@ const MyGalleriesPage: React.FC = () => {
     }
   };
 
-  const filteredGalleries = filter === 'all' 
-    ? galleries 
-    : galleries.filter(g => g.privacy_level === filter);
+  const filteredGalleries = filter === 'all' ? galleries : galleries.filter(g => g.privacy_level === filter);
 
   if (loading) {
     return (
@@ -115,7 +102,7 @@ const MyGalleriesPage: React.FC = () => {
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map(i => (
               <div key={i} className="bg-white rounded-lg shadow-sm p-4">
                 <div className="aspect-video bg-gray-200 rounded mb-4"></div>
                 <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -133,10 +120,7 @@ const MyGalleriesPage: React.FC = () => {
       <ContentContainer>
         <div className="text-center py-12">
           <p className="text-red-600 mb-4">Error loading your galleries</p>
-          <button
-            onClick={() => refetch()}
-            className="text-blue-600 hover:text-blue-700"
-          >
+          <button onClick={() => refetch()} className="text-blue-600 hover:text-blue-700">
             Try Again
           </button>
         </div>
@@ -150,16 +134,14 @@ const MyGalleriesPage: React.FC = () => {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">My Galleries</h1>
-          
+
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             {/* Privacy Filter */}
             <div className="flex items-center gap-2 bg-white rounded-lg shadow-sm p-1">
               <button
                 onClick={() => setFilter('all')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  filter === 'all' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'text-gray-600 hover:text-gray-900'
+                  filter === 'all' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 All ({galleries.length})
@@ -167,9 +149,7 @@ const MyGalleriesPage: React.FC = () => {
               <button
                 onClick={() => setFilter('public')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
-                  filter === 'public' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'text-gray-600 hover:text-gray-900'
+                  filter === 'public' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 <Globe className="w-4 h-4" />
@@ -178,9 +158,7 @@ const MyGalleriesPage: React.FC = () => {
               <button
                 onClick={() => setFilter('members_only')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
-                  filter === 'members_only' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'text-gray-600 hover:text-gray-900'
+                  filter === 'members_only' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 <Users className="w-4 h-4" />
@@ -189,9 +167,7 @@ const MyGalleriesPage: React.FC = () => {
               <button
                 onClick={() => setFilter('private')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
-                  filter === 'private' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'text-gray-600 hover:text-gray-900'
+                  filter === 'private' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 <Lock className="w-4 h-4" />
@@ -214,13 +190,9 @@ const MyGalleriesPage: React.FC = () => {
           <div className="text-center py-16 bg-gray-50 rounded-lg">
             <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              {filter === 'all' 
-                ? 'No galleries yet' 
-                : `No ${getPrivacyLabel(filter).toLowerCase()} galleries`}
+              {filter === 'all' ? 'No galleries yet' : `No ${getPrivacyLabel(filter).toLowerCase()} galleries`}
             </h3>
-            <p className="text-gray-600 mb-6">
-              Create your first photo gallery to start sharing your work!
-            </p>
+            <p className="text-gray-600 mb-6">Create your first photo gallery to start sharing your work!</p>
             <button
               onClick={handleCreateGallery}
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -231,7 +203,7 @@ const MyGalleriesPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredGalleries.map((gallery) => (
+            {filteredGalleries.map(gallery => (
               <div
                 key={gallery.id}
                 onClick={() => handleGalleryClick(gallery.id)}
@@ -250,13 +222,13 @@ const MyGalleriesPage: React.FC = () => {
                       <ImageIcon className="w-16 h-16 text-gray-300" />
                     </div>
                   )}
-                  
+
                   {/* Photo Count Overlay */}
                   <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
                     <ImageIcon className="w-4 h-4" />
                     {gallery.photo_count || 0}
                   </div>
-                  
+
                   {/* Visibility Badge */}
                   {gallery.visibility === 'hidden' && (
                     <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
@@ -270,21 +242,17 @@ const MyGalleriesPage: React.FC = () => {
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 text-lg line-clamp-1">
-                        {gallery.title}
-                      </h3>
+                      <h3 className="font-semibold text-gray-900 text-lg line-clamp-1">{gallery.title}</h3>
                       <div className="flex items-center gap-2 mt-1">
                         {getPrivacyIcon(gallery.privacy_level)}
-                        <span className="text-sm text-gray-600">
-                          {getPrivacyLabel(gallery.privacy_level)}
-                        </span>
+                        <span className="text-sm text-gray-600">{getPrivacyLabel(gallery.privacy_level)}</span>
                       </div>
                     </div>
 
                     {/* Action Menu */}
                     <div className="relative">
                       <button
-                        onClick={(e) => {
+                        onClick={e => {
                           e.stopPropagation();
                           setActiveMenuId(activeMenuId === gallery.id ? null : gallery.id);
                         }}
@@ -292,19 +260,19 @@ const MyGalleriesPage: React.FC = () => {
                       >
                         <MoreVertical className="w-5 h-5 text-gray-600" />
                       </button>
-                      
+
                       {activeMenuId === gallery.id && (
                         <>
                           <div
                             className="fixed inset-0 z-10"
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation();
                               setActiveMenuId(null);
                             }}
                           />
                           <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg z-20 py-1">
                             <button
-                              onClick={(e) => handleToggleVisibility(e, gallery)}
+                              onClick={e => handleToggleVisibility(e, gallery)}
                               className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2 text-sm"
                             >
                               {gallery.visibility === 'visible' ? (
@@ -320,14 +288,14 @@ const MyGalleriesPage: React.FC = () => {
                               )}
                             </button>
                             <button
-                              onClick={(e) => handleEditGallery(e, gallery.id)}
+                              onClick={e => handleEditGallery(e, gallery.id)}
                               className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2 text-sm"
                             >
                               <Edit className="w-4 h-4" />
                               Edit Gallery
                             </button>
                             <button
-                              onClick={(e) => handleDeleteGallery(e, gallery)}
+                              onClick={e => handleDeleteGallery(e, gallery)}
                               className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2 text-sm text-red-600"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -338,20 +306,14 @@ const MyGalleriesPage: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  
+
                   {gallery.description && (
-                    <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-                      {gallery.description}
-                    </p>
+                    <p className="text-gray-600 text-sm line-clamp-2 mb-3">{gallery.description}</p>
                   )}
 
                   <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>
-                      {gallery.view_count || 0} views
-                    </span>
-                    <span>
-                      {formatDistanceToNow(new Date(gallery.created_at), { addSuffix: true })}
-                    </span>
+                    <span>{gallery.view_count || 0} views</span>
+                    <span>{formatDistanceToNow(new Date(gallery.created_at), { addSuffix: true })}</span>
                   </div>
                 </div>
               </div>

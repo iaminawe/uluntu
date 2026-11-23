@@ -16,36 +16,36 @@ const isPastEvent = (date: string): boolean => {
   return eventDate < today;
 };
 
-const EventsList = ({ 
-  initialSearch = '', 
+const EventsList = ({
+  initialSearch = '',
   parentEvents = [],
   parentLoading = false,
-  parentError = null
+  parentError = null,
 }: EventsListProps) => {
   const [selectedTypes, setSelectedTypes] = useState<EventType[]>([]);
   const [dateRange, setDateRange] = useState<DateRangeFilter>('all');
   const [currentPageUpcoming, setCurrentPageUpcoming] = useState(1);
   const [currentPagePast, setCurrentPagePast] = useState(1);
-  
+
   // Determine if we should use parent props or Redux
   const useParentData = parentEvents.length > 0;
-  
+
   // Use hybrid hook for filtered events if not using parent data
-  const { 
-    events: reduxEvents = [], 
-    isLoading: reduxLoading, 
-    error: reduxError, 
+  const {
+    events: reduxEvents = [],
+    isLoading: reduxLoading,
+    error: reduxError,
     setSearchTerm,
     setTypes,
     setDateRange: setDateRangeFilter,
-    clearAllFilters 
+    clearAllFilters,
   } = useEventsHybrid();
-  
+
   // Combined state values
   const mainEvents = useParentData ? parentEvents : reduxEvents;
   const isLoading = useParentData ? parentLoading : reduxLoading;
   const error = useParentData ? parentError : reduxError;
-  
+
   // Apply filters when they change (only if using hybrid approach)
   useEffect(() => {
     if (!useParentData) {
@@ -60,11 +60,11 @@ const EventsList = ({
     setCurrentPageUpcoming(1);
     setCurrentPagePast(1);
   }, [initialSearch, selectedTypes, dateRange]);
-  
+
   const clearFilters = () => {
     setSelectedTypes([]);
     setDateRange('all');
-    
+
     // Only clear hybrid filters if not using parent data
     if (!useParentData) {
       clearAllFilters();
@@ -73,12 +73,12 @@ const EventsList = ({
   };
 
   const hasActiveFilters = selectedTypes.length > 0 || dateRange !== 'all' || initialSearch !== '';
-  
+
   // Convert mainEvents to the local Event type using the adapter function
-  
+
   // Safely convert events to local format
   const allEvents: Event[] = [];
-  
+
   if (Array.isArray(mainEvents) && mainEvents.length > 0) {
     for (const event of mainEvents) {
       if (event && event.id && event.title) {
@@ -96,11 +96,11 @@ const EventsList = ({
             organizer: event.organizer || {
               id: 'default',
               name: 'Event Organizer',
-              image: ''
+              image: '',
             },
             attendees: event.attendees,
             type: event.type,
-            url: event.url
+            url: event.url,
           };
           allEvents.push(adaptedEvent);
         } catch (error) {
@@ -111,16 +111,16 @@ const EventsList = ({
       }
     }
   }
-  
+
   // Filter and sort events safely
   const upcomingEventsRaw = allEvents.filter(event => !isPastEvent(event.date));
   const pastEventsRaw = allEvents.filter(event => isPastEvent(event.date));
-  
+
   // Sort events by date
   upcomingEventsRaw.sort((a, b) => {
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
-  
+
   pastEventsRaw.sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
@@ -148,32 +148,33 @@ const EventsList = ({
     setCurrentPagePast(page);
     // Consider scrolling to the top of the past events section
   };
-  
+
   return (
     <div className="space-y-8">
-      
       {isLoading && (
         <div className="text-center py-8">
           <div className="inline-block w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
           <p className="mt-2 text-slate-600 dark:text-slate-400">Loading events...</p>
         </div>
       )}
-      
+
       {error && (
         <div className="text-center py-8">
           <p className="text-red-500 dark:text-red-400 mb-2">Failed to load events</p>
           <p className="text-slate-600 dark:text-slate-400">Please try again later</p>
         </div>
       )}
-      
+
       {!isLoading && !error && mainEvents.length === 0 && (
         <div className="text-center py-8 bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
           <p className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No events found</p>
           <p className="text-slate-600 dark:text-slate-400 mb-4">
-            {hasActiveFilters ? "No events found matching your criteria." : "There are no events scheduled at this time."}
+            {hasActiveFilters
+              ? 'No events found matching your criteria.'
+              : 'There are no events scheduled at this time.'}
           </p>
           {hasActiveFilters && (
-            <button 
+            <button
               onClick={clearFilters}
               className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
             >
@@ -182,7 +183,7 @@ const EventsList = ({
           )}
         </div>
       )}
-      
+
       {!isLoading && !error && currentUpcomingEventsToDisplay.length > 0 && (
         <div className="mb-12">
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">Upcoming Events</h2>
@@ -200,7 +201,7 @@ const EventsList = ({
           )}
         </div>
       )}
-      
+
       {!isLoading && !error && currentPastEventsToDisplay.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">Recent Events</h2>
@@ -212,19 +213,16 @@ const EventsList = ({
             ))}
           </div>
           {totalPagesPast > 1 && (
-            <Pagination
-              currentPage={currentPagePast}
-              totalPages={totalPagesPast}
-              onPageChange={handlePageChangePast}
-            />
+            <Pagination currentPage={currentPagePast} totalPages={totalPagesPast} onPageChange={handlePageChangePast} />
           )}
         </div>
       )}
-      
+
       {!isLoading && !error && mainEvents.length > 0 && (
         <div className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
           {/* Simplified summary, or could be more detailed if needed */}
-          Showing {currentUpcomingEventsToDisplay.length > 0 ? currentUpcomingEventsToDisplay.length : 0} upcoming and {currentPastEventsToDisplay.length > 0 ? currentPastEventsToDisplay.length : 0} past events on this page.
+          Showing {currentUpcomingEventsToDisplay.length > 0 ? currentUpcomingEventsToDisplay.length : 0} upcoming and{' '}
+          {currentPastEventsToDisplay.length > 0 ? currentPastEventsToDisplay.length : 0} past events on this page.
           Total {allEvents.length} events {hasActiveFilters && ' matching your filters'}.
         </div>
       )}

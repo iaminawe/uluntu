@@ -3,13 +3,7 @@
  * Handles user blocking and unblocking operations
  */
 
-import {
-  useQuery,
-  UseQueryResult,
-  useMutation,
-  UseMutationResult,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useQuery, UseQueryResult, useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query';
 import { messagingApi } from '@/features/messaging/api/messagingApi';
 import { BlockedUser } from './types';
 import { messagingQueryKeys } from './types';
@@ -60,9 +54,9 @@ export function useBlockUser(): UseMutationResult<void, Error, { userId: string;
       // Invalidate conversations to hide blocked user conversations
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to block user:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -83,8 +77,8 @@ export function useUnblockUser(): UseMutationResult<void, Error, string> {
       // Invalidate conversations to show unblocked user conversations
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to unblock user:', error.message, 'MESSAGING');
-    }
+    },
   });
 }

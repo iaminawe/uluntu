@@ -8,10 +8,10 @@ import MemberProfile from '@/features/directory/components/MemberProfile';
 
 export default function DirectoryDetailPage() {
   const { slug } = useParams();
-  
+
   // Use hybrid approach for data fetching with slug
   const { member, isLoading, error } = useMemberHybrid(slug);
-  
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -24,9 +24,12 @@ export default function DirectoryDetailPage() {
     <>
       <Helmet>
         <title>{member.name} - Uluntu</title>
-        <meta name="description" content={`${member.name} - ${member.title}${member.company ? ` at ${member.company}` : ''}`} />
+        <meta
+          name="description"
+          content={`${member.name} - ${member.title}${member.company ? ` at ${member.company}` : ''}`}
+        />
       </Helmet>
-      
+
       <ContentContainer>
         {/* Use our enhanced MemberProfile component that shows all contributions */}
         <MemberProfile memberSlug={slug as string} />

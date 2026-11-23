@@ -5,7 +5,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 
 export const useDashboardOverview = () => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ['dashboard', 'overview', user?.id],
     queryFn: () => dashboardApi.getOverview(),
@@ -17,7 +17,7 @@ export const useDashboardOverview = () => {
 
 export const useUserContent = (contentType: ContentType, filters: ContentFilters) => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ['dashboard', 'content', user?.id, contentType, filters],
     queryFn: () => dashboardApi.getUserContent(filters),
@@ -29,7 +29,7 @@ export const useUserContent = (contentType: ContentType, filters: ContentFilters
 
 export const useActivityStream = () => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ['dashboard', 'activity', user?.id],
     queryFn: () => dashboardApi.getActivityFeed(),
@@ -41,12 +41,12 @@ export const useActivityStream = () => {
 
 export const useContentStats = () => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ['dashboard', 'stats', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      
+
       const overview = await dashboardApi.getOverview();
       return {
         totalContent: overview.totalContent,

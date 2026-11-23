@@ -15,38 +15,38 @@ jest.mock('@/lib/supabase', () => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
           single: jest.fn(),
-          order: jest.fn(() => ({ data: [], error: null }))
+          order: jest.fn(() => ({ data: [], error: null })),
         })),
         insert: jest.fn(() => ({
           select: jest.fn(() => ({
-            single: jest.fn(() => ({ data: mockGallery, error: null }))
-          }))
+            single: jest.fn(() => ({ data: mockGallery, error: null })),
+          })),
         })),
         update: jest.fn(() => ({
           eq: jest.fn(() => ({
             select: jest.fn(() => ({
-              single: jest.fn(() => ({ data: mockGallery, error: null }))
-            }))
-          }))
+              single: jest.fn(() => ({ data: mockGallery, error: null })),
+            })),
+          })),
         })),
         delete: jest.fn(() => ({
-          eq: jest.fn(() => ({ error: null }))
+          eq: jest.fn(() => ({ error: null })),
         })),
         or: jest.fn(() => ({ data: [mockGallery], error: null })),
         contains: jest.fn(() => ({ data: [mockGallery], error: null })),
         gte: jest.fn(() => ({
-          lte: jest.fn(() => ({ data: [mockGallery], error: null }))
-        }))
-      }))
+          lte: jest.fn(() => ({ data: [mockGallery], error: null })),
+        })),
+      })),
     })),
     storage: {
       from: jest.fn(() => ({
         upload: jest.fn(() => ({ data: { path: 'test-path' }, error: null })),
         getPublicUrl: jest.fn(() => ({ data: { publicUrl: 'https://test.com/image.jpg' } })),
-        remove: jest.fn(() => ({ error: null }))
-      }))
-    }
-  }
+        remove: jest.fn(() => ({ error: null })),
+      })),
+    },
+  },
 }));
 
 // Mock data
@@ -64,7 +64,7 @@ const mockGallery: Gallery = {
   is_featured: false,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
-  photos: []
+  photos: [],
 };
 
 const mockPhoto: Photo = {
@@ -86,16 +86,12 @@ const mockPhoto: Photo = {
   height: 1080,
   sort_order: 0,
   visibility: 'visible',
-  created_at: new Date().toISOString()
+  created_at: new Date().toISOString(),
 };
 
 // Mock File object
 class MockFile extends File {
-  constructor(
-    bits: BlobPart[],
-    filename: string,
-    options?: FilePropertyBag
-  ) {
+  constructor(bits: BlobPart[], filename: string, options?: FilePropertyBag) {
     super(bits, filename, options);
   }
 }
@@ -149,7 +145,7 @@ describe('Gallery System Integration', () => {
         title: 'New Test Gallery',
         description: 'A new test gallery',
         privacy_level: 'public' as const,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const result = await galleryApi.createGallery(newGallery);
@@ -160,7 +156,7 @@ describe('Gallery System Integration', () => {
       const filters = {
         search: 'test',
         privacy: 'public' as const,
-        tags: ['test']
+        tags: ['test'],
       };
 
       const result = await galleryApi.getAllGalleries(filters);
@@ -169,15 +165,17 @@ describe('Gallery System Integration', () => {
 
     test('fetches a specific gallery by ID', async () => {
       const result = await galleryApi.getGalleryById('test-gallery-id');
-      expect(result).toEqual(expect.objectContaining({
-        id: 'test-gallery-id'
-      }));
+      expect(result).toEqual(
+        expect.objectContaining({
+          id: 'test-gallery-id',
+        })
+      );
     });
 
     test('updates gallery information', async () => {
       const updates = {
         title: 'Updated Gallery Title',
-        description: 'Updated description'
+        description: 'Updated description',
       };
 
       const result = await galleryApi.updateGallery('test-gallery-id', updates);
@@ -198,37 +196,41 @@ describe('Gallery System Integration', () => {
         title: 'Test Photo',
         description: 'A test photo upload',
         tags: ['test', 'upload'],
-        galleryId: 'test-gallery-id'
+        galleryId: 'test-gallery-id',
       };
 
       const result = await galleryApi.uploadPhoto(uploadInput);
-      expect(result).toEqual(expect.objectContaining({
-        gallery_id: 'test-gallery-id',
-        title: 'Test Photo'
-      }));
+      expect(result).toEqual(
+        expect.objectContaining({
+          gallery_id: 'test-gallery-id',
+          title: 'Test Photo',
+        })
+      );
     });
 
     test('batch uploads multiple photos', async () => {
       const files = [
         new MockFile(['content1'], 'test1.jpg', { type: 'image/jpeg' }),
         new MockFile(['content2'], 'test2.jpg', { type: 'image/jpeg' }),
-        new MockFile(['content3'], 'test3.jpg', { type: 'image/jpeg' })
+        new MockFile(['content3'], 'test3.jpg', { type: 'image/jpeg' }),
       ];
 
-      const uploadPromises = files.map((file, index) => 
+      const uploadPromises = files.map((file, index) =>
         galleryApi.uploadPhoto({
           file,
           title: `Test Photo ${index + 1}`,
-          galleryId: 'test-gallery-id'
+          galleryId: 'test-gallery-id',
         })
       );
 
       const results = await Promise.all(uploadPromises);
       expect(results).toHaveLength(3);
       results.forEach(result => {
-        expect(result).toEqual(expect.objectContaining({
-          gallery_id: 'test-gallery-id'
-        }));
+        expect(result).toEqual(
+          expect.objectContaining({
+            gallery_id: 'test-gallery-id',
+          })
+        );
       });
     });
 
@@ -242,7 +244,7 @@ describe('Gallery System Integration', () => {
       const photoOrders = [
         { id: 'photo1', order: 2 },
         { id: 'photo2', order: 1 },
-        { id: 'photo3', order: 3 }
+        { id: 'photo3', order: 3 },
       ];
 
       const result = await galleryApi.reorderPhotos('test-gallery-id', photoOrders);
@@ -255,13 +257,13 @@ describe('Gallery System Integration', () => {
       // Mock an upload error
       const mockSupabase = require('@/lib/supabase').supabase;
       mockSupabase.storage.from.mockReturnValueOnce({
-        upload: jest.fn(() => ({ error: new Error('Upload failed') }))
+        upload: jest.fn(() => ({ error: new Error('Upload failed') })),
       });
 
       const file = new MockFile(['content'], 'test.jpg', { type: 'image/jpeg' });
       const uploadInput: PhotoUploadInput = {
         file,
-        galleryId: 'test-gallery-id'
+        galleryId: 'test-gallery-id',
       };
 
       await expect(galleryApi.uploadPhoto(uploadInput)).rejects.toThrow('Upload failed');
@@ -272,9 +274,9 @@ describe('Gallery System Integration', () => {
       mockSupabase.from.mockReturnValueOnce({
         select: jest.fn(() => ({
           eq: jest.fn(() => ({
-            single: jest.fn(() => ({ error: new Error('Network error') }))
-          }))
-        }))
+            single: jest.fn(() => ({ error: new Error('Network error') })),
+          })),
+        })),
       });
 
       await expect(galleryApi.getGalleryById('test-id')).rejects.toThrow('Network error');
@@ -284,23 +286,24 @@ describe('Gallery System Integration', () => {
   describe('Performance Considerations', () => {
     test('handles large batch operations efficiently', async () => {
       const start = Date.now();
-      
+
       // Simulate uploading 20 photos
-      const files = Array.from({ length: 20 }, (_, i) => 
-        new MockFile(['content'], `test${i}.jpg`, { type: 'image/jpeg' })
+      const files = Array.from(
+        { length: 20 },
+        (_, i) => new MockFile(['content'], `test${i}.jpg`, { type: 'image/jpeg' })
       );
 
-      const uploadPromises = files.map((file, index) => 
+      const uploadPromises = files.map((file, index) =>
         galleryApi.uploadPhoto({
           file,
           title: `Performance Test ${index + 1}`,
-          galleryId: 'test-gallery-id'
+          galleryId: 'test-gallery-id',
         })
       );
 
       await Promise.all(uploadPromises);
       const duration = Date.now() - start;
-      
+
       // Should complete batch operations reasonably quickly
       expect(duration).toBeLessThan(5000); // 5 seconds
     });
@@ -309,33 +312,37 @@ describe('Gallery System Integration', () => {
   describe('Data Validation', () => {
     test('validates gallery data structure', () => {
       const gallery = mockGallery;
-      
-      expect(gallery).toEqual(expect.objectContaining({
-        id: expect.any(String),
-        user_id: expect.any(String),
-        title: expect.any(String),
-        privacy_level: expect.stringMatching(/^(public|members_only|private)$/),
-        visibility: expect.stringMatching(/^(visible|hidden|archived)$/),
-        created_at: expect.any(String),
-        updated_at: expect.any(String)
-      }));
+
+      expect(gallery).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          user_id: expect.any(String),
+          title: expect.any(String),
+          privacy_level: expect.stringMatching(/^(public|members_only|private)$/),
+          visibility: expect.stringMatching(/^(visible|hidden|archived)$/),
+          created_at: expect.any(String),
+          updated_at: expect.any(String),
+        })
+      );
     });
 
     test('validates photo data structure', () => {
       const photo = mockPhoto;
-      
-      expect(photo).toEqual(expect.objectContaining({
-        id: expect.any(String),
-        gallery_id: expect.any(String),
-        user_id: expect.any(String),
-        file_name: expect.any(String),
-        original_file_name: expect.any(String),
-        file_size: expect.any(Number),
-        mime_type: expect.any(String),
-        storage_path: expect.any(String),
-        visibility: expect.stringMatching(/^(visible|hidden)$/),
-        created_at: expect.any(String)
-      }));
+
+      expect(photo).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          gallery_id: expect.any(String),
+          user_id: expect.any(String),
+          file_name: expect.any(String),
+          original_file_name: expect.any(String),
+          file_size: expect.any(Number),
+          mime_type: expect.any(String),
+          storage_path: expect.any(String),
+          visibility: expect.stringMatching(/^(visible|hidden)$/),
+          created_at: expect.any(String),
+        })
+      );
     });
   });
 });

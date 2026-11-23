@@ -1,8 +1,5 @@
 import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
-import {
-  adaptResourceFromDatabase,
-  adaptResourceToDatabase,
-} from '../utils/resourceAdapter';
+import { adaptResourceFromDatabase, adaptResourceToDatabase } from '../utils/resourceAdapter';
 import { Resource, ContentStatus } from '../types'; // Ensure Resource type is imported
 import { Database } from '../types/supabase'; // Ensure Database type is imported
 
@@ -28,7 +25,7 @@ const mapFullResourceFromApi = (apiResource: SupabaseResourceWithJoins): Resourc
   }
 
   // groupId is already mapped by adaptResourceFromDatabase if present in the base row.
-  // If full group object or tags are needed on the Resource type, 
+  // If full group object or tags are needed on the Resource type,
   // the Resource type in types.ts should be updated first, or handled differently by the caller.
 
   return resource;
@@ -56,7 +53,13 @@ export interface ResourceInput {
 }
 
 export const resourcesApi = {
-  async getAll(filters?: { search?: string; types?: string[]; tags?: string[]; featured?: boolean; category?: string }): Promise<Resource[]> {
+  async getAll(filters?: {
+    search?: string;
+    types?: string[];
+    tags?: string[];
+    featured?: boolean;
+    category?: string;
+  }): Promise<Resource[]> {
     try {
       let query = supabase
         .from('resources')
@@ -100,7 +103,7 @@ export const resourcesApi = {
         handleSupabaseError(error, 'fetching resource by id');
         return null;
       }
-      
+
       return data ? adaptResourceFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'fetching resource by id');
@@ -121,25 +124,21 @@ export const resourcesApi = {
         featured: resourceData.featured ?? false,
         contributor: {
           id: resourceData.contributorId,
-          name: '' // Will be populated on retrieval
+          name: '', // Will be populated on retrieval
         },
-        groupId: resourceData.groupId ?? undefined
+        groupId: resourceData.groupId ?? undefined,
       };
 
       // Get data ready for Supabase using our adapter
       const supabaseData = adaptResourceToDatabase(resourceForAdapter);
-      
-      const { data, error } = await supabase
-        .from('resources')
-        .insert(supabaseData)
-        .select()
-        .single();
+
+      const { data, error } = await supabase.from('resources').insert(supabaseData).select().single();
 
       if (error) {
         handleSupabaseError(error, 'creating resource');
         return null;
       }
-      
+
       return data ? adaptResourceFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating resource');
@@ -151,10 +150,11 @@ export const resourcesApi = {
     try {
       // Convert ResourceInput to a partial Resource for the adapter
       const resourceForAdapter: Partial<Resource> = {};
-      
+
       if (resourceData.title !== undefined) resourceForAdapter.title = resourceData.title;
       if (resourceData.description !== undefined) resourceForAdapter.description = resourceData.description;
-      if (resourceData.type !== undefined) resourceForAdapter.type = resourceData.type as 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link';
+      if (resourceData.type !== undefined)
+        resourceForAdapter.type = resourceData.type as 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link';
       if (resourceData.url !== undefined) resourceForAdapter.url = resourceData.url;
       if (resourceData.image !== undefined) resourceForAdapter.image = resourceData.image ?? undefined;
       if (resourceData.status !== undefined) resourceForAdapter.status = resourceData.status as ContentStatus;
@@ -162,24 +162,19 @@ export const resourcesApi = {
       if (resourceData.contributorId !== undefined) {
         resourceForAdapter.contributor = {
           id: resourceData.contributorId,
-          name: '' // Will be populated on retrieval
+          name: '', // Will be populated on retrieval
         };
       }
       if (resourceData.groupId !== undefined) resourceForAdapter.groupId = resourceData.groupId ?? undefined;
-      
+
       const supabaseData = adaptResourceToDatabase(resourceForAdapter);
-      const { data, error } = await supabase
-        .from('resources')
-        .update(supabaseData)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('resources').update(supabaseData).eq('id', id).select().single();
 
       if (error) {
         handleSupabaseError(error, 'updating resource');
         return null;
       }
-      
+
       return data ? adaptResourceFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'updating resource');
@@ -189,10 +184,7 @@ export const resourcesApi = {
 
   async delete(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('resources')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('resources').delete().eq('id', id);
 
       if (error) {
         handleSupabaseError(error, 'deleting resource');
@@ -230,5 +222,5 @@ export const resourcesApi = {
       handleSupabaseError(error, 'fetching related resources');
       return [];
     }
-  }
+  },
 };

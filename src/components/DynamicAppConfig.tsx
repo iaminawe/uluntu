@@ -13,10 +13,10 @@ import { useSettingsCSS, useSiteInfo, useAppearanceSettings } from '@/hooks/useE
 export function DynamicAppConfig() {
   const siteInfo = useSiteInfo();
   const appearance = useAppearanceSettings();
-  
+
   // Apply CSS variables and theme changes
   useSettingsCSS();
-  
+
   // Update document title when site name changes
   useEffect(() => {
     if (siteInfo.name) {
@@ -29,23 +29,19 @@ export function DynamicAppConfig() {
       {/* Dynamic Site Information */}
       <title>{siteInfo.name}</title>
       <meta name="description" content={siteInfo.description} />
-      
+
       {/* Open Graph / Facebook */}
       <meta property="og:type" content="website" />
       <meta property="og:title" content={siteInfo.name} />
       <meta property="og:description" content={siteInfo.description} />
-      {appearance.logoUrl && (
-        <meta property="og:image" content={appearance.logoUrl} />
-      )}
-      
+      {appearance.logoUrl && <meta property="og:image" content={appearance.logoUrl} />}
+
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={siteInfo.name} />
       <meta name="twitter:description" content={siteInfo.description} />
-      {appearance.logoUrl && (
-        <meta name="twitter:image" content={appearance.logoUrl} />
-      )}
-      
+      {appearance.logoUrl && <meta name="twitter:image" content={appearance.logoUrl} />}
+
       {/* Favicon */}
       {appearance.faviconUrl && (
         <>
@@ -54,11 +50,11 @@ export function DynamicAppConfig() {
           <link rel="apple-touch-icon" href={appearance.faviconUrl} />
         </>
       )}
-      
+
       {/* Theme Color */}
       <meta name="theme-color" content={appearance.primaryColor} />
       <meta name="msapplication-TileColor" content={appearance.primaryColor} />
-      
+
       {/* Font Preload */}
       {appearance.fontFamily !== 'Inter' && (
         <link

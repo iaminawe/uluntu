@@ -12,7 +12,7 @@ const ContactModal = ({ company, onClose }: ContactModalProps) => {
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -30,9 +30,7 @@ const ContactModal = ({ company, onClose }: ContactModalProps) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white dark:bg-slate-800 rounded-lg max-w-md w-full p-6 shadow-xl">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-            Contact {company.name}
-          </h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Contact {company.name}</h2>
           <button
             onClick={onClose}
             className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white"
@@ -43,10 +41,7 @@ const ContactModal = ({ company, onClose }: ContactModalProps) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-            >
+            <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Your Name
             </label>
             <input
@@ -61,10 +56,7 @@ const ContactModal = ({ company, onClose }: ContactModalProps) => {
           </div>
 
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Your Email
             </label>
             <input
@@ -79,10 +71,7 @@ const ContactModal = ({ company, onClose }: ContactModalProps) => {
           </div>
 
           <div>
-            <label
-              htmlFor="subject"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-            >
+            <label htmlFor="subject" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Subject
             </label>
             <input
@@ -97,10 +86,7 @@ const ContactModal = ({ company, onClose }: ContactModalProps) => {
           </div>
 
           <div>
-            <label
-              htmlFor="message"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-            >
+            <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Message
             </label>
             <textarea

@@ -30,7 +30,7 @@ const FeaturedArticleCard = ({ article }: FeaturedArticleCardProps) => {
           Featured
         </span>
       </div>
-      
+
       {/* Right side content (60% width) */}
       <div className="p-6 w-3/5 flex flex-col">
         <div className="flex flex-wrap gap-2 mb-3">
@@ -43,17 +43,19 @@ const FeaturedArticleCard = ({ article }: FeaturedArticleCardProps) => {
             </span>
           ))}
         </div>
-        
+
         <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3 group-hover:text-orange-500 transition-colors">
           {article.title}
         </h3>
-        
+
         <div className="text-slate-600 dark:text-slate-300 mb-4 flex-1 text-base leading-relaxed">
           {displayContent.split('\n\n').map((paragraph, index) => (
-            <p key={index} className="mb-4">{paragraph}</p>
+            <p key={index} className="mb-4">
+              {paragraph}
+            </p>
           ))}
         </div>
-        
+
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
           <div className="flex items-center">
             <img
@@ -62,17 +64,11 @@ const FeaturedArticleCard = ({ article }: FeaturedArticleCardProps) => {
               className="w-10 h-10 rounded-full mr-3 object-cover"
             />
             <div>
-              <div className="text-sm font-medium text-slate-800 dark:text-slate-200">
-                {article.author.name}
-              </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">
-                Contributor
-              </div>
+              <div className="text-sm font-medium text-slate-800 dark:text-slate-200">{article.author.name}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">Contributor</div>
             </div>
           </div>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
-            {formatDate(article.date)}
-          </span>
+          <span className="text-sm text-slate-500 dark:text-slate-400">{formatDate(article.date)}</span>
         </div>
       </div>
     </Link>

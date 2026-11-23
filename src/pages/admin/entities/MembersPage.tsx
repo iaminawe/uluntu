@@ -29,7 +29,8 @@ const AdminMembersPage: React.FC = () => {
                 Members Directory Feature Disabled
               </h3>
               <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                The members directory feature is currently disabled. Enable it in System Management → Features to access member management.
+                The members directory feature is currently disabled. Enable it in System Management → Features to access
+                member management.
               </p>
               <a
                 href="/admin/system/features"
@@ -53,36 +54,36 @@ const AdminMembersPage: React.FC = () => {
             <User className="w-4 h-4 mr-2 text-gray-500" />
             {item.name}
           </div>
-          <div className="text-sm text-gray-500">
-            {item.user_id ? 'Registered User' : 'Profile Only'}
-          </div>
+          <div className="text-sm text-gray-500">{item.user_id ? 'Registered User' : 'Profile Only'}</div>
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'location',
       label: 'Location',
-      sortable: true
+      sortable: true,
     },
     {
       key: 'title',
       label: 'Job Title',
-      sortable: true
+      sortable: true,
     },
     {
       key: 'company',
       label: 'Company',
       render: (value: string) => value || '-',
-      sortable: true
+      sortable: true,
     },
     {
       key: 'status',
       label: 'Status',
       render: (value: string) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          value === 'published' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        }`}>
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            value === 'published' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}
+        >
           {value === 'published' ? (
             <>
               <CheckCircle className="w-3 h-3 mr-1" />
@@ -96,14 +97,14 @@ const AdminMembersPage: React.FC = () => {
           )}
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'created_at',
       label: 'Joined',
       render: (value: string) => new Date(value).toLocaleDateString(),
-      sortable: true
-    }
+      sortable: true,
+    },
   ];
 
   return (

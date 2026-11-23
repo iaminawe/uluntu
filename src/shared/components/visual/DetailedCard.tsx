@@ -32,7 +32,7 @@ export function DetailedCard({
   link,
   linkText = 'Read More',
   className,
-  variant = 'default'
+  variant = 'default',
 }: DetailedCardProps) {
   const isCompact = variant === 'compact';
 
@@ -42,7 +42,7 @@ export function DetailedCard({
     >
       {/* Image */}
       <Link to={link} className="block relative overflow-hidden">
-        <div className={`relative bg-slate-100 dark:bg-slate-700 ${isCompact ? "aspect-[16/9]" : "aspect-[16/10]"}`}>
+        <div className={`relative bg-slate-100 dark:bg-slate-700 ${isCompact ? 'aspect-[16/9]' : 'aspect-[16/10]'}`}>
           {image ? (
             <img
               src={image}
@@ -54,20 +54,18 @@ export function DetailedCard({
               <ImageIcon className="w-12 h-12 text-slate-400" />
             </div>
           )}
-          
+
           {/* Category Badge */}
           {category && (
             <div className="absolute top-4 left-4">
-              <span className="px-3 py-1 bg-orange-500 text-white text-xs font-semibold rounded-full">
-                {category}
-              </span>
+              <span className="px-3 py-1 bg-orange-500 text-white text-xs font-semibold rounded-full">{category}</span>
             </div>
           )}
         </div>
       </Link>
 
       {/* Content */}
-      <div className={`p-6 ${isCompact ? "p-4" : ""}`}>
+      <div className={`p-6 ${isCompact ? 'p-4' : ''}`}>
         {/* Meta */}
         <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-3">
           {date && (
@@ -77,12 +75,12 @@ export function DetailedCard({
                 {new Date(date).toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
-                  year: 'numeric'
+                  year: 'numeric',
                 })}
               </time>
             </div>
           )}
-          
+
           {readTime && (
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
@@ -92,14 +90,16 @@ export function DetailedCard({
         </div>
 
         {/* Title */}
-        <h3 className={`font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-orange-500 transition-colors ${isCompact ? "text-lg" : "text-xl"}`}>
-          <Link to={link}>
-            {title}
-          </Link>
+        <h3
+          className={`font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-orange-500 transition-colors ${isCompact ? 'text-lg' : 'text-xl'}`}
+        >
+          <Link to={link}>{title}</Link>
         </h3>
 
         {/* Excerpt */}
-        <p className={`text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 ${isCompact ? "text-sm line-clamp-2" : ""}`}>
+        <p
+          className={`text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 ${isCompact ? 'text-sm line-clamp-2' : ''}`}
+        >
           {excerpt}
         </p>
 
@@ -109,29 +109,25 @@ export function DetailedCard({
           {author && (
             <div className="flex items-center gap-2">
               {author.image ? (
-                <img
-                  src={author.image}
-                  alt={author.name}
-                  className="w-8 h-8 rounded-full object-cover"
-                />
+                <img src={author.image} alt={author.name} className="w-8 h-8 rounded-full object-cover" />
               ) : (
                 <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
                   <User className="w-4 h-4 text-slate-500" />
                 </div>
               )}
-              <span className="text-sm text-slate-600 dark:text-slate-400">
-                {author.name}
-              </span>
+              <span className="text-sm text-slate-600 dark:text-slate-400">{author.name}</span>
             </div>
           )}
 
           {/* Read More Link */}
           <Link
             to={link}
-            className={`inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-medium transition-colors ${author ? "ml-auto" : ""}`}
+            className={`inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-medium transition-colors ${author ? 'ml-auto' : ''}`}
           >
-            <span className={isCompact ? "text-sm" : ""}>{linkText}</span>
-            <ArrowRight className={`transition-transform group-hover:translate-x-1 ${isCompact ? "w-4 h-4" : "w-5 h-5"}`} />
+            <span className={isCompact ? 'text-sm' : ''}>{linkText}</span>
+            <ArrowRight
+              className={`transition-transform group-hover:translate-x-1 ${isCompact ? 'w-4 h-4' : 'w-5 h-5'}`}
+            />
           </Link>
         </div>
       </div>

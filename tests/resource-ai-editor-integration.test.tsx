@@ -20,11 +20,11 @@ jest.mock('../src/components/content/ContentAIEditor', () => {
         <textarea
           data-testid="ai-editor-textarea"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
         />
       </div>
-    )
+    ),
   };
 });
 
@@ -32,7 +32,10 @@ jest.mock('../src/components/content/ContentAIEditor', () => {
 jest.mock('../src/shared/components/ui/Form', () => ({
   FormInput: ({ value, onChange, placeholder, label, required, id }: any) => (
     <div>
-      <label htmlFor={id || 'form-input'}>{label}{required && ' *'}</label>
+      <label htmlFor={id || 'form-input'}>
+        {label}
+        {required && ' *'}
+      </label>
       <input
         id={id || 'form-input'}
         data-testid="form-input"
@@ -41,7 +44,7 @@ jest.mock('../src/shared/components/ui/Form', () => ({
         placeholder={placeholder}
       />
     </div>
-  )
+  ),
 }));
 
 jest.mock('../src/shared/components/ui/Form/StandardFormComponents', () => ({
@@ -55,24 +58,25 @@ jest.mock('../src/shared/components/ui/Form/StandardFormComponents', () => ({
         onChange={(e: any) => onChange(e.target.value)}
         placeholder="url-friendly-slug"
       />
-      <div data-testid="slug-preview">{baseUrl}{value}</div>
+      <div data-testid="slug-preview">
+        {baseUrl}
+        {value}
+      </div>
     </div>
-  )
+  ),
 }));
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
-      mutations: { retry: false }
-    }
+      mutations: { retry: false },
+    },
   });
 
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
     </QueryClientProvider>
   );
 };
@@ -88,7 +92,7 @@ describe('ResourceDetails with ContentAIEditor Integration', () => {
     groupId: '',
     newTag: '',
     status: 'draft',
-    featured: false
+    featured: false,
   };
 
   const mockHandleChange = jest.fn();
@@ -98,66 +102,54 @@ describe('ResourceDetails with ContentAIEditor Integration', () => {
   });
 
   it('should render with ContentAIEditor for resources', () => {
-    render(
-      <ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />, { wrapper: createWrapper() });
 
     // Check if AI editor is rendered
     expect(screen.getByTestId('content-ai-editor')).toBeInTheDocument();
-    
+
     // Verify content type is set to 'resources'
     expect(screen.getByTestId('editor-content-type')).toHaveTextContent('resources');
-    
+
     // Check if description content is passed correctly
     expect(screen.getByTestId('ai-editor-textarea')).toHaveValue('Initial description');
   });
 
   it('should have image insertion toggle enabled by default', () => {
-    render(
-      <ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />, { wrapper: createWrapper() });
 
     // Check if image insertion is enabled by default
     expect(screen.getByTestId('editor-include-images')).toHaveTextContent('true');
-    
+
     // Check if toggle checkbox is checked
     const imageToggle = screen.getByLabelText('Enable image insertion');
     expect(imageToggle).toBeChecked();
   });
 
   it('should toggle image insertion setting', async () => {
-    render(
-      <ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />, { wrapper: createWrapper() });
 
     const imageToggle = screen.getByLabelText('Enable image insertion');
-    
+
     // Initially enabled
     expect(screen.getByTestId('editor-include-images')).toHaveTextContent('true');
-    
+
     // Toggle off
     fireEvent.click(imageToggle);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('editor-include-images')).toHaveTextContent('false');
     });
-    
+
     // Toggle back on
     fireEvent.click(imageToggle);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('editor-include-images')).toHaveTextContent('true');
     });
   });
 
   it('should handle content changes correctly', async () => {
-    render(
-      <ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />, { wrapper: createWrapper() });
 
     const textarea = screen.getByTestId('ai-editor-textarea');
     const newContent = 'Updated resource description with AI assistance';
@@ -166,29 +158,23 @@ describe('ResourceDetails with ContentAIEditor Integration', () => {
 
     await waitFor(() => {
       expect(mockHandleChange).toHaveBeenCalledWith({
-        target: { name: 'description', value: newContent }
+        target: { name: 'description', value: newContent },
       });
     });
   });
 
   it('should display appropriate placeholder text', () => {
-    render(
-      <ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />, { wrapper: createWrapper() });
 
     const textarea = screen.getByTestId('ai-editor-textarea');
     expect(textarea).toHaveAttribute(
-      'placeholder', 
+      'placeholder',
       'Describe this resource. Use AI assistance to create comprehensive, engaging content...'
     );
   });
 
   it('should maintain form structure with title and slug fields', () => {
-    render(
-      <ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />, { wrapper: createWrapper() });
 
     // Check title field
     expect(screen.getByLabelText('Resource Title *')).toBeInTheDocument();
@@ -201,27 +187,23 @@ describe('ResourceDetails with ContentAIEditor Integration', () => {
   });
 
   it('should display helpful guidance text', () => {
-    render(
-      <ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />, { wrapper: createWrapper() });
 
-    expect(screen.getByText(/Use the AI assistant to generate comprehensive resource descriptions/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Use the AI assistant to generate comprehensive resource descriptions/)
+    ).toBeInTheDocument();
     expect(screen.getByText(/Select text to get contextual AI suggestions/)).toBeInTheDocument();
   });
 
   it('should properly structure the description section with label and toggle', () => {
-    render(
-      <ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ResourceDetails formData={mockFormData} handleChange={mockHandleChange} />, { wrapper: createWrapper() });
 
     // Check description label
     expect(screen.getByText('Description *')).toBeInTheDocument();
-    
+
     // Check image toggle section
     expect(screen.getByText('Enable image insertion')).toBeInTheDocument();
-    
+
     // Verify the layout structure exists
     const descriptionSection = screen.getByText('Description *').closest('div');
     expect(descriptionSection?.querySelector('input[type="checkbox"]')).toBeInTheDocument();
@@ -246,13 +228,10 @@ describe('ResourceDetails Integration Edge Cases', () => {
       groupId: '',
       newTag: '',
       status: 'draft',
-      featured: false
+      featured: false,
     };
 
-    render(
-      <ResourceDetails formData={emptyFormData} handleChange={mockHandleChange} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ResourceDetails formData={emptyFormData} handleChange={mockHandleChange} />, { wrapper: createWrapper() });
 
     const textarea = screen.getByTestId('ai-editor-textarea');
     expect(textarea).toHaveValue('');
@@ -260,7 +239,7 @@ describe('ResourceDetails Integration Edge Cases', () => {
 
   it('should maintain consistency when form data changes', async () => {
     const { rerender } = render(
-      <ResourceDetails 
+      <ResourceDetails
         formData={{
           title: 'Old Title',
           slug: 'old-slug',
@@ -271,16 +250,16 @@ describe('ResourceDetails Integration Edge Cases', () => {
           groupId: '',
           newTag: '',
           status: 'draft',
-          featured: false
-        }} 
-        handleChange={mockHandleChange} 
+          featured: false,
+        }}
+        handleChange={mockHandleChange}
       />,
       { wrapper: createWrapper() }
     );
 
     // Update with new form data
     rerender(
-      <ResourceDetails 
+      <ResourceDetails
         formData={{
           title: 'New Title',
           slug: 'new-slug',
@@ -291,9 +270,9 @@ describe('ResourceDetails Integration Edge Cases', () => {
           groupId: '',
           newTag: '',
           status: 'draft',
-          featured: false
-        }} 
-        handleChange={mockHandleChange} 
+          featured: false,
+        }}
+        handleChange={mockHandleChange}
       />
     );
 

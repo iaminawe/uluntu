@@ -1,14 +1,14 @@
 import React from 'react';
-import { 
-  X, 
-  CheckCircle, 
-  XCircle, 
-  RotateCcw, 
-  Pause, 
+import {
+  X,
+  CheckCircle,
+  XCircle,
+  RotateCcw,
+  Pause,
   Play,
   AlertTriangle,
   Image as ImageIcon,
-  Loader2
+  Loader2,
 } from 'lucide-react';
 import { BatchUploadFile } from '../../types';
 import { formatFileSize } from '../../utils/fileValidation';
@@ -29,13 +29,7 @@ interface FileItemProps {
   compact: boolean;
 }
 
-const FileItem: React.FC<FileItemProps> = ({
-  file,
-  onRemove,
-  onRetry,
-  showProgress,
-  compact
-}) => {
+const FileItem: React.FC<FileItemProps> = ({ file, onRemove, onRetry, showProgress, compact }) => {
   const getStatusIcon = () => {
     switch (file.status) {
       case 'pending':
@@ -56,7 +50,7 @@ const FileItem: React.FC<FileItemProps> = ({
         return <div className="w-5 h-5 border-2 border-slate-300 rounded-full" />;
     }
   };
-  
+
   const getStatusText = () => {
     switch (file.status) {
       case 'pending':
@@ -77,7 +71,7 @@ const FileItem: React.FC<FileItemProps> = ({
         return 'Unknown';
     }
   };
-  
+
   const getStatusColor = () => {
     switch (file.status) {
       case 'pending':
@@ -98,33 +92,31 @@ const FileItem: React.FC<FileItemProps> = ({
         return 'text-slate-600 dark:text-slate-400';
     }
   };
-  
+
   if (compact) {
     return (
       <div className="flex items-center space-x-3 p-2 bg-white dark:bg-slate-800 rounded border">
         {/* Status Icon */}
         {getStatusIcon()}
-        
+
         {/* File Info */}
         <div className="flex-1 min-w-0">
-          <div className="truncate text-sm font-medium text-slate-900 dark:text-white">
-            {file.name}
-          </div>
+          <div className="truncate text-sm font-medium text-slate-900 dark:text-white">{file.name}</div>
           <div className={`text-xs ${getStatusColor()}`}>
             {getStatusText()} • {formatFileSize(file.size)}
           </div>
         </div>
-        
+
         {/* Progress Bar */}
         {showProgress && file.status === 'uploading' && (
           <div className="w-16 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
-            <div 
+            <div
               className="bg-orange-500 h-1.5 rounded-full transition-all duration-300"
               style={{ width: `${file.progress}%` }}
             />
           </div>
         )}
-        
+
         {/* Actions */}
         <div className="flex items-center space-x-1">
           {file.status === 'error' && (
@@ -136,7 +128,7 @@ const FileItem: React.FC<FileItemProps> = ({
               <RotateCcw className="w-4 h-4" />
             </button>
           )}
-          
+
           {file.status !== 'uploading' && file.status !== 'processing' && (
             <button
               onClick={() => onRemove(file.id)}
@@ -150,7 +142,7 @@ const FileItem: React.FC<FileItemProps> = ({
       </div>
     );
   }
-  
+
   return (
     <div className="p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
       <div className="flex items-start space-x-4">
@@ -168,18 +160,14 @@ const FileItem: React.FC<FileItemProps> = ({
             </div>
           )}
         </div>
-        
+
         {/* File Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                {file.name}
-              </h4>
+              <h4 className="text-sm font-medium text-slate-900 dark:text-white truncate">{file.name}</h4>
               <div className="flex items-center space-x-2 mt-1">
-                <span className="text-xs text-slate-500 dark:text-slate-400">
-                  {formatFileSize(file.size)}
-                </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">{formatFileSize(file.size)}</span>
                 {file.metadata && (
                   <>
                     <span className="text-slate-300 dark:text-slate-600">•</span>
@@ -190,7 +178,7 @@ const FileItem: React.FC<FileItemProps> = ({
                 )}
               </div>
             </div>
-            
+
             {/* Actions */}
             <div className="flex items-center space-x-1 ml-2">
               {file.status === 'error' && (
@@ -202,7 +190,7 @@ const FileItem: React.FC<FileItemProps> = ({
                   <RotateCcw className="w-4 h-4" />
                 </button>
               )}
-              
+
               {file.status !== 'uploading' && file.status !== 'processing' && (
                 <button
                   onClick={() => onRemove(file.id)}
@@ -214,35 +202,31 @@ const FileItem: React.FC<FileItemProps> = ({
               )}
             </div>
           </div>
-          
+
           {/* Status */}
           <div className="flex items-center space-x-2 mt-2">
             {getStatusIcon()}
-            <span className={`text-sm ${getStatusColor()}`}>
-              {getStatusText()}
-            </span>
+            <span className={`text-sm ${getStatusColor()}`}>{getStatusText()}</span>
           </div>
-          
+
           {/* Progress Bar */}
           {showProgress && (file.status === 'uploading' || file.status === 'processing') && (
             <div className="mt-3">
               <div className="bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                <div 
+                <div
                   className="bg-orange-500 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${file.progress}%` }}
                 />
               </div>
             </div>
           )}
-          
+
           {/* Error Message */}
           {file.status === 'error' && file.error && (
             <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded">
               <div className="flex items-start space-x-2">
                 <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-red-700 dark:text-red-300">
-                  {file.error}
-                </span>
+                <span className="text-sm text-red-700 dark:text-red-300">{file.error}</span>
               </div>
             </div>
           )}
@@ -257,27 +241,27 @@ export const BatchUploadFileList: React.FC<BatchUploadFileListProps> = ({
   onRemoveFile,
   onRetryFile,
   showProgress = true,
-  compact = false
+  compact = false,
 }) => {
   if (files.length === 0) {
     return null;
   }
-  
+
   const groupedFiles = {
     pending: files.filter(f => f.status === 'pending'),
     active: files.filter(f => ['validating', 'uploading', 'processing'].includes(f.status)),
     completed: files.filter(f => f.status === 'completed'),
     failed: files.filter(f => f.status === 'error'),
-    cancelled: files.filter(f => f.status === 'cancelled')
+    cancelled: files.filter(f => f.status === 'cancelled'),
   };
-  
-  const FileGroup: React.FC<{ title: string; files: BatchUploadFile[]; count?: number }> = ({ 
-    title, 
-    files: groupFiles, 
-    count 
+
+  const FileGroup: React.FC<{ title: string; files: BatchUploadFile[]; count?: number }> = ({
+    title,
+    files: groupFiles,
+    count,
   }) => {
     if (groupFiles.length === 0) return null;
-    
+
     return (
       <div>
         <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center justify-between">
@@ -301,16 +285,14 @@ export const BatchUploadFileList: React.FC<BatchUploadFileListProps> = ({
       </div>
     );
   };
-  
+
   return (
     <div className="space-y-6">
       <FileGroup title="In Progress" files={groupedFiles.active} />
       <FileGroup title="Pending" files={groupedFiles.pending} />
       <FileGroup title="Failed" files={groupedFiles.failed} />
       <FileGroup title="Completed" files={groupedFiles.completed} />
-      {groupedFiles.cancelled.length > 0 && (
-        <FileGroup title="Cancelled" files={groupedFiles.cancelled} />
-      )}
+      {groupedFiles.cancelled.length > 0 && <FileGroup title="Cancelled" files={groupedFiles.cancelled} />}
     </div>
   );
 };

@@ -38,7 +38,7 @@ declare module 'react-hot-toast' {
     dismiss: jest.MockedFunction<any>;
     remove: jest.MockedFunction<any>;
   }
-  
+
   export const toast: MockToast;
 }
 

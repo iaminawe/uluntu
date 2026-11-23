@@ -64,8 +64,7 @@ export function useOnboardingSteps() {
 
   // Get all feature keys that steps depend on - memoized to prevent re-renders
   const requiredFeatureKeys = useMemo(() => {
-    return ALL_STEPS
-      .filter(step => step.requiredFeatures)
+    return ALL_STEPS.filter(step => step.requiredFeatures)
       .flatMap(step => step.requiredFeatures!)
       .filter((feature, index, self) => self.indexOf(feature) === index); // unique features
   }, []); // Empty dependency array since ALL_STEPS is constant
@@ -82,9 +81,7 @@ export function useOnboardingSteps() {
         }
 
         // Check if all required features are enabled
-        const allFeaturesEnabled = step.requiredFeatures.every(
-          feature => toggles[feature] === true
-        );
+        const allFeaturesEnabled = step.requiredFeatures.every(feature => toggles[feature] === true);
 
         // Include step if all required features are enabled
         return allFeaturesEnabled;
@@ -123,10 +120,10 @@ export function useOnboardingSteps() {
 // Define features array outside component to prevent re-creation
 const ONBOARDING_FEATURES: FeatureKey[] = [
   'companies_listing',
-  'groups_communities', 
+  'groups_communities',
   'events_system',
   'user_messaging',
-  'newsletter_system'
+  'newsletter_system',
 ];
 
 /**

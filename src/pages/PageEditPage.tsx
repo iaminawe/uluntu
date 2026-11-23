@@ -43,7 +43,7 @@ const PageEditPage: React.FC = () => {
             <h2 className="text-lg font-semibold mb-2">Error Loading Page</h2>
             <p>{typeof error === 'string' ? error : (error as any)?.message || 'An error occurred'}</p>
           </div>
-          
+
           <div className="mt-6 text-center">
             <button
               onClick={() => navigate('/admin/pages')}
@@ -65,7 +65,7 @@ const PageEditPage: React.FC = () => {
             <h2 className="text-lg font-semibold mb-2">Page Not Found</h2>
             <p>The page you're trying to edit doesn't exist.</p>
           </div>
-          
+
           <div className="mt-6 text-center">
             <button
               onClick={() => navigate('/admin/pages')}
@@ -108,10 +108,7 @@ const PageEditPage: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <a
-                    href="/admin/pages"
-                    className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2"
-                  >
+                  <a href="/admin/pages" className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">
                     Pages
                   </a>
                 </div>
@@ -130,9 +127,7 @@ const PageEditPage: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">
-                    Edit: {currentPage.title}
-                  </span>
+                  <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">Edit: {currentPage.title}</span>
                 </div>
               </li>
             </ol>
@@ -140,19 +135,12 @@ const PageEditPage: React.FC = () => {
 
           <div className="mt-4">
             <h1 className="text-3xl font-bold text-gray-900">Edit Page</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Edit "{currentPage.title}" using the Novel editor.
-            </p>
+            <p className="mt-1 text-sm text-gray-500">Edit "{currentPage.title}" using the Novel editor.</p>
           </div>
         </div>
 
         {/* Form */}
-        <PageForm
-          page={currentPage}
-          mode="edit"
-          onSuccess={handleSuccess}
-          onCancel={handleCancel}
-        />
+        <PageForm page={currentPage} mode="edit" onSuccess={handleSuccess} onCancel={handleCancel} />
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ function ResourceModal({ onClose }: ResourceModalProps) {
     type: 'document' as ResourceType,
     url: '',
     groupId: '',
-    eventId: ''
+    eventId: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -40,7 +40,10 @@ function ResourceModal({ onClose }: ResourceModalProps) {
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-lg w-full mx-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Add Resource</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -63,7 +66,10 @@ function ResourceModal({ onClose }: ResourceModalProps) {
               />
             </div>
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+              >
                 Description
               </label>
               <textarea
@@ -178,7 +184,7 @@ export default function ResourcesList() {
   const [selectedType, setSelectedType] = useState<ResourceType | 'all'>('all');
   const [showModal, setShowModal] = useState(false);
   const isLoggedIn = true; // This would come from your auth context
-  
+
   // Fetch resources from the database
   const { data: resources = [], isLoading, error } = useResources();
 
@@ -206,7 +212,8 @@ export default function ResourcesList() {
   const types: ResourceType[] = ['guide', 'tool', 'article', 'video', 'document', 'link', 'gallery'];
 
   const filteredResources = resources.filter(resource => {
-    const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       resource.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === 'all' || resource.type === selectedType;
     return matchesSearch && matchesType;
@@ -223,9 +230,7 @@ export default function ResourcesList() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">
-          Error loading resources. Please try again later.
-        </p>
+        <p className="text-red-600 dark:text-red-400">Error loading resources. Please try again later.</p>
       </div>
     );
   }
@@ -239,7 +244,7 @@ export default function ResourcesList() {
               type="text"
               placeholder="Search resources..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="w-full px-4 py-2 pl-10 border border-slate-300 dark:border-slate-600 rounded-lg 
                        bg-white dark:bg-slate-800 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -261,9 +266,10 @@ export default function ResourcesList() {
           <button
             onClick={() => setSelectedType('all')}
             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
-              ${selectedType === 'all'
-                ? 'bg-orange-500 text-white'
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              ${
+                selectedType === 'all'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
               }`}
           >
             All Types
@@ -273,9 +279,10 @@ export default function ResourcesList() {
               key={type}
               onClick={() => setSelectedType(type)}
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors flex items-center
-                ${selectedType === type
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                ${
+                  selectedType === type
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
                 }`}
             >
               {getTypeIcon(type)}
@@ -295,9 +302,7 @@ export default function ResourcesList() {
                     {getTypeIcon(resource.type)}
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-1">
-                      {resource.title}
-                    </h3>
+                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-1">{resource.title}</h3>
                     <p className="text-slate-600 dark:text-slate-300">{resource.description}</p>
                   </div>
                 </div>
@@ -305,15 +310,14 @@ export default function ResourcesList() {
 
               <div className="flex items-center mb-4">
                 <span className="text-sm text-slate-600 dark:text-slate-300">
-                  Added by {resource.contributor?.name || 'Unknown'} on {new Date(resource.dateAdded).toLocaleDateString()}
+                  Added by {resource.contributor?.name || 'Unknown'} on{' '}
+                  {new Date(resource.dateAdded).toLocaleDateString()}
                 </span>
               </div>
 
               {resource.groupId && (
                 <div className="mb-4">
-                  <div className="text-sm text-slate-600 dark:text-slate-300">
-                    Group ID: {resource.groupId}
-                  </div>
+                  <div className="text-sm text-slate-600 dark:text-slate-300">Group ID: {resource.groupId}</div>
                 </div>
               )}
 
@@ -325,7 +329,11 @@ export default function ResourcesList() {
               >
                 View Resource
                 <svg className="w-4 h-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </a>
             </div>
@@ -333,9 +341,7 @@ export default function ResourcesList() {
         ))}
       </div>
 
-      {showModal && (
-        <ResourceModal onClose={() => setShowModal(false)} />
-      )}
+      {showModal && <ResourceModal onClose={() => setShowModal(false)} />}
     </div>
   );
 }

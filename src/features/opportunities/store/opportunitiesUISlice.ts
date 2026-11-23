@@ -44,7 +44,7 @@ const opportunitiesUISlice = createSlice({
     updateFilters: (state, action: PayloadAction<Partial<OpportunityFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    clearFilters: (state) => {
+    clearFilters: state => {
       state.filters = {
         status: 'active',
       };

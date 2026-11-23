@@ -60,7 +60,7 @@ export const ICON_OPTIONS = [
   { value: 'HelpCircle', label: 'Help' },
   { value: 'FileText', label: 'Document' },
   { value: 'Link', label: 'Link' },
-  { value: 'ExternalLink', label: 'External Link' }
+  { value: 'ExternalLink', label: 'External Link' },
 ] as const;
 
-export type IconType = typeof ICON_OPTIONS[number]['value'];
+export type IconType = (typeof ICON_OPTIONS)[number]['value'];

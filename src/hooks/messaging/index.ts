@@ -112,12 +112,7 @@ export {
 // =============================================
 // BLOCKED USERS HOOKS
 // =============================================
-export {
-  useBlockedUsers,
-  useGetBlockedUsers,
-  useBlockUser,
-  useUnblockUser,
-} from './useBlockedUsers';
+export { useBlockedUsers, useGetBlockedUsers, useBlockUser, useUnblockUser } from './useBlockedUsers';
 
 // =============================================
 // UTILITY FUNCTIONS

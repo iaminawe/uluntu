@@ -10,29 +10,26 @@ const SimpleTextarea = ({
   label,
   required = false,
   id,
-  className = ''
+  className = '',
 }: RichTextEditorProps) => {
   console.log('SimpleTextarea rendering with:', { value, placeholder, height });
 
   return (
     <div className={className}>
       {label && (
-        <label 
-          htmlFor={id} 
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-        >
+        <label htmlFor={id} className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
+
       <div className="bg-red-100 p-2 text-sm text-red-800 mb-2">
         Simple Textarea Test - This MUST work or there's a deeper issue
       </div>
-      
+
       <textarea
         id={id}
         value={value || ''}
-        onChange={(e) => {
+        onChange={e => {
           console.log('Textarea changed:', e.target.value);
           onChange(e.target.value);
         }}
@@ -42,7 +39,7 @@ const SimpleTextarea = ({
         style={{ minHeight: height }}
         rows={8}
       />
-      
+
       <div className="mt-2 text-xs text-slate-500">
         Value: "{value || 'empty'}" | Placeholder: "{placeholder}"
       </div>

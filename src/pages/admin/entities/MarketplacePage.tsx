@@ -30,7 +30,8 @@ const AdminMarketplacePage: React.FC = () => {
                 Marketplace Feature Disabled
               </h3>
               <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                The marketplace feature is currently disabled. Enable it in System Management → Features to access marketplace listings management.
+                The marketplace feature is currently disabled. Enable it in System Management → Features to access
+                marketplace listings management.
               </p>
               <a
                 href="/admin/system/features"
@@ -45,17 +46,30 @@ const AdminMarketplacePage: React.FC = () => {
     );
   }
   // Custom query to join with members table for seller names
-  const customQuery = async ({ searchTerm, currentPage, pageSize, sortBy }: { searchTerm: string; currentPage: number; pageSize: number; sortBy: { column: string; direction: 'asc' | 'desc' } }) => {
-    let query = supabase
-      .from('marketplace_listings')
-      .select(`
+  const customQuery = async ({
+    searchTerm,
+    currentPage,
+    pageSize,
+    sortBy,
+  }: {
+    searchTerm: string;
+    currentPage: number;
+    pageSize: number;
+    sortBy: { column: string; direction: 'asc' | 'desc' };
+  }) => {
+    let query = supabase.from('marketplace_listings').select(
+      `
         *,
         seller_name:members(name)
-      `, { count: 'exact' });
+      `,
+      { count: 'exact' }
+    );
 
     // Apply search
     if (searchTerm) {
-      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,type.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`);
+      query = query.or(
+        `title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,type.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`
+      );
     }
 
     // Apply sorting (avoid sorting by seller_name since it's a joined field)
@@ -77,7 +91,7 @@ const AdminMarketplacePage: React.FC = () => {
     // Transform the data to flatten seller_name
     const transformedData = (data || []).map(item => ({
       ...item,
-      seller_name: item.seller_name?.name || 'Unknown'
+      seller_name: item.seller_name?.name || 'Unknown',
     }));
 
     return { items: transformedData, total: count || 0 };
@@ -94,13 +108,11 @@ const AdminMarketplacePage: React.FC = () => {
             {value}
           </div>
           {item.description && (
-            <div className="text-sm text-gray-500 truncate max-w-xs">
-              {item.description.substring(0, 60)}...
-            </div>
+            <div className="text-sm text-gray-500 truncate max-w-xs">{item.description.substring(0, 60)}...</div>
           )}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'type',
@@ -109,17 +121,20 @@ const AdminMarketplacePage: React.FC = () => {
         const typeConfig = {
           product: { text: 'Product', color: 'bg-green-100 text-green-800' },
           service: { text: 'Service', color: 'bg-blue-100 text-blue-800' },
-          other: { text: 'Other', color: 'bg-purple-100 text-purple-800' }
+          other: { text: 'Other', color: 'bg-purple-100 text-purple-800' },
         };
-        const config = typeConfig[value as keyof typeof typeConfig] || { text: value, color: 'bg-gray-100 text-gray-800' };
-        
+        const config = typeConfig[value as keyof typeof typeConfig] || {
+          text: value,
+          color: 'bg-gray-100 text-gray-800',
+        };
+
         return (
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
             {config.text}
           </span>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'price',
@@ -130,17 +145,20 @@ const AdminMarketplacePage: React.FC = () => {
           {value === 0 ? 'Free' : value ? `$${value.toFixed(2)}` : 'N/A'}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'condition',
       label: 'Condition',
-      render: (value: string) => value ? (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-          {value}
-        </span>
-      ) : 'N/A',
-      sortable: true
+      render: (value: string) =>
+        value ? (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            {value}
+          </span>
+        ) : (
+          'N/A'
+        ),
+      sortable: true,
     },
     {
       key: 'seller_name',
@@ -151,13 +169,13 @@ const AdminMarketplacePage: React.FC = () => {
           {value}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'location',
       label: 'Location',
       render: (value: string) => value || 'Not specified',
-      sortable: true
+      sortable: true,
     },
     {
       key: 'status',
@@ -165,9 +183,11 @@ const AdminMarketplacePage: React.FC = () => {
       render: (value: string) => {
         const isActive = value === 'published';
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-          }`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}
+          >
             {isActive ? (
               <>
                 <CheckCircle className="w-3 h-3 mr-1" />
@@ -182,14 +202,14 @@ const AdminMarketplacePage: React.FC = () => {
           </span>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'created_at',
       label: 'Listed',
       render: (value: string) => new Date(value).toLocaleDateString(),
-      sortable: true
-    }
+      sortable: true,
+    },
   ];
 
   return (

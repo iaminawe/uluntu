@@ -11,18 +11,18 @@ export default function ForgotPasswordForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       setError('Please enter your email address');
       return;
     }
-    
+
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const { success, error: resetError } = await forgotPassword(email);
-      
+
       if (resetError) {
         // Handle specific errors with user-friendly messages
         if (resetError.message.includes('User not found')) {
@@ -34,7 +34,7 @@ export default function ForgotPasswordForm() {
           throw new Error(resetError.message);
         }
       }
-      
+
       if (success) {
         setIsSuccess(true);
         // Clear the email field on success
@@ -51,10 +51,8 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 w-full max-w-md mx-auto">
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">
-        Forgot Password
-      </h2>
-      
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">Forgot Password</h2>
+
       {error && (
         <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6">
           <div className="flex">
@@ -67,7 +65,7 @@ export default function ForgotPasswordForm() {
           </div>
         </div>
       )}
-      
+
       {isSuccess && (
         <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6">
           <div className="flex">
@@ -82,7 +80,7 @@ export default function ForgotPasswordForm() {
           </div>
         </div>
       )}
-      
+
       {!isSuccess ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -102,7 +100,7 @@ export default function ForgotPasswordForm() {
                 className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 placeholder="you@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 disabled={isLoading}
               />
             </div>
@@ -110,7 +108,7 @@ export default function ForgotPasswordForm() {
               Enter the email address associated with your account and we'll send you a link to reset your password.
             </p>
           </div>
-          
+
           <div>
             <button
               type="submit"
@@ -131,7 +129,7 @@ export default function ForgotPasswordForm() {
           </button>
         </div>
       )}
-      
+
       <div className="mt-6 text-center">
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Remember your password?{' '}

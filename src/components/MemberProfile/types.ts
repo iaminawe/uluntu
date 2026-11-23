@@ -88,12 +88,14 @@ export const adaptMainMemberToLocal = (mainMember: MainMember): Partial<Member> 
   return {
     ...mainMember,
     // Map social from main type to socialLinks in local type
-    socialLinks: mainMember.social ? [
-      ...Object.entries(mainMember.social).map(([platform, url]) => ({
-        platform,
-        url: url || ''
-      }))
-    ] : undefined,
+    socialLinks: mainMember.social
+      ? [
+          ...Object.entries(mainMember.social).map(([platform, url]) => ({
+            platform,
+            url: url || '',
+          })),
+        ]
+      : undefined,
     // These properties don't exist in the main type, so they would need to be added separately
     organizations: [],
     groups: [],
@@ -103,7 +105,7 @@ export const adaptMainMemberToLocal = (mainMember: MainMember): Partial<Member> 
     marketplaceListings: [],
     employmentStatus: 'not-looking',
     openToVolunteering: false,
-    arrivedInNelson: ''
+    arrivedInNelson: '',
   };
 };
 
@@ -122,12 +124,12 @@ export const SAMPLE_MEMBER: Member = {
   status: 'published',
   joinDate: '2023-01-15',
   social: {
-    website: 'https://sarahjohnson.dev'
+    website: 'https://sarahjohnson.dev',
   },
   socialLinks: [
     { platform: 'GitHub', url: 'https://github.com/sarahjohnson' },
     { platform: 'LinkedIn', url: 'https://linkedin.com/in/sarahjohnson' },
-    { platform: 'Twitter', url: 'https://twitter.com/sarahjohnson' }
+    { platform: 'Twitter', url: 'https://twitter.com/sarahjohnson' },
   ],
   employmentStatus: 'freelance',
   openToVolunteering: true,
@@ -136,41 +138,41 @@ export const SAMPLE_MEMBER: Member = {
     {
       id: '1',
       name: 'Mountain Tech Solutions',
-      role: 'Senior Developer'
+      role: 'Senior Developer',
     },
     {
       id: '2',
       name: 'Kootenay Code Club',
-      role: 'Mentor'
-    }
+      role: 'Mentor',
+    },
   ],
   groups: [
     {
       id: '1',
       name: 'AI Enthusiasts Kootenay',
       role: 'admin',
-      joinedDate: '2024-01-15'
+      joinedDate: '2024-01-15',
     },
     {
       id: '2',
       name: 'Kootenay Tech Organizers',
       role: 'member',
-      joinedDate: '2024-02-01'
-    }
+      joinedDate: '2024-02-01',
+    },
   ],
   events: [
     {
       id: '1',
       title: 'AI Ethics Workshop',
       date: '2024-02-15',
-      presentation: 'Ethics in Healthcare AI'
+      presentation: 'Ethics in Healthcare AI',
     },
     {
       id: '2',
       title: 'Machine Learning Study Group',
       date: '2024-03-01',
-      presentation: 'Introduction to Neural Networks'
-    }
+      presentation: 'Introduction to Neural Networks',
+    },
   ],
   resources: [
     {
@@ -178,15 +180,15 @@ export const SAMPLE_MEMBER: Member = {
       title: 'Getting Started with AI',
       type: 'document',
       date: '2024-02-01',
-      url: 'https://example.com/ai-guide.pdf'
+      url: 'https://example.com/ai-guide.pdf',
     },
     {
       id: '2',
       title: 'ML Workshop Slides',
       type: 'presentation',
       date: '2024-03-01',
-      url: 'https://example.com/ml-slides.pptx'
-    }
+      url: 'https://example.com/ml-slides.pptx',
+    },
   ],
   posts: [
     {
@@ -194,10 +196,10 @@ export const SAMPLE_MEMBER: Member = {
       title: 'Recap: February AI Ethics Workshop',
       group: {
         id: '1',
-        name: 'AI Enthusiasts Kootenay'
+        name: 'AI Enthusiasts Kootenay',
       },
-      date: '2024-02-16'
-    }
+      date: '2024-02-16',
+    },
   ],
   marketplaceListings: [
     {
@@ -206,7 +208,7 @@ export const SAMPLE_MEMBER: Member = {
       type: 'service',
       price: 75,
       image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg',
-      dateAdded: '2025-03-14'
+      dateAdded: '2025-03-14',
     },
     {
       id: '2',
@@ -214,8 +216,8 @@ export const SAMPLE_MEMBER: Member = {
       type: 'equipment',
       price: 2000,
       image: 'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg',
-      dateAdded: '2025-03-15'
-    }
+      dateAdded: '2025-03-15',
+    },
   ],
   opportunities: [
     {
@@ -224,7 +226,8 @@ export const SAMPLE_MEMBER: Member = {
       type: 'contract',
       location: 'Nelson, BC',
       remote: true,
-      description: 'Looking for a React developer to help build a new web application for a local business. 3-month contract with possibility of extension.'
+      description:
+        'Looking for a React developer to help build a new web application for a local business. 3-month contract with possibility of extension.',
     },
     {
       id: '2',
@@ -232,24 +235,25 @@ export const SAMPLE_MEMBER: Member = {
       type: 'volunteer',
       location: 'Kootenay Region',
       remote: false,
-      description: 'Seeking experienced developers to mentor high school students in our after-school coding program. 2 hours per week commitment.'
-    }
+      description:
+        'Seeking experienced developers to mentor high school students in our after-school coding program. 2 hours per week commitment.',
+    },
   ],
   achievements: [
     {
       title: 'Kootenay Tech Innovation Award',
       description: 'Recognized for contributions to the local tech community and innovative solutions',
-      date: '2023-11-15'
+      date: '2023-11-15',
     },
     {
       title: 'Open Source Contributor',
       description: 'Top 10 contributor to the React Kootenay library',
-      date: '2023-08-22'
+      date: '2023-08-22',
     },
     {
       title: 'Workshop Facilitator',
       description: 'Led 12 successful tech workshops for beginners in the community',
-      date: '2023-06-30'
-    }
-  ]
+      date: '2023-06-30',
+    },
+  ],
 };

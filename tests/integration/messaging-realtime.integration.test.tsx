@@ -13,14 +13,14 @@ import React from 'react';
 const mockUser = {
   id: 'user-123',
   email: 'test@example.com',
-  role: 'member'
+  role: 'member',
 };
 
 // Test configuration
 const testConfig = {
   supabaseUrl: process.env.VITE_SUPABASE_URL || 'https://test.supabase.co',
   supabaseAnonKey: process.env.VITE_SUPABASE_ANON_KEY || 'test-key',
-  conversationId: 'test-conversation-123'
+  conversationId: 'test-conversation-123',
 };
 
 // Create test providers
@@ -34,9 +34,7 @@ const createTestProviders = () => {
 
   const TestProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <SessionProvider>
-        {children}
-      </SessionProvider>
+      <SessionProvider>{children}</SessionProvider>
     </QueryClientProvider>
   );
 
@@ -67,15 +65,13 @@ describe('Messaging Real-time Integration Tests', () => {
   describe('Real-time Message Delivery', () => {
     test('should receive real-time messages from other users', async () => {
       const { TestProviders } = createTestProviders();
-      
+
       // Mock session with test user
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
-      const { result } = renderHook(
-        () => useRealtimeChat(testConversationId),
-        { wrapper: TestProviders }
-      );
+      const { result } = renderHook(() => useRealtimeChat(testConversationId), { wrapper: TestProviders });
 
       await waitFor(() => {
         expect(result.current.isConnected).toBe(true);
@@ -88,7 +84,7 @@ describe('Messaging Real-time Integration Tests', () => {
         sender_id: 'other-user-456',
         conversation_id: testConversationId,
         created_at: new Date().toISOString(),
-        message_type: 'text'
+        message_type: 'text',
       };
 
       // Simulate receiving a broadcast message
@@ -102,17 +98,15 @@ describe('Messaging Real-time Integration Tests', () => {
 
     test('should handle conversation isolation correctly', async () => {
       const { TestProviders, queryClient } = createTestProviders();
-      
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
-      const { result, rerender } = renderHook(
-        ({ conversationId }) => useRealtimeChat(conversationId),
-        { 
-          wrapper: TestProviders,
-          initialProps: { conversationId: testConversationId }
-        }
-      );
+      const { result, rerender } = renderHook(({ conversationId }) => useRealtimeChat(conversationId), {
+        wrapper: TestProviders,
+        initialProps: { conversationId: testConversationId },
+      });
 
       await waitFor(() => {
         expect(result.current.isConnected).toBe(true);
@@ -120,7 +114,7 @@ describe('Messaging Real-time Integration Tests', () => {
 
       // Switch to different conversation
       const newConversationId = `test-conv-${Date.now() + 1000}`;
-      
+
       act(() => {
         rerender({ conversationId: newConversationId });
       });
@@ -131,24 +125,23 @@ describe('Messaging Real-time Integration Tests', () => {
       });
 
       // Verify cache isolation
-      const cacheKeys = queryClient.getQueryCache().getAll().map(q => q.queryKey);
-      const oldConversationQueries = cacheKeys.filter(key => 
-        Array.isArray(key) && key.includes(testConversationId)
-      );
-      
+      const cacheKeys = queryClient
+        .getQueryCache()
+        .getAll()
+        .map(q => q.queryKey);
+      const oldConversationQueries = cacheKeys.filter(key => Array.isArray(key) && key.includes(testConversationId));
+
       expect(oldConversationQueries.length).toBe(0);
     });
 
     test('should handle typing indicators correctly', async () => {
       const { TestProviders } = createTestProviders();
-      
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
-      const { result } = renderHook(
-        () => useRealtimeChat(testConversationId),
-        { wrapper: TestProviders }
-      );
+      const { result } = renderHook(() => useRealtimeChat(testConversationId), { wrapper: TestProviders });
 
       await waitFor(() => {
         expect(result.current.isConnected).toBe(true);
@@ -166,7 +159,7 @@ describe('Messaging Real-time Integration Tests', () => {
       const typingUser = {
         user_id: 'other-user-456',
         username: 'Other User',
-        is_typing: true
+        is_typing: true,
       };
 
       // This would normally come from realtime broadcast
@@ -177,14 +170,12 @@ describe('Messaging Real-time Integration Tests', () => {
   describe('Message Operations', () => {
     test('should send messages with optimistic updates', async () => {
       const { TestProviders, queryClient } = createTestProviders();
-      
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
-      const { result } = renderHook(
-        () => useRealtimeChat(testConversationId),
-        { wrapper: TestProviders }
-      );
+      const { result } = renderHook(() => useRealtimeChat(testConversationId), { wrapper: TestProviders });
 
       await waitFor(() => {
         expect(result.current.isConnected).toBe(true);
@@ -197,22 +188,22 @@ describe('Messaging Real-time Integration Tests', () => {
       });
 
       // Should have optimistic update in cache
-      const messageQueries = queryClient.getQueryCache().getAll()
+      const messageQueries = queryClient
+        .getQueryCache()
+        .getAll()
         .filter(q => Array.isArray(q.queryKey) && q.queryKey.includes(testConversationId));
-      
+
       expect(messageQueries.length).toBeGreaterThan(0);
     });
 
     test('should handle message editing', async () => {
       const { TestProviders } = createTestProviders();
-      
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
-      const { result } = renderHook(
-        () => useRealtimeChat(testConversationId),
-        { wrapper: TestProviders }
-      );
+      const { result } = renderHook(() => useRealtimeChat(testConversationId), { wrapper: TestProviders });
 
       await waitFor(() => {
         expect(result.current.isConnected).toBe(true);
@@ -233,14 +224,12 @@ describe('Messaging Real-time Integration Tests', () => {
 
     test('should handle message deletion', async () => {
       const { TestProviders } = createTestProviders();
-      
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
-      const { result } = renderHook(
-        () => useRealtimeChat(testConversationId),
-        { wrapper: TestProviders }
-      );
+      const { result } = renderHook(() => useRealtimeChat(testConversationId), { wrapper: TestProviders });
 
       await waitFor(() => {
         expect(result.current.isConnected).toBe(true);
@@ -262,15 +251,13 @@ describe('Messaging Real-time Integration Tests', () => {
   describe('Error Handling & Recovery', () => {
     test('should handle connection failures gracefully', async () => {
       const { TestProviders } = createTestProviders();
-      
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
       // Mock connection failure
-      const { result } = renderHook(
-        () => useRealtimeChat(testConversationId),
-        { wrapper: TestProviders }
-      );
+      const { result } = renderHook(() => useRealtimeChat(testConversationId), { wrapper: TestProviders });
 
       // Initially should attempt connection
       expect(result.current.isConnected).toBe(false);
@@ -278,22 +265,19 @@ describe('Messaging Real-time Integration Tests', () => {
 
     test('should handle conversation isolation errors', async () => {
       const { TestProviders } = createTestProviders();
-      
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
-      const { result } = renderHook(
-        () => useRealtimeChat(testConversationId),
-        { wrapper: TestProviders }
-      );
+      const { result } = renderHook(() => useRealtimeChat(testConversationId), { wrapper: TestProviders });
 
       // Test invalid conversation ID handling
       const invalidConversationId = '';
-      
-      const { result: invalidResult } = renderHook(
-        () => useRealtimeChat(invalidConversationId),
-        { wrapper: TestProviders }
-      );
+
+      const { result: invalidResult } = renderHook(() => useRealtimeChat(invalidConversationId), {
+        wrapper: TestProviders,
+      });
 
       expect(invalidResult.current.isConnected).toBe(false);
       expect(invalidResult.current.onlineUsers).toHaveLength(0);
@@ -304,14 +288,12 @@ describe('Messaging Real-time Integration Tests', () => {
   describe('Performance & Memory', () => {
     test('should clean up resources on unmount', async () => {
       const { TestProviders } = createTestProviders();
-      
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
-      const { result, unmount } = renderHook(
-        () => useRealtimeChat(testConversationId),
-        { wrapper: TestProviders }
-      );
+      const { result, unmount } = renderHook(() => useRealtimeChat(testConversationId), { wrapper: TestProviders });
 
       await waitFor(() => {
         expect(result.current.isConnected).toBe(false);
@@ -326,22 +308,20 @@ describe('Messaging Real-time Integration Tests', () => {
 
     test('should handle multiple conversation switches', async () => {
       const { TestProviders, queryClient } = createTestProviders();
-      
-      jest.spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
+
+      jest
+        .spyOn(require('@/shared/contexts/SessionContextWithRedux'), 'useSession')
         .mockReturnValue({ user: mockUser });
 
-      const { result, rerender } = renderHook(
-        ({ conversationId }) => useRealtimeChat(conversationId),
-        { 
-          wrapper: TestProviders,
-          initialProps: { conversationId: testConversationId }
-        }
-      );
+      const { result, rerender } = renderHook(({ conversationId }) => useRealtimeChat(conversationId), {
+        wrapper: TestProviders,
+        initialProps: { conversationId: testConversationId },
+      });
 
       // Switch conversations multiple times rapidly
       for (let i = 0; i < 5; i++) {
         const newId = `test-conv-${Date.now() + i}`;
-        
+
         act(() => {
           rerender({ conversationId: newId });
         });

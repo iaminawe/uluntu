@@ -26,12 +26,12 @@ export default function GroupGuard({ children }: GroupGuardProps) {
   useEffect(() => {
     async function checkGroupAccess() {
       console.log('[GroupGuard] Checking access for group:', slug, { loading, user: !!user, isAdmin });
-      
+
       if (!slug || loading) {
         console.log('[GroupGuard] Skipping check - no slug or still loading');
         return;
       }
-      
+
       // First, resolve the slug to get the group ID
       const { data: group, foundBy } = await lookupContent('groups', slug, supabase);
       if (!group) {
@@ -40,7 +40,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
         setIsLoading(false);
         return;
       }
-      
+
       const id = group.id;
       setGroupId(id);
       console.log('[GroupGuard] Resolved slug to ID:', slug, '->', id);
@@ -56,11 +56,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
         // If user is not authenticated, they only have access to open/closed groups
         if (!user) {
           console.log('[GroupGuard] No user - checking group visibility');
-          const { data: group } = await supabase
-            .from('groups')
-            .select('visibility')
-            .eq('id', id)
-            .single();
+          const { data: group } = await supabase.from('groups').select('visibility').eq('id', id).single();
 
           const access = group?.visibility === 'open' || group?.visibility === 'closed';
           console.log('[GroupGuard] Group visibility:', group?.visibility, 'Access:', access);
@@ -86,11 +82,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
           // User has no member record, so they can't be a group member
           // Check if the group is open or closed for non-members
           console.log('[GroupGuard] No member record found - checking group visibility');
-          const { data: group } = await supabase
-            .from('groups')
-            .select('visibility')
-            .eq('id', id)
-            .single();
+          const { data: group } = await supabase.from('groups').select('visibility').eq('id', id).single();
 
           setHasAccess(group?.visibility === 'open' || group?.visibility === 'closed');
           return;
@@ -116,11 +108,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
         }
 
         // If not a member, check if the group is open or closed
-        const { data: group } = await supabase
-          .from('groups')
-          .select('visibility')
-          .eq('id', id)
-          .single();
+        const { data: group } = await supabase.from('groups').select('visibility').eq('id', id).single();
 
         setHasAccess(group?.visibility === 'open' || group?.visibility === 'closed');
       } catch (error) {
@@ -136,7 +124,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
   }, [slug, user, loading, isAdmin]);
 
   console.log('[GroupGuard] Render state:', { loading, isLoading, hasAccess });
-  
+
   if (loading || isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -154,7 +142,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
     console.log('[GroupGuard] Access granted - rendering children');
     return <>{children}</>;
   }
-  
+
   // This shouldn't happen, but just in case
   console.log('[GroupGuard] Unexpected state - hasAccess is null but not loading');
   return null;

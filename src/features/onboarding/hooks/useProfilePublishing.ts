@@ -4,7 +4,7 @@ import { onboardingApi } from '../api/onboardingApi';
 import { toast } from 'react-hot-toast';
 
 export const useProfilePublishing = () => {
-  const { user } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector(state => state.auth);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isUnpublishing, setIsUnpublishing] = useState(false);
   const [profileStatus, setProfileStatus] = useState<{
@@ -21,7 +21,7 @@ export const useProfilePublishing = () => {
     setIsPublishing(true);
     try {
       const success = await onboardingApi.publishProfile(user.id);
-      
+
       if (success) {
         setProfileStatus({ status: 'published', isPublished: true });
         toast.success('Your profile is now visible in the directory!');
@@ -47,7 +47,7 @@ export const useProfilePublishing = () => {
     setIsUnpublishing(true);
     try {
       const success = await onboardingApi.unpublishProfile(user.id);
-      
+
       if (success) {
         setProfileStatus({ status: 'draft', isPublished: false });
         toast.success('Your profile is now private');
@@ -96,13 +96,13 @@ export const useProfilePublishing = () => {
     isUnpublishing,
     profileStatus,
     isLoading: isPublishing || isUnpublishing,
-    
+
     // Actions
     publishProfile,
     unpublishProfile,
     toggleProfileVisibility,
     checkProfileStatus,
-    
+
     // Computed
     isPublished: profileStatus?.isPublished ?? false,
     canPublish: user?.id != null,

@@ -1,13 +1,13 @@
 import { supabase } from '@/lib/supabase';
 import { newsletterSubscriptionApi } from './subscriptions';
 import { newsletterCampaignApi } from './campaigns';
-import { 
+import {
   NewsletterSubscription,
   NewsletterCampaign,
   ImportResult,
   ExportFormat,
   BulkOperation,
-  BulkOperationResult
+  BulkOperationResult,
 } from '@/types/newsletter';
 
 class NewsletterImportExportAPI {
@@ -31,7 +31,7 @@ class NewsletterImportExportAPI {
         failed_imports: 0,
         errors: [],
         warnings: [],
-        duplicates_skipped: 0
+        duplicates_skipped: 0,
       };
 
       const lines = csvContent.trim().split('\n');
@@ -39,18 +39,18 @@ class NewsletterImportExportAPI {
         return {
           ...result,
           success: false,
-          errors: ['CSV must contain at least a header row and one data row']
+          errors: ['CSV must contain at least a header row and one data row'],
         };
       }
 
       const headers = this.parseCSVLine(lines[0]);
       const emailIndex = this.findColumnIndex(headers, ['email', 'email_address', 'e-mail']);
-      
+
       if (emailIndex === -1) {
         return {
           ...result,
           success: false,
-          errors: ['Email column not found in CSV. Expected columns: email, email_address, or e-mail']
+          errors: ['Email column not found in CSV. Expected columns: email, email_address, or e-mail'],
         };
       }
 
@@ -74,7 +74,7 @@ class NewsletterImportExportAPI {
 
           // Check for existing subscription
           const existing = await newsletterSubscriptionApi.getSubscription(email);
-          
+
           if (existing) {
             if (options.skipDuplicates) {
               result.duplicates_skipped++;
@@ -82,10 +82,7 @@ class NewsletterImportExportAPI {
             } else if (options.updateExisting) {
               // Update existing subscription
               const preferences = this.extractPreferencesFromRow(headers, values);
-              await newsletterSubscriptionApi.updatePreferences(
-                existing.subscription_token, 
-                { preferences }
-              );
+              await newsletterSubscriptionApi.updatePreferences(existing.subscription_token, { preferences });
               result.successful_imports++;
             } else {
               result.warnings.push(`Row ${i + 1}: Email ${email} already exists`);
@@ -95,11 +92,11 @@ class NewsletterImportExportAPI {
             // Create new subscription
             const subscriptionData = {
               email,
-              preferences: this.extractPreferencesFromRow(headers, values)
+              preferences: this.extractPreferencesFromRow(headers, values),
             };
 
             const subscription = await newsletterSubscriptionApi.subscribe(subscriptionData);
-            
+
             if (subscription) {
               // If default status is active and not sending confirmation, confirm immediately
               if (options.defaultStatus === 'active' && !options.sendConfirmation) {
@@ -128,7 +125,7 @@ class NewsletterImportExportAPI {
         failed_imports: 0,
         errors: [error instanceof Error ? error.message : 'Unknown error'],
         warnings: [],
-        duplicates_skipped: 0
+        duplicates_skipped: 0,
       };
     }
   }
@@ -150,7 +147,7 @@ class NewsletterImportExportAPI {
       const subscriptionFilters = {
         limit: 10000, // Export all matching
         offset: 0,
-        ...filters
+        ...filters,
       };
 
       const result = await newsletterSubscriptionApi.getAllSubscriptions(subscriptionFilters);
@@ -200,7 +197,7 @@ class NewsletterImportExportAPI {
       const campaignFilters = {
         limit: 10000,
         offset: 0,
-        ...filters
+        ...filters,
       };
 
       const result = await newsletterCampaignApi.getCampaigns(campaignFilters);
@@ -237,19 +234,16 @@ class NewsletterImportExportAPI {
         total_processed: operation.subscriber_ids.length,
         successful_operations: 0,
         failed_operations: 0,
-        errors: []
+        errors: [],
       };
 
       for (const subscriberId of operation.subscriber_ids) {
         try {
           switch (operation.type) {
             case 'update_status':
-              await newsletterSubscriptionApi.updateSubscriptionStatus(
-                subscriberId, 
-                operation.data.status
-              );
+              await newsletterSubscriptionApi.updateSubscriptionStatus(subscriberId, operation.data.status);
               break;
-            
+
             case 'update_preferences':
               // Need to get subscription token first
               const { data: sub } = await supabase
@@ -257,31 +251,30 @@ class NewsletterImportExportAPI {
                 .select('subscription_token')
                 .eq('id', subscriberId)
                 .single();
-              
+
               if (sub) {
-                await newsletterSubscriptionApi.updatePreferences(
-                  sub.subscription_token,
-                  { preferences: operation.data.preferences }
-                );
+                await newsletterSubscriptionApi.updatePreferences(sub.subscription_token, {
+                  preferences: operation.data.preferences,
+                });
               }
               break;
-            
+
             case 'assign_segment':
               await this.assignSubscriberToSegment(subscriberId, operation.data.segment_id);
               break;
-            
+
             case 'remove_segment':
               await this.removeSubscriberFromSegment(subscriberId, operation.data.segment_id);
               break;
-            
+
             case 'delete':
               await newsletterSubscriptionApi.deleteSubscription(subscriberId);
               break;
-            
+
             default:
               throw new Error(`Unsupported operation type: ${operation.type}`);
           }
-          
+
           result.successful_operations++;
         } catch (error) {
           result.errors.push(`Subscriber ${subscriberId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -298,7 +291,7 @@ class NewsletterImportExportAPI {
         total_processed: operation.subscriber_ids.length,
         successful_operations: 0,
         failed_operations: operation.subscriber_ids.length,
-        errors: [error instanceof Error ? error.message : 'Unknown error']
+        errors: [error instanceof Error ? error.message : 'Unknown error'],
       };
     }
   }
@@ -307,34 +300,20 @@ class NewsletterImportExportAPI {
    * Generate export template for imports
    */
   generateImportTemplate(format: ExportFormat = 'csv'): string {
-    const headers = [
-      'email',
-      'frequency',
-      'content_types',
-      'format',
-      'location_filter',
-      'language'
-    ];
+    const headers = ['email', 'frequency', 'content_types', 'format', 'location_filter', 'language'];
 
-    const sampleData = [
-      'john@example.com',
-      'weekly',
-      'events,news,opportunities',
-      'digest',
-      'true',
-      'en'
-    ];
+    const sampleData = ['john@example.com', 'weekly', 'events,news,opportunities', 'digest', 'true', 'en'];
 
     if (format === 'csv') {
-      return [
-        headers.join(','),
-        sampleData.join(',')
-      ].join('\n');
+      return [headers.join(','), sampleData.join(',')].join('\n');
     } else if (format === 'json') {
-      const sampleRecord = headers.reduce((obj, header, index) => {
-        obj[header] = sampleData[index];
-        return obj;
-      }, {} as Record<string, string>);
+      const sampleRecord = headers.reduce(
+        (obj, header, index) => {
+          obj[header] = sampleData[index];
+          return obj;
+        },
+        {} as Record<string, string>
+      );
 
       return JSON.stringify([sampleRecord], null, 2);
     }
@@ -351,7 +330,7 @@ class NewsletterImportExportAPI {
 
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
-      
+
       if (char === '"') {
         inQuotes = !inQuotes;
       } else if (char === ',' && !inQuotes) {
@@ -361,7 +340,7 @@ class NewsletterImportExportAPI {
         current += char;
       }
     }
-    
+
     result.push(current.trim());
     return result;
   }
@@ -385,7 +364,7 @@ class NewsletterImportExportAPI {
       content_types: ['events', 'news', 'opportunities'],
       format: 'digest',
       location_filter: true,
-      language: 'en'
+      language: 'en',
     };
 
     const frequencyIndex = this.findColumnIndex(headers, ['frequency']);
@@ -424,7 +403,7 @@ class NewsletterImportExportAPI {
   private async addAnalyticsToSubscribers(subscribers: NewsletterSubscription[]): Promise<any[]> {
     // Add analytics data like open rates, click rates, etc.
     const subscriberIds = subscribers.map(s => s.id);
-    
+
     const { data: analytics, error } = await supabase
       .from('newsletter_analytics')
       .select('subscription_id, event_type')
@@ -445,8 +424,8 @@ class NewsletterImportExportAPI {
           total_opens: opens,
           total_clicks: clicks,
           open_rate: sent > 0 ? (opens / sent) * 100 : 0,
-          click_rate: opens > 0 ? (clicks / opens) * 100 : 0
-        }
+          click_rate: opens > 0 ? (clicks / opens) * 100 : 0,
+        },
       };
     });
   }
@@ -455,13 +434,15 @@ class NewsletterImportExportAPI {
     return campaigns.map(campaign => ({
       ...campaign,
       analytics: {
-        open_rate: campaign.delivery_stats.sent > 0 ? 
-          (campaign.delivery_stats.opened / campaign.delivery_stats.sent) * 100 : 0,
-        click_rate: campaign.delivery_stats.opened > 0 ? 
-          (campaign.delivery_stats.clicked / campaign.delivery_stats.opened) * 100 : 0,
-        bounce_rate: campaign.delivery_stats.sent > 0 ? 
-          (campaign.delivery_stats.bounced / campaign.delivery_stats.sent) * 100 : 0
-      }
+        open_rate:
+          campaign.delivery_stats.sent > 0 ? (campaign.delivery_stats.opened / campaign.delivery_stats.sent) * 100 : 0,
+        click_rate:
+          campaign.delivery_stats.opened > 0
+            ? (campaign.delivery_stats.clicked / campaign.delivery_stats.opened) * 100
+            : 0,
+        bounce_rate:
+          campaign.delivery_stats.sent > 0 ? (campaign.delivery_stats.bounced / campaign.delivery_stats.sent) * 100 : 0,
+      },
     }));
   }
 
@@ -477,7 +458,7 @@ class NewsletterImportExportAPI {
       'Subscribed At',
       'Confirmed At',
       'Last Sent At',
-      'Bounce Count'
+      'Bounce Count',
     ];
 
     if (includeAnalytics) {
@@ -496,7 +477,7 @@ class NewsletterImportExportAPI {
         subscriber.subscribed_at,
         subscriber.confirmed_at || '',
         subscriber.last_sent_at || '',
-        subscriber.bounce_count.toString()
+        subscriber.bounce_count.toString(),
       ];
 
       if (includeAnalytics && subscriber.analytics) {
@@ -512,9 +493,7 @@ class NewsletterImportExportAPI {
       return row;
     });
 
-    return [headers, ...rows]
-      .map(row => row.map(field => `"${field}"`).join(','))
-      .join('\n');
+    return [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
   }
 
   private exportToJSON(subscribers: any[]): string {
@@ -539,7 +518,7 @@ class NewsletterImportExportAPI {
       'Delivered',
       'Bounced',
       'Opened',
-      'Clicked'
+      'Clicked',
     ];
 
     if (includeAnalytics) {
@@ -558,7 +537,7 @@ class NewsletterImportExportAPI {
         campaign.delivery_stats.delivered.toString(),
         campaign.delivery_stats.bounced.toString(),
         campaign.delivery_stats.opened.toString(),
-        campaign.delivery_stats.clicked.toString()
+        campaign.delivery_stats.clicked.toString(),
       ];
 
       if (includeAnalytics && campaign.analytics) {
@@ -572,9 +551,7 @@ class NewsletterImportExportAPI {
       return row;
     });
 
-    return [headers, ...rows]
-      .map(row => row.map(field => `"${field}"`).join(','))
-      .join('\n');
+    return [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
   }
 
   private exportCampaignsToJSON(campaigns: any[]): string {
@@ -582,12 +559,13 @@ class NewsletterImportExportAPI {
   }
 
   private async assignSubscriberToSegment(subscriberId: string, segmentId: string): Promise<void> {
-    await supabase
-      .from('newsletter_segment_assignments')
-      .upsert({
+    await supabase.from('newsletter_segment_assignments').upsert(
+      {
         subscription_id: subscriberId,
-        segment_id: segmentId
-      }, { onConflict: 'subscription_id,segment_id' });
+        segment_id: segmentId,
+      },
+      { onConflict: 'subscription_id,segment_id' }
+    );
   }
 
   private async removeSubscriberFromSegment(subscriberId: string, segmentId: string): Promise<void> {

@@ -1,19 +1,23 @@
 import React from 'react';
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Info, 
-  AlertCircle, 
-  Save,
-  RefreshCw,
-  Eye,
-  EyeOff
-} from 'lucide-react';
+import { ChevronDown, ChevronUp, Info, AlertCircle, Save, RefreshCw, Eye, EyeOff } from 'lucide-react';
 
 export interface FormField {
   id: string;
   label: string;
-  type: 'text' | 'email' | 'password' | 'number' | 'textarea' | 'select' | 'color' | 'checkbox' | 'radio' | 'file' | 'url' | 'toggle' | 'range';
+  type:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'textarea'
+    | 'select'
+    | 'color'
+    | 'checkbox'
+    | 'radio'
+    | 'file'
+    | 'url'
+    | 'toggle'
+    | 'range';
   value: any;
   placeholder?: string;
   description?: string;
@@ -78,7 +82,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
   hasChanges = false,
   errors = {},
   readonly = false,
-  className = ''
+  className = '',
 }) => {
   const [collapsedSections, setCollapsedSections] = React.useState<Set<string>>(
     new Set(sections.filter(s => s.collapsed).map(s => s.id))
@@ -117,10 +121,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
       w-full px-3 py-2 border rounded-lg transition-colors duration-200
       focus:ring-2 focus:ring-blue-500 focus:border-blue-500
       disabled:bg-gray-50 disabled:cursor-not-allowed
-      ${hasError 
-        ? 'border-red-300 bg-red-50' 
-        : 'border-gray-300 hover:border-gray-400'
-      }
+      ${hasError ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'}
     `;
 
     const renderInput = () => {
@@ -130,7 +131,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
             <textarea
               id={field.id}
               value={field.value || ''}
-              onChange={(e) => onFieldChange(field.id, e.target.value)}
+              onChange={e => onFieldChange(field.id, e.target.value)}
               placeholder={field.placeholder}
               disabled={field.disabled || readonly || loading}
               required={field.required}
@@ -144,13 +145,13 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
             <select
               id={field.id}
               value={field.value || ''}
-              onChange={(e) => onFieldChange(field.id, e.target.value)}
+              onChange={e => onFieldChange(field.id, e.target.value)}
               disabled={field.disabled || readonly || loading}
               required={field.required}
               className={baseInputClasses}
             >
               <option value="">Select...</option>
-              {field.options?.map((option) => (
+              {field.options?.map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -165,14 +166,14 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
                 type="color"
                 id={field.id}
                 value={field.value || '#000000'}
-                onChange={(e) => onFieldChange(field.id, e.target.value)}
+                onChange={e => onFieldChange(field.id, e.target.value)}
                 disabled={field.disabled || readonly || loading}
                 className="h-10 w-16 border border-gray-300 rounded cursor-pointer"
               />
               <input
                 type="text"
                 value={field.value || ''}
-                onChange={(e) => onFieldChange(field.id, e.target.value)}
+                onChange={e => onFieldChange(field.id, e.target.value)}
                 placeholder={field.placeholder || '#000000'}
                 disabled={field.disabled || readonly || loading}
                 className={`flex-1 ${baseInputClasses}`}
@@ -189,7 +190,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
                 type="checkbox"
                 id={field.id}
                 checked={field.value || false}
-                onChange={(e) => onFieldChange(field.id, e.target.checked)}
+                onChange={e => onFieldChange(field.id, e.target.checked)}
                 disabled={field.disabled || readonly || loading}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
@@ -202,7 +203,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
         case 'radio':
           return (
             <div className="space-y-2">
-              {field.options?.map((option) => (
+              {field.options?.map(option => (
                 <div key={option.value} className="flex items-center">
                   <input
                     type="radio"
@@ -210,7 +211,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
                     name={field.id}
                     value={option.value}
                     checked={field.value === option.value}
-                    onChange={(e) => onFieldChange(field.id, e.target.value)}
+                    onChange={e => onFieldChange(field.id, e.target.value)}
                     disabled={field.disabled || readonly || loading}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                   />
@@ -232,7 +233,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
                 max={field.max || 100}
                 step={field.step || 1}
                 value={field.value || 0}
-                onChange={(e) => onFieldChange(field.id, parseInt(e.target.value))}
+                onChange={e => onFieldChange(field.id, parseInt(e.target.value))}
                 disabled={field.disabled || readonly || loading}
                 className="w-full"
               />
@@ -249,7 +250,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
             <input
               type="file"
               id={field.id}
-              onChange={(e) => onFieldChange(field.id, e.target.files?.[0] || null)}
+              onChange={e => onFieldChange(field.id, e.target.files?.[0] || null)}
               disabled={field.disabled || readonly || loading}
               accept={field.accept}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -263,7 +264,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
                 type={showPassword ? 'text' : 'password'}
                 id={field.id}
                 value={field.value || ''}
-                onChange={(e) => onFieldChange(field.id, e.target.value)}
+                onChange={e => onFieldChange(field.id, e.target.value)}
                 placeholder={field.placeholder}
                 disabled={field.disabled || readonly || loading}
                 required={field.required}
@@ -285,7 +286,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
               type={field.type}
               id={field.id}
               value={field.value || ''}
-              onChange={(e) => onFieldChange(field.id, e.target.value)}
+              onChange={e => onFieldChange(field.id, e.target.value)}
               placeholder={field.placeholder}
               disabled={field.disabled || readonly || loading}
               required={field.required}
@@ -306,13 +307,11 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
-        
+
         {renderInput()}
-        
-        {field.description && (
-          <p className="text-xs text-gray-500">{field.description}</p>
-        )}
-        
+
+        {field.description && <p className="text-xs text-gray-500">{field.description}</p>}
+
         {hasError && (
           <div className="flex items-center text-red-600 text-sm">
             <AlertCircle className="h-4 w-4 mr-1" />
@@ -333,14 +332,10 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
       {(title || description || hasChanges) && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1">
-            {title && (
-              <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            )}
-            {description && (
-              <p className="text-sm text-gray-500 mt-1">{description}</p>
-            )}
+            {title && <h3 className="text-lg font-semibold text-gray-900">{title}</h3>}
+            {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
           </div>
-          
+
           {hasChanges && !readonly && (
             <div className="flex items-center space-x-3">
               {onReset && (
@@ -353,7 +348,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
                   {resetLabel}
                 </button>
               )}
-              
+
               {onSave && (
                 <button
                   onClick={onSave}
@@ -370,7 +365,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
       )}
 
       {/* Sections */}
-      {visibleSections.map((section) => {
+      {visibleSections.map(section => {
         const Icon = section.icon;
         const isCollapsed = collapsedSections.has(section.id);
         const visibleFields = section.fields
@@ -378,9 +373,12 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
           .sort((a, b) => (a.order || 0) - (b.order || 0));
 
         return (
-          <div key={section.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${section.className || ''}`}>
+          <div
+            key={section.id}
+            className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${section.className || ''}`}
+          >
             {/* Section Header */}
-            <div 
+            <div
               className="px-6 py-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
               onClick={() => toggleSection(section.id)}
             >
@@ -389,9 +387,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
                   {Icon && <Icon className="h-5 w-5 text-gray-600" />}
                   <div>
                     <h4 className="font-medium text-gray-900">{section.title}</h4>
-                    {section.description && (
-                      <p className="text-sm text-gray-500 mt-1">{section.description}</p>
-                    )}
+                    {section.description && <p className="text-sm text-gray-500 mt-1">{section.description}</p>}
                   </div>
                 </div>
                 {isCollapsed ? (
@@ -427,7 +423,7 @@ export const ResponsiveForm: React.FC<ResponsiveFormProps> = ({
               {resetLabel}
             </button>
           )}
-          
+
           {onSave && (
             <button
               onClick={onSave}

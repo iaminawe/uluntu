@@ -7,11 +7,7 @@ interface GallerySelectorProps {
     id?: string;
     name?: string;
   };
-  onChange: (selection: {
-    type: 'user' | 'group' | 'company';
-    id?: string;
-    name?: string;
-  }) => void;
+  onChange: (selection: { type: 'user' | 'group' | 'company'; id?: string; name?: string }) => void;
   userGroups?: Array<{ id: string; name: string; role: string }>;
   userCompanies?: Array<{ id: string; name: string; role: string }>;
   disabled?: boolean;
@@ -22,7 +18,7 @@ export const GallerySelector: React.FC<GallerySelectorProps> = ({
   onChange,
   userGroups = [],
   userCompanies = [],
-  disabled = false
+  disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -57,18 +53,14 @@ export const GallerySelector: React.FC<GallerySelectorProps> = ({
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Gallery Owner
-      </label>
-      
+      <label className="block text-sm font-medium text-gray-700 mb-2">Gallery Owner</label>
+
       <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={`w-full flex items-center justify-between px-4 py-2 border rounded-lg text-left focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-          disabled 
-            ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
-            : 'bg-white border-gray-300 hover:border-gray-400'
+          disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white border-gray-300 hover:border-gray-400'
         }`}
       >
         <div className="flex items-center gap-2">
@@ -81,11 +73,8 @@ export const GallerySelector: React.FC<GallerySelectorProps> = ({
       {isOpen && !disabled && (
         <>
           {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
-          
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+
           {/* Dropdown */}
           <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-20 max-h-64 overflow-y-auto">
             {/* Personal Option */}
@@ -110,19 +99,17 @@ export const GallerySelector: React.FC<GallerySelectorProps> = ({
             {adminGroups.length > 0 && (
               <>
                 <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Groups You Manage
-                  </div>
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Groups You Manage</div>
                 </div>
-                {adminGroups.map((group) => (
+                {adminGroups.map(group => (
                   <button
                     key={`group-${group.id}`}
                     type="button"
                     onClick={() => {
-                      onChange({ 
-                        type: 'group', 
-                        id: group.id, 
-                        name: group.name 
+                      onChange({
+                        type: 'group',
+                        id: group.id,
+                        name: group.name,
                       });
                       setIsOpen(false);
                     }}
@@ -144,19 +131,17 @@ export const GallerySelector: React.FC<GallerySelectorProps> = ({
             {adminCompanies.length > 0 && (
               <>
                 <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Companies You Manage
-                  </div>
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Companies You Manage</div>
                 </div>
-                {adminCompanies.map((company) => (
+                {adminCompanies.map(company => (
                   <button
                     key={`company-${company.id}`}
                     type="button"
                     onClick={() => {
-                      onChange({ 
-                        type: 'company', 
-                        id: company.id, 
-                        name: company.name 
+                      onChange({
+                        type: 'company',
+                        id: company.id,
+                        name: company.name,
                       });
                       setIsOpen(false);
                     }}

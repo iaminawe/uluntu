@@ -38,12 +38,12 @@ export const DashboardLayout: React.FC = () => {
   if (error) {
     return (
       <ContentContainer>
-        <ErrorMessage 
+        <ErrorMessage
           title="Unable to load dashboard"
           message="Please try refreshing the page or contact support if the problem persists."
           action={{
-            label: "Retry",
-            onClick: () => window.location.reload()
+            label: 'Retry',
+            onClick: () => window.location.reload(),
           }}
         />
       </ContentContainer>
@@ -53,13 +53,10 @@ export const DashboardLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <DashboardHeader user={dashboardData?.user} />
-      
+
       <div className="flex">
-        <DashboardSidebar 
-          stats={dashboardData?.stats}
-          className="hidden lg:block"
-        />
-        
+        <DashboardSidebar stats={dashboardData?.stats} className="hidden lg:block" />
+
         <main className="flex-1 lg:ml-64">
           <div className="py-6">
             <Outlet />

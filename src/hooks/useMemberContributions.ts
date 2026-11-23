@@ -64,21 +64,15 @@ export function useMemberContributions(memberId?: string) {
       }
 
       // Fetch real data from database in parallel
-      const [
-        groupsData,
-        eventsData, 
-        resourcesData,
-        postsData,
-        marketplaceListingsData,
-        opportunitiesData
-      ] = await Promise.all([
-        fetchMemberGroups(memberId),
-        fetchMemberEvents(memberId),
-        fetchMemberResources(memberId),
-        fetchMemberPosts(memberId),
-        fetchMemberMarketplaceListings(memberId),
-        fetchMemberOpportunities(memberId)
-      ]);
+      const [groupsData, eventsData, resourcesData, postsData, marketplaceListingsData, opportunitiesData] =
+        await Promise.all([
+          fetchMemberGroups(memberId),
+          fetchMemberEvents(memberId),
+          fetchMemberResources(memberId),
+          fetchMemberPosts(memberId),
+          fetchMemberMarketplaceListings(memberId),
+          fetchMemberOpportunities(memberId),
+        ]);
 
       const groups = groupsData || [];
       const events = eventsData || [];
@@ -86,14 +80,14 @@ export function useMemberContributions(memberId?: string) {
       const posts = postsData || [];
       const marketplaceListings = marketplaceListingsData || [];
       const opportunities = opportunitiesData || [];
-      
+
       const contributions: MemberContributions = {
         groups,
         events,
         resources,
         posts,
         marketplaceListings,
-        opportunities
+        opportunities,
       };
 
       return contributions;
@@ -109,11 +103,11 @@ export function useMemberContributions(memberId?: string) {
  */
 export function useMemberContributionsByType(memberId: string, type: keyof MemberContributions) {
   const { data: contributions, isLoading, error } = useMemberContributions(memberId);
-  
+
   return {
     data: contributions ? contributions[type] : [],
     isLoading,
-    error
+    error,
   };
 }
 
@@ -125,7 +119,8 @@ export function useMemberContributionsByType(memberId: string, type: keyof Membe
 async function fetchMemberGroups(memberId: string) {
   const { data, error } = await supabase
     .from('group_members')
-    .select(`
+    .select(
+      `
       role,
       joined_date,
       groups:group_id (
@@ -133,7 +128,8 @@ async function fetchMemberGroups(memberId: string) {
         name,
         slug
       )
-    `)
+    `
+    )
     .eq('member_id', memberId)
     .order('joined_date', { ascending: false });
 
@@ -146,7 +142,7 @@ async function fetchMemberGroups(memberId: string) {
     id: item.groups?.id || '',
     name: item.groups?.name || '',
     role: item.role,
-    joinedDate: item.joined_date
+    joinedDate: item.joined_date,
   }));
 }
 
@@ -172,7 +168,7 @@ async function fetchMemberEvents(memberId: string) {
     id: event.id,
     title: event.title,
     date: event.date,
-    presentation: 'Event Organizer'
+    presentation: 'Event Organizer',
   }));
 }
 
@@ -197,7 +193,7 @@ async function fetchMemberResources(memberId: string) {
     title: resource.title,
     type: resource.type || 'document',
     date: resource.created_at,
-    url: resource.url || '#'
+    url: resource.url || '#',
   }));
 }
 
@@ -207,7 +203,8 @@ async function fetchMemberResources(memberId: string) {
 async function fetchMemberPosts(memberId: string) {
   const { data, error } = await supabase
     .from('group_posts')
-    .select(`
+    .select(
+      `
       id,
       title,
       content,
@@ -216,7 +213,8 @@ async function fetchMemberPosts(memberId: string) {
         id,
         name
       )
-    `)
+    `
+    )
     .eq('author_id', memberId)
     .eq('status', 'published')
     .order('created_at', { ascending: false });
@@ -232,9 +230,9 @@ async function fetchMemberPosts(memberId: string) {
     excerpt: post.content ? post.content.substring(0, 150) + '...' : undefined,
     group: {
       id: post.groups?.id || '',
-      name: post.groups?.name || ''
+      name: post.groups?.name || '',
     },
-    date: post.created_at
+    date: post.created_at,
   }));
 }
 
@@ -262,7 +260,7 @@ async function fetchMemberMarketplaceListings(memberId: string) {
     type: listing.type || 'item',
     price: listing.price || 0,
     image: listing.image || '',
-    createdAt: listing.created_at
+    createdAt: listing.created_at,
   }));
 }
 
@@ -288,6 +286,6 @@ async function fetchMemberOpportunities(memberId: string) {
     type: opportunity.type || 'opportunity',
     location: opportunity.location || '',
     remote: opportunity.remote || false,
-    description: opportunity.description
+    description: opportunity.description,
   }));
 }

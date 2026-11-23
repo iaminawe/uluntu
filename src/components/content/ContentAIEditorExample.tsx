@@ -17,20 +17,20 @@ export const ContentAIEditorExample: React.FC = () => {
       id: 'community-guidelines',
       label: '📜 Community Guidelines',
       prompt: 'Create comprehensive community guidelines that promote respectful and productive interactions.',
-      icon: '📜'
+      icon: '📜',
     },
     {
       id: 'welcome-message',
       label: '👋 Welcome Message',
       prompt: 'Write a warm welcome message for new community members.',
-      icon: '👋'
+      icon: '👋',
     },
     {
       id: 'event-reminder',
       label: '⏰ Event Reminder',
       prompt: 'Create an engaging event reminder that encourages attendance.',
-      icon: '⏰'
-    }
+      icon: '⏰',
+    },
   ];
 
   const contentTypes: Array<{ value: ContentType; label: string; description: string }> = [
@@ -42,7 +42,7 @@ export const ContentAIEditorExample: React.FC = () => {
     { value: 'marketplace', label: 'Marketplace Listing', description: 'Product descriptions, service listings' },
     { value: 'opportunities', label: 'Opportunities', description: 'Job postings, volunteer opportunities' },
     { value: 'blog', label: 'Blog Post', description: 'Long-form articles, thought leadership' },
-    { value: 'general', label: 'General Content', description: 'Any other type of content' }
+    { value: 'general', label: 'General Content', description: 'Any other type of content' },
   ];
 
   const handleSave = () => {
@@ -59,9 +59,7 @@ export const ContentAIEditorExample: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          ContentAIEditor Demo
-        </h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">ContentAIEditor Demo</h1>
         <p className="text-slate-600 dark:text-slate-400">
           Experience AI-powered content creation for different content types
         </p>
@@ -69,22 +67,18 @@ export const ContentAIEditorExample: React.FC = () => {
 
       {/* Configuration Panel */}
       <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-300 dark:border-slate-600 p-6">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-          Configuration
-        </h2>
-        
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Configuration</h2>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Content Type */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Content Type
-            </label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Content Type</label>
             <select
               value={contentType}
-              onChange={(e) => setContentType(e.target.value as ContentType)}
+              onChange={e => setContentType(e.target.value as ContentType)}
               className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
             >
-              {contentTypes.map((type) => (
+              {contentTypes.map(type => (
                 <option key={type.value} value={type.value}>
                   {type.label}
                 </option>
@@ -97,52 +91,40 @@ export const ContentAIEditorExample: React.FC = () => {
 
           {/* Editor Mode */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Editor Mode
-            </label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Editor Mode</label>
             <select
               value={mode}
-              onChange={(e) => setMode(e.target.value as 'visual' | 'markdown' | 'html')}
+              onChange={e => setMode(e.target.value as 'visual' | 'markdown' | 'html')}
               className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
             >
               <option value="visual">Visual Editor</option>
               <option value="markdown">Markdown</option>
               <option value="html">HTML</option>
             </select>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Choose your preferred editing format
-            </p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Choose your preferred editing format</p>
           </div>
 
           {/* Include Images */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Options
-            </label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Options</label>
             <label className="flex items-center">
               <input
                 type="checkbox"
                 checked={includeImages}
-                onChange={(e) => setIncludeImages(e.target.checked)}
+                onChange={e => setIncludeImages(e.target.checked)}
                 className="mr-2 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
               />
-              <span className="text-sm text-slate-700 dark:text-slate-300">
-                Enable Unsplash Images
-              </span>
+              <span className="text-sm text-slate-700 dark:text-slate-300">Enable Unsplash Images</span>
             </label>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Requires Unsplash API key
-            </p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Requires Unsplash API key</p>
           </div>
         </div>
       </div>
 
       {/* Editor */}
       <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-          Content Editor
-        </h2>
-        
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Content Editor</h2>
+
         <ContentAIEditor
           value={content}
           onChange={setContent}
@@ -179,17 +161,15 @@ export const ContentAIEditorExample: React.FC = () => {
       {/* Content Preview */}
       {content && (
         <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-300 dark:border-slate-600 p-6">
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-            Content Preview ({mode})
-          </h2>
-          
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Content Preview ({mode})</h2>
+
           <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 max-h-96 overflow-auto">
             {mode === 'visual' || mode === 'markdown' ? (
               <div className="prose prose-sm dark:prose-invert max-w-none">
                 <pre className="whitespace-pre-wrap text-sm">{content}</pre>
               </div>
             ) : (
-              <div 
+              <div
                 className="prose prose-sm dark:prose-invert max-w-none"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
@@ -200,15 +180,11 @@ export const ContentAIEditorExample: React.FC = () => {
 
       {/* Usage Instructions */}
       <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-          How to Use ContentAIEditor
-        </h2>
-        
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">How to Use ContentAIEditor</h2>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
-              AI Features
-            </h3>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">AI Features</h3>
             <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
               <li>• Generate complete content based on content type</li>
               <li>• Use AI Assistant with content-specific prompts</li>
@@ -217,34 +193,37 @@ export const ContentAIEditorExample: React.FC = () => {
               <li>• Fix grammar and enhance writing quality</li>
             </ul>
           </div>
-          
+
           <div>
-            <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
-              Editor Modes
-            </h3>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Editor Modes</h3>
             <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-              <li>• <strong>Visual:</strong> WYSIWYG-style editing</li>
-              <li>• <strong>Markdown:</strong> Write in Markdown format</li>
-              <li>• <strong>HTML:</strong> Direct HTML editing</li>
+              <li>
+                • <strong>Visual:</strong> WYSIWYG-style editing
+              </li>
+              <li>
+                • <strong>Markdown:</strong> Write in Markdown format
+              </li>
+              <li>
+                • <strong>HTML:</strong> Direct HTML editing
+              </li>
             </ul>
           </div>
         </div>
-        
+
         <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
           <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            <strong>Setup Required:</strong> Configure your AI provider (OpenAI/Anthropic) and optionally Unsplash API keys in your environment variables to enable all features.
+            <strong>Setup Required:</strong> Configure your AI provider (OpenAI/Anthropic) and optionally Unsplash API
+            keys in your environment variables to enable all features.
           </p>
         </div>
       </div>
 
       {/* Integration Example */}
       <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-300 dark:border-slate-600 p-6">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-          Integration Example
-        </h2>
-        
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Integration Example</h2>
+
         <pre className="text-sm bg-slate-100 dark:bg-slate-700 rounded-lg p-4 overflow-x-auto">
-{`import { ContentAIEditor } from '@/components/content';
+          {`import { ContentAIEditor } from '@/components/content';
 
 // Basic usage
 <ContentAIEditor

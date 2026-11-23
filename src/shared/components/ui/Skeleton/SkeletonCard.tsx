@@ -17,21 +17,14 @@ const SkeletonCard: React.FC<SkeletonCardProps> = ({
   colorMode,
 }) => {
   // Determine color class based on color mode or system preference
-  const colorClass = colorMode === 'light' 
-    ? 'bg-slate-200' 
-    : colorMode === 'dark' 
-      ? 'bg-slate-700' 
-      : 'bg-slate-200 dark:bg-slate-700';
+  const colorClass =
+    colorMode === 'light' ? 'bg-slate-200' : colorMode === 'dark' ? 'bg-slate-700' : 'bg-slate-200 dark:bg-slate-700';
 
   // Determine background class for the card
   const cardBgClass = 'bg-white dark:bg-slate-800';
 
   // Determine border radius class
-  const roundedClass = rounded === true 
-    ? 'rounded-lg' 
-    : typeof rounded === 'string' 
-      ? rounded 
-      : '';
+  const roundedClass = rounded === true ? 'rounded-lg' : typeof rounded === 'string' ? rounded : '';
 
   return (
     <div className={`${cardBgClass} shadow-md overflow-hidden ${roundedClass} ${className}`}>
@@ -40,7 +33,7 @@ const SkeletonCard: React.FC<SkeletonCardProps> = ({
           <SkeletonImage height="h-full" rounded="rounded-none" colorMode={colorMode} />
         </div>
       )}
-      
+
       <div className="p-4">
         {/* Card Header - Title and badge */}
         <div className="flex justify-between items-start mb-4">

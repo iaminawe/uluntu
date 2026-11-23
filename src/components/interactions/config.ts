@@ -4,10 +4,10 @@
 export const interactionsConfig = {
   // Set to true now that tables exist
   enabled: true,
-  
+
   // Show UI but in disabled state
   showDisabled: true,
-  
+
   // Message to show when disabled
-  disabledMessage: 'Interactions are temporarily unavailable'
+  disabledMessage: 'Interactions are temporarily unavailable',
 };

@@ -22,11 +22,7 @@ interface InvitationsSectionProps {
   onRefresh: () => void;
 }
 
-const InvitationsSection: React.FC<InvitationsSectionProps> = ({ 
-  invitations, 
-  isLoading,
-  onRefresh 
-}) => {
+const InvitationsSection: React.FC<InvitationsSectionProps> = ({ invitations, isLoading, onRefresh }) => {
   const cancelInvitation = useCancelInvitation();
 
   const handleCancel = async (invitationId: string) => {
@@ -81,7 +77,7 @@ const InvitationsSection: React.FC<InvitationsSectionProps> = ({
 
   return (
     <div className="space-y-3">
-      {invitations.map((invitation) => (
+      {invitations.map(invitation => (
         <div
           key={invitation.id}
           className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4"
@@ -89,28 +85,25 @@ const InvitationsSection: React.FC<InvitationsSectionProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <img
-                  src={invitation.inviter.image}
-                  alt={invitation.inviter.name}
-                  className="w-8 h-8 rounded-full"
-                />
+                <img src={invitation.inviter.image} alt={invitation.inviter.name} className="w-8 h-8 rounded-full" />
                 <div>
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">
-                    {invitation.email}
-                  </p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">{invitation.email}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Invited by {invitation.inviter.name} • {formatDistanceToNow(new Date(invitation.created_at), { addSuffix: true })}
+                    Invited by {invitation.inviter.name} •{' '}
+                    {formatDistanceToNow(new Date(invitation.created_at), { addSuffix: true })}
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusStyles(invitation.status)}`}>
+              <div
+                className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusStyles(invitation.status)}`}
+              >
                 {getStatusIcon(invitation.status)}
                 <span className="capitalize">{invitation.status}</span>
               </div>
-              
+
               {invitation.status === 'pending' && new Date(invitation.expires_at) > new Date() && (
                 <button
                   onClick={() => handleCancel(invitation.id)}

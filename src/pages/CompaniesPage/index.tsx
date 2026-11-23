@@ -15,16 +15,7 @@ export default function CompaniesPage() {
   const companiesEnabled = isFeatureEnabled('companies_listing');
 
   // Use hybrid approach: React Query for data, Redux for UI state
-  const {
-    companies,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    filters,
-    setSearchTerm,
-    setIndustries
-  } = useCompaniesHybrid();
+  const { companies, isLoading, isError, error, refetch, filters, setSearchTerm, setIndustries } = useCompaniesHybrid();
 
   // Redirect if companies feature is disabled
   if (!featuresLoading && !companiesEnabled) {
@@ -35,30 +26,30 @@ export default function CompaniesPage() {
   if (featuresLoading) {
     return <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />;
   }
-  
+
   return (
     <>
       <Helmet>
         <title>Tech Companies - Uluntu</title>
         <meta name="description" content="Explore tech companies and startups in the Kootenay region" />
       </Helmet>
-      
+
       <PageHeader />
-      
+
       <ContentContainer>
-        <ActionBar 
+        <ActionBar
           searchTerm={filters.search || ''}
           onSearch={setSearchTerm}
           selectedIndustries={filters.industries || []}
           onIndustryChange={setIndustries}
         />
-        
+
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
         ) : isError ? (
-          <QueryError 
-            error={error || new Error('Failed to load companies')} 
-            retry={refetch} 
+          <QueryError
+            error={error || new Error('Failed to load companies')}
+            retry={refetch}
             message="We couldn't load the companies. Please try again."
           />
         ) : !companies || companies.length === 0 ? (
@@ -67,14 +58,14 @@ export default function CompaniesPage() {
             description="There are no companies in the directory yet."
             primaryActionUrl="/companies/create"
             primaryAction={{
-              text: "Add a Company",
-              onClick: () => console.log('Navigate to add company')
+              text: 'Add a Company',
+              onClick: () => console.log('Navigate to add company'),
             }}
           />
         ) : (
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-              {(companies || []).map((company) => (
+              {(companies || []).map(company => (
                 <CompanyCard key={company.id} company={company} />
               ))}
             </div>

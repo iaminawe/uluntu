@@ -41,7 +41,9 @@ const SkeletonGrid: React.FC<SkeletonGridProps> = ({
     columns.md ? `md:grid-cols-${columns.md}` : 'md:grid-cols-2',
     columns.lg ? `lg:grid-cols-${columns.lg}` : 'lg:grid-cols-3',
     columns.xl ? `xl:grid-cols-${columns.xl}` : '',
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={`grid ${gridCols} gap-6 ${className}`}>

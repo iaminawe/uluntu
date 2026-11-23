@@ -1,17 +1,17 @@
 import React, { useState, useCallback } from 'react';
-import { 
-  GripVertical, 
-  Star, 
-  StarOff, 
-  Trash2, 
-  Eye, 
-  Edit, 
+import {
+  GripVertical,
+  Star,
+  StarOff,
+  Trash2,
+  Eye,
+  Edit,
   Grid,
   Users,
   Globe,
   Lock,
   MoreVertical,
-  Image as ImageIcon
+  Image as ImageIcon,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
@@ -38,57 +38,66 @@ const EntityGalleryList: React.FC<EntityGalleryListProps> = ({
   onView,
   featuredGalleryId,
   editable = true,
-  showPrivacy = true
+  showPrivacy = true,
 }) => {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState<string | null>(null);
 
   // Handle drag start
-  const handleDragStart = useCallback((e: React.DragEvent, galleryId: string) => {
-    if (!editable) return;
-    setDraggedItem(galleryId);
-    e.dataTransfer.effectAllowed = 'move';
-  }, [editable]);
+  const handleDragStart = useCallback(
+    (e: React.DragEvent, galleryId: string) => {
+      if (!editable) return;
+      setDraggedItem(galleryId);
+      e.dataTransfer.effectAllowed = 'move';
+    },
+    [editable]
+  );
 
   // Handle drag over
-  const handleDragOver = useCallback((e: React.DragEvent, galleryId: string) => {
-    e.preventDefault();
-    if (draggedItem && draggedItem !== galleryId) {
-      setDropTarget(galleryId);
-    }
-  }, [draggedItem]);
+  const handleDragOver = useCallback(
+    (e: React.DragEvent, galleryId: string) => {
+      e.preventDefault();
+      if (draggedItem && draggedItem !== galleryId) {
+        setDropTarget(galleryId);
+      }
+    },
+    [draggedItem]
+  );
 
   // Handle drop
-  const handleDrop = useCallback((e: React.DragEvent, targetGalleryId: string) => {
-    e.preventDefault();
-    
-    if (!draggedItem || draggedItem === targetGalleryId) {
+  const handleDrop = useCallback(
+    (e: React.DragEvent, targetGalleryId: string) => {
+      e.preventDefault();
+
+      if (!draggedItem || draggedItem === targetGalleryId) {
+        setDraggedItem(null);
+        setDropTarget(null);
+        return;
+      }
+
+      const reorderedGalleries = [...galleries];
+      const draggedIndex = reorderedGalleries.findIndex(g => g.id === draggedItem);
+      const targetIndex = reorderedGalleries.findIndex(g => g.id === targetGalleryId);
+
+      if (draggedIndex !== -1 && targetIndex !== -1) {
+        const [draggedGallery] = reorderedGalleries.splice(draggedIndex, 1);
+        reorderedGalleries.splice(targetIndex, 0, draggedGallery);
+
+        // Update sort_order based on new positions
+        const updatedGalleries = reorderedGalleries.map((gallery, index) => ({
+          ...gallery,
+          sort_order: index,
+        }));
+
+        onReorder(updatedGalleries);
+      }
+
       setDraggedItem(null);
       setDropTarget(null);
-      return;
-    }
-
-    const reorderedGalleries = [...galleries];
-    const draggedIndex = reorderedGalleries.findIndex(g => g.id === draggedItem);
-    const targetIndex = reorderedGalleries.findIndex(g => g.id === targetGalleryId);
-
-    if (draggedIndex !== -1 && targetIndex !== -1) {
-      const [draggedGallery] = reorderedGalleries.splice(draggedIndex, 1);
-      reorderedGalleries.splice(targetIndex, 0, draggedGallery);
-      
-      // Update sort_order based on new positions
-      const updatedGalleries = reorderedGalleries.map((gallery, index) => ({
-        ...gallery,
-        sort_order: index
-      }));
-      
-      onReorder(updatedGalleries);
-    }
-
-    setDraggedItem(null);
-    setDropTarget(null);
-  }, [draggedItem, galleries, onReorder]);
+    },
+    [draggedItem, galleries, onReorder]
+  );
 
   // Handle drag end
   const handleDragEnd = useCallback(() => {
@@ -97,17 +106,23 @@ const EntityGalleryList: React.FC<EntityGalleryListProps> = ({
   }, []);
 
   // Toggle featured status
-  const handleToggleFeatured = useCallback((gallery: Gallery) => {
-    const isFeatured = gallery.id === featuredGalleryId || gallery.is_featured;
-    onSetFeatured(gallery.id, !isFeatured);
-  }, [featuredGalleryId, onSetFeatured]);
+  const handleToggleFeatured = useCallback(
+    (gallery: Gallery) => {
+      const isFeatured = gallery.id === featuredGalleryId || gallery.is_featured;
+      onSetFeatured(gallery.id, !isFeatured);
+    },
+    [featuredGalleryId, onSetFeatured]
+  );
 
   // Handle remove with confirmation
-  const handleRemove = useCallback((galleryId: string) => {
-    if (confirm('Are you sure you want to remove this gallery attachment?')) {
-      onRemove(galleryId);
-    }
-  }, [onRemove]);
+  const handleRemove = useCallback(
+    (galleryId: string) => {
+      if (confirm('Are you sure you want to remove this gallery attachment?')) {
+        onRemove(galleryId);
+      }
+    },
+    [onRemove]
+  );
 
   // Get privacy icon
   const getPrivacyIcon = (privacyLevel: Gallery['privacy_level']) => {
@@ -144,17 +159,17 @@ const EntityGalleryList: React.FC<EntityGalleryListProps> = ({
           <div
             key={gallery.id}
             draggable={editable}
-            onDragStart={(e) => handleDragStart(e, gallery.id)}
-            onDragOver={(e) => handleDragOver(e, gallery.id)}
-            onDrop={(e) => handleDrop(e, gallery.id)}
+            onDragStart={e => handleDragStart(e, gallery.id)}
+            onDragOver={e => handleDragOver(e, gallery.id)}
+            onDrop={e => handleDrop(e, gallery.id)}
             onDragEnd={handleDragEnd}
             className={`group flex items-center space-x-4 p-4 bg-white dark:bg-slate-800 border rounded-lg transition-all ${
               isDragging ? 'opacity-50 transform rotate-2' : ''
             } ${
-              isDropTarget ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-200 dark:border-slate-700'
-            } ${
-              editable ? 'hover:border-slate-300 dark:hover:border-slate-600' : ''
-            }`}
+              isDropTarget
+                ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-slate-200 dark:border-slate-700'
+            } ${editable ? 'hover:border-slate-300 dark:hover:border-slate-600' : ''}`}
           >
             {/* Drag handle */}
             {editable && (
@@ -166,11 +181,7 @@ const EntityGalleryList: React.FC<EntityGalleryListProps> = ({
             {/* Gallery thumbnail */}
             <div className="flex-shrink-0 w-16 h-12 bg-slate-100 dark:bg-slate-700 rounded overflow-hidden">
               {gallery.cover_photo_url ? (
-                <img
-                  src={gallery.cover_photo_url}
-                  alt={gallery.title}
-                  className="w-full h-full object-cover"
-                />
+                <img src={gallery.cover_photo_url} alt={gallery.title} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <ImageIcon className="w-6 h-6 text-slate-400" />
@@ -181,20 +192,14 @@ const EntityGalleryList: React.FC<EntityGalleryListProps> = ({
             {/* Gallery info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <h4 className="font-medium text-slate-900 dark:text-white truncate">
-                  {gallery.title}
-                </h4>
-                {isFeatured && (
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                )}
+                <h4 className="font-medium text-slate-900 dark:text-white truncate">{gallery.title}</h4>
+                {isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-current" />}
               </div>
-              
+
               <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400">
                 <span>{gallery.photo_count} photos</span>
                 {showPrivacy && getPrivacyIcon(gallery.privacy_level)}
-                <span className="text-xs">
-                  Updated {new Date(gallery.updated_at).toLocaleDateString()}
-                </span>
+                <span className="text-xs">Updated {new Date(gallery.updated_at).toLocaleDateString()}</span>
               </div>
             </div>
 

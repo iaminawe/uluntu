@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { 
-  MapPin, 
-  Clock, 
+import {
+  MapPin,
+  Clock,
   Building2,
   DollarSign,
   Calendar,
@@ -11,16 +11,10 @@ import {
   Home,
   Globe,
   TrendingUp,
-  Award
+  Award,
 } from 'lucide-react';
 import { Opportunity } from './types';
-import { 
-  formatDate, 
-  calculateDaysLeft, 
-  getTypeColor, 
-  getOpportunityTypeLabel,
-  getExperienceLevelLabel
-} from './utils';
+import { formatDate, calculateDaysLeft, getTypeColor, getOpportunityTypeLabel, getExperienceLevelLabel } from './utils';
 
 interface OpportunityCardProps {
   opportunity: Opportunity;
@@ -32,18 +26,23 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
   const isExpired = daysLeft !== null && daysLeft <= 0;
   const isUrgent = daysLeft !== null && daysLeft <= 7 && daysLeft > 0;
   const postedDate = formatDate(opportunity.postedDate);
-  
+
   // Default cover images based on opportunity type
   const defaultCovers = {
-    'full-time': 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    'part-time': 'https://images.pexels.com/photos/5439381/pexels-photo-5439381.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    'contract': 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    'volunteer': 'https://images.pexels.com/photos/6646917/pexels-photo-6646917.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    'internship': 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+    'full-time':
+      'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+    'part-time':
+      'https://images.pexels.com/photos/5439381/pexels-photo-5439381.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+    contract:
+      'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+    volunteer:
+      'https://images.pexels.com/photos/6646917/pexels-photo-6646917.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+    internship:
+      'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
   };
-  
+
   const coverImage = opportunity.coverImage || defaultCovers[opportunity.type] || defaultCovers['full-time'];
-  
+
   return (
     <Link
       to={`/opportunities/${opportunity.originalId || String(opportunity.id)}`}
@@ -58,7 +57,7 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
           Featured
         </div>
       )}
-      
+
       {/* Urgent Badge */}
       {isUrgent && !isExpired && (
         <div className="absolute top-4 left-4 z-20 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg animate-pulse">
@@ -66,7 +65,7 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
           Closing Soon
         </div>
       )}
-      
+
       {/* Cover Image Section */}
       <div className={`${featured ? 'h-64' : 'h-48'} w-full relative overflow-hidden`}>
         <img
@@ -75,7 +74,7 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-        
+
         {/* Stats Overlay */}
         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white/90">
           <div className="flex items-center gap-3">
@@ -98,7 +97,7 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
           )}
         </div>
       </div>
-      
+
       {/* Logo Section - Floating */}
       <div className="flex justify-center -mt-12 relative z-10 px-6">
         <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 shadow-xl border-4 border-white dark:border-slate-800 group-hover:shadow-2xl transition-all duration-300">
@@ -115,7 +114,7 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
           )}
         </div>
       </div>
-      
+
       {/* Content Section */}
       <div className="p-6 flex flex-col flex-grow pt-4">
         {/* Title & Company */}
@@ -123,11 +122,9 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
           <h3 className="font-bold text-xl text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors line-clamp-2 mb-1">
             {opportunity.title}
           </h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
-            {opportunity.company.name}
-          </p>
+          <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">{opportunity.company.name}</p>
         </div>
-        
+
         {/* Key Details Grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="flex items-center justify-center text-sm text-slate-600 dark:text-slate-400">
@@ -141,16 +138,18 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
             </div>
           )}
         </div>
-        
+
         {/* Description */}
         <p className="text-slate-600 dark:text-slate-300 text-sm line-clamp-3 mb-4 text-center leading-relaxed">
           {opportunity.description}
         </p>
-        
+
         {/* Tags */}
         <div className="mt-auto">
           <div className="flex flex-wrap gap-1.5 justify-center">
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${getTypeColor(opportunity.type)}`}>
+            <span
+              className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${getTypeColor(opportunity.type)}`}
+            >
               {getOpportunityTypeLabel(opportunity.type)}
             </span>
             {opportunity.experienceLevel && (
@@ -167,7 +166,7 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
             )}
           </div>
         </div>
-        
+
         {/* Footer */}
         <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <span className="flex items-center">
@@ -189,7 +188,7 @@ const OpportunityCardEnhanced = ({ opportunity, featured = false }: OpportunityC
           )}
         </div>
       </div>
-      
+
       {/* Hover Effect - Bottom Border */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
     </Link>

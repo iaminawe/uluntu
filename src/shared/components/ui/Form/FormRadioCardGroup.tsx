@@ -101,7 +101,9 @@ export const FormRadioCardGroup: React.FC<FormRadioCardGroupProps> = ({
     columns.sm ? `sm:grid-cols-${columns.sm}` : '',
     columns.md ? `md:grid-cols-${columns.md}` : '',
     columns.lg ? `lg:grid-cols-${columns.lg}` : '',
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={`mb-4 ${containerClassName}`}>
@@ -110,55 +112,51 @@ export const FormRadioCardGroup: React.FC<FormRadioCardGroupProps> = ({
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
+
       <div className={`grid ${columnClasses} gap-3`}>
-        {options.map((option) => (
+        {options.map(option => (
           <label
             key={option.value}
             className={`relative ${compact ? 'p-3' : 'p-4'} border rounded-lg cursor-pointer
                       flex flex-col items-center text-center gap-2
                       transition-colors
-                      ${value === option.value 
-                        ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' 
-                        : 'border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                      ${
+                        value === option.value
+                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
+                          : 'border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700'
+                      }`}
           >
-            <input 
-              type="radio" 
+            <input
+              type="radio"
               id={`${id}-${option.value}`}
-              name={name} 
-              value={option.value} 
-              checked={value === option.value} 
+              name={name}
+              value={option.value}
+              checked={value === option.value}
               onChange={onChange}
               className="sr-only"
               aria-describedby={error ? `${id}-error` : undefined}
               required={required}
             />
-            
+
             {option.icon && (
-              <div className={option.iconColor || 'text-slate-700 dark:text-slate-300'}>
-                {option.icon}
-              </div>
+              <div className={option.iconColor || 'text-slate-700 dark:text-slate-300'}>{option.icon}</div>
             )}
-            
+
             <div>
               <span className={`block text-slate-900 dark:text-white ${option.description ? 'font-medium' : ''}`}>
                 {option.label}
               </span>
-              
+
               {option.description && (
-                <span className="text-sm text-slate-500 dark:text-slate-400">
-                  {option.description}
-                </span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{option.description}</span>
               )}
             </div>
           </label>
         ))}
       </div>
-      
-      {helperText && !error && (
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
-      )}
-      
+
+      {helperText && !error && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{helperText}</p>}
+
       {error && (
         <p id={`${id}-error`} className="mt-1 text-xs text-red-500">
           {error}

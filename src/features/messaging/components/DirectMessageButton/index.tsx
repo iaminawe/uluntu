@@ -19,7 +19,7 @@ export function DirectMessageButton({
   recipientId,
   recipientName,
   onEmailFallback,
-  className = ''
+  className = '',
 }: DirectMessageButtonProps) {
   const { user } = useSession();
   const { enabled: isMessagingEnabled, loading } = useFeatureToggle('user_messaging');
@@ -70,7 +70,7 @@ export function DirectMessageButton({
         <MessageCircle className="h-4 w-4 mr-2" />
         Send Message
       </button>
-      
+
       <ComposeMessageModal
         recipientId={recipientId}
         recipientName={recipientName}

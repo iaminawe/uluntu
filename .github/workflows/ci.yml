@@ -27,6 +27,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Check formatting
+        run: npm run format:check
+
       - name: Build
         run: npm run build
         env:
@@ -41,6 +44,7 @@ jobs:
             exit 1
           fi
 
+  # Formatting (format:check) is required and runs in the build job above.
   # Typecheck, lint and tests don't pass on main yet (thousands of existing type
   # and lint errors, many of them in dead code). This job reports them without
   # blocking merges. Once each one is green on main, remove its

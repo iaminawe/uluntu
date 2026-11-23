@@ -1,18 +1,18 @@
-import { Navigate, Outlet } from "react-router-dom"
-import { useSession } from "@/shared/contexts/SessionContext"
+import { Navigate, Outlet } from 'react-router-dom';
+import { useSession } from '@/shared/contexts/SessionContext';
 
 const AuthProtectedRoute = () => {
-  const { session, loading } = useSession()
+  const { session, loading } = useSession();
 
   if (loading) {
-    return null // Or loading component
+    return null; // Or loading component
   }
 
   if (!session) {
-    return <Navigate to="/auth/sign-in" replace />
+    return <Navigate to="/auth/sign-in" replace />;
   }
 
-  return <Outlet />
-}
+  return <Outlet />;
+};
 
-export default AuthProtectedRoute
+export default AuthProtectedRoute;

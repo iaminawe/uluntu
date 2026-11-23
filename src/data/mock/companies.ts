@@ -32,14 +32,15 @@ export const companies: Company[] = [
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/company/testcompany',
-      twitter: 'https://twitter.com/testcompany'
+      twitter: 'https://twitter.com/testcompany',
     },
-    employees: []
+    employees: [],
   },
   {
     id: '1',
     name: 'Mountain Tech Solutions',
-    description: 'A leading technology company in the Kootenays specializing in AI and machine learning solutions for environmental monitoring and sustainable resource management.',
+    description:
+      'A leading technology company in the Kootenays specializing in AI and machine learning solutions for environmental monitoring and sustainable resource management.',
     logo: 'https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg',
     coverImage: 'https://images.pexels.com/photos/2559941/pexels-photo-2559941.jpeg',
     industry: ['Technology', 'Artificial Intelligence', 'Environmental Tech'],
@@ -52,14 +53,15 @@ export const companies: Company[] = [
     social: {
       linkedin: 'https://linkedin.com/company/mountaintech',
       twitter: 'https://twitter.com/mountaintech',
-      github: 'https://github.com/mountaintech'
+      github: 'https://github.com/mountaintech',
     },
-    employees: ['1', '4']
+    employees: ['1', '4'],
   },
   {
     id: '2',
     name: 'Kootenay AI Solutions',
-    description: 'Specialized AI consulting firm helping local businesses implement machine learning solutions to improve operations and sustainability.',
+    description:
+      'Specialized AI consulting firm helping local businesses implement machine learning solutions to improve operations and sustainability.',
     logo: 'https://images.pexels.com/photos/2312369/pexels-photo-2312369.jpeg',
     coverImage: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg',
     industry: ['Artificial Intelligence', 'Consulting', 'Technology'],
@@ -70,14 +72,15 @@ export const companies: Company[] = [
     status: 'published' as ContentStatus,
     social: {
       linkedin: 'https://linkedin.com/company/kootenayai',
-      github: 'https://github.com/kootenayai'
+      github: 'https://github.com/kootenayai',
     },
-    employees: ['2']
+    employees: ['2'],
   },
   {
     id: '3',
     name: 'Kootenay Data Insights',
-    description: 'Data analytics company focused on environmental monitoring and conservation efforts in the Kootenay region.',
+    description:
+      'Data analytics company focused on environmental monitoring and conservation efforts in the Kootenay region.',
     logo: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg',
     coverImage: 'https://images.pexels.com/photos/1181373/pexels-photo-1181373.jpeg',
     industry: ['Data Analytics', 'Environmental', 'Conservation'],
@@ -87,14 +90,15 @@ export const companies: Company[] = [
     website: 'https://kootenaydata.example.com',
     status: 'published' as ContentStatus,
     social: {
-      linkedin: 'https://linkedin.com/company/kootenaydata'
+      linkedin: 'https://linkedin.com/company/kootenaydata',
     },
-    employees: ['3']
+    employees: ['3'],
   },
   {
     id: '4',
     name: 'Mountain Web Works',
-    description: 'Web development studio creating beautiful, accessible websites and applications for local businesses and organizations.',
+    description:
+      'Web development studio creating beautiful, accessible websites and applications for local businesses and organizations.',
     logo: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg',
     coverImage: 'https://images.pexels.com/photos/196646/pexels-photo-196646.jpeg',
     industry: ['Web Development', 'Design', 'Technology'],
@@ -105,14 +109,15 @@ export const companies: Company[] = [
     status: 'published' as ContentStatus,
     social: {
       linkedin: 'https://linkedin.com/company/mountainweb',
-      github: 'https://github.com/mountainweb'
+      github: 'https://github.com/mountainweb',
     },
-    employees: ['4']
+    employees: ['4'],
   },
   {
     id: '5',
     name: 'Kootenay Creative',
-    description: 'Design studio specializing in UX/UI design, branding, and digital marketing for sustainable and community-focused businesses.',
+    description:
+      'Design studio specializing in UX/UI design, branding, and digital marketing for sustainable and community-focused businesses.',
     logo: 'https://images.pexels.com/photos/6444/pencil-typography-black-design.jpg',
     coverImage: 'https://images.pexels.com/photos/6444/pencil-typography-black-design.jpg',
     industry: ['Design', 'Marketing', 'Creative'],
@@ -124,8 +129,8 @@ export const companies: Company[] = [
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/company/kootenaycreative',
-      twitter: 'https://twitter.com/kootenaycreative'
+      twitter: 'https://twitter.com/kootenaycreative',
     },
-    employees: ['5']
-  }
+    employees: ['5'],
+  },
 ];

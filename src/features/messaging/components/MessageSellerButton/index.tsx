@@ -25,7 +25,7 @@ export function MessageSellerButton({
   itemTitle,
   itemType = 'marketplace',
   fullWidth = false,
-  className = ''
+  className = '',
 }: MessageSellerButtonProps) {
   const { user } = useSession();
   const navigate = useNavigate();
@@ -54,9 +54,9 @@ export function MessageSellerButton({
         buyerId: 'current-user-id', // Should be from user session
         itemId,
         itemTitle,
-        initialMessage: `Hi! I'm interested in ${itemTitle}`
+        initialMessage: `Hi! I'm interested in ${itemTitle}`,
       });
-      
+
       // Navigate to messages page with the new thread selected
       navigate(`/messages?thread=${thread.id}`);
     } catch (error) {

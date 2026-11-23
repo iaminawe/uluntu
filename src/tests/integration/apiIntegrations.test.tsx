@@ -1,7 +1,7 @@
 // Mock environment dependencies first
 jest.mock('@/config/env', () => ({
   getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
-  IS_SUPABASE_ENABLED: false
+  IS_SUPABASE_ENABLED: false,
 }));
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
@@ -17,16 +17,16 @@ jest.mock('@/lib/supabase', () => {
     supabase: {
       from: jest.fn(),
       storage: {
-        from: jest.fn()
+        from: jest.fn(),
       },
       auth: {
         getSession: jest.fn(),
         getUser: jest.fn(),
         signInWithPassword: jest.fn(),
-        signOut: jest.fn()
-      }
+        signOut: jest.fn(),
+      },
     },
-    checkSupabaseConnection: jest.fn()
+    checkSupabaseConnection: jest.fn(),
   };
 });
 
@@ -46,22 +46,22 @@ describe('API Integrations', () => {
     // Setup mock response for successful data retrieval
     const mockMembers = [
       { id: '1', name: 'John Doe', title: 'Developer' },
-      { id: '2', name: 'Jane Smith', title: 'Designer' }
+      { id: '2', name: 'Jane Smith', title: 'Designer' },
     ];
-    
+
     // Mock the membersApi.getAll method directly instead of mocking Supabase
     const originalGetAll = membersApi.getAll;
     membersApi.getAll = jest.fn().mockResolvedValue(mockMembers);
-    
+
     // Call the API method
     const result = await membersApi.getAll();
-    
+
     // Verify the API method was called
     expect(membersApi.getAll).toHaveBeenCalled();
-    
+
     // Verify the result contains the expected data
     expect(result).toEqual(mockMembers);
-    
+
     // Restore the original method
     membersApi.getAll = originalGetAll;
   });
@@ -77,29 +77,29 @@ describe('API Integrations', () => {
       website: 'https://example.com',
       logo: 'logo.png',
       location: 'Test City',
-      industry: 'Technology',  // Add required fields for CompanyInput
+      industry: 'Technology', // Add required fields for CompanyInput
       size: 'Small',
-      founded: '2020'
+      founded: '2020',
     };
-    
+
     const mockCreatedCompany = {
       ...newCompany,
-      id: '123'
+      id: '123',
     };
-    
+
     // Mock the companiesApi.create method directly instead of mocking Supabase
     const originalCreate = companiesApi.create;
     companiesApi.create = jest.fn().mockResolvedValue(mockCreatedCompany);
-    
+
     // Call the API method
     const result = await companiesApi.create(newCompany);
-    
+
     // Verify the API method was called
     expect(companiesApi.create).toHaveBeenCalledWith(newCompany);
-    
+
     // Verify the result contains the expected data
     expect(result).toEqual(mockCreatedCompany);
-    
+
     // Restore the original method
     companiesApi.create = originalCreate;
   });
@@ -112,31 +112,31 @@ describe('API Integrations', () => {
     const mockError = {
       message: 'Database connection error',
       code: 'PGRST301',
-      details: 'Could not connect to database'
+      details: 'Could not connect to database',
     };
-    
+
     const mockSupabaseResponse = {
       data: null,
-      error: mockError
+      error: mockError,
     };
-    
+
     // Configure the mock to return our mock error
     const selectMock = jest.fn().mockReturnValue({
       limit: jest.fn().mockReturnValue({
-        order: jest.fn().mockResolvedValue(mockSupabaseResponse)
-      })
+        order: jest.fn().mockResolvedValue(mockSupabaseResponse),
+      }),
     });
-    
+
     const fromMock = jest.fn().mockReturnValue({
-      select: selectMock
+      select: selectMock,
     });
-    
+
     // @ts-ignore - Mocking the supabase client
     supabase.from.mockImplementation(fromMock);
-    
+
     // Test error handling in API call
     await expect(membersApi.getAll()).rejects.toThrow();
-    
+
     // Test the error handling utility directly
     expect(() => {
       handleSupabaseError(mockError, 'fetching members');
@@ -150,20 +150,20 @@ describe('API Integrations', () => {
     // Mock a successful connection check
     const mockSupabaseResponse = {
       data: [{ count: 10 }],
-      error: null
+      error: null,
     };
-    
+
     const limitMock = jest.fn().mockResolvedValue(mockSupabaseResponse);
     const selectMock = jest.fn().mockReturnValue({ limit: limitMock });
     const fromMock = jest.fn().mockReturnValue({ select: selectMock });
-    
+
     // @ts-ignore - Mocking the supabase client
     supabase.from.mockImplementation(fromMock);
     // @ts-ignore - Mocking the checkSupabaseConnection function
     checkSupabaseConnection.mockImplementation(async () => true);
-    
+
     const isConnected = await checkSupabaseConnection();
-    
+
     expect(isConnected).toBe(true);
   });
 
@@ -174,30 +174,30 @@ describe('API Integrations', () => {
     // Mock file and response
     const mockFile = new File(['test content'], 'test.png', { type: 'image/png' });
     const mockUrl = 'https://example.com/storage/test.png';
-    
+
     // Configure mocks for storage operations
     const uploadMock = jest.fn().mockResolvedValue({ error: null });
-    const getPublicUrlMock = jest.fn().mockReturnValue({ 
-      data: { publicUrl: mockUrl }
+    const getPublicUrlMock = jest.fn().mockReturnValue({
+      data: { publicUrl: mockUrl },
     });
-    
+
     const storageMock = jest.fn().mockReturnValue({
       upload: uploadMock,
-      getPublicUrl: getPublicUrlMock
+      getPublicUrl: getPublicUrlMock,
     });
-    
+
     // @ts-ignore - Mocking the supabase storage
     supabase.storage.from.mockImplementation(storageMock);
-    
+
     // Call the function that would use storage
     const result = await supabase.storage
       .from('profile-images')
       .upload('user-123/profile.png', mockFile, { upsert: true });
-    
+
     // Verify the storage API was called correctly
     expect(supabase.storage.from).toHaveBeenCalledWith('profile-images');
     expect(uploadMock).toHaveBeenCalledWith('user-123/profile.png', mockFile, { upsert: true });
-    
+
     // Verify no error was returned
     expect(result.error).toBeNull();
   });
@@ -210,26 +210,26 @@ describe('API Integrations', () => {
     const mockAuthResponse = {
       data: {
         user: { id: 'user-123', email: 'test@example.com' },
-        session: { access_token: 'test-token' }
+        session: { access_token: 'test-token' },
       },
-      error: null
+      error: null,
     };
-    
+
     // @ts-ignore - Mocking the supabase auth
     supabase.auth.signInWithPassword.mockResolvedValue(mockAuthResponse);
-    
+
     // Call the authentication method
     const result = await supabase.auth.signInWithPassword({
       email: 'test@example.com',
-      password: 'password123'
+      password: 'password123',
     });
-    
+
     // Verify the auth API was called correctly
     expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
       email: 'test@example.com',
-      password: 'password123'
+      password: 'password123',
     });
-    
+
     // Verify the result contains the expected data
     expect(result).toEqual(mockAuthResponse);
   });

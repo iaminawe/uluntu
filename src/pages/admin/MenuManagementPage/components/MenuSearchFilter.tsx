@@ -17,7 +17,7 @@ export const MenuSearchFilter: React.FC<SearchAndFilterProps> = ({
   enabledFilter,
   onEnabledFilterChange,
   onRefresh,
-  isLoading
+  isLoading,
 }) => {
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
@@ -29,7 +29,7 @@ export const MenuSearchFilter: React.FC<SearchAndFilterProps> = ({
             type="text"
             placeholder="Search menu items..."
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={e => onSearchChange(e.target.value)}
             className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           />
         </div>
@@ -38,7 +38,7 @@ export const MenuSearchFilter: React.FC<SearchAndFilterProps> = ({
         <div>
           <select
             value={visibilityFilter}
-            onChange={(e) => onVisibilityFilterChange(e.target.value as MenuVisibility | 'all')}
+            onChange={e => onVisibilityFilterChange(e.target.value as MenuVisibility | 'all')}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
             <option value="all">All Visibility</option>
@@ -53,7 +53,7 @@ export const MenuSearchFilter: React.FC<SearchAndFilterProps> = ({
         <div>
           <select
             value={enabledFilter === 'all' ? 'all' : enabledFilter.toString()}
-            onChange={(e) => {
+            onChange={e => {
               const value = e.target.value;
               onEnabledFilterChange(value === 'all' ? 'all' : value === 'true');
             }}
@@ -67,17 +67,8 @@ export const MenuSearchFilter: React.FC<SearchAndFilterProps> = ({
 
         {/* Refresh Button */}
         <div>
-          <Button
-            onClick={onRefresh}
-            disabled={isLoading}
-            variant="outline"
-            className="w-full"
-          >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4 mr-2" />
-            )}
+          <Button onClick={onRefresh} disabled={isLoading} variant="outline" className="w-full">
+            {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
             Refresh
           </Button>
         </div>

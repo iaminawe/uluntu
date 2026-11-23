@@ -6,20 +6,19 @@ import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import MessageBubble from '../MessageBubble';
 import TypingIndicator from '../TypingIndicator';
-import { 
-  Message, 
-  RealtimeMessageThreadProps, 
+import {
+  Message,
+  RealtimeMessageThreadProps,
   ConversationSwitchContext,
   ConversationIsolationError,
-  isConversationIsolationError 
+  isConversationIsolationError,
 } from '../../types';
 
-
-export default function RealtimeMessageThread({ 
-  conversationId, 
+export default function RealtimeMessageThread({
+  conversationId,
   className = '',
   onConversationSwitch,
-  onIsolationError
+  onIsolationError,
 }: RealtimeMessageThreadProps) {
   const [message, setMessage] = useState('');
   const [editingMessage, setEditingMessage] = useState<Message | null>(null);
@@ -28,19 +27,19 @@ export default function RealtimeMessageThread({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const previousConversationId = useRef<string | undefined>(undefined);
-  
+
   // Get current user information
   const { user } = useSession();
-  
+
   // Get current user's member profile
   const { data: currentMember } = useMemberByUserId(user?.id);
-  
+
   // Fetch conversation details to check if it's a group chat
   const { data: conversationData } = useConversation(conversationId || '');
 
   // Fetch messages with React Query and error handling
   const { data, isLoading, error } = useMessages(conversationId);
-  
+
   // Ensure messages are properly filtered for this conversation with validation
   const messages = React.useMemo(() => {
     try {
@@ -54,13 +53,13 @@ export default function RealtimeMessageThread({
           console.warn('Message bleeding detected:', {
             messageConversationId: msg.conversation_id,
             expectedConversationId: conversationId,
-            messageId: msg.id
+            messageId: msg.id,
           });
           return false;
         }
         return true;
       });
-      
+
       return filteredMessages;
     } catch (err) {
       const isolationError = new ConversationIsolationError(
@@ -73,14 +72,15 @@ export default function RealtimeMessageThread({
       return [];
     }
   }, [data, conversationId, onIsolationError]);
-  
+
   // Determine if this is a group conversation (more than 2 participants)
   const isGroupChat = useMemo(() => {
     if (!conversationData) return false;
-    return conversationData.type === 'group' || 
-           (conversationData.participants && conversationData.participants.length > 2);
+    return (
+      conversationData.type === 'group' || (conversationData.participants && conversationData.participants.length > 2)
+    );
   }, [conversationData]);
-  
+
   // Get current user's member ID to identify own messages
   const currentMemberId = useMemo(() => {
     // Use the member ID from the member profile, not the auth user ID
@@ -96,7 +96,7 @@ export default function RealtimeMessageThread({
     editMessage,
     deleteMessage,
     sendTypingIndicator,
-    requestNotificationPermission
+    requestNotificationPermission,
   } = useRealtimeChat(conversationId);
 
   // Reset state when conversation changes with error handling
@@ -108,17 +108,17 @@ export default function RealtimeMessageThread({
           previousConversationId: previousConversationId.current,
           newConversationId: conversationId,
           reason: 'user_selection',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
-        
+
         // Notify parent component of conversation switch
         onConversationSwitch?.(switchContext);
-        
+
         // Clear state when switching conversations
         setMessage('');
         setEditingMessage(null);
         setReplyingTo(null);
-        
+
         // Clear typing timeout
         if (typingTimeoutRef.current) {
           clearTimeout(typingTimeoutRef.current);
@@ -135,7 +135,7 @@ export default function RealtimeMessageThread({
         console.error('Conversation isolation error:', isolationError);
       }
     }
-    
+
     previousConversationId.current = conversationId;
   }, [conversationId, onConversationSwitch, onIsolationError]);
 
@@ -165,7 +165,7 @@ export default function RealtimeMessageThread({
     // Send typing indicator
     if (e.target.value.length > 0) {
       sendTypingIndicator(true);
-      
+
       // Stop typing after 1.5 seconds of inactivity
       typingTimeoutRef.current = setTimeout(() => {
         sendTypingIndicator(false);
@@ -178,7 +178,7 @@ export default function RealtimeMessageThread({
   // Handle send message
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    
+
     if (!message.trim()) return;
 
     try {
@@ -191,10 +191,10 @@ export default function RealtimeMessageThread({
         await sendMessage(message.trim(), replyingTo?.id);
         setReplyingTo(null);
       }
-      
+
       setMessage('');
       sendTypingIndicator(false);
-      
+
       // Clear typing timeout
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
@@ -271,7 +271,7 @@ export default function RealtimeMessageThread({
         </div>
       );
     }
-    
+
     return (
       <div className="flex items-center justify-center h-full text-red-500">
         Error loading messages: {(error as Error).message}
@@ -294,12 +294,8 @@ export default function RealtimeMessageThread({
           <div className="flex items-center space-x-2">
             <span className="text-xs text-slate-500 dark:text-slate-400">Online:</span>
             <div className="flex -space-x-2">
-              {onlineUsers.slice(0, 5).map((user) => (
-                <div
-                  key={user.user_id}
-                  className="relative"
-                  title={user.username}
-                >
+              {onlineUsers.slice(0, 5).map(user => (
+                <div key={user.user_id} className="relative" title={user.username}>
                   <img
                     src={user.avatar_url || '/default-avatar.png'}
                     alt={user.username || 'User'}
@@ -326,7 +322,7 @@ export default function RealtimeMessageThread({
           </div>
         ) : (
           <>
-            {messages.map((msg) => (
+            {messages.map(msg => (
               <MessageBubble
                 key={msg.id}
                 message={msg}
@@ -339,18 +335,18 @@ export default function RealtimeMessageThread({
             ))}
           </>
         )}
-        
+
         {/* Typing indicators */}
         {typingUsers.length > 0 && (
           <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
             <TypingIndicator />
             <span>
-              {typingUsers.map(u => u.username).join(', ')} 
+              {typingUsers.map(u => u.username).join(', ')}
               {typingUsers.length === 1 ? ' is' : ' are'} typing...
             </span>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -402,11 +398,7 @@ export default function RealtimeMessageThread({
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder={
-              editingMessage 
-                ? "Edit your message..." 
-                : replyingTo 
-                  ? "Type your reply..."
-                  : "Type a message..."
+              editingMessage ? 'Edit your message...' : replyingTo ? 'Type your reply...' : 'Type a message...'
             }
             className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white resize-none"
             rows={1}

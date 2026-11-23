@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  MapPin, 
-  Clock, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Clock,
   Building2,
   DollarSign,
   Calendar,
@@ -16,15 +16,15 @@ import {
   Award,
   ArrowRight,
   CheckCircle,
-  Target
+  Target,
 } from 'lucide-react';
 import { Opportunity } from './OpportunitiesList/types';
-import { 
-  formatDate, 
-  calculateDaysLeft, 
-  getTypeColor, 
+import {
+  formatDate,
+  calculateDaysLeft,
+  getTypeColor,
   getOpportunityTypeLabel,
-  getExperienceLevelLabel
+  getExperienceLevelLabel,
 } from './OpportunitiesList/utils';
 
 interface FeaturedOpportunitiesCarouselProps {
@@ -33,7 +33,7 @@ interface FeaturedOpportunitiesCarouselProps {
 
 const FeaturedOpportunitiesCarousel = ({ opportunities }: FeaturedOpportunitiesCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   // Filter out expired opportunities
   const activeOpportunities = opportunities.filter(opp => {
     if (!opp.deadline) return true; // If no deadline, consider it active
@@ -44,11 +44,9 @@ const FeaturedOpportunitiesCarousel = ({ opportunities }: FeaturedOpportunitiesC
   // Auto-advance carousel every 5 seconds
   useEffect(() => {
     if (activeOpportunities.length <= 1) return;
-    
+
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => 
-        prevIndex === activeOpportunities.length - 1 ? 0 : prevIndex + 1
-      );
+      setCurrentIndex(prevIndex => (prevIndex === activeOpportunities.length - 1 ? 0 : prevIndex + 1));
     }, 5000);
 
     return () => clearInterval(interval);
@@ -71,7 +69,8 @@ const FeaturedOpportunitiesCarousel = ({ opportunities }: FeaturedOpportunitiesC
     setCurrentIndex(currentIndex === activeOpportunities.length - 1 ? 0 : currentIndex + 1);
   };
 
-  const defaultCoverImage = 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+  const defaultCoverImage =
+    'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
   const coverImage = currentOpportunity.coverImage || defaultCoverImage;
 
   return (
@@ -89,9 +88,7 @@ const FeaturedOpportunitiesCarousel = ({ opportunities }: FeaturedOpportunitiesC
                   key={index}
                   onClick={() => setCurrentIndex(index)}
                   className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentIndex 
-                      ? 'bg-white w-6' 
-                      : 'bg-white/50 hover:bg-white/70'
+                    index === currentIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/70'
                   }`}
                   aria-label={`Go to opportunity ${index + 1}`}
                 />
@@ -105,13 +102,9 @@ const FeaturedOpportunitiesCarousel = ({ opportunities }: FeaturedOpportunitiesC
         <div className="relative">
           {/* Cover Image with Overlay */}
           <div className="relative h-80 overflow-hidden">
-            <img
-              src={coverImage}
-              alt={`${currentOpportunity.title} cover`}
-              className="w-full h-full object-cover"
-            />
+            <img src={coverImage} alt={`${currentOpportunity.title} cover`} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-            
+
             {/* Urgent Badge */}
             {isUrgent && (
               <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 shadow-lg animate-pulse">
@@ -164,9 +157,7 @@ const FeaturedOpportunitiesCarousel = ({ opportunities }: FeaturedOpportunitiesC
               {/* Main Info */}
               <div className="lg:col-span-2">
                 <div className="mb-4">
-                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                    {currentOpportunity.title}
-                  </h2>
+                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{currentOpportunity.title}</h2>
                   <p className="text-xl text-slate-600 dark:text-slate-400 font-medium">
                     {currentOpportunity.company.name}
                   </p>
@@ -221,7 +212,7 @@ const FeaturedOpportunitiesCarousel = ({ opportunities }: FeaturedOpportunitiesC
                       </ul>
                     </div>
                   )}
-                  
+
                   {currentOpportunity.requirements && currentOpportunity.requirements.length > 0 && (
                     <div>
                       <h3 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center">
@@ -247,7 +238,9 @@ const FeaturedOpportunitiesCarousel = ({ opportunities }: FeaturedOpportunitiesC
                   {/* Tags */}
                   <div className="mb-6">
                     <div className="flex flex-wrap gap-2">
-                      <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium ${getTypeColor(currentOpportunity.type)}`}>
+                      <span
+                        className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium ${getTypeColor(currentOpportunity.type)}`}
+                      >
                         {getOpportunityTypeLabel(currentOpportunity.type)}
                       </span>
                       {currentOpportunity.experienceLevel && (

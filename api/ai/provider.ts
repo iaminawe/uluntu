@@ -7,12 +7,7 @@
 // request to the provider — so BlockNote's streaming AI menu works without any
 // key in the bundle.
 import { getUser, type ApiReq, type ApiRes } from '../_lib/auth.js';
-import {
-  DEFAULT_MODEL,
-  checkTargetUrl,
-  isAIProvider,
-  limitBody,
-} from '../_lib/ai-limits.js';
+import { DEFAULT_MODEL, checkTargetUrl, isAIProvider, limitBody } from '../_lib/ai-limits.js';
 
 const OPENAI_KEY = process.env.OPENAI_API_KEY || '';
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
@@ -79,8 +74,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
   const headers: Record<string, string> = { 'content-type': 'application/json' };
   if (provider === 'anthropic') {
     headers['x-api-key'] = key;
-    headers['anthropic-version'] =
-      q(req.headers['anthropic-version']) || '2023-06-01';
+    headers['anthropic-version'] = q(req.headers['anthropic-version']) || '2023-06-01';
     const beta = q(req.headers['anthropic-beta']);
     if (beta && /^[a-z0-9-]+(,[a-z0-9-]+)*$/.test(beta)) headers['anthropic-beta'] = beta;
   } else {
@@ -95,10 +89,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     });
 
     res.status(upstream.status);
-    res.setHeader(
-      'Content-Type',
-      upstream.headers.get('content-type') || 'application/json'
-    );
+    res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/json');
     res.setHeader('Cache-Control', 'no-store');
 
     if (!upstream.body) {

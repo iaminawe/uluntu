@@ -47,7 +47,7 @@ export class ThemeErrorBoundary extends Component<Props, State> {
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     const { onError } = this.props;
-    
+
     // Log error to console in development
     if (process.env.NODE_ENV === 'development') {
       console.error('Theme Error Boundary caught an error:', error, errorInfo);
@@ -163,13 +163,11 @@ export class ThemeErrorBoundary extends Component<Props, State> {
                   <AlertTriangle className="h-6 w-6 text-red-600" />
                 </div>
                 <div className="ml-3 flex-1">
-                  <h3 className="text-lg font-medium text-red-900">
-                    Theme System Error
-                  </h3>
+                  <h3 className="text-lg font-medium text-red-900">Theme System Error</h3>
                   <p className="mt-2 text-sm text-red-700">
                     {error.message || 'An unexpected error occurred in the theme system'}
                   </p>
-                  
+
                   {/* Error count warning */}
                   {errorCount > 2 && (
                     <p className="mt-2 text-sm text-red-600 font-medium">
@@ -186,20 +184,16 @@ export class ThemeErrorBoundary extends Component<Props, State> {
                       <RefreshCw className="h-4 w-4 mr-1" />
                       Try Again
                     </button>
-                    
+
                     <button
                       onClick={this.toggleDetails}
                       className="inline-flex items-center px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                     >
                       <Bug className="h-4 w-4 mr-1" />
                       {showDetails ? 'Hide' : 'Show'} Details
-                      {showDetails ? (
-                        <ChevronUp className="h-4 w-4 ml-1" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4 ml-1" />
-                      )}
+                      {showDetails ? <ChevronUp className="h-4 w-4 ml-1" /> : <ChevronDown className="h-4 w-4 ml-1" />}
                     </button>
-                    
+
                     <button
                       onClick={() => window.location.reload()}
                       className="inline-flex items-center px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
@@ -211,17 +205,11 @@ export class ThemeErrorBoundary extends Component<Props, State> {
                   {/* Error details */}
                   {showDetails && errorInfo && (
                     <div className="mt-4 bg-red-100 rounded-md p-3">
-                      <h4 className="text-sm font-medium text-red-900 mb-2">
-                        Error Details
-                      </h4>
-                      <pre className="text-xs text-red-800 overflow-x-auto whitespace-pre-wrap">
-                        {error.stack}
-                      </pre>
+                      <h4 className="text-sm font-medium text-red-900 mb-2">Error Details</h4>
+                      <pre className="text-xs text-red-800 overflow-x-auto whitespace-pre-wrap">{error.stack}</pre>
                       {process.env.NODE_ENV === 'development' && (
                         <>
-                          <h4 className="text-sm font-medium text-red-900 mt-3 mb-2">
-                            Component Stack
-                          </h4>
+                          <h4 className="text-sm font-medium text-red-900 mt-3 mb-2">Component Stack</h4>
                           <pre className="text-xs text-red-800 overflow-x-auto whitespace-pre-wrap">
                             {errorInfo.componentStack}
                           </pre>

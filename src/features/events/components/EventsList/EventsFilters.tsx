@@ -20,7 +20,7 @@ const EventsFilters = ({
   dateRange,
   setDateRange,
   clearFilters,
-  hasActiveFilters
+  hasActiveFilters,
 }: EventsFiltersProps) => {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4">
@@ -35,11 +35,11 @@ const EventsFilters = ({
               placeholder="Search events by title, description, or location..."
               className="block w-full pl-10 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={e => setSearch(e.target.value)}
             />
           </div>
         </div>
-        
+
         <div className="flex flex-wrap gap-2 md:w-auto">
           {hasActiveFilters && (
             <button
@@ -51,7 +51,7 @@ const EventsFilters = ({
           )}
         </div>
       </div>
-      
+
       {/* Date Range Filter */}
       <div className="mt-4">
         <div className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Date Range:</div>
@@ -60,14 +60,14 @@ const EventsFilters = ({
             { value: 'upcoming', label: 'Upcoming' },
             { value: 'month', label: 'This Month' },
             { value: 'three-months', label: 'Next 3 Months' },
-            { value: 'all', label: 'All Events' }
+            { value: 'all', label: 'All Events' },
           ].map(option => (
             <button
               key={option.value}
               onClick={() => setDateRange(option.value as DateRangeFilter)}
               className={`px-3 py-1 rounded-full text-sm ${
                 dateRange === option.value
-                  ? 'bg-orange-500 text-white' 
+                  ? 'bg-orange-500 text-white'
                   : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
               }`}
             >
@@ -76,7 +76,7 @@ const EventsFilters = ({
           ))}
         </div>
       </div>
-      
+
       {/* Event Type Filter */}
       <div className="mt-4">
         <div className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Event Type:</div>
@@ -84,14 +84,14 @@ const EventsFilters = ({
           {[
             { value: 'in-person', label: 'In-Person' },
             { value: 'online', label: 'Online' },
-            { value: 'hybrid', label: 'Hybrid' }
+            { value: 'hybrid', label: 'Hybrid' },
           ].map(type => (
             <button
               key={type.value}
               onClick={() => handleTypeToggle(type.value as EventType)}
               className={`px-3 py-1 rounded-full text-sm ${
                 selectedTypes.includes(type.value as EventType)
-                  ? 'bg-orange-500 text-white' 
+                  ? 'bg-orange-500 text-white'
                   : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
               }`}
             >

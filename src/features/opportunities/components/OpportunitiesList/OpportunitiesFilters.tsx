@@ -1,19 +1,7 @@
 import { useState } from 'react';
-import { 
-  X, 
-  Filter, 
-  MapPin, 
-  Monitor 
-} from 'lucide-react';
-import { 
-  OpportunityType, 
-  ExperienceLevel,
-  FilterOptions 
-} from './types';
-import { 
-  getOpportunityTypeLabel,
-  getExperienceLevelLabel
-} from './utils';
+import { X, Filter, MapPin, Monitor } from 'lucide-react';
+import { OpportunityType, ExperienceLevel, FilterOptions } from './types';
+import { getOpportunityTypeLabel, getExperienceLevelLabel } from './utils';
 
 interface OpportunitiesFiltersProps {
   filters: FilterOptions;
@@ -22,31 +10,32 @@ interface OpportunitiesFiltersProps {
   totalCount: number;
 }
 
-const OpportunitiesFilters = ({ 
-  filters, 
-  setFilters, 
-  resultsCount, 
-  totalCount 
-}: OpportunitiesFiltersProps) => {
+const OpportunitiesFilters = ({ filters, setFilters, resultsCount, totalCount }: OpportunitiesFiltersProps) => {
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Options for filter select elements
-  const typeOptions: (OpportunityType | 'all')[] = ['all', 'full-time', 'part-time', 'contract', 'volunteer', 'internship'];
+  const typeOptions: (OpportunityType | 'all')[] = [
+    'all',
+    'full-time',
+    'part-time',
+    'contract',
+    'volunteer',
+    'internship',
+  ];
   const experienceLevelOptions: (ExperienceLevel | 'all')[] = ['all', 'entry', 'mid', 'senior', 'lead', 'executive'];
-  
+
   // Reset all filters to default values
   const resetFilters = () => {
     setFilters({
       type: 'all',
       experienceLevel: 'all',
       remote: 'all',
-      search: ''
+      search: '',
     });
   };
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 mb-6">
-      
       {/* Filter toggle and results count */}
       <div className="flex justify-between items-center mb-4">
         <button
@@ -57,21 +46,20 @@ const OpportunitiesFilters = ({
           <Filter className="h-4 w-4 mr-1" />
           {showFilters ? 'Hide Filters' : 'Show Filters'}
         </button>
-        
+
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          Showing <span className="font-medium text-slate-700 dark:text-slate-300">{resultsCount}</span> of {totalCount} opportunities
+          Showing <span className="font-medium text-slate-700 dark:text-slate-300">{resultsCount}</span> of {totalCount}{' '}
+          opportunities
         </div>
       </div>
-      
+
       {/* Expanded filters */}
       {showFilters && (
         <div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-700">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Type filter */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Type
-              </label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Type</label>
               <select
                 value={filters.type}
                 onChange={e => setFilters({ ...filters, type: e.target.value as OpportunityType | 'all' })}
@@ -86,7 +74,7 @@ const OpportunitiesFilters = ({
                 ))}
               </select>
             </div>
-            
+
             {/* Experience level filter */}
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -106,19 +94,17 @@ const OpportunitiesFilters = ({
                 ))}
               </select>
             </div>
-            
+
             {/* Remote filter */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Remote Work
-              </label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Remote Work</label>
               <select
                 value={filters.remote === 'all' ? 'all' : filters.remote.toString()}
                 onChange={e => {
                   const value = e.target.value;
-                  setFilters({ 
-                    ...filters, 
-                    remote: value === 'all' ? 'all' : value === 'true' 
+                  setFilters({
+                    ...filters,
+                    remote: value === 'all' ? 'all' : value === 'true',
                   });
                 }}
                 className="w-full py-2 px-3 border border-slate-300 dark:border-slate-600 rounded-lg
@@ -131,16 +117,18 @@ const OpportunitiesFilters = ({
               </select>
             </div>
           </div>
-          
+
           {/* Active filters and reset */}
           <div className="flex flex-wrap items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
             <div className="flex flex-wrap items-center gap-2">
               {/* Show active filters as badges */}
               {filters.type !== 'all' && (
-                <span className="flex items-center px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 
-                               text-slate-700 dark:text-slate-300 rounded-full">
+                <span
+                  className="flex items-center px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 
+                               text-slate-700 dark:text-slate-300 rounded-full"
+                >
                   {getOpportunityTypeLabel(filters.type)}
-                  <button 
+                  <button
                     onClick={() => setFilters({ ...filters, type: 'all' })}
                     className="ml-1 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                   >
@@ -148,12 +136,14 @@ const OpportunitiesFilters = ({
                   </button>
                 </span>
               )}
-              
+
               {filters.experienceLevel !== 'all' && filters.experienceLevel && (
-                <span className="flex items-center px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 
-                               text-slate-700 dark:text-slate-300 rounded-full">
+                <span
+                  className="flex items-center px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 
+                               text-slate-700 dark:text-slate-300 rounded-full"
+                >
                   {getExperienceLevelLabel(filters.experienceLevel)}
-                  <button 
+                  <button
                     onClick={() => setFilters({ ...filters, experienceLevel: 'all' })}
                     className="ml-1 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                   >
@@ -161,10 +151,12 @@ const OpportunitiesFilters = ({
                   </button>
                 </span>
               )}
-              
+
               {filters.remote !== 'all' && (
-                <span className="flex items-center px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 
-                               text-slate-700 dark:text-slate-300 rounded-full">
+                <span
+                  className="flex items-center px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 
+                               text-slate-700 dark:text-slate-300 rounded-full"
+                >
                   {filters.remote ? (
                     <>
                       <Monitor className="h-3 w-3 mr-1" />
@@ -176,7 +168,7 @@ const OpportunitiesFilters = ({
                       On-site
                     </>
                   )}
-                  <button 
+                  <button
                     onClick={() => setFilters({ ...filters, remote: 'all' })}
                     className="ml-1 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                   >
@@ -185,7 +177,7 @@ const OpportunitiesFilters = ({
                 </span>
               )}
             </div>
-            
+
             <button
               onClick={resetFilters}
               className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"

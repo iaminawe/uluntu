@@ -1,6 +1,6 @@
 // Mock supabaseUtils
 export const supabase = {
-  from: jest.fn()
+  from: jest.fn(),
 };
 
 export const handleSupabaseError = jest.fn((_error: any, context?: string) => {

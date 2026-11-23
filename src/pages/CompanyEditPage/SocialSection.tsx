@@ -1,18 +1,17 @@
 import { Linkedin, Twitter, Github } from 'lucide-react';
 import { SocialSectionProps } from './types';
 
-const SocialSection = ({
-  social,
-  onChange,
-  isSubmitting
-}: SocialSectionProps) => {
+const SocialSection = ({ social, onChange, isSubmitting }: SocialSectionProps) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium text-slate-800 dark:text-white">Social Media</h3>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label htmlFor="social.linkedin" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <label
+            htmlFor="social.linkedin"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+          >
             LinkedIn
           </label>
           <div className="relative">
@@ -33,7 +32,7 @@ const SocialSection = ({
             />
           </div>
         </div>
-        
+
         <div>
           <label htmlFor="social.twitter" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Twitter
@@ -56,7 +55,7 @@ const SocialSection = ({
             />
           </div>
         </div>
-        
+
         <div>
           <label htmlFor="social.github" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             GitHub

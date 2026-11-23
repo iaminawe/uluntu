@@ -15,19 +15,19 @@ jest.mock('@/lib/supabase', () => ({
     from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({ data: null, error: null }))
+          single: jest.fn(() => Promise.resolve({ data: null, error: null })),
         })),
         order: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({ data: [], error: null }))
+          limit: jest.fn(() => Promise.resolve({ data: [], error: null })),
         })),
-        range: jest.fn(() => Promise.resolve({ data: [], error: null, count: 0 }))
+        range: jest.fn(() => Promise.resolve({ data: [], error: null, count: 0 })),
       })),
       insert: jest.fn(() => Promise.resolve({ data: null, error: null })),
       update: jest.fn(() => Promise.resolve({ data: null, error: null })),
-      delete: jest.fn(() => Promise.resolve({ data: null, error: null }))
+      delete: jest.fn(() => Promise.resolve({ data: null, error: null })),
     })),
-    rpc: jest.fn(() => Promise.resolve({ data: { count: 0 }, error: null }))
-  }
+    rpc: jest.fn(() => Promise.resolve({ data: { count: 0 }, error: null })),
+  },
 }));
 
 // Mock API modules
@@ -37,8 +37,8 @@ jest.mock('@/api/admin/features', () => ({
     toggleFeature: jest.fn(),
     updateFeatureConfig: jest.fn(),
     getFeatureTranslations: jest.fn(() => Promise.resolve([])),
-    upsertFeatureTranslation: jest.fn()
-  }
+    upsertFeatureTranslation: jest.fn(),
+  },
 }));
 
 jest.mock('@/api/admin/roles', () => ({
@@ -49,62 +49,72 @@ jest.mock('@/api/admin/roles', () => ({
     deleteRole: jest.fn(),
     assignRole: jest.fn(),
     removeRole: jest.fn(),
-    getUserRoles: jest.fn(() => Promise.resolve([]))
-  }
+    getUserRoles: jest.fn(() => Promise.resolve([])),
+  },
 }));
 
 jest.mock('@/api/admin/moderation', () => ({
   adminModerationApi: {
     getModerationQueue: jest.fn(() => Promise.resolve({ data: [], count: 0 })),
-    getModerationStats: jest.fn(() => Promise.resolve({
-      totalPending: 0,
-      byType: {}
-    })),
+    getModerationStats: jest.fn(() =>
+      Promise.resolve({
+        totalPending: 0,
+        byType: {},
+      })
+    ),
     approveContent: jest.fn(),
     rejectContent: jest.fn(),
     getContentDetails: jest.fn(),
     approveItem: jest.fn(),
-    rejectItem: jest.fn()
-  }
+    rejectItem: jest.fn(),
+  },
 }));
 
 jest.mock('@/api/admin/stats', () => ({
   adminStatsApi: {
-    getDashboardStats: jest.fn(() => Promise.resolve({
-      totalMembers: 0,
-      totalCompanies: 0,
-      totalGroups: 0,
-      totalEvents: 0,
-      totalNews: 0,
-      totalResources: 0,
-      totalMarketplaceListings: 0,
-      totalOpportunities: 0,
-      pendingModeration: 0,
-      totalUsers: 0,
-      recentActivity: []
-    })),
-    getUserGrowthStats: jest.fn(() => Promise.resolve({
-      labels: [],
-      data: []
-    })),
-    getContentStats: jest.fn(() => Promise.resolve({
-      published: 0,
-      draft: 0,
-      archived: 0
-    })),
-    getEngagementStats: jest.fn(() => Promise.resolve({
-      activeUsers: 0,
-      pageViews: 0,
-      interactions: 0
-    }))
-  }
+    getDashboardStats: jest.fn(() =>
+      Promise.resolve({
+        totalMembers: 0,
+        totalCompanies: 0,
+        totalGroups: 0,
+        totalEvents: 0,
+        totalNews: 0,
+        totalResources: 0,
+        totalMarketplaceListings: 0,
+        totalOpportunities: 0,
+        pendingModeration: 0,
+        totalUsers: 0,
+        recentActivity: [],
+      })
+    ),
+    getUserGrowthStats: jest.fn(() =>
+      Promise.resolve({
+        labels: [],
+        data: [],
+      })
+    ),
+    getContentStats: jest.fn(() =>
+      Promise.resolve({
+        published: 0,
+        draft: 0,
+        archived: 0,
+      })
+    ),
+    getEngagementStats: jest.fn(() =>
+      Promise.resolve({
+        activeUsers: 0,
+        pageViews: 0,
+        interactions: 0,
+      })
+    ),
+  },
 }));
 
 jest.mock('@/api/admin/audit', () => ({
   adminAuditApi: {
     getAuditLogs: jest.fn(() => Promise.resolve({ data: [], count: 0 })),
-    exportAuditLogs: jest.fn(() => Promise.resolve(''))
-  }
+    exportAuditLogs: jest.fn(() => Promise.resolve('')),
+  },
 }));
 
 // Test wrapper component
@@ -112,15 +122,13 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
-      mutations: { retry: false }
-    }
+      mutations: { retry: false },
+    },
   });
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
     </QueryClientProvider>
   );
 };
@@ -135,8 +143,8 @@ describe('Admin Pages', () => {
       );
 
       expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
-      expect(screen.getByText('Overview of your platform\'s activity and statistics')).toBeInTheDocument();
-      
+      expect(screen.getByText("Overview of your platform's activity and statistics")).toBeInTheDocument();
+
       await waitFor(() => {
         expect(screen.getByText('Total Members')).toBeInTheDocument();
         expect(screen.getByText('Companies')).toBeInTheDocument();

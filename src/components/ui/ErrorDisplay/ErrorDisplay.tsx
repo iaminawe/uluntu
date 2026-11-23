@@ -21,15 +21,11 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
       <div className="mx-auto flex justify-center mb-6">
         {icon || <AlertTriangle className="h-12 w-12 text-red-500 dark:text-red-400" />}
       </div>
-      
-      <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-        {title}
-      </h2>
-      
-      <p className="text-slate-600 dark:text-slate-300 mb-6 max-w-lg mx-auto">
-        {message}
-      </p>
-      
+
+      <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">{title}</h2>
+
+      <p className="text-slate-600 dark:text-slate-300 mb-6 max-w-lg mx-auto">{message}</p>
+
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
         {backLink && (
           <Link
@@ -40,7 +36,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             {backLink.text}
           </Link>
         )}
-        
+
         {primaryAction && (
           <button
             onClick={primaryAction.onClick}
@@ -49,7 +45,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             {primaryAction.text}
           </button>
         )}
-        
+
         {actions}
       </div>
     </div>

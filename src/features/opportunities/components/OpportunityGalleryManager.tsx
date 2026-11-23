@@ -13,7 +13,7 @@ interface OpportunityGalleryManagerProps {
 export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps> = ({
   opportunityId,
   canEdit = false,
-  onGalleryUpdate
+  onGalleryUpdate,
 }) => {
   const [attachedGalleries, setAttachedGalleries] = useState<OpportunityGallery[]>([]);
   const [availableGalleries, setAvailableGalleries] = useState<AttachableGallery[]>([]);
@@ -56,7 +56,7 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
         gallery_id: galleryId,
         display_order: attachedGalleries.length,
         featured,
-        caption
+        caption,
       };
 
       const result = await opportunitiesApi.attachGallery(input);
@@ -120,10 +120,9 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Galleries</h3>
           <p className="text-sm text-gray-600">
-            {attachedGalleries.length === 0 
+            {attachedGalleries.length === 0
               ? 'No galleries attached to this opportunity'
-              : `${attachedGalleries.length} ${attachedGalleries.length === 1 ? 'gallery' : 'galleries'} attached`
-            }
+              : `${attachedGalleries.length} ${attachedGalleries.length === 1 ? 'gallery' : 'galleries'} attached`}
           </p>
         </div>
         {canEdit && (
@@ -140,7 +139,7 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
       {/* Attached Galleries */}
       {attachedGalleries.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {attachedGalleries.map((attachment) => (
+          {attachedGalleries.map(attachment => (
             <div key={attachment.id} className="bg-white rounded-lg shadow border overflow-hidden">
               {/* Gallery Image */}
               <div className="relative h-48">
@@ -176,17 +175,9 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
               <div className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900 truncate">
-                      {attachment.gallery?.title}
-                    </h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {attachment.gallery?.photo_count} photos
-                    </p>
-                    {attachment.caption && (
-                      <p className="text-sm text-gray-700 mt-2 italic">
-                        "{attachment.caption}"
-                      </p>
-                    )}
+                    <h4 className="font-medium text-gray-900 truncate">{attachment.gallery?.title}</h4>
+                    <p className="text-sm text-gray-600 mt-1">{attachment.gallery?.photo_count} photos</p>
+                    {attachment.caption && <p className="text-sm text-gray-700 mt-2 italic">"{attachment.caption}"</p>}
                   </div>
                   <a
                     href={`/galleries/${attachment.gallery?.slug}`}
@@ -206,9 +197,7 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
                       className="h-6 w-6 rounded-full"
                     />
                   )}
-                  <span className="ml-2 text-sm text-gray-600">
-                    by {attachment.gallery?.owner_name}
-                  </span>
+                  <span className="ml-2 text-sm text-gray-600">by {attachment.gallery?.owner_name}</span>
                 </div>
               </div>
             </div>
@@ -223,10 +212,7 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium text-gray-900">Attach Gallery</h3>
-                <button
-                  onClick={() => setShowAttachDialog(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
+                <button onClick={() => setShowAttachDialog(false)} className="text-gray-400 hover:text-gray-600">
                   <X className="h-6 w-6" />
                 </button>
               </div>
@@ -240,7 +226,7 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {availableGalleries.map((gallery) => (
+                  {availableGalleries.map(gallery => (
                     <div
                       key={gallery.id}
                       className={`bg-white rounded-lg shadow border overflow-hidden ${
@@ -265,15 +251,9 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
                         <p className="text-sm text-gray-600">{gallery.photo_count} photos</p>
                         <div className="flex items-center mt-2">
                           {gallery.owner_image && (
-                            <img
-                              src={gallery.owner_image}
-                              alt={gallery.owner_name}
-                              className="h-4 w-4 rounded-full"
-                            />
+                            <img src={gallery.owner_image} alt={gallery.owner_name} className="h-4 w-4 rounded-full" />
                           )}
-                          <span className="ml-1 text-xs text-gray-500">
-                            by {gallery.owner_name}
-                          </span>
+                          <span className="ml-1 text-xs text-gray-500">by {gallery.owner_name}</span>
                         </div>
                       </div>
                     </div>
@@ -292,32 +272,27 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium text-gray-900">Edit Gallery Attachment</h3>
-                <button
-                  onClick={() => setEditingAttachment(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
+                <button onClick={() => setEditingAttachment(null)} className="text-gray-400 hover:text-gray-600">
                   <X className="h-6 w-6" />
                 </button>
               </div>
             </div>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={e => {
                 e.preventDefault();
                 const formData = new FormData(e.currentTarget);
                 const updates: UpdateGalleryAttachmentInput = {
                   featured: formData.get('featured') === 'on',
-                  caption: formData.get('caption') as string || undefined,
-                  display_order: parseInt(formData.get('display_order') as string) || 0
+                  caption: (formData.get('caption') as string) || undefined,
+                  display_order: parseInt(formData.get('display_order') as string) || 0,
                 };
                 handleUpdateAttachment(editingAttachment.id, updates);
               }}
               className="p-6 space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Caption (optional)
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Caption (optional)</label>
                 <textarea
                   name="caption"
                   rows={3}
@@ -328,9 +303,7 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Display Order
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Display Order</label>
                 <input
                   type="number"
                   name="display_order"

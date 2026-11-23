@@ -15,14 +15,14 @@ const defaultPresenter: EventPresenter = {
   image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg', // Default image
   bio: '',
   title: '',
-  company: ''
+  company: '',
 };
 
 const defaultResource: EventSessionResource = {
   id: '0', // Will be replaced with a proper ID when saved
   title: '',
   url: '',
-  type: 'slides'
+  type: 'slides',
 };
 
 const defaultSession: EventSession = {
@@ -33,13 +33,19 @@ const defaultSession: EventSession = {
   endTime: '',
   presenters: [],
   videoUrl: '',
-  resources: []
+  resources: [],
 };
 
 const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsChange }) => {
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
-  const [expandedPresenterIndex, setExpandedPresenterIndex] = useState<{ sessionIndex: number, presenterIndex: number } | null>(null);
-  const [expandedResourceIndex, setExpandedResourceIndex] = useState<{ sessionIndex: number, resourceIndex: number } | null>(null);
+  const [expandedPresenterIndex, setExpandedPresenterIndex] = useState<{
+    sessionIndex: number;
+    presenterIndex: number;
+  } | null>(null);
+  const [expandedResourceIndex, setExpandedResourceIndex] = useState<{
+    sessionIndex: number;
+    resourceIndex: number;
+  } | null>(null);
   const [uploadingImages, setUploadingImages] = useState<Set<string>>(new Set());
 
   const addSession = () => {
@@ -72,16 +78,16 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
       ...defaultPresenter,
       id: Date.now().toString(), // Use timestamp as temporary ID
     };
-    
+
     const updatedSession = {
       ...session,
-      presenters: [...session.presenters, newPresenter]
+      presenters: [...session.presenters, newPresenter],
     };
-    
+
     updateSession(sessionIndex, updatedSession);
-    setExpandedPresenterIndex({ 
-      sessionIndex, 
-      presenterIndex: updatedSession.presenters.length - 1 
+    setExpandedPresenterIndex({
+      sessionIndex,
+      presenterIndex: updatedSession.presenters.length - 1,
     });
   };
 
@@ -89,12 +95,12 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
     const session = sessions[sessionIndex];
     const updatedPresenters = [...session.presenters];
     updatedPresenters[presenterIndex] = updatedPresenter;
-    
+
     const updatedSession = {
       ...session,
-      presenters: updatedPresenters
+      presenters: updatedPresenters,
     };
-    
+
     updateSession(sessionIndex, updatedSession);
   };
 
@@ -102,21 +108,21 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
     const session = sessions[sessionIndex];
     const updatedPresenters = [...session.presenters];
     updatedPresenters.splice(presenterIndex, 1);
-    
+
     const updatedSession = {
       ...session,
-      presenters: updatedPresenters
+      presenters: updatedPresenters,
     };
-    
+
     updateSession(sessionIndex, updatedSession);
     setExpandedPresenterIndex(null);
   };
 
   const handlePresenterImageUpload = async (sessionIndex: number, presenterIndex: number, file: File | null) => {
     if (!file) {
-      updatePresenter(sessionIndex, presenterIndex, { 
-        ...sessions[sessionIndex].presenters[presenterIndex], 
-        image: '' 
+      updatePresenter(sessionIndex, presenterIndex, {
+        ...sessions[sessionIndex].presenters[presenterIndex],
+        image: '',
       });
       return;
     }
@@ -127,15 +133,15 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
     try {
       const presenterId = `presenter-${sessionIndex}-${presenterIndex}-${Date.now()}`;
       const { url, error } = await uploadDirectoryImage(file, presenterId);
-      
+
       if (error) {
         console.error('Error uploading presenter image:', error);
         return;
       }
 
-      updatePresenter(sessionIndex, presenterIndex, { 
-        ...sessions[sessionIndex].presenters[presenterIndex], 
-        image: url || ''
+      updatePresenter(sessionIndex, presenterIndex, {
+        ...sessions[sessionIndex].presenters[presenterIndex],
+        image: url || '',
       });
     } catch (error) {
       console.error('Error uploading presenter image:', error);
@@ -154,16 +160,16 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
       ...defaultResource,
       id: Date.now().toString(), // Use timestamp as temporary ID
     };
-    
+
     const updatedSession = {
       ...session,
-      resources: [...(session.resources || []), newResource]
+      resources: [...(session.resources || []), newResource],
     };
-    
+
     updateSession(sessionIndex, updatedSession);
-    setExpandedResourceIndex({ 
-      sessionIndex, 
-      resourceIndex: (updatedSession.resources?.length || 0) - 1 
+    setExpandedResourceIndex({
+      sessionIndex,
+      resourceIndex: (updatedSession.resources?.length || 0) - 1,
     });
   };
 
@@ -171,12 +177,12 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
     const session = sessions[sessionIndex];
     const updatedResources = [...(session.resources || [])];
     updatedResources[resourceIndex] = updatedResource;
-    
+
     const updatedSession = {
       ...session,
-      resources: updatedResources
+      resources: updatedResources,
     };
-    
+
     updateSession(sessionIndex, updatedSession);
   };
 
@@ -184,12 +190,12 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
     const session = sessions[sessionIndex];
     const updatedResources = [...(session.resources || [])];
     updatedResources.splice(resourceIndex, 1);
-    
+
     const updatedSession = {
       ...session,
-      resources: updatedResources
+      resources: updatedResources,
     };
-    
+
     updateSession(sessionIndex, updatedSession);
     setExpandedResourceIndex(null);
   };
@@ -197,9 +203,7 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium text-slate-900 dark:text-white">
-          Sessions & Presenters
-        </h3>
+        <h3 className="text-lg font-medium text-slate-900 dark:text-white">Sessions & Presenters</h3>
         <button
           type="button"
           onClick={addSession}
@@ -219,19 +223,14 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
       ) : (
         <div className="space-y-4">
           {sessions.map((session, sessionIndex) => (
-            <div 
-              key={session.id} 
-              className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden"
-            >
+            <div key={session.id} className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
               {/* Session Header */}
-              <div 
+              <div
                 className="bg-slate-50 dark:bg-slate-800 p-4 flex justify-between items-center cursor-pointer"
                 onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}
               >
                 <div>
-                  <h4 className="font-medium text-slate-900 dark:text-white">
-                    {session.title || 'Untitled Session'}
-                  </h4>
+                  <h4 className="font-medium text-slate-900 dark:text-white">{session.title || 'Untitled Session'}</h4>
                   <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 mt-1">
                     <Clock className="h-3.5 w-3.5 mr-1" />
                     <span>
@@ -256,21 +255,25 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                       <>
                         <span className="mx-2">•</span>
                         <Link className="h-3.5 w-3.5 mr-1" />
-                        <span>{session.resources.length} {session.resources.length === 1 ? 'resource' : 'resources'}</span>
+                        <span>
+                          {session.resources.length} {session.resources.length === 1 ? 'resource' : 'resources'}
+                        </span>
                       </>
                     )}
                     {session.presenters.length > 0 && (
                       <>
                         <span className="mx-2">•</span>
                         <User className="h-3.5 w-3.5 mr-1" />
-                        <span>{session.presenters.length} {session.presenters.length === 1 ? 'presenter' : 'presenters'}</span>
+                        <span>
+                          {session.presenters.length} {session.presenters.length === 1 ? 'presenter' : 'presenters'}
+                        </span>
                       </>
                     )}
                   </div>
                 </div>
                 <button
                   type="button"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     removeSession(sessionIndex);
                   }}
@@ -292,7 +295,7 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                       <input
                         type="text"
                         value={session.title}
-                        onChange={(e) => updateSession(sessionIndex, { ...session, title: e.target.value })}
+                        onChange={e => updateSession(sessionIndex, { ...session, title: e.target.value })}
                         className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
                         placeholder="e.g., Opening Keynote"
                       />
@@ -307,10 +310,12 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                         <input
                           type="datetime-local"
                           value={session.startTime ? session.startTime.slice(0, 16) : ''}
-                          onChange={(e) => updateSession(sessionIndex, { 
-                            ...session, 
-                            startTime: e.target.value ? new Date(e.target.value).toISOString() : '' 
-                          })}
+                          onChange={e =>
+                            updateSession(sessionIndex, {
+                              ...session,
+                              startTime: e.target.value ? new Date(e.target.value).toISOString() : '',
+                            })
+                          }
                           className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
                         />
                       </div>
@@ -321,10 +326,12 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                         <input
                           type="datetime-local"
                           value={session.endTime ? session.endTime.slice(0, 16) : ''}
-                          onChange={(e) => updateSession(sessionIndex, { 
-                            ...session, 
-                            endTime: e.target.value ? new Date(e.target.value).toISOString() : '' 
-                          })}
+                          onChange={e =>
+                            updateSession(sessionIndex, {
+                              ...session,
+                              endTime: e.target.value ? new Date(e.target.value).toISOString() : '',
+                            })
+                          }
                           className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
                         />
                       </div>
@@ -342,7 +349,7 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                         <input
                           type="text"
                           value={session.videoUrl || ''}
-                          onChange={(e) => updateSession(sessionIndex, { ...session, videoUrl: e.target.value })}
+                          onChange={e => updateSession(sessionIndex, { ...session, videoUrl: e.target.value })}
                           className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
                           placeholder="e.g., https://www.youtube.com/watch?v=..."
                         />
@@ -359,7 +366,7 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                       </label>
                       <textarea
                         value={session.description}
-                        onChange={(e) => updateSession(sessionIndex, { ...session, description: e.target.value })}
+                        onChange={e => updateSession(sessionIndex, { ...session, description: e.target.value })}
                         rows={3}
                         className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
                         placeholder="Describe what this session is about..."
@@ -391,19 +398,21 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                       ) : (
                         <div className="space-y-3">
                           {session.resources.map((resource, resourceIndex) => (
-                            <div 
-                              key={resource.id} 
+                            <div
+                              key={resource.id}
                               className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden"
                             >
                               {/* Resource Header */}
-                              <div 
+                              <div
                                 className="bg-slate-50 dark:bg-slate-800 p-3 flex justify-between items-center cursor-pointer"
-                                onClick={() => setExpandedResourceIndex(
-                                  expandedResourceIndex?.sessionIndex === sessionIndex && 
-                                  expandedResourceIndex?.resourceIndex === resourceIndex 
-                                    ? null 
-                                    : { sessionIndex, resourceIndex }
-                                )}
+                                onClick={() =>
+                                  setExpandedResourceIndex(
+                                    expandedResourceIndex?.sessionIndex === sessionIndex &&
+                                      expandedResourceIndex?.resourceIndex === resourceIndex
+                                      ? null
+                                      : { sessionIndex, resourceIndex }
+                                  )
+                                }
                               >
                                 <div>
                                   <h5 className="font-medium text-slate-900 dark:text-white">
@@ -416,7 +425,7 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                                 </div>
                                 <button
                                   type="button"
-                                  onClick={(e) => {
+                                  onClick={e => {
                                     e.stopPropagation();
                                     removeResource(sessionIndex, resourceIndex);
                                   }}
@@ -427,70 +436,74 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                               </div>
 
                               {/* Resource Details */}
-                              {expandedResourceIndex?.sessionIndex === sessionIndex && 
-                               expandedResourceIndex?.resourceIndex === resourceIndex && (
-                                <div className="p-3 border-t border-slate-200 dark:border-slate-700">
-                                  <div className="space-y-3">
-                                    {/* Resource Title */}
-                                    <div>
-                                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                        Title
-                                      </label>
-                                      <input
-                                        type="text"
-                                        value={resource.title}
-                                        onChange={(e) => updateResource(
-                                          sessionIndex, 
-                                          resourceIndex, 
-                                          { ...resource, title: e.target.value }
-                                        )}
-                                        className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
-                                        placeholder="e.g., Presentation Slides"
-                                      />
-                                    </div>
+                              {expandedResourceIndex?.sessionIndex === sessionIndex &&
+                                expandedResourceIndex?.resourceIndex === resourceIndex && (
+                                  <div className="p-3 border-t border-slate-200 dark:border-slate-700">
+                                    <div className="space-y-3">
+                                      {/* Resource Title */}
+                                      <div>
+                                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                          Title
+                                        </label>
+                                        <input
+                                          type="text"
+                                          value={resource.title}
+                                          onChange={e =>
+                                            updateResource(sessionIndex, resourceIndex, {
+                                              ...resource,
+                                              title: e.target.value,
+                                            })
+                                          }
+                                          className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
+                                          placeholder="e.g., Presentation Slides"
+                                        />
+                                      </div>
 
-                                    {/* Resource Type */}
-                                    <div>
-                                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                        Type
-                                      </label>
-                                      <select
-                                        value={resource.type}
-                                        onChange={(e) => updateResource(
-                                          sessionIndex, 
-                                          resourceIndex, 
-                                          { ...resource, type: e.target.value as 'slides' | 'document' | 'code' | 'website' | 'other' }
-                                        )}
-                                        className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
-                                      >
-                                        <option value="slides">Slides</option>
-                                        <option value="document">Document</option>
-                                        <option value="code">Code</option>
-                                        <option value="website">Website</option>
-                                        <option value="other">Other</option>
-                                      </select>
-                                    </div>
+                                      {/* Resource Type */}
+                                      <div>
+                                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                          Type
+                                        </label>
+                                        <select
+                                          value={resource.type}
+                                          onChange={e =>
+                                            updateResource(sessionIndex, resourceIndex, {
+                                              ...resource,
+                                              type: e.target.value as
+                                                'slides' | 'document' | 'code' | 'website' | 'other',
+                                            })
+                                          }
+                                          className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
+                                        >
+                                          <option value="slides">Slides</option>
+                                          <option value="document">Document</option>
+                                          <option value="code">Code</option>
+                                          <option value="website">Website</option>
+                                          <option value="other">Other</option>
+                                        </select>
+                                      </div>
 
-                                    {/* Resource URL */}
-                                    <div>
-                                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                        URL
-                                      </label>
-                                      <input
-                                        type="text"
-                                        value={resource.url}
-                                        onChange={(e) => updateResource(
-                                          sessionIndex, 
-                                          resourceIndex, 
-                                          { ...resource, url: e.target.value }
-                                        )}
-                                        className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
-                                        placeholder="https://..."
-                                      />
+                                      {/* Resource URL */}
+                                      <div>
+                                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                          URL
+                                        </label>
+                                        <input
+                                          type="text"
+                                          value={resource.url}
+                                          onChange={e =>
+                                            updateResource(sessionIndex, resourceIndex, {
+                                              ...resource,
+                                              url: e.target.value,
+                                            })
+                                          }
+                                          className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
+                                          placeholder="https://..."
+                                        />
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              )}
+                                )}
                             </div>
                           ))}
                         </div>
@@ -515,31 +528,31 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
 
                       {session.presenters.length === 0 ? (
                         <div className="text-center py-4 bg-slate-50 dark:bg-slate-700/20 rounded-lg border border-dashed border-slate-300 dark:border-slate-600">
-                          <p className="text-sm text-slate-500 dark:text-slate-400">
-                            No presenters added yet.
-                          </p>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">No presenters added yet.</p>
                         </div>
                       ) : (
                         <div className="space-y-3">
                           {session.presenters.map((presenter, presenterIndex) => (
-                            <div 
-                              key={presenter.id} 
+                            <div
+                              key={presenter.id}
                               className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden"
                             >
                               {/* Presenter Header */}
-                              <div 
+                              <div
                                 className="bg-slate-50 dark:bg-slate-800 p-3 flex justify-between items-center cursor-pointer"
-                                onClick={() => setExpandedPresenterIndex(
-                                  expandedPresenterIndex?.sessionIndex === sessionIndex && 
-                                  expandedPresenterIndex?.presenterIndex === presenterIndex 
-                                    ? null 
-                                    : { sessionIndex, presenterIndex }
-                                )}
+                                onClick={() =>
+                                  setExpandedPresenterIndex(
+                                    expandedPresenterIndex?.sessionIndex === sessionIndex &&
+                                      expandedPresenterIndex?.presenterIndex === presenterIndex
+                                      ? null
+                                      : { sessionIndex, presenterIndex }
+                                  )
+                                }
                               >
                                 <div className="flex items-center">
-                                  <img 
-                                    src={presenter.image} 
-                                    alt={presenter.name} 
+                                  <img
+                                    src={presenter.image}
+                                    alt={presenter.name}
                                     className="w-8 h-8 rounded-full mr-3 object-cover"
                                   />
                                   <div>
@@ -557,7 +570,7 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                                 </div>
                                 <button
                                   type="button"
-                                  onClick={(e) => {
+                                  onClick={e => {
                                     e.stopPropagation();
                                     removePresenter(sessionIndex, presenterIndex);
                                   }}
@@ -568,99 +581,105 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                               </div>
 
                               {/* Presenter Details */}
-                              {expandedPresenterIndex?.sessionIndex === sessionIndex && 
-                               expandedPresenterIndex?.presenterIndex === presenterIndex && (
-                                <div className="p-3 border-t border-slate-200 dark:border-slate-700">
-                                  <div className="space-y-3">
-                                    {/* Name */}
-                                    <div>
-                                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                        Name
-                                      </label>
-                                      <input
-                                        type="text"
-                                        value={presenter.name}
-                                        onChange={(e) => updatePresenter(
-                                          sessionIndex, 
-                                          presenterIndex, 
-                                          { ...presenter, name: e.target.value }
-                                        )}
-                                        className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
-                                        placeholder="Full name"
-                                      />
-                                    </div>
-
-                                    {/* Title & Company */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {expandedPresenterIndex?.sessionIndex === sessionIndex &&
+                                expandedPresenterIndex?.presenterIndex === presenterIndex && (
+                                  <div className="p-3 border-t border-slate-200 dark:border-slate-700">
+                                    <div className="space-y-3">
+                                      {/* Name */}
                                       <div>
                                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                          Title
+                                          Name
                                         </label>
                                         <input
                                           type="text"
-                                          value={presenter.title || ''}
-                                          onChange={(e) => updatePresenter(
-                                            sessionIndex, 
-                                            presenterIndex, 
-                                            { ...presenter, title: e.target.value }
-                                          )}
+                                          value={presenter.name}
+                                          onChange={e =>
+                                            updatePresenter(sessionIndex, presenterIndex, {
+                                              ...presenter,
+                                              name: e.target.value,
+                                            })
+                                          }
                                           className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
-                                          placeholder="e.g., Software Engineer"
+                                          placeholder="Full name"
                                         />
                                       </div>
+
+                                      {/* Title & Company */}
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div>
+                                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                            Title
+                                          </label>
+                                          <input
+                                            type="text"
+                                            value={presenter.title || ''}
+                                            onChange={e =>
+                                              updatePresenter(sessionIndex, presenterIndex, {
+                                                ...presenter,
+                                                title: e.target.value,
+                                              })
+                                            }
+                                            className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
+                                            placeholder="e.g., Software Engineer"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                            Company
+                                          </label>
+                                          <input
+                                            type="text"
+                                            value={presenter.company || ''}
+                                            onChange={e =>
+                                              updatePresenter(sessionIndex, presenterIndex, {
+                                                ...presenter,
+                                                company: e.target.value,
+                                              })
+                                            }
+                                            className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
+                                            placeholder="e.g., Tech Company"
+                                          />
+                                        </div>
+                                      </div>
+
+                                      {/* Profile Image Upload */}
+                                      <div>
+                                        <FormImageUpload
+                                          id={`presenter-image-${sessionIndex}-${presenterIndex}`}
+                                          name={`presenterImage-${sessionIndex}-${presenterIndex}`}
+                                          label="Profile Image"
+                                          currentImage={presenter.image}
+                                          onChange={file =>
+                                            handlePresenterImageUpload(sessionIndex, presenterIndex, file)
+                                          }
+                                          disabled={uploadingImages.has(`${sessionIndex}-${presenterIndex}`)}
+                                          helperText="Upload a profile image for this presenter"
+                                          maxSize={3 * 1024 * 1024}
+                                          acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+                                        />
+                                      </div>
+
+                                      {/* Bio */}
                                       <div>
                                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                          Company
+                                          Bio
                                         </label>
-                                        <input
-                                          type="text"
-                                          value={presenter.company || ''}
-                                          onChange={(e) => updatePresenter(
-                                            sessionIndex, 
-                                            presenterIndex, 
-                                            { ...presenter, company: e.target.value }
-                                          )}
+                                        <textarea
+                                          value={presenter.bio || ''}
+                                          onChange={e =>
+                                            updatePresenter(sessionIndex, presenterIndex, {
+                                              ...presenter,
+                                              bio: e.target.value,
+                                            })
+                                          }
+                                          rows={2}
                                           className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
-                                          placeholder="e.g., Tech Company"
+                                          placeholder="Brief biography of the presenter..."
                                         />
                                       </div>
-                                    </div>
-
-                                    {/* Profile Image Upload */}
-                                    <div>
-                                      <FormImageUpload
-                                        id={`presenter-image-${sessionIndex}-${presenterIndex}`}
-                                        name={`presenterImage-${sessionIndex}-${presenterIndex}`}
-                                        label="Profile Image"
-                                        currentImage={presenter.image}
-                                        onChange={(file) => handlePresenterImageUpload(sessionIndex, presenterIndex, file)}
-                                        disabled={uploadingImages.has(`${sessionIndex}-${presenterIndex}`)}
-                                        helperText="Upload a profile image for this presenter"
-                                        maxSize={3 * 1024 * 1024}
-                                        acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
-                                      />
-                                    </div>
-
-                                    {/* Bio */}
-                                    <div>
-                                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                        Bio
-                                      </label>
-                                      <textarea
-                                        value={presenter.bio || ''}
-                                        onChange={(e) => updatePresenter(
-                                          sessionIndex, 
-                                          presenterIndex, 
-                                          { ...presenter, bio: e.target.value }
-                                        )}
-                                        rows={2}
-                                        className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
-                                        placeholder="Brief biography of the presenter..."
-                                      />
                                     </div>
                                   </div>
-                                </div>
-                              )}
+                                )}
                             </div>
                           ))}
                         </div>

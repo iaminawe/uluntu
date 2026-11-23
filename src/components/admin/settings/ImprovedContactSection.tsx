@@ -4,21 +4,21 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { 
-  MessageSquare, 
-  MapPin, 
-  Phone, 
+import {
+  MessageSquare,
+  MapPin,
+  Phone,
   Mail,
   Clock,
   Globe,
   Eye,
   EyeOff,
-  Save, 
-  RotateCcw, 
+  Save,
+  RotateCcw,
   Info,
   CheckCircle,
   XCircle,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -51,28 +51,28 @@ const contactInfoFields: SettingField[] = [
     type: 'email',
     placeholder: 'contact@example.com',
     description: 'Main email address for general inquiries',
-    required: true
+    required: true,
   },
   {
     key: 'support_email',
     label: 'Support Email',
     type: 'email',
     placeholder: 'support@example.com',
-    description: 'Email address for technical support requests'
+    description: 'Email address for technical support requests',
   },
   {
     key: 'business_email',
     label: 'Business Email',
     type: 'email',
     placeholder: 'business@example.com',
-    description: 'Email address for business inquiries and partnerships'
+    description: 'Email address for business inquiries and partnerships',
   },
   {
     key: 'contact_form_enabled',
     label: 'Enable Contact Form',
     type: 'boolean',
-    description: 'Allow users to submit inquiries through website contact form'
-  }
+    description: 'Allow users to submit inquiries through website contact form',
+  },
 ];
 
 const phoneFields: SettingField[] = [
@@ -81,22 +81,22 @@ const phoneFields: SettingField[] = [
     label: 'Primary Phone Number',
     type: 'tel',
     placeholder: '+1 (250) 555-0123',
-    description: 'Main phone number for the organization'
+    description: 'Main phone number for the organization',
   },
   {
     key: 'support_phone',
     label: 'Support Phone',
     type: 'tel',
     placeholder: '+1 (250) 555-0124',
-    description: 'Phone number for technical support (optional)'
+    description: 'Phone number for technical support (optional)',
   },
   {
     key: 'phone_hours',
     label: 'Phone Support Hours',
     type: 'text',
     placeholder: 'Mon-Fri 9AM-5PM PST',
-    description: 'Available hours for phone support'
-  }
+    description: 'Available hours for phone support',
+  },
 ];
 
 const locationFields: SettingField[] = [
@@ -106,7 +106,7 @@ const locationFields: SettingField[] = [
     type: 'text',
     placeholder: 'Uluntu',
     description: 'Official name of the organization',
-    required: true
+    required: true,
   },
   {
     key: 'street_address',
@@ -114,36 +114,36 @@ const locationFields: SettingField[] = [
     type: 'textarea',
     placeholder: '123 Tech Street\nSuite 456',
     description: 'Physical street address (optional)',
-    validation: { maxLength: 200 }
+    validation: { maxLength: 200 },
   },
   {
     key: 'city',
     label: 'City',
     type: 'text',
     placeholder: 'Nelson',
-    description: 'City where organization is located'
+    description: 'City where organization is located',
   },
   {
     key: 'province_state',
     label: 'Province/State',
     type: 'text',
     placeholder: 'British Columbia',
-    description: 'Province or state'
+    description: 'Province or state',
   },
   {
     key: 'postal_code',
     label: 'Postal/Zip Code',
     type: 'text',
     placeholder: 'V1L 1A1',
-    description: 'Postal or zip code'
+    description: 'Postal or zip code',
   },
   {
     key: 'country',
     label: 'Country',
     type: 'text',
     placeholder: 'Canada',
-    description: 'Country where organization is located'
-  }
+    description: 'Country where organization is located',
+  },
 ];
 
 const socialFields: SettingField[] = [
@@ -152,36 +152,36 @@ const socialFields: SettingField[] = [
     label: 'Website URL',
     type: 'url',
     placeholder: 'https://example.com',
-    description: 'Main website URL'
+    description: 'Main website URL',
   },
   {
     key: 'facebook_url',
     label: 'Facebook URL',
     type: 'url',
     placeholder: 'https://facebook.com/your-community',
-    description: 'Facebook page URL (optional)'
+    description: 'Facebook page URL (optional)',
   },
   {
     key: 'twitter_url',
     label: 'Twitter/X URL',
     type: 'url',
     placeholder: 'https://twitter.com/your-community',
-    description: 'Twitter/X profile URL (optional)'
+    description: 'Twitter/X profile URL (optional)',
   },
   {
     key: 'linkedin_url',
     label: 'LinkedIn URL',
     type: 'url',
     placeholder: 'https://linkedin.com/company/your-community',
-    description: 'LinkedIn company page URL (optional)'
+    description: 'LinkedIn company page URL (optional)',
   },
   {
     key: 'github_url',
     label: 'GitHub URL',
     type: 'url',
     placeholder: 'https://github.com/your-community',
-    description: 'GitHub organization URL (optional)'
-  }
+    description: 'GitHub organization URL (optional)',
+  },
 ];
 
 const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
@@ -189,7 +189,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
   features,
   onUpdateSetting,
   onRefresh,
-  isLoading
+  isLoading,
 }) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
@@ -217,22 +217,22 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
     setSaving(true);
     try {
       const updates: UpdateSettingRequest[] = [];
-      
+
       for (const fieldKey of changedFields) {
         const [category, settingKey] = fieldKey.split('.');
         const value = formData[fieldKey];
         const setting = settings.find(s => s.setting_key === settingKey && s.category === category);
-        
+
         updates.push({
           setting_key: settingKey,
           setting_value: value,
           category: category as any,
-          data_type: setting?.data_type as SettingDataType || 'string' as SettingDataType
+          data_type: (setting?.data_type as SettingDataType) || ('string' as SettingDataType),
         });
       }
-      
+
       await Promise.all(updates.map(update => onUpdateSetting(update)));
-      
+
       setChangedFields(new Set());
       toast.success(`Saved ${updates.length} contact settings successfully`);
       onRefresh();
@@ -259,14 +259,14 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
     const fieldKey = `${category}.${field.key}`;
     const value = formData[fieldKey];
     const hasChanged = changedFields.has(fieldKey);
-    
+
     return (
       <div key={fieldKey} className="space-y-3">
         <label className="block text-sm font-medium text-gray-700">
           {field.label}
           {field.required && <span className="text-red-500 ml-1">*</span>}
         </label>
-        
+
         {field.type === 'boolean' ? (
           <div className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
             <div className="flex-1">
@@ -276,21 +276,19 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                 ) : (
                   <XCircle className="h-4 w-4 text-gray-400" />
                 )}
-                <span className="text-sm font-medium">
-                  {value ? 'Enabled' : 'Disabled'}
-                </span>
+                <span className="text-sm font-medium">{value ? 'Enabled' : 'Disabled'}</span>
               </div>
             </div>
             <Switch
               checked={value || false}
-              onCheckedChange={(checked) => handleFieldChange(category, field.key, checked)}
+              onCheckedChange={checked => handleFieldChange(category, field.key, checked)}
               className={hasChanged ? 'ring-2 ring-blue-300' : ''}
             />
           </div>
         ) : field.type === 'textarea' ? (
           <textarea
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             placeholder={field.placeholder}
             rows={3}
             maxLength={field.validation?.maxLength}
@@ -301,7 +299,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
         ) : field.type === 'select' ? (
           <select
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
               hasChanged ? 'border-blue-300 bg-blue-50' : 'border-gray-300'
             }`}
@@ -317,7 +315,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
           <input
             type={field.type}
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             placeholder={field.placeholder}
             maxLength={field.validation?.maxLength}
             className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
@@ -326,7 +324,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
             required={field.required}
           />
         )}
-        
+
         {field.description && (
           <p className="text-xs text-gray-500 flex items-start">
             <Info className="h-3 w-3 mt-0.5 mr-1 flex-shrink-0" />
@@ -346,13 +344,15 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
   // Check contact completeness
   const hasBasicInfo = formData['contact.contact_email'] && formData['location.organization_name'];
   const hasLocation = formData['location.city'] && formData['location.country'];
-  const hasSocials = formData['contact.website_url'] || formData['contact.facebook_url'] || formData['contact.twitter_url'];
+  const hasSocials =
+    formData['contact.website_url'] || formData['contact.facebook_url'] || formData['contact.twitter_url'];
 
-  const contactFeatures = features.filter(f => 
-    f.feature_key.includes('contact') || 
-    f.feature_key.includes('form') || 
-    f.feature_key.includes('support') ||
-    f.feature_key.includes('location')
+  const contactFeatures = features.filter(
+    f =>
+      f.feature_key.includes('contact') ||
+      f.feature_key.includes('form') ||
+      f.feature_key.includes('support') ||
+      f.feature_key.includes('location')
   );
 
   return (
@@ -365,7 +365,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
             Manage contact information, location details, and communication preferences
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
@@ -375,19 +375,14 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
             {previewMode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             <span>{previewMode ? 'Hide Preview' : 'Show Preview'}</span>
           </Button>
-          
+
           {changedFields.size > 0 && (
             <>
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                disabled={saving}
-                className="flex items-center space-x-2"
-              >
+              <Button variant="outline" onClick={handleReset} disabled={saving} className="flex items-center space-x-2">
                 <RotateCcw className="h-4 w-4" />
                 <span>Reset</span>
               </Button>
-              
+
               <Button
                 onClick={handleSaveAll}
                 disabled={saving}
@@ -395,9 +390,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
               >
                 <Save className="h-4 w-4" />
                 <span>Save Changes</span>
-                <span className="ml-1 px-2 py-0.5 bg-blue-500 text-xs rounded-full">
-                  {changedFields.size}
-                </span>
+                <span className="ml-1 px-2 py-0.5 bg-blue-500 text-xs rounded-full">{changedFields.size}</span>
               </Button>
             </>
           )}
@@ -416,7 +409,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
               <h4 className="text-lg font-semibold text-gray-900 mb-4">
                 {formData['location.organization_name'] || 'Your Organization Name'}
               </h4>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Contact Methods */}
                 <div>
@@ -428,7 +421,10 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                     {formData['contact.contact_email'] && (
                       <div className="flex items-center">
                         <Mail className="h-3 w-3 mr-2 text-gray-400" />
-                        <a href={`mailto:${formData['contact.contact_email']}`} className="text-blue-600 hover:underline">
+                        <a
+                          href={`mailto:${formData['contact.contact_email']}`}
+                          className="text-blue-600 hover:underline"
+                        >
                           {formData['contact.contact_email']}
                         </a>
                       </div>
@@ -458,20 +454,22 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                   </h5>
                   <div className="text-sm text-gray-600 space-y-1">
                     {formData['location.street_address'] && (
-                      <div>{formData['location.street_address'].split('\n').map((line: string, i: number) => (
-                        <div key={i}>{line}</div>
-                      ))}</div>
+                      <div>
+                        {formData['location.street_address'].split('\n').map((line: string, i: number) => (
+                          <div key={i}>{line}</div>
+                        ))}
+                      </div>
                     )}
                     <div>
                       {[
                         formData['location.city'],
                         formData['location.province_state'],
-                        formData['location.postal_code']
-                      ].filter(Boolean).join(', ')}
+                        formData['location.postal_code'],
+                      ]
+                        .filter(Boolean)
+                        .join(', ')}
                     </div>
-                    {formData['location.country'] && (
-                      <div>{formData['location.country']}</div>
-                    )}
+                    {formData['location.country'] && <div>{formData['location.country']}</div>}
                   </div>
                 </div>
               </div>
@@ -485,9 +483,9 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                   </h5>
                   <div className="flex flex-wrap gap-3">
                     {formData['contact.website_url'] && (
-                      <a 
-                        href={formData['contact.website_url']} 
-                        target="_blank" 
+                      <a
+                        href={formData['contact.website_url']}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                       >
@@ -497,9 +495,9 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                       </a>
                     )}
                     {formData['contact.facebook_url'] && (
-                      <a 
-                        href={formData['contact.facebook_url']} 
-                        target="_blank" 
+                      <a
+                        href={formData['contact.facebook_url']}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                       >
@@ -508,9 +506,9 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                       </a>
                     )}
                     {formData['contact.twitter_url'] && (
-                      <a 
-                        href={formData['contact.twitter_url']} 
-                        target="_blank" 
+                      <a
+                        href={formData['contact.twitter_url']}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                       >
@@ -519,9 +517,9 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                       </a>
                     )}
                     {formData['contact.linkedin_url'] && (
-                      <a 
-                        href={formData['contact.linkedin_url']} 
-                        target="_blank" 
+                      <a
+                        href={formData['contact.linkedin_url']}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                       >
@@ -530,9 +528,9 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                       </a>
                     )}
                     {formData['contact.github_url'] && (
-                      <a 
-                        href={formData['contact.github_url']} 
-                        target="_blank" 
+                      <a
+                        href={formData['contact.github_url']}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                       >
@@ -558,7 +556,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                 </div>
                 <p className="text-xs text-gray-500 mt-1">Organization name and contact email</p>
               </div>
-              
+
               <div className="bg-white p-4 rounded-lg border">
                 <div className="flex items-center space-x-2">
                   {hasLocation ? (
@@ -570,7 +568,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                 </div>
                 <p className="text-xs text-gray-500 mt-1">City and country information</p>
               </div>
-              
+
               <div className="bg-white p-4 rounded-lg border">
                 <div className="flex items-center space-x-2">
                   {hasSocials ? (
@@ -593,11 +591,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
           <CardTitle className="flex items-center space-x-2">
             <MessageSquare className="h-5 w-5 text-blue-600" />
             <span>Contact Information</span>
-            {hasBasicInfo ? (
-              <Badge variant="success">Complete</Badge>
-            ) : (
-              <Badge variant="destructive">Incomplete</Badge>
-            )}
+            {hasBasicInfo ? <Badge variant="success">Complete</Badge> : <Badge variant="destructive">Incomplete</Badge>}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -616,9 +610,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {phoneFields.map(field => renderField('contact', field))}
-          </div>
+          <div className="space-y-6">{phoneFields.map(field => renderField('contact', field))}</div>
         </CardContent>
       </Card>
 
@@ -628,11 +620,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
           <CardTitle className="flex items-center space-x-2">
             <MapPin className="h-5 w-5 text-purple-600" />
             <span>Location & Address</span>
-            {hasLocation ? (
-              <Badge variant="success">Complete</Badge>
-            ) : (
-              <Badge variant="secondary">Optional</Badge>
-            )}
+            {hasLocation ? <Badge variant="success">Complete</Badge> : <Badge variant="secondary">Optional</Badge>}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -649,16 +637,16 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
             <Globe className="h-5 w-5 text-indigo-600" />
             <span>Online Presence</span>
             {hasSocials ? (
-              <Badge variant="success">{Object.values(formData).filter(v => v && String(v).startsWith('http')).length} links</Badge>
+              <Badge variant="success">
+                {Object.values(formData).filter(v => v && String(v).startsWith('http')).length} links
+              </Badge>
             ) : (
               <Badge variant="secondary">Optional</Badge>
             )}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {socialFields.map(field => renderField('contact', field))}
-          </div>
+          <div className="space-y-6">{socialFields.map(field => renderField('contact', field))}</div>
         </CardContent>
       </Card>
 
@@ -676,24 +664,27 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {contactFeatures.map((feature) => (
-                <div key={feature.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg bg-gray-50">
+              {contactFeatures.map(feature => (
+                <div
+                  key={feature.id}
+                  className="flex items-center justify-between p-3 border border-gray-100 rounded-lg bg-gray-50"
+                >
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
                       <h4 className="font-medium text-gray-900 text-sm">
                         {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </h4>
                       {feature.enabled && (
-                        <Badge variant="success" size="sm">Active</Badge>
+                        <Badge variant="success" size="sm">
+                          Active
+                        </Badge>
                       )}
                     </div>
-                    {feature.description && (
-                      <p className="text-xs text-gray-500 mt-1">{feature.description}</p>
-                    )}
+                    {feature.description && <p className="text-xs text-gray-500 mt-1">{feature.description}</p>}
                   </div>
                   <Switch
                     checked={feature.enabled || false}
-                    onCheckedChange={(checked) => {
+                    onCheckedChange={checked => {
                       toast.success('Contact feature toggle functionality coming soon');
                     }}
                     disabled={isLoading}
@@ -715,12 +706,24 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
         </CardHeader>
         <CardContent>
           <ul className="list-disc list-inside space-y-2 text-sm text-amber-700">
-            <li><strong>Keep it current:</strong> Regularly update contact information to ensure users can reach you</li>
-            <li><strong>Multiple channels:</strong> Provide various ways for users to contact you (email, phone, social)</li>
-            <li><strong>Response times:</strong> Set clear expectations for response times and support hours</li>
-            <li><strong>Professional presence:</strong> Use consistent branding across all contact channels</li>
-            <li><strong>Privacy considerations:</strong> Only share information you're comfortable making public</li>
-            <li><strong>Accessibility:</strong> Ensure contact methods are accessible to users with disabilities</li>
+            <li>
+              <strong>Keep it current:</strong> Regularly update contact information to ensure users can reach you
+            </li>
+            <li>
+              <strong>Multiple channels:</strong> Provide various ways for users to contact you (email, phone, social)
+            </li>
+            <li>
+              <strong>Response times:</strong> Set clear expectations for response times and support hours
+            </li>
+            <li>
+              <strong>Professional presence:</strong> Use consistent branding across all contact channels
+            </li>
+            <li>
+              <strong>Privacy considerations:</strong> Only share information you're comfortable making public
+            </li>
+            <li>
+              <strong>Accessibility:</strong> Ensure contact methods are accessible to users with disabilities
+            </li>
           </ul>
         </CardContent>
       </Card>
@@ -751,9 +754,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
               <div className="text-sm text-gray-600">Location Fields</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
-                {changedFields.size}
-              </div>
+              <div className="text-2xl font-bold text-orange-600">{changedFields.size}</div>
               <div className="text-sm text-gray-600">Unsaved Changes</div>
             </div>
           </div>

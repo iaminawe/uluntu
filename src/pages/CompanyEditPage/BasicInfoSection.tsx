@@ -9,7 +9,7 @@ const BasicInfoSection = ({
   logoFile,
   coverImageFile,
   onLogoFileChange,
-  onCoverImageFileChange
+  onCoverImageFileChange,
 }: BasicInfoSectionProps) => {
   return (
     <div className="space-y-6">
@@ -36,7 +36,6 @@ const BasicInfoSection = ({
         </div>
         {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
       </div>
-
       <div>
         <label htmlFor="slug" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           URL Slug <span className="text-red-500">*</span>
@@ -63,7 +62,6 @@ const BasicInfoSection = ({
           This will be used in the URL: /companies/{formData.slug || 'your-slug'}
         </p>
       </div>
-
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           Description <span className="text-red-500">*</span>
@@ -82,11 +80,12 @@ const BasicInfoSection = ({
         />
         {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description}</p>}
       </div>
-
       {/* Status and Featured */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
+          <label htmlFor="status" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            Status
+          </label>
           <select
             id="status"
             name="status"
@@ -102,7 +101,9 @@ const BasicInfoSection = ({
           {errors.status && <p className="mt-1 text-sm text-red-500">{errors.status}</p>}
         </div>
 
-        <div className="flex items-center mt-2 md:mt-7"> {/* Adjusted margin for alignment */}
+        <div className="flex items-center mt-2 md:mt-7">
+          {' '}
+          {/* Adjusted margin for alignment */}
           <input
             id="featured"
             name="featured"
@@ -112,13 +113,15 @@ const BasicInfoSection = ({
             disabled={isSubmitting}
             className="h-5 w-5 text-orange-600 border-slate-300 dark:border-slate-600 rounded focus:ring-orange-500 bg-white dark:bg-slate-800 cursor-pointer"
           />
-          <label htmlFor="featured" className="ml-3 block text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
+          <label
+            htmlFor="featured"
+            className="ml-3 block text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
+          >
             Feature this company?
           </label>
           {/* Error display for checkbox if needed, though less common */}
         </div>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="logoFile" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -127,14 +130,17 @@ const BasicInfoSection = ({
           <div className="mt-1 flex items-center space-x-4">
             {(formData.logo || logoFile) && (
               <div className="shrink-0">
-                <img 
-                  src={logoFile ? URL.createObjectURL(logoFile) : formData.logo} 
-                  alt="Logo preview" 
+                <img
+                  src={logoFile ? URL.createObjectURL(logoFile) : formData.logo}
+                  alt="Logo preview"
                   className="h-16 w-16 object-cover rounded-full border border-slate-300 dark:border-slate-600 p-0.5"
                 />
               </div>
             )}
-            <label htmlFor="logoFile" className={`flex-grow block w-full px-3 py-2 border ${errors.logo ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'} rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-within:ring-2 focus-within:ring-orange-500 cursor-pointer hover:border-orange-400`}>
+            <label
+              htmlFor="logoFile"
+              className={`flex-grow block w-full px-3 py-2 border ${errors.logo ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'} rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-within:ring-2 focus-within:ring-orange-500 cursor-pointer hover:border-orange-400`}
+            >
               <div className="flex items-center justify-center">
                 <UploadCloud className="h-5 w-5 text-slate-400 mr-2" />
                 <span className="text-sm text-slate-500 dark:text-slate-400">
@@ -162,14 +168,17 @@ const BasicInfoSection = ({
           <div className="mt-1 flex items-center space-x-4">
             {(formData.coverImage || coverImageFile) && (
               <div className="shrink-0">
-                <img 
-                  src={coverImageFile ? URL.createObjectURL(coverImageFile) : formData.coverImage} 
-                  alt="Cover image preview" 
+                <img
+                  src={coverImageFile ? URL.createObjectURL(coverImageFile) : formData.coverImage}
+                  alt="Cover image preview"
                   className="h-20 w-32 object-cover rounded border border-slate-300 dark:border-slate-600 p-0.5"
                 />
               </div>
             )}
-            <label htmlFor="coverImageFile" className={`flex-grow block w-full px-3 py-2 border ${errors.coverImage ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'} rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-within:ring-2 focus-within:ring-orange-500 cursor-pointer hover:border-orange-400`}>
+            <label
+              htmlFor="coverImageFile"
+              className={`flex-grow block w-full px-3 py-2 border ${errors.coverImage ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'} rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-within:ring-2 focus-within:ring-orange-500 cursor-pointer hover:border-orange-400`}
+            >
               <div className="flex items-center justify-center">
                 <UploadCloud className="h-5 w-5 text-slate-400 mr-2" />
                 <span className="text-sm text-slate-500 dark:text-slate-400">
@@ -283,7 +292,8 @@ const BasicInfoSection = ({
           </div>
           {/* Error display for website if needed */}
         </div>
-      </div> {/* Closes the grid for Size, Founded, Location, Website */}
+      </div>{' '}
+      {/* Closes the grid for Size, Founded, Location, Website */}
     </div> /* Closes the main wrapping div with className space-y-6 */
   );
 };

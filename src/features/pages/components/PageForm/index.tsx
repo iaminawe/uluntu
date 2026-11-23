@@ -26,15 +26,10 @@ interface FormData {
   is_featured: boolean;
 }
 
-export const PageForm: React.FC<PageFormProps> = ({
-  page,
-  mode,
-  onSuccess,
-  onCancel,
-}) => {
+export const PageForm: React.FC<PageFormProps> = ({ page, mode, onSuccess, onCancel }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.pages);
+  const { loading, error } = useAppSelector(state => state.pages);
 
   const [formData, setFormData] = useState<FormData>({
     title: page?.title || '',
@@ -63,7 +58,7 @@ export const PageForm: React.FC<PageFormProps> = ({
   useEffect(() => {
     if (formData.content && !formData.excerpt) {
       const autoExcerpt = generateExcerpt(formData.content, 160);
-      setFormData((prev) => ({ ...prev, excerpt: autoExcerpt }));
+      setFormData(prev => ({ ...prev, excerpt: autoExcerpt }));
     }
   }, [formData.content]);
 
@@ -73,7 +68,7 @@ export const PageForm: React.FC<PageFormProps> = ({
     setIsGeneratingSlug(true);
     try {
       const slug = await pagesApi.generateSlug(title);
-      setFormData((prev) => ({ ...prev, slug }));
+      setFormData(prev => ({ ...prev, slug }));
     } catch (error) {
       console.error('Failed to generate slug:', error);
     } finally {
@@ -82,11 +77,11 @@ export const PageForm: React.FC<PageFormProps> = ({
   };
 
   const handleInputChange = (field: keyof FormData, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    
+    setFormData(prev => ({ ...prev, [field]: value }));
+
     // Clear validation error for this field
     if (validationErrors[field]) {
-      setValidationErrors((prev) => ({ ...prev, [field]: undefined }));
+      setValidationErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -185,16 +180,12 @@ export const PageForm: React.FC<PageFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
+      {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">{error}</div>}
 
       {/* Basic Information */}
       <div className="bg-white shadow-sm rounded-lg p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -204,35 +195,30 @@ export const PageForm: React.FC<PageFormProps> = ({
               type="text"
               id="title"
               value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
+              onChange={e => handleInputChange('title', e.target.value)}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
                 validationErrors.title ? 'border-red-300' : 'border-gray-300'
               }`}
               placeholder="Enter page title"
             />
-            {validationErrors.title && (
-              <p className="mt-1 text-sm text-red-600">{validationErrors.title}</p>
-            )}
+            {validationErrors.title && <p className="mt-1 text-sm text-red-600">{validationErrors.title}</p>}
           </div>
 
           <div>
             <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-2">
-              Slug *
-              {isGeneratingSlug && <span className="text-blue-600 ml-2">Generating...</span>}
+              Slug *{isGeneratingSlug && <span className="text-blue-600 ml-2">Generating...</span>}
             </label>
             <input
               type="text"
               id="slug"
               value={formData.slug}
-              onChange={(e) => handleInputChange('slug', e.target.value)}
+              onChange={e => handleInputChange('slug', e.target.value)}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
                 validationErrors.slug ? 'border-red-300' : 'border-gray-300'
               }`}
               placeholder="page-slug"
             />
-            {validationErrors.slug && (
-              <p className="mt-1 text-sm text-red-600">{validationErrors.slug}</p>
-            )}
+            {validationErrors.slug && <p className="mt-1 text-sm text-red-600">{validationErrors.slug}</p>}
           </div>
         </div>
 
@@ -244,7 +230,7 @@ export const PageForm: React.FC<PageFormProps> = ({
             id="excerpt"
             rows={3}
             value={formData.excerpt}
-            onChange={(e) => handleInputChange('excerpt', e.target.value)}
+            onChange={e => handleInputChange('excerpt', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Brief description of the page (auto-generated from content if left empty)"
           />
@@ -254,7 +240,7 @@ export const PageForm: React.FC<PageFormProps> = ({
       {/* Content Editor */}
       <div className="bg-white shadow-sm rounded-lg p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Content *</h3>
-        
+
         <div className="mb-4">
           <PageEditor
             content={formData.content}
@@ -262,24 +248,18 @@ export const PageForm: React.FC<PageFormProps> = ({
             placeholder="Start writing your page content..."
             className="min-h-96"
           />
-          {validationErrors.content && (
-            <p className="mt-2 text-sm text-red-600">{validationErrors.content}</p>
-          )}
+          {validationErrors.content && <p className="mt-2 text-sm text-red-600">{validationErrors.content}</p>}
         </div>
       </div>
 
       {/* Hero Image */}
       <div className="bg-white shadow-sm rounded-lg p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Hero Image</h3>
-        
+
         <div className="space-y-4">
           {formData.hero_image && (
             <div className="relative">
-              <img
-                src={formData.hero_image}
-                alt="Hero"
-                className="max-w-md h-48 object-cover rounded-lg border"
-              />
+              <img src={formData.hero_image} alt="Hero" className="max-w-md h-48 object-cover rounded-lg border" />
               <button
                 type="button"
                 onClick={() => handleInputChange('hero_image', '')}
@@ -289,12 +269,12 @@ export const PageForm: React.FC<PageFormProps> = ({
               </button>
             </div>
           )}
-          
+
           <div>
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => {
+              onChange={e => {
                 const file = e.target.files?.[0];
                 if (file) {
                   handleImageUpload(file);
@@ -311,7 +291,7 @@ export const PageForm: React.FC<PageFormProps> = ({
       {/* Publishing Options */}
       <div className="bg-white shadow-sm rounded-lg p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Publishing Options</h3>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
@@ -320,7 +300,7 @@ export const PageForm: React.FC<PageFormProps> = ({
             <select
               id="status"
               value={formData.status}
-              onChange={(e) => handleInputChange('status', e.target.value as 'draft' | 'published')}
+              onChange={e => handleInputChange('status', e.target.value as 'draft' | 'published')}
               className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20"
             >
               <option value="draft">Draft</option>
@@ -333,7 +313,7 @@ export const PageForm: React.FC<PageFormProps> = ({
               type="checkbox"
               id="is_featured"
               checked={formData.is_featured}
-              onChange={(e) => handleInputChange('is_featured', e.target.checked)}
+              onChange={e => handleInputChange('is_featured', e.target.checked)}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
             <label htmlFor="is_featured" className="ml-2 block text-sm text-gray-900">
@@ -346,7 +326,7 @@ export const PageForm: React.FC<PageFormProps> = ({
       {/* SEO Options */}
       <div className="bg-white shadow-sm rounded-lg p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">SEO Options</h3>
-        
+
         <div className="space-y-4">
           <div>
             <label htmlFor="meta_title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -356,7 +336,7 @@ export const PageForm: React.FC<PageFormProps> = ({
               type="text"
               id="meta_title"
               value={formData.meta_title}
-              onChange={(e) => handleInputChange('meta_title', e.target.value)}
+              onChange={e => handleInputChange('meta_title', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               placeholder="SEO title (defaults to page title)"
             />
@@ -370,7 +350,7 @@ export const PageForm: React.FC<PageFormProps> = ({
               id="meta_description"
               rows={3}
               value={formData.meta_description}
-              onChange={(e) => handleInputChange('meta_description', e.target.value)}
+              onChange={e => handleInputChange('meta_description', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               placeholder="SEO description (defaults to excerpt)"
             />
@@ -387,7 +367,7 @@ export const PageForm: React.FC<PageFormProps> = ({
         >
           Cancel
         </button>
-        
+
         <button
           type="submit"
           disabled={loading || isUploading}

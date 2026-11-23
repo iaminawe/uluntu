@@ -23,11 +23,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
   // Add a new tag
   const addTag = (tag: string) => {
     const trimmedTag = tag.trim();
-    if (
-      trimmedTag && 
-      !tags.includes(trimmedTag) && 
-      (!maxTags || tags.length < maxTags)
-    ) {
+    if (trimmedTag && !tags.includes(trimmedTag) && (!maxTags || tags.length < maxTags)) {
       onChange([...tags, trimmedTag]);
     }
     setInputValue('');
@@ -57,7 +53,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
       .split(/,|\n/)
       .map(tag => tag.trim())
       .filter(tag => tag);
-    
+
     // Add each pasted tag
     const newTags = [...tags];
     for (const tag of pastedTags) {
@@ -65,14 +61,14 @@ const TagsInput: React.FC<TagsInputProps> = ({
         newTags.push(tag);
       }
     }
-    
+
     onChange(newTags);
   };
 
   // Handle input change for comma-separated values
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    
+
     // Check if the user entered a comma
     if (value.includes(',')) {
       const parts = value.split(',');
@@ -94,7 +90,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
+
       <div
         className={`
           border border-slate-300 dark:border-slate-600 rounded-md 
@@ -104,14 +100,14 @@ const TagsInput: React.FC<TagsInputProps> = ({
       >
         {/* Render existing tags */}
         {tags.map(tag => (
-          <div 
+          <div
             key={tag}
             className="flex items-center bg-orange-100 dark:bg-orange-900/30 
                      text-orange-800 dark:text-orange-300 rounded-md px-2 py-1 text-sm"
           >
             <span className="mr-1">{tag}</span>
             {!disabled && (
-              <button 
+              <button
                 type="button"
                 onClick={() => removeTag(tag)}
                 className="text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-200"
@@ -121,7 +117,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
             )}
           </div>
         ))}
-        
+
         {/* Input for new tags */}
         {(!maxTags || tags.length < maxTags) && (
           <input
@@ -144,7 +140,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
           />
         )}
       </div>
-      
+
       {/* Helper text and counter */}
       <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
         <span>{helperText}</span>

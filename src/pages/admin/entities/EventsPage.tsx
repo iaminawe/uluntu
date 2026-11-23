@@ -25,11 +25,10 @@ const AdminEventsPage: React.FC = () => {
           <div className="flex items-start">
             <Lock className="h-6 w-6 text-yellow-400 mr-3 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">
-                Events Feature Disabled
-              </h3>
+              <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">Events Feature Disabled</h3>
               <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                The events system feature is currently disabled. Enable it in System Management → Features to access events management.
+                The events system feature is currently disabled. Enable it in System Management → Features to access
+                events management.
               </p>
               <a
                 href="/admin/system/features"
@@ -53,14 +52,10 @@ const AdminEventsPage: React.FC = () => {
             <Calendar className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" />
             {value}
           </div>
-          {item.event_type && (
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              {item.event_type}
-            </div>
-          )}
+          {item.event_type && <div className="text-sm text-gray-500 dark:text-gray-400">{item.event_type}</div>}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'start_date',
@@ -79,7 +74,7 @@ const AdminEventsPage: React.FC = () => {
           )}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'location',
@@ -92,12 +87,10 @@ const AdminEventsPage: React.FC = () => {
               {value}
             </div>
           )}
-          {item.is_virtual && (
-            <div className="text-sm text-blue-600">Virtual Event</div>
-          )}
+          {item.is_virtual && <div className="text-sm text-blue-600">Virtual Event</div>}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'is_published',
@@ -106,7 +99,7 @@ const AdminEventsPage: React.FC = () => {
         const now = new Date();
         const eventDate = new Date(item.start_date);
         const isPast = eventDate < now;
-        
+
         if (isPast) {
           return (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -115,11 +108,13 @@ const AdminEventsPage: React.FC = () => {
             </span>
           );
         }
-        
+
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-          }`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}
+          >
             {value ? (
               <>
                 <CheckCircle className="w-3 h-3 mr-1" />
@@ -134,14 +129,14 @@ const AdminEventsPage: React.FC = () => {
           </span>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'created_at',
       label: 'Created',
       render: (value: string) => new Date(value).toLocaleDateString(),
-      sortable: true
-    }
+      sortable: true,
+    },
   ];
 
   return (

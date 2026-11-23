@@ -29,8 +29,10 @@ class AdminActivityLogger {
 
   async log(activity: Omit<AdminActivity, 'created_at'>): Promise<void> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         console.warn('No authenticated user for admin activity logging');
         return;
@@ -40,7 +42,7 @@ class AdminActivityLogger {
         ...activity,
         admin_id: user.id,
         admin_email: user.email || '',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
       this.pendingLogs.push(logEntry);
@@ -67,9 +69,7 @@ class AdminActivityLogger {
     this.pendingLogs = [];
 
     try {
-      const { error } = await supabase
-        .from('admin_activity_logs')
-        .insert(logsToFlush);
+      const { error } = await supabase.from('admin_activity_logs').insert(logsToFlush);
 
       if (error) {
         console.error('Failed to flush admin activity logs:', error);
@@ -90,7 +90,7 @@ class AdminActivityLogger {
       action: `user_${action}`,
       entity_type: 'user',
       entity_id: userId,
-      details
+      details,
     });
   }
 
@@ -106,57 +106,43 @@ class AdminActivityLogger {
       details: {
         ...details,
         affected_count: entityIds.length,
-        entity_ids: entityIds
-      }
+        entity_ids: entityIds,
+      },
     });
   }
 
-  async logImport(
-    entityType: string,
-    count: number,
-    source: string,
-    details?: Record<string, any>
-  ): Promise<void> {
+  async logImport(entityType: string, count: number, source: string, details?: Record<string, any>): Promise<void> {
     await this.log({
       action: 'import',
       entity_type: entityType,
       details: {
         ...details,
         imported_count: count,
-        source
-      }
+        source,
+      },
     });
   }
 
-  async logExport(
-    entityType: string,
-    count: number,
-    format: string,
-    details?: Record<string, any>
-  ): Promise<void> {
+  async logExport(entityType: string, count: number, format: string, details?: Record<string, any>): Promise<void> {
     await this.log({
       action: 'export',
       entity_type: entityType,
       details: {
         ...details,
         exported_count: count,
-        format
-      }
+        format,
+      },
     });
   }
 
-  async logRoleAssignment(
-    userId: string,
-    roleId: string,
-    action: 'assign' | 'remove'
-  ): Promise<void> {
+  async logRoleAssignment(userId: string, roleId: string, action: 'assign' | 'remove'): Promise<void> {
     await this.log({
       action: `role_${action}`,
       entity_type: 'user_role',
       entity_id: userId,
       details: {
-        role_id: roleId
-      }
+        role_id: roleId,
+      },
     });
   }
 
@@ -209,9 +195,7 @@ class AdminActivityLogger {
     }
   }
 
-  async getActivityStats(
-    timeframe: '24h' | '7d' | '30d' = '7d'
-  ): Promise<{
+  async getActivityStats(timeframe: '24h' | '7d' | '30d' = '7d'): Promise<{
     total_actions: number;
     actions_by_type: Record<string, number>;
     most_active_admins: Array<{ admin_email: string; action_count: number }>;
@@ -231,9 +215,13 @@ class AdminActivityLogger {
         break;
     }
 
-    const logs = await this.getActivityLogs({
-      start_date: startDate.toISOString()
-    }, 1000, 0);
+    const logs = await this.getActivityLogs(
+      {
+        start_date: startDate.toISOString(),
+      },
+      1000,
+      0
+    );
 
     const actionsByType: Record<string, number> = {};
     const adminActions: Record<string, number> = {};
@@ -251,7 +239,7 @@ class AdminActivityLogger {
     return {
       total_actions: logs.length,
       actions_by_type: actionsByType,
-      most_active_admins: mostActiveAdmins
+      most_active_admins: mostActiveAdmins,
     };
   }
 }

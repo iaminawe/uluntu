@@ -11,7 +11,7 @@ export function useMemberBySlugOrId(identifier?: string) {
     queryKey: ['member', 'identifier', identifier],
     queryFn: async () => {
       if (!identifier) return null;
-      
+
       const { data } = await lookupMember(identifier);
       return data;
     },

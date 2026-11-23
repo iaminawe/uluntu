@@ -1,6 +1,6 @@
 /**
  * Component Tests for DynamicMenu
- * 
+ *
  * Tests rendering, hierarchical structure, filtering,
  * permissions, and user interactions.
  */
@@ -35,9 +35,7 @@ describe('DynamicMenu Component', () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
   const mockMenuItems: MenuItem[] = [
@@ -93,7 +91,7 @@ describe('DynamicMenu Component', () => {
       },
     });
     user = userEvent.setup();
-    
+
     mockUseMenu.mockReturnValue({
       menuItems: mockMenuItems,
       isLoading: false,
@@ -433,11 +431,7 @@ describe('DynamicMenu Component', () => {
     it('should apply custom CSS classes', () => {
       render(
         <TestWrapper>
-          <DynamicMenu 
-            menuType="main" 
-            className="custom-menu"
-            itemClassName="custom-item"
-          />
+          <DynamicMenu menuType="main" className="custom-menu" itemClassName="custom-item" />
         </TestWrapper>
       );
 
@@ -451,18 +445,11 @@ describe('DynamicMenu Component', () => {
     });
 
     it('should render custom item content', () => {
-      const customRender = (item: MenuItem) => (
-        <div data-testid={`custom-${item.id}`}>
-          {item.title.toUpperCase()}
-        </div>
-      );
+      const customRender = (item: MenuItem) => <div data-testid={`custom-${item.id}`}>{item.title.toUpperCase()}</div>;
 
       render(
         <TestWrapper>
-          <DynamicMenu 
-            menuType="main" 
-            renderItem={customRender}
-          />
+          <DynamicMenu menuType="main" renderItem={customRender} />
         </TestWrapper>
       );
 
@@ -473,11 +460,7 @@ describe('DynamicMenu Component', () => {
     it('should support theme customization', () => {
       render(
         <TestWrapper>
-          <DynamicMenu 
-            menuType="main" 
-            theme="dark"
-            variant="compact"
-          />
+          <DynamicMenu menuType="main" theme="dark" variant="compact" />
         </TestWrapper>
       );
 
@@ -488,7 +471,7 @@ describe('DynamicMenu Component', () => {
 
   describe('Performance', () => {
     it('should handle large menu structures efficiently', () => {
-      const largeMenuItems = Array.from({ length: 100 }, (_, i) => 
+      const largeMenuItems = Array.from({ length: 100 }, (_, i) =>
         createMockMenuItem({
           id: `item-${i}`,
           title: `Item ${i}`,
@@ -505,7 +488,7 @@ describe('DynamicMenu Component', () => {
       });
 
       const startTime = performance.now();
-      
+
       render(
         <TestWrapper>
           <DynamicMenu menuType="main" />
@@ -513,7 +496,7 @@ describe('DynamicMenu Component', () => {
       );
 
       const endTime = performance.now();
-      
+
       // Should render within reasonable time
       expect(endTime - startTime).toBeLessThan(100);
       expect(screen.getAllByRole('link')).toHaveLength(100);
@@ -527,7 +510,7 @@ describe('DynamicMenu Component', () => {
       );
 
       const initialItems = screen.getAllByRole('link');
-      
+
       // Re-render with same props
       rerender(
         <TestWrapper>
@@ -536,7 +519,7 @@ describe('DynamicMenu Component', () => {
       );
 
       const rerenderedItems = screen.getAllByRole('link');
-      
+
       // Should have same number of items (memoization working)
       expect(rerenderedItems).toHaveLength(initialItems.length);
     });
@@ -544,11 +527,7 @@ describe('DynamicMenu Component', () => {
     it('should lazy load nested menu items', async () => {
       render(
         <TestWrapper>
-          <DynamicMenu 
-            menuType="main" 
-            showHierarchy={true}
-            lazyLoad={true}
-          />
+          <DynamicMenu menuType="main" showHierarchy={true} lazyLoad={true} />
         </TestWrapper>
       );
 
@@ -569,7 +548,7 @@ describe('DynamicMenu Component', () => {
   describe('Event Handling', () => {
     it('should handle item clicks correctly', async () => {
       const onItemClick = vi.fn();
-      
+
       render(
         <TestWrapper>
           <DynamicMenu menuType="main" onItemClick={onItemClick} />
@@ -579,15 +558,12 @@ describe('DynamicMenu Component', () => {
       const homeLink = screen.getByRole('link', { name: /home/i });
       await user.click(homeLink);
 
-      expect(onItemClick).toHaveBeenCalledWith(
-        expect.objectContaining({ id: '1', title: 'Home' }),
-        expect.any(Object)
-      );
+      expect(onItemClick).toHaveBeenCalledWith(expect.objectContaining({ id: '1', title: 'Home' }), expect.any(Object));
     });
 
     it('should prevent navigation when onItemClick returns false', async () => {
       const onItemClick = vi.fn().mockReturnValue(false);
-      
+
       render(
         <TestWrapper>
           <DynamicMenu menuType="main" onItemClick={onItemClick} />
@@ -604,15 +580,10 @@ describe('DynamicMenu Component', () => {
 
     it('should handle menu expand/collapse events', async () => {
       const onExpandChange = vi.fn();
-      
+
       render(
         <TestWrapper>
-          <DynamicMenu 
-            menuType="main" 
-            showHierarchy={true}
-            collapsible={true}
-            onExpandChange={onExpandChange}
-          />
+          <DynamicMenu menuType="main" showHierarchy={true} collapsible={true} onExpandChange={onExpandChange} />
         </TestWrapper>
       );
 

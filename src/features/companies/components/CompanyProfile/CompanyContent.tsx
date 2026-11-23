@@ -19,11 +19,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
         <div className="space-y-4">
           {company.members.map(member => (
             <div key={member.id} className="flex items-center">
-              <img
-                src={member.image}
-                alt={member.name}
-                className="w-10 h-10 rounded-full mr-3"
-              />
+              <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full mr-3" />
               <div>
                 <Link
                   to={getMemberProfileUrl(member)}

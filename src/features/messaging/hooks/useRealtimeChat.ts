@@ -45,25 +45,22 @@ const updateInfiniteQueryData = (
 ) => {
   // Use conversation-specific query key with infinite suffix
   const queryKey = [...messagingQueryKeys.messages(conversationId), 50, 'infinite'];
-  
-  queryClient.setQueryData(
-    queryKey,
-    (oldData: { pages: Message[][]; pageParams: unknown[] } | undefined) => {
-      if (!oldData || !oldData.pages || oldData.pages.length === 0) {
-        return {
-          pages: [[]],
-          pageParams: [0]
-        };
-      }
-      
-      const updatedPages = updateFn([...oldData.pages]);
-      
+
+  queryClient.setQueryData(queryKey, (oldData: { pages: Message[][]; pageParams: unknown[] } | undefined) => {
+    if (!oldData || !oldData.pages || oldData.pages.length === 0) {
       return {
-        ...oldData,
-        pages: updatedPages
+        pages: [[]],
+        pageParams: [0],
       };
     }
-  );
+
+    const updatedPages = updateFn([...oldData.pages]);
+
+    return {
+      ...oldData,
+      pages: updatedPages,
+    };
+  });
 };
 
 export function useRealtimeChat(conversationId: string | undefined) {
@@ -91,14 +88,14 @@ export function useRealtimeChat(conversationId: string | undefined) {
       setOnlineUsers([]);
       setTypingUsers(new Map());
       setIsConnected(false);
-      
+
       // Clear cache for previous conversation to prevent bleed-through
-      queryClient.removeQueries({ 
+      queryClient.removeQueries({
         queryKey: [...messagingQueryKeys.messages(previousConversationId.current), 50, 'infinite'],
-        exact: true
+        exact: true,
       });
     }
-    
+
     previousConversationId.current = conversationId;
 
     // Create a unique channel for this conversation
@@ -106,128 +103,107 @@ export function useRealtimeChat(conversationId: string | undefined) {
       config: {
         broadcast: {
           self: true, // Receive own broadcasts for optimistic updates
-          ack: true   // Get acknowledgement when server receives message
+          ack: true, // Get acknowledgement when server receives message
         },
         presence: {
-          key: user.id // Use user ID as presence key
-        }
-      }
+          key: user.id, // Use user ID as presence key
+        },
+      },
     });
 
     channelRef.current = channel;
 
     // Track new messages from database with conversation isolation
-    channel
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`
-        },
-        (payload) => {
-          // Only invalidate this conversation's queries
-          queryClient.invalidateQueries({ 
-            queryKey: [...messagingQueryKeys.messages(conversationId), 50, 'infinite'],
-            exact: true
-          });
-          queryClient.invalidateQueries({ 
-            queryKey: messagingQueryKeys.conversations,
-            exact: true
-          });
-        }
-      );
-
-    // Listen for real-time message broadcasts with conversation validation
-    channel.on('broadcast', { event: 'new_message' }, 
-      ({ payload }: { payload: MessagePayload }) => {
-        // Skip if it's our own message (we handle optimistic updates separately)
-        if (payload.sender_id === user.id) return;
-        
-        // Critical: Only process messages for the current conversation
-        if (payload.conversation_id !== conversationId) {
-          console.warn('Received message for wrong conversation', { 
-            received: payload.conversation_id, 
-            expected: conversationId 
-          });
-          return;
-        }
-
-        // Add message to cache immediately for infinite query
-        updateInfiniteQueryData(
-          queryClient,
-          conversationId,
-          (pages) => {
-            const firstPage = pages[0] || [];
-            
-            // Check if message already exists (deduplication)
-            if (firstPage.some(m => m.id === payload.id)) {
-              return pages;
-            }
-            
-            // Add new message to the beginning of first page (newest first)
-            const newPages = [...pages];
-            newPages[0] = [payload as any, ...firstPage];
-            return newPages;
-          }
-        );
-
-        // Play notification sound
-        playNotificationSound();
-      }
-    );
-
-    // Listen for message edits with conversation validation
-    channel.on('broadcast', { event: 'edit_message' },
-      ({ payload }: { payload: EditMessagePayload }) => {
-        updateInfiniteQueryData(
-          queryClient,
-          conversationId,
-          (pages) => {
-            return pages.map(page => 
-              page.map(msg => 
-                msg.id === payload.id && msg.conversation_id === conversationId
-                  ? { ...msg, content: payload.content, updated_at: payload.updated_at }
-                  : msg
-              )
-            );
-          }
-        );
-      }
-    );
-
-    // Listen for message deletions with conversation validation
-    channel.on('broadcast', { event: 'delete_message' },
-      ({ payload }: { payload: { id: string } }) => {
-        updateInfiniteQueryData(
-          queryClient,
-          conversationId,
-          (pages) => {
-            return pages.map(page => 
-              page.filter(msg => !(msg.id === payload.id && msg.conversation_id === conversationId))
-            );
-          }
-        );
-      }
-    );
-
-    // Listen for typing indicators
-    channel.on('broadcast', { event: 'typing' },
-      ({ payload }: { payload: TypingPayload }) => {
-        if (payload.user_id === user.id) return; // Ignore our own typing
-        
-        setTypingUsers(prev => {
-          const updated = new Map(prev);
-          if (payload.is_typing) {
-            updated.set(payload.user_id, payload);
-          } else {
-            updated.delete(payload.user_id);
-          }
-          return updated;
+    channel.on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `conversation_id=eq.${conversationId}`,
+      },
+      payload => {
+        // Only invalidate this conversation's queries
+        queryClient.invalidateQueries({
+          queryKey: [...messagingQueryKeys.messages(conversationId), 50, 'infinite'],
+          exact: true,
+        });
+        queryClient.invalidateQueries({
+          queryKey: messagingQueryKeys.conversations,
+          exact: true,
         });
       }
     );
+
+    // Listen for real-time message broadcasts with conversation validation
+    channel.on('broadcast', { event: 'new_message' }, ({ payload }: { payload: MessagePayload }) => {
+      // Skip if it's our own message (we handle optimistic updates separately)
+      if (payload.sender_id === user.id) return;
+
+      // Critical: Only process messages for the current conversation
+      if (payload.conversation_id !== conversationId) {
+        console.warn('Received message for wrong conversation', {
+          received: payload.conversation_id,
+          expected: conversationId,
+        });
+        return;
+      }
+
+      // Add message to cache immediately for infinite query
+      updateInfiniteQueryData(queryClient, conversationId, pages => {
+        const firstPage = pages[0] || [];
+
+        // Check if message already exists (deduplication)
+        if (firstPage.some(m => m.id === payload.id)) {
+          return pages;
+        }
+
+        // Add new message to the beginning of first page (newest first)
+        const newPages = [...pages];
+        newPages[0] = [payload as any, ...firstPage];
+        return newPages;
+      });
+
+      // Play notification sound
+      playNotificationSound();
+    });
+
+    // Listen for message edits with conversation validation
+    channel.on('broadcast', { event: 'edit_message' }, ({ payload }: { payload: EditMessagePayload }) => {
+      updateInfiniteQueryData(queryClient, conversationId, pages => {
+        return pages.map(page =>
+          page.map(msg =>
+            msg.id === payload.id && msg.conversation_id === conversationId
+              ? { ...msg, content: payload.content, updated_at: payload.updated_at }
+              : msg
+          )
+        );
+      });
+    });
+
+    // Listen for message deletions with conversation validation
+    channel.on('broadcast', { event: 'delete_message' }, ({ payload }: { payload: { id: string } }) => {
+      updateInfiniteQueryData(queryClient, conversationId, pages => {
+        return pages.map(page =>
+          page.filter(msg => !(msg.id === payload.id && msg.conversation_id === conversationId))
+        );
+      });
+    });
+
+    // Listen for typing indicators
+    channel.on('broadcast', { event: 'typing' }, ({ payload }: { payload: TypingPayload }) => {
+      if (payload.user_id === user.id) return; // Ignore our own typing
+
+      setTypingUsers(prev => {
+        const updated = new Map(prev);
+        if (payload.is_typing) {
+          updated.set(payload.user_id, payload);
+        } else {
+          updated.delete(payload.user_id);
+        }
+        return updated;
+      });
+    });
 
     // Handle presence changes
     channel.on('presence', { event: 'sync' }, () => {
@@ -251,7 +227,7 @@ export function useRealtimeChat(conversationId: string | undefined) {
     });
 
     // Subscribe to channel
-    channel.subscribe(async (status) => {
+    channel.subscribe(async status => {
       if (status === 'SUBSCRIBED') {
         setIsConnected(true);
         // Track presence
@@ -270,7 +246,7 @@ export function useRealtimeChat(conversationId: string | undefined) {
       setOnlineUsers([]);
       setTypingUsers(new Map());
       channel.unsubscribe();
-      
+
       // Clear typing timeout
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
@@ -280,84 +256,68 @@ export function useRealtimeChat(conversationId: string | undefined) {
   }, [user, conversationId, queryClient]);
 
   // Send message function
-  const sendMessage = useCallback(async (
-    content: string, 
-    parentMessageId?: string,
-    tempId?: string
-  ) => {
-    if (!user || !conversationId || !channelRef.current) return;
+  const sendMessage = useCallback(
+    async (content: string, parentMessageId?: string, tempId?: string) => {
+      if (!user || !conversationId || !channelRef.current) return;
 
-    // Create optimistic message
-    const optimisticMessage = {
-      id: tempId || `temp-${Date.now()}`,
-      content,
-      sender_id: user.id,
-      message_type: 'text',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      conversation_id: conversationId,
-      parent_message_id: parentMessageId
-    };
+      // Create optimistic message
+      const optimisticMessage = {
+        id: tempId || `temp-${Date.now()}`,
+        content,
+        sender_id: user.id,
+        message_type: 'text',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        conversation_id: conversationId,
+        parent_message_id: parentMessageId,
+      };
 
-    // Optimistic update for infinite query with conversation isolation
-    updateInfiniteQueryData(
-      queryClient,
-      conversationId,
-      (pages) => {
+      // Optimistic update for infinite query with conversation isolation
+      updateInfiniteQueryData(queryClient, conversationId, pages => {
         if (pages.length === 0) {
           return [[optimisticMessage as any]];
         }
-        
+
         // Add to the first page (most recent messages)
         const newPages = [...pages];
         newPages[0] = [optimisticMessage as any, ...newPages[0]];
         return newPages;
-      }
-    );
-
-    try {
-      // Broadcast to other users immediately
-      await channelRef.current.send({
-        type: 'broadcast',
-        event: 'new_message',
-        payload: optimisticMessage
       });
 
-      // Send to database via messaging API
-      const data = await messagingApi.sendMessage({
-        conversation_id: conversationId,
-        content,
-        parent_message_id: parentMessageId
-      });
+      try {
+        // Broadcast to other users immediately
+        await channelRef.current.send({
+          type: 'broadcast',
+          event: 'new_message',
+          payload: optimisticMessage,
+        });
 
-      // Update optimistic message with real data
-      updateInfiniteQueryData(
-        queryClient,
-        conversationId,
-        (pages) => {
+        // Send to database via messaging API
+        const data = await messagingApi.sendMessage({
+          conversation_id: conversationId,
+          content,
+          parent_message_id: parentMessageId,
+        });
+
+        // Update optimistic message with real data
+        updateInfiniteQueryData(queryClient, conversationId, pages => {
           return pages.map(page =>
-            page.map(msg => 
-              msg.id === optimisticMessage.id && msg.conversation_id === conversationId ? data : msg
-            )
+            page.map(msg => (msg.id === optimisticMessage.id && msg.conversation_id === conversationId ? data : msg))
           );
-        }
-      );
-
-    } catch (error) {
-      // Remove optimistic message on error
-      updateInfiniteQueryData(
-        queryClient,
-        conversationId,
-        (pages) => {
+        });
+      } catch (error) {
+        // Remove optimistic message on error
+        updateInfiniteQueryData(queryClient, conversationId, pages => {
           return pages.map(page =>
             page.filter(msg => !(msg.id === optimisticMessage.id && msg.conversation_id === conversationId))
           );
-        }
-      );
-      
-      throw error;
-    }
-  }, [user, conversationId, queryClient]);
+        });
+
+        throw error;
+      }
+    },
+    [user, conversationId, queryClient]
+  );
 
   // Edit message function
   const editMessage = useCallback(async (messageId: string, newContent: string) => {
@@ -374,10 +334,9 @@ export function useRealtimeChat(conversationId: string | undefined) {
         payload: {
           id: messageId,
           content: newContent,
-          updated_at: data.updated_at
-        }
+          updated_at: data.updated_at,
+        },
       });
-
     } catch (error) {
       console.error('Failed to edit message:', error);
       throw error;
@@ -396,9 +355,8 @@ export function useRealtimeChat(conversationId: string | undefined) {
       await channelRef.current.send({
         type: 'broadcast',
         event: 'delete_message',
-        payload: { id: messageId }
+        payload: { id: messageId },
       });
-
     } catch (error) {
       console.error('Failed to delete message:', error);
       throw error;
@@ -406,29 +364,32 @@ export function useRealtimeChat(conversationId: string | undefined) {
   }, []);
 
   // Send typing indicator
-  const sendTypingIndicator = useCallback(async (isTyping: boolean) => {
-    if (!user || !channelRef.current) return;
+  const sendTypingIndicator = useCallback(
+    async (isTyping: boolean) => {
+      if (!user || !channelRef.current) return;
 
-    await channelRef.current.send({
-      type: 'broadcast',
-      event: 'typing',
-      payload: {
-        user_id: user.id,
-        username: user.email,
-        is_typing: isTyping
-      }
-    });
-  }, [user]);
+      await channelRef.current.send({
+        type: 'broadcast',
+        event: 'typing',
+        payload: {
+          user_id: user.id,
+          username: user.email,
+          is_typing: isTyping,
+        },
+      });
+    },
+    [user]
+  );
 
   // Request notification permission
   const requestNotificationPermission = useCallback(async () => {
     if (!('Notification' in window)) return false;
-    
+
     if (Notification.permission === 'default') {
       const permission = await Notification.requestPermission();
       return permission === 'granted';
     }
-    
+
     return Notification.permission === 'granted';
   }, []);
 
@@ -440,7 +401,7 @@ export function useRealtimeChat(conversationId: string | undefined) {
     editMessage,
     deleteMessage,
     sendTypingIndicator,
-    requestNotificationPermission
+    requestNotificationPermission,
   };
 }
 

@@ -7,16 +7,16 @@ const GroupSelect: React.FC<GroupSelectProps> = ({ formData, handleChange }) => 
     { id: '1', name: 'AI Enthusiasts Kootenay' },
     { id: '2', name: 'Web Developers Guild' },
     { id: '3', name: 'Data Science Network' },
-    { id: '4', name: 'UX/UI Design Group' }
+    { id: '4', name: 'UX/UI Design Group' },
   ];
-  
+
   // Transform groups data to the format expected by FormSelect
   const groupOptions = [
     { value: '', label: 'Select a group (optional)' },
     ...groups.map(group => ({
       value: group.id,
-      label: group.name
-    }))
+      label: group.name,
+    })),
   ];
 
   return (

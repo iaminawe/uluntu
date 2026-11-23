@@ -7,22 +7,16 @@ import TopicSelector from '@/components/admin/TopicSelector';
 import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 import type { OnboardingStepProps } from '../../types';
 
-const TopicInterestsStep: React.FC<OnboardingStepProps> = ({
-  onNext,
-  onBack,
-  onSkip,
-  isFirstStep,
-  isLastStep,
-}) => {
+const TopicInterestsStep: React.FC<OnboardingStepProps> = ({ onNext, onBack, onSkip, isFirstStep, isLastStep }) => {
   const user = useAppSelector(selectCurrentUser);
   const { data: member } = useMemberByUserId(user?.id);
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Topic management hooks
   const { data: memberTopics } = useEntityTopics('member', member?.id || '');
   const setEntityTopicsMutation = useSetEntityTopics();
-  
+
   // Populate existing topics if they exist
   useEffect(() => {
     if (memberTopics) {
@@ -38,17 +32,17 @@ const TopicInterestsStep: React.FC<OnboardingStepProps> = ({
     }
 
     setIsSubmitting(true);
-    
+
     try {
       // Save topics if any are selected
       if (selectedTopicIds.length > 0) {
         await setEntityTopicsMutation.mutateAsync({
           entityType: 'member',
           entityId: member.id,
-          topicIds: selectedTopicIds
+          topicIds: selectedTopicIds,
         });
       }
-      
+
       onNext();
     } catch (error) {
       console.error('Error saving topics:', error);
@@ -74,9 +68,7 @@ const TopicInterestsStep: React.FC<OnboardingStepProps> = ({
         <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 dark:bg-orange-900/20 rounded-full mb-4">
           <Hash className="h-8 w-8 text-orange-500" />
         </div>
-        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          What are you interested in?
-        </h2>
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">What are you interested in?</h2>
         <p className="text-lg text-slate-600 dark:text-slate-400">
           Select topics that match your interests to help others find you and connect over shared passions
         </p>
@@ -96,7 +88,7 @@ const TopicInterestsStep: React.FC<OnboardingStepProps> = ({
             className="w-full"
           />
         </div>
-        
+
         {selectedTopicIds.length > 0 && (
           <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
             <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -108,9 +100,7 @@ const TopicInterestsStep: React.FC<OnboardingStepProps> = ({
 
       {/* Why Topics Matter */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-8">
-        <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
-          Why select topics?
-        </h3>
+        <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">Why select topics?</h3>
         <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-400">
           <li className="flex items-start">
             <span className="mr-2">•</span>
@@ -155,7 +145,7 @@ const TopicInterestsStep: React.FC<OnboardingStepProps> = ({
           onClick={handleSubmit}
           disabled={isSubmitting || selectedTopicIds.length === 0}
           className={`flex items-center px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors ${
-            (isSubmitting || selectedTopicIds.length === 0) ? 'opacity-50 cursor-not-allowed' : ''
+            isSubmitting || selectedTopicIds.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
           {isSubmitting ? 'Saving...' : isLastStep ? 'Complete' : 'Continue'}

@@ -28,21 +28,20 @@ export function useCompanyEvents(companyId?: string): UseQueryResult<Event[], Er
           // For now, we'll fetch all events and filter by company
           // In the future, we should add a company filter to the events API
           const allEvents = await eventsApi.getAll();
-          
+
           // Filter events where the company is the organizer or sponsor
           const companyEvents = allEvents.filter(event => {
             // Check if event has company association
             // This logic will depend on how company associations are stored in events
             // For now, we'll use a placeholder check
-            return (event as any).organizer_id === companyId || 
-                   (event as any).sponsor_ids?.includes(companyId);
+            return (event as any).organizer_id === companyId || (event as any).sponsor_ids?.includes(companyId);
           });
-          
-          logger.debug('Company events fetched', 'COMPANY_ASSOCIATIONS', { 
-            companyId, 
-            eventsCount: companyEvents.length 
+
+          logger.debug('Company events fetched', 'COMPANY_ASSOCIATIONS', {
+            companyId,
+            eventsCount: companyEvents.length,
           });
-          
+
           return companyEvents as Event[];
         } else {
           // Mock implementation
@@ -58,13 +57,13 @@ export function useCompanyEvents(companyId?: string): UseQueryResult<Event[], Er
               organizer: {
                 id: companyId,
                 name: 'Tech Company',
-                image: 'https://via.placeholder.com/150'
+                image: 'https://via.placeholder.com/150',
               },
               max_attendees: 200,
               current_attendees: 0,
               image: 'https://via.placeholder.com/400x200',
               created_at: new Date().toISOString(),
-              featured: true
+              featured: true,
             },
             {
               id: `event-${companyId}-2`,
@@ -77,15 +76,15 @@ export function useCompanyEvents(companyId?: string): UseQueryResult<Event[], Er
               organizer: {
                 id: companyId,
                 name: 'Tech Company',
-                image: 'https://via.placeholder.com/150'
+                image: 'https://via.placeholder.com/150',
               },
               max_attendees: 50,
               current_attendees: 0,
               image: 'https://via.placeholder.com/400x200',
-              created_at: new Date().toISOString()
-            }
+              created_at: new Date().toISOString(),
+            },
           ];
-          
+
           return mockEvents;
         }
       } catch (error) {
@@ -116,19 +115,19 @@ export function useCompanyResources(companyId?: string): UseQueryResult<Resource
           // For now, we'll fetch all resources and filter by company
           // In the future, we should add a company filter to the resources API
           const allResources = await resourcesApi.getAll();
-          
+
           // Filter resources where the company is the author or contributor
           const companyResources = allResources.filter(resource => {
             // Check if resource has company association
             // This logic will depend on how company associations are stored
             return (resource as any).author_company_id === companyId;
           });
-          
-          logger.debug('Company resources fetched', 'COMPANY_ASSOCIATIONS', { 
-            companyId, 
-            resourcesCount: companyResources.length 
+
+          logger.debug('Company resources fetched', 'COMPANY_ASSOCIATIONS', {
+            companyId,
+            resourcesCount: companyResources.length,
           });
-          
+
           return companyResources as Resource[];
         } else {
           // Mock implementation
@@ -146,8 +145,8 @@ export function useCompanyResources(companyId?: string): UseQueryResult<Resource
               dateAdded: new Date().toISOString(),
               contributor: {
                 id: companyId,
-                name: 'Tech Company Team'
-              }
+                name: 'Tech Company Team',
+              },
             },
             {
               id: `resource-${companyId}-2`,
@@ -161,8 +160,8 @@ export function useCompanyResources(companyId?: string): UseQueryResult<Resource
               dateAdded: new Date().toISOString(),
               contributor: {
                 id: companyId,
-                name: 'Tech Company'
-              }
+                name: 'Tech Company',
+              },
             },
             {
               id: `resource-${companyId}-3`,
@@ -176,11 +175,11 @@ export function useCompanyResources(companyId?: string): UseQueryResult<Resource
               dateAdded: new Date().toISOString(),
               contributor: {
                 id: companyId,
-                name: 'Tech Company Engineering'
-              }
-            }
+                name: 'Tech Company Engineering',
+              },
+            },
           ];
-          
+
           return mockResources;
         }
       } catch (error) {
@@ -211,14 +210,14 @@ export function useCompanyGalleries(companyId?: string): UseQueryResult<Gallery[
           // Fetch galleries owned by the company
           const response = await galleryApi.getAllGalleries({
             ownerType: 'company',
-            ownerId: companyId
+            ownerId: companyId,
           });
-          
-          logger.debug('Company galleries fetched', 'COMPANY_ASSOCIATIONS', { 
-            companyId, 
-            galleriesCount: response.galleries.length 
+
+          logger.debug('Company galleries fetched', 'COMPANY_ASSOCIATIONS', {
+            companyId,
+            galleriesCount: response.galleries.length,
           });
-          
+
           return response.galleries;
         } else {
           // Mock implementation
@@ -241,7 +240,7 @@ export function useCompanyGalleries(companyId?: string): UseQueryResult<Gallery[
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
               cover_photo_url: 'https://via.placeholder.com/600x400',
-              photos: []
+              photos: [],
             },
             {
               id: `gallery-${companyId}-2`,
@@ -261,10 +260,10 @@ export function useCompanyGalleries(companyId?: string): UseQueryResult<Gallery[
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
               cover_photo_url: 'https://via.placeholder.com/600x400',
-              photos: []
-            }
+              photos: [],
+            },
           ];
-          
+
           return mockGalleries;
         }
       } catch (error) {
@@ -292,30 +291,30 @@ export function useCompanyAssociations(companyId?: string) {
     employees: {
       data: employeesQuery.data || [],
       isLoading: employeesQuery.isLoading,
-      error: employeesQuery.error
+      error: employeesQuery.error,
     },
     events: {
       data: eventsQuery.data || [],
       isLoading: eventsQuery.isLoading,
-      error: eventsQuery.error
+      error: eventsQuery.error,
     },
     resources: {
       data: resourcesQuery.data || [],
       isLoading: resourcesQuery.isLoading,
-      error: resourcesQuery.error
+      error: resourcesQuery.error,
     },
     galleries: {
       data: galleriesQuery.data || [],
       isLoading: galleriesQuery.isLoading,
-      error: galleriesQuery.error
+      error: galleriesQuery.error,
     },
-    isLoading: employeesQuery.isLoading || eventsQuery.isLoading || 
-               resourcesQuery.isLoading || galleriesQuery.isLoading,
+    isLoading:
+      employeesQuery.isLoading || eventsQuery.isLoading || resourcesQuery.isLoading || galleriesQuery.isLoading,
     refetch: () => {
       employeesQuery.refetch();
       eventsQuery.refetch();
       resourcesQuery.refetch();
       galleriesQuery.refetch();
-    }
+    },
   };
 }

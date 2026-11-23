@@ -26,9 +26,7 @@ const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-        <BrowserRouter>
-          {component}
-        </BrowserRouter>
+        <BrowserRouter>{component}</BrowserRouter>
       </Provider>
     </QueryClientProvider>
   );
@@ -95,7 +93,7 @@ describe('Form Standardization Tests', () => {
         <GroupEditPage />,
         <MarketplaceEditPage />,
         <DirectoryEditPage />,
-        <ResourceEditPage />
+        <ResourceEditPage />,
       ];
 
       formPages.forEach((page, index) => {
@@ -116,10 +114,10 @@ describe('Form Standardization Tests', () => {
         <GroupEditPage />,
         <MarketplaceEditPage />,
         <DirectoryEditPage />,
-        <ResourceEditPage />
+        <ResourceEditPage />,
       ];
 
-      formPages.forEach((page) => {
+      formPages.forEach(page => {
         renderWithProviders(page);
         const saveButton = screen.getByRole('button', { name: /save/i });
         expect(saveButton).toBeInTheDocument();
@@ -135,10 +133,10 @@ describe('Form Standardization Tests', () => {
         <GroupEditPage />,
         <MarketplaceEditPage />,
         <DirectoryEditPage />,
-        <ResourceEditPage />
+        <ResourceEditPage />,
       ];
 
-      formPages.forEach((page) => {
+      formPages.forEach(page => {
         renderWithProviders(page);
         const cancelButton = screen.getByRole('button', { name: /cancel/i });
         expect(cancelButton).toBeInTheDocument();

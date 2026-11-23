@@ -6,12 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { groupsApi } from '@/features/groups/api/groupsApi';
 import { toast } from 'react-hot-toast';
 
-const FormActions: React.FC<FormActionsProps> = ({
-  isEditMode,
-  isSubmitting,
-  navigate,
-  id
-}) => {
+const FormActions: React.FC<FormActionsProps> = ({ isEditMode, isSubmitting, navigate, id }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const queryClient = useQueryClient();
 
@@ -22,10 +17,10 @@ const FormActions: React.FC<FormActionsProps> = ({
       queryClient.invalidateQueries({ queryKey: ['groups'] });
       navigate('/groups');
     },
-    onError: (error) => {
+    onError: error => {
       toast.error('Failed to delete group');
       console.error('Error deleting group:', error);
-    }
+    },
   });
 
   const handleCancel = () => {
@@ -37,7 +32,7 @@ const FormActions: React.FC<FormActionsProps> = ({
       await deleteGroupMutation.mutateAsync(id);
     }
   };
-  
+
   return (
     <>
       <SharedFormActions
@@ -49,7 +44,7 @@ const FormActions: React.FC<FormActionsProps> = ({
         align="between"
         className="pt-4 border-t border-slate-200 dark:border-slate-700"
       />
-      
+
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteConfirm}

@@ -10,7 +10,12 @@ import { Button } from '@/components/ui/Button';
 
 // AI Commands
 const AI_EDIT_COMMANDS = [
-  { id: 'improve', label: '✨ Improve Writing', prompt: 'Improve the writing quality, grammar, and clarity', needsSelection: true },
+  {
+    id: 'improve',
+    label: '✨ Improve Writing',
+    prompt: 'Improve the writing quality, grammar, and clarity',
+    needsSelection: true,
+  },
   { id: 'shorten', label: '📝 Make Shorter', prompt: 'Make this text more concise', needsSelection: true },
   { id: 'expand', label: '📖 Make Longer', prompt: 'Expand this text with more details', needsSelection: true },
   { id: 'professional', label: '👔 Professional', prompt: 'Rewrite in a professional tone', needsSelection: true },
@@ -20,12 +25,53 @@ const AI_EDIT_COMMANDS = [
 ];
 
 const AI_CREATE_COMMANDS = [
-  { id: 'blog-post', label: '📄 Blog Post', prompt: 'Write a comprehensive, engaging blog post of 1000-1500 words (8-12 paragraphs) with introduction, main body sections, and conclusion about: ', needsInput: true, needsSelection: false },
-  { id: 'article-outline', label: '📋 Article Outline', prompt: 'Create a detailed article outline with at least 5 main sections and 3-4 subsections each for: ', needsInput: true, needsSelection: false },
-  { id: 'introduction', label: '🎯 Introduction', prompt: 'Write an engaging introduction of 200-300 words (2-3 substantial paragraphs) that hooks the reader for an article about: ', needsInput: true, needsSelection: false },
-  { id: 'conclusion', label: '🏁 Conclusion', prompt: 'Write a compelling conclusion of 200-300 words (2-3 substantial paragraphs) that summarizes key points and provides a call to action for: ', needsInput: true, needsSelection: false },
-  { id: 'how-to', label: '📖 How-To Guide', prompt: 'Write a detailed step-by-step guide of 600-1000 words with numbered steps, tips, and explanations on how to: ', needsInput: true, needsSelection: false },
-  { id: 'product-description', label: '🛍️ Product Description', prompt: 'Write a detailed product description of 300-500 words covering features, benefits, specifications, and use cases for: ', needsInput: true, needsSelection: false },
+  {
+    id: 'blog-post',
+    label: '📄 Blog Post',
+    prompt:
+      'Write a comprehensive, engaging blog post of 1000-1500 words (8-12 paragraphs) with introduction, main body sections, and conclusion about: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'article-outline',
+    label: '📋 Article Outline',
+    prompt: 'Create a detailed article outline with at least 5 main sections and 3-4 subsections each for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'introduction',
+    label: '🎯 Introduction',
+    prompt:
+      'Write an engaging introduction of 200-300 words (2-3 substantial paragraphs) that hooks the reader for an article about: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'conclusion',
+    label: '🏁 Conclusion',
+    prompt:
+      'Write a compelling conclusion of 200-300 words (2-3 substantial paragraphs) that summarizes key points and provides a call to action for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'how-to',
+    label: '📖 How-To Guide',
+    prompt:
+      'Write a detailed step-by-step guide of 600-1000 words with numbered steps, tips, and explanations on how to: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'product-description',
+    label: '🛍️ Product Description',
+    prompt:
+      'Write a detailed product description of 300-500 words covering features, benefits, specifications, and use cases for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
 ];
 
 const AI_COMMANDS = [...AI_CREATE_COMMANDS, ...AI_EDIT_COMMANDS];
@@ -47,7 +93,7 @@ export const FixedBlockEditor: React.FC<FixedBlockEditorProps> = ({
   const [aiProcessing, setAiProcessing] = useState(false);
   const [selectedText, setSelectedText] = useState('');
   const [includeImages, setIncludeImages] = useState(true);
-  
+
   const aiConfig = checkAIConfiguration();
   const unsplashConfigured = unsplashService.isConfigured();
 
@@ -87,9 +133,9 @@ export const FixedBlockEditor: React.FC<FixedBlockEditorProps> = ({
   };
 
   // Handle AI command
-  const handleAICommand = async (command: typeof AI_COMMANDS[0]) => {
+  const handleAICommand = async (command: (typeof AI_COMMANDS)[0]) => {
     const hasSelection = handleTextSelection();
-    
+
     if (command.needsSelection && !hasSelection) {
       alert('Please select some text first for this command');
       return;
@@ -104,54 +150,51 @@ export const FixedBlockEditor: React.FC<FixedBlockEditorProps> = ({
 
     setAiProcessing(true);
     setShowAIMenu(false);
-    
+
     try {
       let fullPrompt = command.prompt;
       if (command.needsInput) {
         fullPrompt = command.prompt + userInput;
       }
-      
+
       const result = await callAI(fullPrompt, command.needsSelection ? selectedText : '');
-      
+
       if (result && editor) {
         try {
           // For blog posts and longer content, try to fetch relevant images
           let images: Array<{ url: string; caption: string; placement: string }> = [];
-          
+
           const imageEnabledCommands = ['blog-post', 'article-outline', 'how-to', 'comparison', 'product-description'];
-          const shouldFetchImages = includeImages && imageEnabledCommands.includes(command.id) && unsplashService.isConfigured();
-          
+          const shouldFetchImages =
+            includeImages && imageEnabledCommands.includes(command.id) && unsplashService.isConfigured();
+
           if (shouldFetchImages) {
             const topic = userInput || (command.needsSelection ? selectedText.substring(0, 50) : '');
             console.log('Fetching relevant images for content about:', topic);
-            
+
             let imageCount = 3;
             if (command.id === 'article-outline') imageCount = 1;
             if (command.id === 'product-description') imageCount = 2;
-            
-            const photos = await unsplashService.findRelevantPhotos(
-              result.substring(0, 500),
-              topic,
-              imageCount
-            );
-            
+
+            const photos = await unsplashService.findRelevantPhotos(result.substring(0, 500), topic, imageCount);
+
             images = photos.map(({ photo, placement }) => ({
               url: unsplashService.getOptimalImageUrl(photo),
               caption: unsplashService.formatAttribution(photo),
-              placement
+              placement,
             }));
-            
+
             console.log(`Found ${images.length} images for ${command.id}`);
           }
-          
+
           // Convert markdown to BlockNote blocks with images
           const blocks = markdownToBlocks(result, images);
-          
+
           console.log('Generated blocks from markdown:', blocks);
-          
+
           // Get current position
           const currentPosition = editor.getTextCursorPosition();
-          
+
           if (currentPosition && currentPosition.block) {
             if (command.needsSelection && hasSelection) {
               editor.insertBlocks(blocks, currentPosition.block, 'after');
@@ -171,7 +214,7 @@ export const FixedBlockEditor: React.FC<FixedBlockEditorProps> = ({
             const paragraphs = result.split('\n\n').filter(p => p.trim());
             const fallbackBlocks = paragraphs.map(p => ({
               type: 'paragraph' as const,
-              content: p.trim()
+              content: p.trim(),
             }));
             editor.insertBlocks(fallbackBlocks);
           } catch (fallbackError) {
@@ -180,7 +223,7 @@ export const FixedBlockEditor: React.FC<FixedBlockEditorProps> = ({
           }
         }
       }
-      
+
       setSelectedText('');
     } catch (error) {
       console.error('AI processing failed:', error);
@@ -211,26 +254,26 @@ export const FixedBlockEditor: React.FC<FixedBlockEditorProps> = ({
             >
               {aiProcessing ? '⏳ Processing...' : '✨ AI Assistant'}
             </Button>
-            
+
             {unsplashConfigured && (
               <label className="ml-4 inline-flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={includeImages}
-                  onChange={(e) => setIncludeImages(e.target.checked)}
+                  onChange={e => setIncludeImages(e.target.checked)}
                   disabled={aiProcessing}
                 />
                 <span className="text-sm">📷 Include Images</span>
               </label>
             )}
           </div>
-          
+
           {showAIMenu && (
             <div className="mt-4 p-4 border rounded-lg bg-gray-50">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="font-semibold mb-2 text-sm">Create Content</div>
-                  {AI_CREATE_COMMANDS.map((cmd) => (
+                  {AI_CREATE_COMMANDS.map(cmd => (
                     <button
                       key={cmd.id}
                       className="block w-full text-left px-3 py-2 text-sm hover:bg-white rounded"
@@ -243,7 +286,7 @@ export const FixedBlockEditor: React.FC<FixedBlockEditorProps> = ({
                 </div>
                 <div>
                   <div className="font-semibold mb-2 text-sm">Edit Selected Text</div>
-                  {AI_EDIT_COMMANDS.map((cmd) => (
+                  {AI_EDIT_COMMANDS.map(cmd => (
                     <button
                       key={cmd.id}
                       className="block w-full text-left px-3 py-2 text-sm hover:bg-white rounded"
@@ -260,26 +303,19 @@ export const FixedBlockEditor: React.FC<FixedBlockEditorProps> = ({
         </div>
       )}
 
-      <BlockNoteView 
-        editor={editor} 
-        editable={editable}
-        theme="light"
-      />
+      <BlockNoteView editor={editor} editable={editable} theme="light" />
 
       {/* AI Status Indicator */}
       <div className="p-2 bg-gray-50 border-t text-sm text-center">
         {aiConfig.isConfigured ? (
           <span className="text-green-600">
-            ✨ AI Ready ({aiConfig.provider})
-            {unsplashConfigured && <span className="ml-2">📷 Images Available</span>}
+            ✨ AI Ready ({aiConfig.provider}){unsplashConfigured && <span className="ml-2">📷 Images Available</span>}
           </span>
         ) : (
           <span className="text-gray-500">Configure API keys in .env.local to enable AI</span>
         )}
         {!unsplashConfigured && aiConfig.isConfigured && (
-          <span className="ml-2 text-gray-500 text-xs">
-            (Add Unsplash API key for images)
-          </span>
+          <span className="ml-2 text-gray-500 text-xs">(Add Unsplash API key for images)</span>
         )}
         {aiProcessing && <span className="ml-2 text-blue-600">Processing...</span>}
       </div>

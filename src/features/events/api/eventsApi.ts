@@ -3,7 +3,6 @@ import { adaptEventFromDatabase, adaptEventToSupabaseInsert, adaptEventToSupabas
 import { Event as FrontendEvent } from '../types'; // For typing
 import { parseContentIdentifier } from '@/utils/contentUrlUtils';
 
-
 // TODO: Consider importing specific Supabase row types for 'data' variables
 // e.g., import { Tables } from '../types/supabase';
 // type EventTableRow = Tables<'events'>;
@@ -33,7 +32,7 @@ export const eventsApi = {
     try {
       console.log('[EventsAPI] Fetching all events with filters:', filters);
       console.log('[EventsAPI] Supabase URL:', import.meta.env.VITE_SUPABASE_URL || 'Not set');
-      
+
       // First, let's do a simple test query to check if we can access the database at all
       console.log('[EventsAPI] Running test query to verify Supabase connection...');
       try {
@@ -46,34 +45,35 @@ export const eventsApi = {
           errorMessage: testResult.error?.message,
           errorCode: testResult.error?.code,
           status: testResult.status,
-          statusText: testResult.statusText
+          statusText: testResult.statusText,
         });
-        
+
         // Try to list some common tables to check permissions
         console.log('[EventsAPI] Checking table access...');
         const tablesCheck = [];
-        
+
         // Check events table
         const eventsCheck = await supabase.from('events').select('id').limit(1);
         tablesCheck.push({ table: 'events', success: !eventsCheck.error, error: eventsCheck.error?.message });
-        
+
         // Check members table
         const membersCheck = await supabase.from('members').select('id').limit(1);
         tablesCheck.push({ table: 'members', success: !membersCheck.error, error: membersCheck.error?.message });
-        
+
         // Check companies table
         const companiesCheck = await supabase.from('companies').select('id').limit(1);
         tablesCheck.push({ table: 'companies', success: !companiesCheck.error, error: companiesCheck.error?.message });
-        
+
         console.log('[EventsAPI] Table access check results:', tablesCheck);
       } catch (testError) {
         console.error('[EventsAPI] Test query failed:', testError);
       }
-      
+
       // Now proceed with the actual query
       let query = supabase
         .from('events')
-        .select(`
+        .select(
+          `
           *,
           members!organizer_id(id, name, image),
           event_sessions(
@@ -81,7 +81,8 @@ export const eventsApi = {
             event_presenters(*),
             event_resources(*)
           )
-        `)
+        `
+        )
         .eq('status', 'published')
         .order('date', { ascending: true });
 
@@ -119,7 +120,7 @@ export const eventsApi = {
       }
 
       console.log('[EventsAPI] Executing Supabase query...', query);
-      
+
       // Log the SQL query being executed (if available)
       if (typeof (query as any).toSQL === 'function') {
         try {
@@ -129,42 +130,42 @@ export const eventsApi = {
           console.log('[EventsAPI] Could not get SQL query:', e);
         }
       }
-      
+
       // Execute the query with detailed error handling
       let data, error;
       try {
         const result = await query;
         data = result.data;
         error = result.error;
-        console.log('[EventsAPI] Query result:', { 
-          dataLength: data?.length, 
-          error, 
+        console.log('[EventsAPI] Query result:', {
+          dataLength: data?.length,
+          error,
           data: data?.slice(0, 2),
-          rawData: data
+          rawData: data,
         });
       } catch (queryError) {
         console.error('[EventsAPI] Query execution error:', queryError);
         error = queryError;
       }
-      
+
       if (error) {
         console.error('[EventsAPI] Supabase error:', error);
         handleSupabaseError(error, 'fetching events');
         return [];
       }
-      
+
       // Log the raw data structure to understand what we're working with
       console.log('[EventsAPI] Raw data structure:', {
         firstItem: data && data.length > 0 ? Object.keys(data[0]) : 'No data',
-        sampleData: data?.slice(0, 1)
-      })
-      
+        sampleData: data?.slice(0, 1),
+      });
+
       // Ensure we have data to adapt
       if (!data || data.length === 0) {
         console.log('[EventsAPI] No data to adapt, returning empty array');
         return [];
       }
-      
+
       // Use the adapter to properly transform the data
       const adapted = data.map(item => {
         try {
@@ -185,18 +186,18 @@ export const eventsApi = {
             organizer: {
               id: item.organizer_id || 'unknown',
               name: 'Unknown Organizer',
-              image: '/placeholder-avatar.png'
+              image: '/placeholder-avatar.png',
             },
-            sessions: []
+            sessions: [],
           } as any;
         }
       });
-      
+
       console.log('[EventsAPI] Adapted events:', {
         count: adapted.length,
-        sample: adapted.slice(0, 2)
+        sample: adapted.slice(0, 2),
       });
-      
+
       return adapted;
     } catch (error) {
       console.error('[EventsAPI] Exception caught:', error);
@@ -209,11 +210,12 @@ export const eventsApi = {
     try {
       // Determine if identifier is a UUID or slug
       const { type, value } = parseContentIdentifier(identifier);
-      
+
       // Build query with proper field
       let query = supabase
         .from('events')
-        .select(`
+        .select(
+          `
           *,
           members!organizer_id(id, name, image),
           event_sessions(
@@ -221,26 +223,28 @@ export const eventsApi = {
             event_presenters(*),
             event_resources(*)
           )
-        `)
+        `
+        )
         .eq('status', 'published');
-      
+
       // Use slug or ID based on the identifier type
       if (type === 'slug') {
         query = query.eq('slug', value);
       } else {
         query = query.eq('id', value);
       }
-      
+
       const { data, error } = await query.single();
 
       if (error) {
         console.log(`[EventsAPI] No event found for ${type}: ${value}, trying alternative`);
-        
+
         // If not found by slug, try by ID as fallback
         if (type === 'slug') {
           const fallbackQuery = await supabase
             .from('events')
-            .select(`
+            .select(
+              `
               *,
               members!organizer_id(id, name, image),
               event_sessions(
@@ -248,20 +252,21 @@ export const eventsApi = {
                 event_presenters(*),
                 event_resources(*)
               )
-            `)
+            `
+            )
             .eq('id', value)
             .eq('status', 'published')
             .single();
-          
+
           if (!fallbackQuery.error && fallbackQuery.data) {
             return adaptEventFromDatabase(fallbackQuery.data);
           }
         }
-        
+
         handleSupabaseError(error, `fetching event by ${type}`);
         return null;
       }
-      
+
       return data ? adaptEventFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'fetching event');
@@ -299,7 +304,7 @@ export const eventsApi = {
         handleSupabaseError(error, 'creating event');
         return null;
       }
-      
+
       return data ? adaptEventFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating event');
@@ -321,10 +326,16 @@ export const eventsApi = {
         ...(eventData.type && { type: eventData.type as FrontendEvent['type'] }),
         ...(eventData.url !== undefined && { url: eventData.url === null ? undefined : eventData.url }),
         ...(eventData.organizerId && { organizer_id: eventData.organizerId }),
-        ...(eventData.groupId !== undefined && { group_id: eventData.groupId === null ? undefined : eventData.groupId }),
-        ...(eventData.maxAttendees !== undefined && { max_attendees: eventData.maxAttendees === null ? undefined : eventData.maxAttendees }),
+        ...(eventData.groupId !== undefined && {
+          group_id: eventData.groupId === null ? undefined : eventData.groupId,
+        }),
+        ...(eventData.maxAttendees !== undefined && {
+          max_attendees: eventData.maxAttendees === null ? undefined : eventData.maxAttendees,
+        }),
         ...(eventData.status && { status: eventData.status as FrontendEvent['status'] }),
-        ...(eventData.featured !== undefined && { featured: eventData.featured === null ? undefined : eventData.featured }),
+        ...(eventData.featured !== undefined && {
+          featured: eventData.featured === null ? undefined : eventData.featured,
+        }),
       };
 
       const supabaseData = adaptEventToSupabaseUpdate(preparedEventData);
@@ -338,7 +349,7 @@ export const eventsApi = {
         handleSupabaseError(error, 'updating event');
         return null;
       }
-      
+
       // Handle the case where multiple rows might be returned
       const updatedEvent = Array.isArray(data) ? data[0] : data;
       return updatedEvent ? adaptEventFromDatabase(updatedEvent) : null;
@@ -350,10 +361,7 @@ export const eventsApi = {
 
   async delete(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('events')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('events').delete().eq('id', id);
 
       if (error) {
         handleSupabaseError(error, 'deleting event');
@@ -364,5 +372,5 @@ export const eventsApi = {
       handleSupabaseError(error, 'deleting event');
       return false;
     }
-  }
+  },
 };

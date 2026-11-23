@@ -12,17 +12,11 @@ interface ContactInfoSectionProps {
   isSubmitting: boolean;
 }
 
-const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ 
-  formData, 
-  handleChange, 
-  isSubmitting 
-}) => {
+const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ formData, handleChange, isSubmitting }) => {
   return (
     <div className="bg-white dark:bg-slate-800 shadow rounded-lg p-6">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-        Contact Information
-      </h2>
-      
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Contact Information</h2>
+
       <div className="space-y-4">
         {/* Show Contact Info Toggle */}
         <div className="flex items-center">
@@ -31,13 +25,15 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
             id="showContactInfo"
             name="showContactInfo"
             checked={formData.showContactInfo}
-            onChange={(e) => handleChange({
-              ...e,
-              target: {
-                ...e.target,
-                value: String(e.target.checked)
-              }
-            } as React.ChangeEvent<HTMLInputElement>)}
+            onChange={e =>
+              handleChange({
+                ...e,
+                target: {
+                  ...e.target,
+                  value: String(e.target.checked),
+                },
+              } as React.ChangeEvent<HTMLInputElement>)
+            }
             disabled={isSubmitting}
             className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
           />
@@ -50,7 +46,10 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
           <>
             {/* Contact Method */}
             <div>
-              <label htmlFor="contactMethod" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor="contactMethod"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 Preferred Contact Method
               </label>
               <select
@@ -71,7 +70,10 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
             {/* Email Field */}
             {(formData.contactMethod === 'email' || formData.contactMethod === 'both') && (
               <div>
-                <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="contactEmail"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Contact Email
                 </label>
                 <div className="relative">
@@ -95,7 +97,10 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
             {/* Phone Field */}
             {(formData.contactMethod === 'phone' || formData.contactMethod === 'both') && (
               <div>
-                <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="contactPhone"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Contact Phone
                 </label>
                 <div className="relative">

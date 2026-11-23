@@ -14,8 +14,10 @@ export default function AcceptInvitationPage() {
   const { data: invitation, isLoading: invitationLoading } = useInvitationByToken(token);
   const acceptInvitation = useAcceptInvitation();
   const { data: isMember } = useGroupMembership(invitation?.group_id, currentMember?.id);
-  
-  const [status, setStatus] = useState<'loading' | 'valid' | 'expired' | 'invalid' | 'already_member' | 'accepted' | 'error'>('loading');
+
+  const [status, setStatus] = useState<
+    'loading' | 'valid' | 'expired' | 'invalid' | 'already_member' | 'accepted' | 'error'
+  >('loading');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function AcceptInvitationPage() {
     try {
       const success = await acceptInvitation.mutateAsync({
         token: token!,
-        memberId: currentMember.id
+        memberId: currentMember.id,
       });
 
       if (success) {
@@ -86,18 +88,14 @@ export default function AcceptInvitationPage() {
               </p>
               {invitation?.message && (
                 <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg max-w-md mx-auto">
-                  <p className="text-sm text-slate-600 dark:text-slate-300 italic">
-                    "{invitation.message}"
-                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 italic">"{invitation.message}"</p>
                 </div>
               )}
             </div>
 
             {!currentMember ? (
               <div className="space-y-4">
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Please sign in to accept this invitation
-                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Please sign in to accept this invitation</p>
                 <button
                   onClick={() => navigate('/signin?redirect=/invite/' + token)}
                   className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
@@ -123,9 +121,7 @@ export default function AcceptInvitationPage() {
             <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <XCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Invitation Expired
-            </h2>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Invitation Expired</h2>
             <p className="text-slate-600 dark:text-slate-300 mb-6">
               This invitation has expired. Please request a new invitation from a group admin.
             </p>
@@ -144,9 +140,7 @@ export default function AcceptInvitationPage() {
             <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <XCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Invalid Invitation
-            </h2>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Invalid Invitation</h2>
             <p className="text-slate-600 dark:text-slate-300 mb-6">
               This invitation link is invalid or has already been used.
             </p>
@@ -165,9 +159,7 @@ export default function AcceptInvitationPage() {
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Already a Member
-            </h2>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Already a Member</h2>
             <p className="text-slate-600 dark:text-slate-300 mb-6">
               You're already a member of {invitation?.group?.name}.
             </p>
@@ -201,12 +193,8 @@ export default function AcceptInvitationPage() {
             <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <XCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Error
-            </h2>
-            <p className="text-slate-600 dark:text-slate-300 mb-6">
-              {errorMessage}
-            </p>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Error</h2>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">{errorMessage}</p>
             <button
               onClick={() => window.location.reload()}
               className="px-6 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
@@ -229,9 +217,7 @@ export default function AcceptInvitationPage() {
       </Helmet>
 
       <ContentContainer maxWidth="md">
-        <Card className="mt-8">
-          {renderContent()}
-        </Card>
+        <Card className="mt-8">{renderContent()}</Card>
       </ContentContainer>
     </>
   );

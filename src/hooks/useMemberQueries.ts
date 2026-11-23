@@ -47,7 +47,7 @@ function isBoolean(value: unknown): value is boolean {
 function adaptMember(data: unknown): Member {
   // Cast to a record to safely access properties
   const member = data as Record<string, unknown>;
-  
+
   // Safe property access with type checking
   const adaptedMember = {
     id: isString(member.id) ? member.id : String(member.id),
@@ -60,27 +60,33 @@ function adaptMember(data: unknown): Member {
     company: isString(member.company) ? member.company : undefined,
     social: member.social || undefined,
     image: isString(member.image) ? member.image : 'https://via.placeholder.com/150',
-    role: isString(member.title) ? member.title : 
-          isString(member.role) ? member.role : undefined,
-    skills: isArray(member.skills) ? 
-            (member.skills as unknown[]).filter(isString) as string[] : [],
+    role: isString(member.title) ? member.title : isString(member.role) ? member.role : undefined,
+    skills: isArray(member.skills) ? ((member.skills as unknown[]).filter(isString) as string[]) : [],
     // Support both joinDate (API) and joinedDate (mock)
-    joinDate: isString(member.joinDate) ? member.joinDate :
-              isString(member.joinedDate) ? member.joinedDate :
-              isString(member.joined_date) ? member.joined_date : new Date().toISOString(),
-    joinedDate: isString(member.joinedDate) ? member.joinedDate :
-               isString(member.joined_date) ? member.joined_date :
-               isString(member.joinDate) ? member.joinDate : undefined,
+    joinDate: isString(member.joinDate)
+      ? member.joinDate
+      : isString(member.joinedDate)
+        ? member.joinedDate
+        : isString(member.joined_date)
+          ? member.joined_date
+          : new Date().toISOString(),
+    joinedDate: isString(member.joinedDate)
+      ? member.joinedDate
+      : isString(member.joined_date)
+        ? member.joined_date
+        : isString(member.joinDate)
+          ? member.joinDate
+          : undefined,
     created_at: isString(member.created_at) ? member.created_at : undefined,
-    status: isString(member.status) ? member.status as ContentStatus : 'published' as ContentStatus,
-    featured: isBoolean(member.featured) ? member.featured : undefined
+    status: isString(member.status) ? (member.status as ContentStatus) : ('published' as ContentStatus),
+    featured: isBoolean(member.featured) ? member.featured : undefined,
   };
-  
+
   // Add user_id if available
   if (isString(member.user_id)) {
     (adaptedMember as any).user_id = member.user_id;
   }
-  
+
   return adaptedMember;
 }
 
@@ -124,14 +130,15 @@ export function useMembersWithFilters(filters?: MemberFilters): UseQueryResult<M
         let filteredMembers = [...allMockData.members];
         if (filters?.search) {
           const searchTerm = filters.search.toLowerCase();
-          filteredMembers = filteredMembers.filter(member => 
-            member.name.toLowerCase().includes(searchTerm) ||
-            (member.bio && member.bio.toLowerCase().includes(searchTerm))
+          filteredMembers = filteredMembers.filter(
+            member =>
+              member.name.toLowerCase().includes(searchTerm) ||
+              (member.bio && member.bio.toLowerCase().includes(searchTerm))
           );
         }
         if (filters?.skills && filters.skills.length > 0) {
-          filteredMembers = filteredMembers.filter(member => 
-            member.skills && filters.skills?.some(skill => member.skills?.includes(skill))
+          filteredMembers = filteredMembers.filter(
+            member => member.skills && filters.skills?.some(skill => member.skills?.includes(skill))
           );
         }
         return filteredMembers.map(m => adaptMember(m));
@@ -147,7 +154,7 @@ export function useMemberById(id?: string): UseQueryResult<Member | null, Error>
       if (!id) {
         return null;
       }
-      
+
       if (USE_SUPABASE) {
         try {
           const member = await membersApi.getById(id);
@@ -162,7 +169,7 @@ export function useMemberById(id?: string): UseQueryResult<Member | null, Error>
         return member ? adaptMember(member) : null;
       }
     },
-    enabled: !!id
+    enabled: !!id,
   });
 }
 
@@ -172,7 +179,7 @@ export function useCreateMember(): UseMutationResult<
   MemberInput // API expects MemberInput
 > {
   const queryClient = useQueryClient();
-  
+
   // Create a properly typed mutation for both mock and Supabase
   return useMutation<Member | null, Error, MemberInput>({
     mutationFn: async (data: MemberInput): Promise<Member | null> => {
@@ -195,28 +202,24 @@ export function useCreateMember(): UseMutationResult<
           joinDate: new Date().toISOString(),
           joinedDate: new Date().toISOString(), // Keep both for compatibility
           created_at: new Date().toISOString(),
-          status: data.status || 'published' as ContentStatus,
-          featured: data.featured || false
+          status: data.status || ('published' as ContentStatus),
+          featured: data.featured || false,
         };
-        
+
         // Add to mock data (this is just for simulation)
         allMockData.members.unshift(newMember);
-        
+
         return adaptMember(newMember);
       }
     },
     onSuccess: () => {
       // Invalidate both mock and Supabase queries to be safe
       queryClient.invalidateQueries({ queryKey: ['members'] });
-    }
+    },
   });
 }
 
-export function useUpdateMember(): UseMutationResult<
-  Member | null,
-  Error,
-  { id: string; data: Partial<MemberInput> }
-> {
+export function useUpdateMember(): UseMutationResult<Member | null, Error, { id: string; data: Partial<MemberInput> }> {
   const queryClient = useQueryClient();
 
   // Create a properly typed mutation for both mock and Supabase
@@ -233,7 +236,7 @@ export function useUpdateMember(): UseMutationResult<
           console.error(`Member with id ${id} not found`);
           return null;
         }
-        
+
         // Update the member
         const originalMember = allMockData.members[memberIndex];
         const updatedMember = {
@@ -245,10 +248,10 @@ export function useUpdateMember(): UseMutationResult<
           status: data.status !== undefined ? data.status : originalMember.status,
           featured: data.featured !== undefined ? data.featured : originalMember.featured,
         };
-        
+
         // Update in the mock data
         allMockData.members[memberIndex] = updatedMember;
-        
+
         return adaptMember(updatedMember);
       }
     },
@@ -256,7 +259,7 @@ export function useUpdateMember(): UseMutationResult<
       // Invalidate both mock and Supabase queries to be safe
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', id] });
-    }
+    },
   });
 }
 
@@ -279,7 +282,7 @@ export function useDeleteMember(): UseMutationResult<
         if (memberIndex === -1) {
           return false;
         }
-        
+
         // Remove from mock data
         allMockData.members.splice(memberIndex, 1);
         return true;
@@ -289,7 +292,7 @@ export function useDeleteMember(): UseMutationResult<
       // Invalidate both mock and Supabase queries to be safe
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', id] });
-    }
+    },
   });
 }
 
@@ -342,7 +345,7 @@ export function useSearchMembers(query: string): UseQueryResult<Member[], Error>
     // Only enable the query if the debounced query is at least 2 characters
     enabled: !!debouncedQuery && debouncedQuery.trim().length >= 2,
     // Keep previous data while fetching new results
-    placeholderData: (previousData) => previousData,
+    placeholderData: previousData => previousData,
     // Cache results for 5 minutes
     staleTime: 5 * 60 * 1000,
   });

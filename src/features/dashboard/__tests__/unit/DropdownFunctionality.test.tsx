@@ -11,12 +11,12 @@ import { describe, test, expect, beforeEach, jest, afterEach } from '@jest/globa
 import { UserDashboard } from '../../components/UserDashboard';
 import { ContentGrid } from '../../components/ContentGrid';
 import { contentManagementApi } from '../../api/contentManagementApi';
-import { 
-  createTestWrapper, 
-  createTestUser, 
-  createTestContent, 
+import {
+  createTestWrapper,
+  createTestUser,
+  createTestContent,
   createTestGroup,
-  createTestCompany
+  createTestCompany,
 } from '../../../shared/test-utils/testHelpers';
 
 // Mock the APIs
@@ -26,9 +26,9 @@ jest.mock('@/lib/supabase', () => ({
     from: jest.fn(),
     auth: {
       getUser: jest.fn(),
-      getSession: jest.fn()
-    }
-  }
+      getSession: jest.fn(),
+    },
+  },
 }));
 
 const mockApi = contentManagementApi as jest.Mocked<typeof contentManagementApi>;
@@ -41,7 +41,7 @@ describe('Dropdown Functionality Tests', () => {
     memberId: 'member-dropdown',
     role: 'member',
     groups: ['public-group', 'private-group', 'special-group'],
-    companies: ['company-a', 'company-b']
+    companies: ['company-a', 'company-b'],
   });
 
   const testContent = [
@@ -50,27 +50,27 @@ describe('Dropdown Functionality Tests', () => {
       type: 'photo',
       title: 'Photo Content',
       status: 'published',
-      companyId: 'company-a'
+      companyId: 'company-a',
     }),
     createTestContent('member-dropdown', {
       id: 'content-2',
       type: 'event',
       title: 'Event Content',
       status: 'draft',
-      groupId: 'private-group'
+      groupId: 'private-group',
     }),
     createTestContent('member-dropdown', {
       id: 'content-3',
       type: 'news',
       title: 'News Content',
       status: 'published',
-      featured: true
-    })
+      featured: true,
+    }),
   ];
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Default API responses
     mockApi.getAllUserContent.mockResolvedValue({
       data: testContent,
@@ -81,9 +81,9 @@ describe('Dropdown Functionality Tests', () => {
         limit: 20,
         total: 3,
         total_pages: 1,
-        has_more: false
+        has_more: false,
       },
-      filters_applied: {}
+      filters_applied: {},
     });
 
     mockApi.getContentStatistics.mockResolvedValue({
@@ -92,17 +92,14 @@ describe('Dropdown Functionality Tests', () => {
         total_content: 3,
         total_views: 100,
         total_engagement: 20,
-        growth_percentage: 5.2
-      }
+        growth_percentage: 5.2,
+      },
     });
   });
 
   describe('Content Type Filter Dropdown', () => {
     test('Shows all available content types in filter dropdown', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       // Wait for dashboard to load
       await waitFor(() => {
@@ -135,10 +132,7 @@ describe('Dropdown Functionality Tests', () => {
     });
 
     test('Content type filter updates content display', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Photo Content')).toBeInTheDocument();
@@ -156,9 +150,9 @@ describe('Dropdown Functionality Tests', () => {
           limit: 20,
           total: 1,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: { type: ['photo'] }
+        filters_applied: { type: ['photo'] },
       });
 
       // Navigate to All Content and then Photo Galleries sub-tab
@@ -193,7 +187,7 @@ describe('Dropdown Functionality Tests', () => {
             view_count: 50,
             like_count: 10,
             comment_count: 2,
-            growth_percentage: 10.0
+            growth_percentage: 10.0,
           },
           {
             content_type: 'event' as const,
@@ -204,7 +198,7 @@ describe('Dropdown Functionality Tests', () => {
             view_count: 30,
             like_count: 5,
             comment_count: 1,
-            growth_percentage: 0.0
+            growth_percentage: 0.0,
           },
           {
             content_type: 'news' as const,
@@ -215,21 +209,18 @@ describe('Dropdown Functionality Tests', () => {
             view_count: 20,
             like_count: 5,
             comment_count: 3,
-            growth_percentage: 15.0
-          }
+            growth_percentage: 15.0,
+          },
         ],
         summary: {
           total_content: 3,
           total_views: 100,
           total_engagement: 26,
-          growth_percentage: 8.3
-        }
+          growth_percentage: 8.3,
+        },
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       // Check tab counts are displayed
       await waitFor(() => {
@@ -259,10 +250,7 @@ describe('Dropdown Functionality Tests', () => {
 
   describe('Status Filter Dropdown', () => {
     test('Status dropdown shows appropriate options', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /filter/i })).toBeInTheDocument();
@@ -292,10 +280,7 @@ describe('Dropdown Functionality Tests', () => {
     });
 
     test('Status filter affects displayed content', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Photo Content')).toBeInTheDocument();
@@ -312,9 +297,9 @@ describe('Dropdown Functionality Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: { status: ['published'] }
+        filters_applied: { status: ['published'] },
       });
 
       // Apply status filter
@@ -336,10 +321,7 @@ describe('Dropdown Functionality Tests', () => {
 
   describe('Company Selection Dropdown', () => {
     test('Shows only companies user is associated with', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       // Find and click create button
       await waitFor(() => {
@@ -370,10 +352,7 @@ describe('Dropdown Functionality Tests', () => {
     });
 
     test('Company dropdown updates based on content type selection', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const createButton = screen.getByRole('button', { name: /create/i });
       const userEventInstance = userEvent.setup();
@@ -408,10 +387,7 @@ describe('Dropdown Functionality Tests', () => {
 
   describe('Group Selection Dropdown', () => {
     test('Shows only groups user belongs to', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const createButton = screen.getByRole('button', { name: /create/i });
       const userEventInstance = userEvent.setup();
@@ -445,10 +421,7 @@ describe('Dropdown Functionality Tests', () => {
     });
 
     test('Group dropdown shows group visibility indicators', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const createButton = screen.getByRole('button', { name: /create/i });
       const userEventInstance = userEvent.setup();
@@ -477,10 +450,7 @@ describe('Dropdown Functionality Tests', () => {
 
   describe('Sort and Order Dropdowns', () => {
     test('Sort dropdown shows appropriate options', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /filter/i })).toBeInTheDocument();
@@ -510,10 +480,7 @@ describe('Dropdown Functionality Tests', () => {
     });
 
     test('Sort dropdown updates content order', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Photo Content')).toBeInTheDocument();
@@ -529,9 +496,9 @@ describe('Dropdown Functionality Tests', () => {
           limit: 20,
           total: 3,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: { sortBy: 'title', sortOrder: 'asc' }
+        filters_applied: { sortBy: 'title', sortOrder: 'asc' },
       });
 
       const filterButton = screen.getByRole('button', { name: /filter/i });
@@ -546,18 +513,15 @@ describe('Dropdown Functionality Tests', () => {
         expect(mockApi.getAllUserContent).toHaveBeenCalledWith(
           expect.objectContaining({
             filters: expect.objectContaining({
-              sortBy: 'title'
-            })
+              sortBy: 'title',
+            }),
           })
         );
       });
     });
 
     test('Order dropdown toggles ascending/descending', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const filterButton = screen.getByRole('button', { name: /filter/i });
       const userEventInstance = userEvent.setup();
@@ -584,8 +548,8 @@ describe('Dropdown Functionality Tests', () => {
         expect(mockApi.getAllUserContent).toHaveBeenCalledWith(
           expect.objectContaining({
             filters: expect.objectContaining({
-              sortOrder: 'asc'
-            })
+              sortOrder: 'asc',
+            }),
           })
         );
       });
@@ -600,17 +564,12 @@ describe('Dropdown Functionality Tests', () => {
         can_delete: true,
         can_publish: true,
         can_feature: true,
-        can_view_analytics: true
+        can_view_analytics: true,
       });
 
-      render(
-        <ContentGrid 
-          content={testContent} 
-          view="grid" 
-          isLoading={false} 
-        />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<ContentGrid content={testContent} view="grid" isLoading={false} />, {
+        wrapper: createTestWrapper(testUser),
+      });
 
       // Select multiple items first
       await waitFor(() => {
@@ -620,7 +579,7 @@ describe('Dropdown Functionality Tests', () => {
 
       const userEventInstance = userEvent.setup();
       const checkboxes = screen.getAllByRole('checkbox');
-      
+
       // Select first two items
       await userEventInstance.click(checkboxes[0]);
       await userEventInstance.click(checkboxes[1]);
@@ -650,17 +609,12 @@ describe('Dropdown Functionality Tests', () => {
         can_delete: false, // Cannot delete
         can_publish: true,
         can_feature: false, // Cannot feature
-        can_view_analytics: true
+        can_view_analytics: true,
       });
 
-      render(
-        <ContentGrid 
-          content={testContent} 
-          view="grid" 
-          isLoading={false} 
-        />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<ContentGrid content={testContent} view="grid" isLoading={false} />, {
+        wrapper: createTestWrapper(testUser),
+      });
 
       const userEventInstance = userEvent.setup();
       const checkboxes = screen.getAllByRole('checkbox');
@@ -673,7 +627,7 @@ describe('Dropdown Functionality Tests', () => {
         // Should show allowed actions
         expect(screen.getByRole('menuitem', { name: /publish/i })).toBeInTheDocument();
         expect(screen.getByRole('menuitem', { name: /archive/i })).toBeInTheDocument();
-        
+
         // Should NOT show restricted actions
         expect(screen.queryByRole('menuitem', { name: /delete/i })).not.toBeInTheDocument();
         expect(screen.queryByRole('menuitem', { name: /feature/i })).not.toBeInTheDocument();
@@ -683,10 +637,7 @@ describe('Dropdown Functionality Tests', () => {
 
   describe('Dynamic Data Loading', () => {
     test('Dropdowns update when user associations change', async () => {
-      const { rerender } = render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      const { rerender } = render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const createButton = screen.getByRole('button', { name: /create/i });
       const userEventInstance = userEvent.setup();
@@ -706,13 +657,10 @@ describe('Dropdown Functionality Tests', () => {
       // Update user to have additional company
       const updatedUser = {
         ...testUser,
-        companies: ['company-a', 'company-b', 'company-c']
+        companies: ['company-a', 'company-b', 'company-c'],
       };
 
-      rerender(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(updatedUser) }
-      );
+      rerender(<UserDashboard />, { wrapper: createTestWrapper(updatedUser) });
 
       // Should now show additional company
       await waitFor(() => {
@@ -726,10 +674,7 @@ describe('Dropdown Functionality Tests', () => {
     });
 
     test('Dropdown options load asynchronously', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const createButton = screen.getByRole('button', { name: /create/i });
       const userEventInstance = userEvent.setup();
@@ -751,10 +696,13 @@ describe('Dropdown Functionality Tests', () => {
       });
 
       // After loading completes, should show options
-      await waitFor(() => {
-        expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
-        expect(screen.getByRole('option', { name: /company a/i })).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+          expect(screen.getByRole('option', { name: /company a/i })).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -763,10 +711,7 @@ describe('Dropdown Functionality Tests', () => {
       // Mock API error for company data
       const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const createButton = screen.getByRole('button', { name: /create/i });
       const userEventInstance = userEvent.setup();
@@ -791,13 +736,10 @@ describe('Dropdown Functionality Tests', () => {
       const userWithNoAssociations = createTestUser({
         id: 'user-no-associations',
         groups: [],
-        companies: []
+        companies: [],
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(userWithNoAssociations) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(userWithNoAssociations) });
 
       const createButton = screen.getByRole('button', { name: /create/i });
       const userEventInstance = userEvent.setup();

@@ -4,11 +4,7 @@ import FooterColumn from '@/shared/components/layout/Footer/FooterColumn';
 import SocialLinks from '@/shared/components/layout/Footer/SocialLinks';
 import { Github, Linkedin, Twitter } from 'lucide-react';
 
-const Footer: React.FC<FooterProps> = ({
-  columns,
-  socialLinks,
-  copyrightText
-}) => {
+const Footer: React.FC<FooterProps> = ({ columns, socialLinks, copyrightText }) => {
   // Default footer columns if none provided
   const defaultColumns = columns || [
     {
@@ -16,24 +12,24 @@ const Footer: React.FC<FooterProps> = ({
       links: [
         { text: 'Directory', href: '/directory' },
         { text: 'Companies', href: '/companies' },
-        { text: 'Groups', href: '/groups' }
-      ]
+        { text: 'Groups', href: '/groups' },
+      ],
     },
     {
       title: 'Resources',
       links: [
         { text: 'Events', href: '/events' },
         { text: 'News', href: '/news' },
-        { text: 'Resources', href: '/resources' }
-      ]
+        { text: 'Resources', href: '/resources' },
+      ],
     },
     {
       title: 'Marketplace',
       links: [
         { text: 'Marketplace', href: '/marketplace' },
-        { text: 'Opportunities', href: '/opportunities' }
-      ]
-    }
+        { text: 'Opportunities', href: '/opportunities' },
+      ],
+    },
   ];
 
   // Default social links if none provided
@@ -41,23 +37,22 @@ const Footer: React.FC<FooterProps> = ({
     {
       platform: 'GitHub',
       href: 'https://github.com',
-      icon: <Github className="h-5 w-5" />
+      icon: <Github className="h-5 w-5" />,
     },
     {
       platform: 'LinkedIn',
       href: 'https://linkedin.com',
-      icon: <Linkedin className="h-5 w-5" />
+      icon: <Linkedin className="h-5 w-5" />,
     },
     {
       platform: 'Twitter',
       href: 'https://twitter.com',
-      icon: <Twitter className="h-5 w-5" />
-    }
+      icon: <Twitter className="h-5 w-5" />,
+    },
   ];
 
   // Default copyright text if none provided
-  const defaultCopyrightText = copyrightText || 
-    `© ${new Date().getFullYear()} Uluntu. All rights reserved.`;
+  const defaultCopyrightText = copyrightText || `© ${new Date().getFullYear()} Uluntu. All rights reserved.`;
 
   return (
     <footer className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
@@ -67,16 +62,14 @@ const Footer: React.FC<FooterProps> = ({
             {defaultColumns.map((column, index) => (
               <FooterColumn key={index} column={column} />
             ))}
-            
+
             <div className="flex flex-col">
-              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-                Follow Us
-              </h3>
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Follow Us</h3>
               <SocialLinks socialLinks={defaultSocialLinks} />
             </div>
           </div>
         )}
-        
+
         <div className="border-t border-slate-200 dark:border-slate-700 pt-8">
           <div className="text-center text-slate-600 dark:text-slate-400">
             <p>{defaultCopyrightText}</p>

@@ -17,22 +17,22 @@ export default function NewMessageModal({
   isOpen,
   onClose,
   onCreateConversation,
-  className = ''
+  className = '',
 }: NewMessageModalProps) {
   const { user } = useSession();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
   const [message, setMessage] = useState('');
   const [title, setTitle] = useState('');
-  
+
   // Fetch members for selection
   const { data: members = [], isLoading: loadingMembers } = useMembersWithFilters({
-    search: searchTerm
+    search: searchTerm,
   });
-  
+
   // Filter out current user and already selected participants
-  const availableMembers = members.filter((member: any) => 
-    member.id !== user?.id && !selectedParticipants.includes(member.id)
+  const availableMembers = members.filter(
+    (member: any) => member.id !== user?.id && !selectedParticipants.includes(member.id)
   );
 
   if (!isOpen) return null;
@@ -50,12 +50,8 @@ export default function NewMessageModal({
     e.preventDefault();
     if (selectedParticipants.length === 0 || !message.trim()) return;
 
-    onCreateConversation(
-      selectedParticipants,
-      title.trim() || undefined,
-      message.trim()
-    );
-    
+    onCreateConversation(selectedParticipants, title.trim() || undefined, message.trim());
+
     // Reset form
     setTitle('');
     setMessage('');
@@ -70,16 +66,17 @@ export default function NewMessageModal({
     .join(', ');
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 ${className}`} onClick={onClose}>
-      <div 
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 ${className}`}
+      onClick={onClose}
+    >
+      <div
         className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-600">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-            New Message
-          </h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">New Message</h2>
           <button
             onClick={onClose}
             className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded"
@@ -87,47 +84,39 @@ export default function NewMessageModal({
             <X className="h-5 w-5" />
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="flex flex-col max-h-[calc(90vh-80px)]">
           {/* Participant Selection */}
           <div className="p-6 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                To:
-              </label>
-              
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">To:</label>
+
               {/* Selected Participants */}
               {selectedParticipants.length > 0 && (
                 <div className="mb-2 p-2 bg-slate-50 dark:bg-slate-700 rounded border">
-                  <div className="text-sm text-slate-600 dark:text-slate-400">
-                    {selectedMemberNames}
-                  </div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">{selectedMemberNames}</div>
                 </div>
               )}
-              
+
               {/* Member Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <input
                   type="text"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   placeholder="Search for members..."
                   className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
                 />
               </div>
-              
+
               {/* Member Results */}
               {searchTerm.length > 0 && (
                 <div className="mt-2 max-h-32 overflow-y-auto border border-slate-200 dark:border-slate-600 rounded-lg">
                   {loadingMembers ? (
-                    <div className="p-3 text-center text-slate-500 dark:text-slate-400">
-                      Searching...
-                    </div>
+                    <div className="p-3 text-center text-slate-500 dark:text-slate-400">Searching...</div>
                   ) : availableMembers.length === 0 ? (
-                    <div className="p-3 text-center text-slate-500 dark:text-slate-400">
-                      No members found
-                    </div>
+                    <div className="p-3 text-center text-slate-500 dark:text-slate-400">No members found</div>
                   ) : (
                     availableMembers.map((member: any) => (
                       <button
@@ -138,11 +127,7 @@ export default function NewMessageModal({
                       >
                         <div className="flex-shrink-0">
                           {member.image ? (
-                            <img
-                              src={member.image}
-                              alt={member.name}
-                              className="h-8 w-8 rounded-full"
-                            />
+                            <img src={member.image} alt={member.name} className="h-8 w-8 rounded-full" />
                           ) : (
                             <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center">
                               <User className="h-4 w-4 text-slate-500 dark:text-slate-400" />
@@ -154,9 +139,7 @@ export default function NewMessageModal({
                             {member.name}
                           </div>
                           {member.title && (
-                            <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                              {member.title}
-                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 truncate">{member.title}</div>
                           )}
                         </div>
                       </button>
@@ -165,7 +148,7 @@ export default function NewMessageModal({
                 </div>
               )}
             </div>
-            
+
             {/* Optional Title */}
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -174,28 +157,26 @@ export default function NewMessageModal({
               <input
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={e => setTitle(e.target.value)}
                 placeholder="Conversation subject"
                 className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
               />
             </div>
           </div>
-          
+
           {/* Message */}
           <div className="flex-1 p-6 pt-0">
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Message:
-            </label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Message:</label>
             <textarea
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={e => setMessage(e.target.value)}
               placeholder="Type your message here..."
               required
               rows={4}
               className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 resize-none"
             />
           </div>
-          
+
           {/* Actions */}
           <div className="flex justify-end space-x-3 p-6 pt-0 border-t border-slate-200 dark:border-slate-600">
             <button

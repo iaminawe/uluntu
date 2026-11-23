@@ -1,20 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Tag, Plus, Edit2, Trash2, Search, ChevronUp, ChevronDown, Save, X, Palette, Hash, Lock } from 'lucide-react';
 import {
-  Tag,
-  Plus,
-  Edit2,
-  Trash2,
-  Search,
-  ChevronUp,
-  ChevronDown,
-  Save,
-  X,
-  Palette,
-  Hash,
-  Lock
-} from 'lucide-react';
-import { useTopicsHybrid, useTopicAnalytics, useCreateTopic, useUpdateTopic, useDeleteTopic } from '@/features/topics/hooks/useTopicsHybrid';
+  useTopicsHybrid,
+  useTopicAnalytics,
+  useCreateTopic,
+  useUpdateTopic,
+  useDeleteTopic,
+} from '@/features/topics/hooks/useTopicsHybrid';
 import { useEnabledFeatures } from '@/hooks/useSettings';
 import type { Topic, TopicWithAnalytics, TopicFormData } from '@/features/topics/types';
 
@@ -37,7 +30,7 @@ const AdminTopicsPage: React.FC = () => {
     icon: '📌',
     color: '#3B82F6',
     sortOrder: 0,
-    isActive: true
+    isActive: true,
   });
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
@@ -47,7 +40,7 @@ const AdminTopicsPage: React.FC = () => {
     return {
       ...topic,
       totalContentCount: analytics?.totalContentCount || 0,
-      memberCount: analytics?.memberCount || 0
+      memberCount: analytics?.memberCount || 0,
     };
   });
 
@@ -59,11 +52,10 @@ const AdminTopicsPage: React.FC = () => {
           <div className="flex items-start">
             <Lock className="h-6 w-6 text-yellow-400 mr-3 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">
-                Topics System Disabled
-              </h3>
+              <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">Topics System Disabled</h3>
               <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                The topics system is currently disabled. Enable it in System Management → Features to access topics management.
+                The topics system is currently disabled. Enable it in System Management → Features to access topics
+                management.
               </p>
               <a
                 href="/admin/system/features"
@@ -94,7 +86,7 @@ const AdminTopicsPage: React.FC = () => {
         icon: '📌',
         color: '#3B82F6',
         sortOrder: 0,
-        isActive: true
+        isActive: true,
       });
       refetch();
     } catch (error) {
@@ -109,7 +101,7 @@ const AdminTopicsPage: React.FC = () => {
     try {
       await updateTopicMutation.mutateAsync({
         id: editingTopic.id,
-        data: formData
+        data: formData,
       });
       setEditingTopic(null);
       setFormData({
@@ -118,7 +110,7 @@ const AdminTopicsPage: React.FC = () => {
         icon: '📌',
         color: '#3B82F6',
         sortOrder: 0,
-        isActive: true
+        isActive: true,
       });
       refetch();
     } catch (error) {
@@ -144,7 +136,7 @@ const AdminTopicsPage: React.FC = () => {
       icon: getTopicIcon(topic.icon), // Convert to emoji for editing
       color: topic.color,
       sortOrder: topic.sortOrder,
-      isActive: topic.isActive
+      isActive: topic.isActive,
     });
     setShowCreateForm(false);
   };
@@ -157,27 +149,27 @@ const AdminTopicsPage: React.FC = () => {
       icon: '📌',
       color: '#3B82F6',
       sortOrder: 0,
-      isActive: true
+      isActive: true,
     });
   };
 
   const moveTopic = async (topic: Topic, direction: 'up' | 'down') => {
     const currentIndex = enrichedTopics.findIndex(t => t.id === topic.id);
     const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    
+
     if (swapIndex < 0 || swapIndex >= enrichedTopics.length) return;
-    
+
     const swapTopic = enrichedTopics[swapIndex];
-    
+
     try {
       // Swap sort orders
       await updateTopicMutation.mutateAsync({
         id: topic.id,
-        data: { sortOrder: swapTopic.sortOrder }
+        data: { sortOrder: swapTopic.sortOrder },
       });
       await updateTopicMutation.mutateAsync({
         id: swapTopic.id,
-        data: { sortOrder: topic.sortOrder }
+        data: { sortOrder: topic.sortOrder },
       });
       refetch();
     } catch (error) {
@@ -187,45 +179,66 @@ const AdminTopicsPage: React.FC = () => {
 
   // Icon mapping for text-based icons to emojis
   const iconMap: Record<string, string> = {
-    'laptop': '💻',
-    'briefcase': '💼', 
-    'palette': '🎨',
-    'camera': '📷',
-    'layers': '📋',
-    'technology': '💻',
-    'business': '💼',
-    'art': '🎨',
-    'photography': '📷',
-    'design': '📋',
-    'music': '🎵',
-    'book': '📚',
-    'building': '🏢',
-    'star': '⭐',
-    'rocket': '🚀',
-    'bulb': '💡',
-    'target': '🎯',
-    'tool': '🔧',
-    'chart': '📊',
-    'trophy': '🏆',
-    'money': '💰',
-    'microscope': '🔬',
-    'gamepad': '🎮',
-    'film': '🎬',
-    'pin': '📌'
+    laptop: '💻',
+    briefcase: '💼',
+    palette: '🎨',
+    camera: '📷',
+    layers: '📋',
+    technology: '💻',
+    business: '💼',
+    art: '🎨',
+    photography: '📷',
+    design: '📋',
+    music: '🎵',
+    book: '📚',
+    building: '🏢',
+    star: '⭐',
+    rocket: '🚀',
+    bulb: '💡',
+    target: '🎯',
+    tool: '🔧',
+    chart: '📊',
+    trophy: '🏆',
+    money: '💰',
+    microscope: '🔬',
+    gamepad: '🎮',
+    film: '🎬',
+    pin: '📌',
   };
 
-  const emojiOptions = ['📌', '💡', '🚀', '🎯', '🔧', '📊', '🎨', '🏆', '💰', '⭐', '🔬', '🎮', '🎬', '🎵', '📚', '🏢', '💻', '💼', '📷', '📋'];
+  const emojiOptions = [
+    '📌',
+    '💡',
+    '🚀',
+    '🎯',
+    '🔧',
+    '📊',
+    '🎨',
+    '🏆',
+    '💰',
+    '⭐',
+    '🔬',
+    '🎮',
+    '🎬',
+    '🎵',
+    '📚',
+    '🏢',
+    '💻',
+    '💼',
+    '📷',
+    '📋',
+  ];
   const colorOptions = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
 
   // Helper function to get the proper icon
   const getTopicIcon = (iconValue: string | null | undefined): string => {
     if (!iconValue) return '📌';
-    
+
     // If it's already an emoji (length 1-2 and contains emoji characters)
     if (iconValue.length <= 2 && /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(iconValue)) {
       return iconValue;
     }
-    
+
     // Convert text-based icons to emojis
     const mappedIcon = iconMap[iconValue.toLowerCase()];
     return mappedIcon || '📌';
@@ -254,7 +267,9 @@ const AdminTopicsPage: React.FC = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Topics Management</h1>
-        <p className="text-gray-600 dark:text-gray-400">Manage topics used for categorizing content across the platform</p>
+        <p className="text-gray-600 dark:text-gray-400">
+          Manage topics used for categorizing content across the platform
+        </p>
       </div>
 
       {/* Actions Bar */}
@@ -265,7 +280,7 @@ const AdminTopicsPage: React.FC = () => {
             <input
               type="text"
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={e => setSearchInput(e.target.value)}
               placeholder="Search topics..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
@@ -277,7 +292,7 @@ const AdminTopicsPage: React.FC = () => {
             Search
           </button>
         </form>
-        
+
         <button
           onClick={() => {
             setShowCreateForm(true);
@@ -296,52 +311,44 @@ const AdminTopicsPage: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
             {editingTopic ? 'Edit Topic' : 'Create New Topic'}
           </h2>
-          
+
           <form onSubmit={editingTopic ? handleUpdateTopic : handleCreateTopic} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Name *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name *</label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   required
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Sort Order
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sort Order</label>
                 <input
                   type="number"
                   value={formData.sortOrder}
-                  onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
+                  onChange={e => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />
               </div>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Description
-              </label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Icon
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Icon</label>
                 <div className="flex flex-wrap gap-2">
                   {emojiOptions.map(emoji => (
                     <button
@@ -359,11 +366,9 @@ const AdminTopicsPage: React.FC = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Color
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color</label>
                 <div className="flex flex-wrap gap-2">
                   {colorOptions.map(color => (
                     <button
@@ -381,19 +386,19 @@ const AdminTopicsPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                  onChange={e => setFormData({ ...formData, isActive: e.target.checked })}
                   className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
               </label>
             </div>
-            
+
             <div className="flex gap-3">
               <button
                 type="submit"
@@ -403,7 +408,7 @@ const AdminTopicsPage: React.FC = () => {
                 <Save className="h-4 w-4" />
                 {editingTopic ? 'Update' : 'Create'}
               </button>
-              
+
               <button
                 type="button"
                 onClick={() => {
@@ -478,12 +483,8 @@ const AdminTopicsPage: React.FC = () => {
                         </span>
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {topic.name}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {topic.slug}
-                        </div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{topic.name}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{topic.slug}</div>
                       </div>
                     </div>
                   </td>
@@ -497,9 +498,7 @@ const AdminTopicsPage: React.FC = () => {
                       <div className="text-gray-900 dark:text-gray-100 font-medium">
                         {topic.totalContentCount} items
                       </div>
-                      <div className="text-gray-500 dark:text-gray-400">
-                        {topic.memberCount} members
-                      </div>
+                      <div className="text-gray-500 dark:text-gray-400">{topic.memberCount} members</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -521,7 +520,7 @@ const AdminTopicsPage: React.FC = () => {
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
-                      
+
                       {deleteConfirmId === topic.id ? (
                         <div className="flex items-center gap-2">
                           <button
@@ -542,7 +541,9 @@ const AdminTopicsPage: React.FC = () => {
                           onClick={() => setDeleteConfirmId(topic.id)}
                           disabled={topic.totalContentCount > 0}
                           className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 disabled:opacity-30 disabled:cursor-not-allowed"
-                          title={topic.totalContentCount > 0 ? 'Cannot delete topic with associated content' : 'Delete topic'}
+                          title={
+                            topic.totalContentCount > 0 ? 'Cannot delete topic with associated content' : 'Delete topic'
+                          }
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -554,14 +555,12 @@ const AdminTopicsPage: React.FC = () => {
             </tbody>
           </table>
         </div>
-        
+
         {enrichedTopics.length === 0 && (
           <div className="text-center py-12">
             <Tag className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600 dark:text-gray-400">No topics found</p>
-            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-              Create your first topic to get started
-            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Create your first topic to get started</p>
           </div>
         )}
       </div>
@@ -575,13 +574,11 @@ const AdminTopicsPage: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Topics</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                {enrichedTopics.length}
-              </p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{enrichedTopics.length}</p>
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
@@ -595,7 +592,7 @@ const AdminTopicsPage: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">

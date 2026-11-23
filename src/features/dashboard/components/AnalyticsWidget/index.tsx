@@ -19,11 +19,11 @@ export const AnalyticsWidget: React.FC<AnalyticsWidgetProps> = ({
   icon: Icon,
   change,
   trend,
-  className = ''
+  className = '',
 }) => {
   const formatValue = (val: number | string, fmt: string) => {
     if (typeof val === 'string') return val;
-    
+
     switch (fmt) {
       case 'number':
         return val.toLocaleString();
@@ -32,7 +32,7 @@ export const AnalyticsWidget: React.FC<AnalyticsWidgetProps> = ({
       case 'currency':
         return new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'USD'
+          currency: 'USD',
         }).format(val);
       case 'duration':
         const hours = Math.floor(val / 3600);
@@ -74,27 +74,22 @@ export const AnalyticsWidget: React.FC<AnalyticsWidgetProps> = ({
     <div className={`p-3 bg-slate-50 dark:bg-slate-800 rounded-lg ${className}`}>
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center">
-          {Icon && (
-            <Icon className="h-4 w-4 text-slate-400 mr-2" />
-          )}
-          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-            {title}
-          </span>
+          {Icon && <Icon className="h-4 w-4 text-slate-400 mr-2" />}
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{title}</span>
         </div>
-        
+
         {change !== undefined && TrendIcon && (
           <div className={`flex items-center ${getTrendColor(trend)}`}>
             <TrendIcon className="h-3 w-3 mr-1" />
             <span className="text-xs font-medium">
-              {change > 0 ? '+' : ''}{change.toFixed(1)}%
+              {change > 0 ? '+' : ''}
+              {change.toFixed(1)}%
             </span>
           </div>
         )}
       </div>
-      
-      <div className="text-xl font-semibold text-slate-900 dark:text-white">
-        {formatValue(value, format)}
-      </div>
+
+      <div className="text-xl font-semibold text-slate-900 dark:text-white">{formatValue(value, format)}</div>
     </div>
   );
 };

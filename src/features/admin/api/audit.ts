@@ -14,20 +14,15 @@ export const adminAuditApi = {
   }) {
     // TODO: Re-enable when admin_audit_log table is properly configured
     console.warn('Admin audit log temporarily disabled - returning empty data');
-    
+
     return {
       data: [] as AuditLogEntry[],
-      count: 0
+      count: 0,
     };
   },
 
   // Log an admin action - temporarily stub
-  async logAction(
-    _action: string,
-    _entityType?: string,
-    _entityId?: string,
-    _changes?: Record<string, unknown>
-  ) {
+  async logAction(_action: string, _entityType?: string, _entityId?: string, _changes?: Record<string, unknown>) {
     // TODO: Re-enable when admin_audit_log table is properly configured
     console.warn('Admin audit logging temporarily disabled');
     return true;
@@ -53,5 +48,5 @@ export const adminAuditApi = {
     // TODO: Re-enable when admin_audit_log table is properly configured
     console.warn('Admin audit export temporarily disabled');
     return 'Date,Admin,Action,Entity Type,Entity ID,Changes\n';
-  }
+  },
 };

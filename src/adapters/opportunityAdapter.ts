@@ -10,7 +10,7 @@ export function adaptOpportunityFromDatabase(dbOpportunity: SupabaseOpportunity)
     company: {
       id: dbOpportunity.organization ?? dbOpportunity.posted_by ?? '1',
       name: dbOpportunity.organization ?? 'Unknown Company',
-      logo: dbOpportunity.image ?? '/placeholder-company.png'
+      logo: dbOpportunity.image ?? '/placeholder-company.png',
     },
     type: (dbOpportunity.type as 'full-time' | 'part-time' | 'contract' | 'volunteer') ?? 'full-time',
     location: dbOpportunity.location ?? 'Remote',
@@ -21,14 +21,16 @@ export function adaptOpportunityFromDatabase(dbOpportunity: SupabaseOpportunity)
     deadline: dbOpportunity.deadline ?? undefined,
     status: (dbOpportunity.status as 'draft' | 'published' | 'archived') ?? 'draft',
     featured: dbOpportunity.featured === null ? false : !!dbOpportunity.featured,
-    created_at: dbOpportunity.created_at ?? new Date().toISOString()
+    created_at: dbOpportunity.created_at ?? new Date().toISOString(),
   };
 }
 
-export function adaptOpportunityToDatabase(opportunity: Partial<Opportunity>): Database['public']['Tables']['opportunities']['Insert'] {
+export function adaptOpportunityToDatabase(
+  opportunity: Partial<Opportunity>
+): Database['public']['Tables']['opportunities']['Insert'] {
   // Extract organization name from company if available
   const organization = opportunity.company?.name ?? 'Unknown Company';
-  
+
   return {
     title: opportunity.title ?? '', // Required field
     description: opportunity.description ?? '', // Required field
@@ -46,6 +48,6 @@ export function adaptOpportunityToDatabase(opportunity: Partial<Opportunity>): D
     responsibilities: null, // Not available in FrontendOpportunity
     benefits: null, // Not available in FrontendOpportunity
     status: opportunity.status ?? 'draft', // Required field
-    featured: opportunity.featured ?? null
+    featured: opportunity.featured ?? null,
   };
 }

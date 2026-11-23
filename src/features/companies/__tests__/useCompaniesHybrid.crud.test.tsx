@@ -110,7 +110,7 @@ describe('useCompaniesHybrid CRUD Operations', () => {
       expect(result.current.isLoading).toBe(true);
 
       await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        await new Promise(resolve => setTimeout(resolve, 0));
       });
 
       expect(result.current.companies).toEqual(mockCompanies);
@@ -125,7 +125,7 @@ describe('useCompaniesHybrid CRUD Operations', () => {
       const { result } = renderHook(() => useCompaniesHybrid(), { wrapper });
 
       await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        await new Promise(resolve => setTimeout(resolve, 0));
       });
 
       expect(result.current.isError).toBe(true);

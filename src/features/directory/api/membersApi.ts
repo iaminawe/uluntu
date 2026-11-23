@@ -1,10 +1,6 @@
 import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
-import {
-  adaptMemberFromDatabase,
-  adaptMemberToDatabase
-} from '../utils/memberAdapter';
+import { adaptMemberFromDatabase, adaptMemberToDatabase } from '../utils/memberAdapter';
 import { Member, ContentStatus } from '../types';
-
 
 // Define the input type for member data passed from the application
 export interface MemberInput {
@@ -31,7 +27,9 @@ export const membersApi = {
         .order('created_at', { ascending: false });
 
       if (filters?.search) {
-        query = query.or(`name.ilike.%${filters.search}%,title.ilike.%${filters.search}%,bio.ilike.%${filters.search}%`);
+        query = query.or(
+          `name.ilike.%${filters.search}%,title.ilike.%${filters.search}%,bio.ilike.%${filters.search}%`
+        );
       }
 
       const { data, error } = await query;
@@ -43,15 +41,15 @@ export const membersApi = {
       // Log the raw data structure to understand what we're working with
       console.log('[MembersAPI] Raw data structure:', {
         firstItem: data && data.length > 0 ? Object.keys(data[0]) : 'No data',
-        sampleData: data?.slice(0, 1)
+        sampleData: data?.slice(0, 1),
       });
-      
+
       // Ensure we have data to adapt
       if (!data || data.length === 0) {
         console.log('[MembersAPI] No data to adapt, returning empty array');
         return [];
       }
-      
+
       // Directly adapt the data without using helper functions that might be causing issues
       const adapted = data.map(item => {
         // Create a basic member object with required fields
@@ -70,15 +68,15 @@ export const membersApi = {
           joinDate: item.created_at || new Date().toISOString(),
           // Add any other fields that might be needed
         };
-        
+
         return member;
       });
-      
+
       console.log('[MembersAPI] Adapted members:', {
         count: adapted.length,
-        sample: adapted.slice(0, 2)
+        sample: adapted.slice(0, 2),
       });
-      
+
       return adapted;
     } catch (error) {
       handleSupabaseError(error, 'fetching members');
@@ -100,7 +98,7 @@ export const membersApi = {
         handleSupabaseError(error, 'fetching member by id');
         return null;
       }
-      
+
       return data ? adaptMemberFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'fetching member by id');
@@ -120,12 +118,12 @@ export const membersApi = {
         social: memberData.social,
         intro: memberData.intro,
         status: memberData.status,
-        featured: memberData.featured
+        featured: memberData.featured,
       };
-      
+
       // Convert to the appropriate format for Supabase
       const supabaseData = adaptMemberToDatabase(memberWithCorrectFormat);
-      
+
       // Create object with correct structure for Supabase insert
       const insertData = {
         name: supabaseData.name || memberData.name, // name is required
@@ -136,20 +134,16 @@ export const membersApi = {
         website: supabaseData.website,
         intro: (supabaseData as any).intro,
         status: supabaseData.status || 'draft',
-        featured: supabaseData.featured
+        featured: supabaseData.featured,
       };
-      
-      const { data, error } = await supabase
-        .from('members')
-        .insert(insertData)
-        .select()
-        .single();
+
+      const { data, error } = await supabase.from('members').insert(insertData).select().single();
 
       if (error) {
         handleSupabaseError(error, 'creating member');
         return null;
       }
-      
+
       return data ? adaptMemberFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating member');
@@ -170,10 +164,10 @@ export const membersApi = {
       if (memberData.intro !== undefined) memberWithCorrectFormat.intro = memberData.intro;
       if (memberData.status !== undefined) memberWithCorrectFormat.status = memberData.status;
       if (memberData.featured !== undefined) memberWithCorrectFormat.featured = memberData.featured;
-      
+
       // Convert to the appropriate format for Supabase
       const supabaseData = adaptMemberToDatabase(memberWithCorrectFormat);
-      
+
       // Create object with correct structure for Supabase update
       const updateData: Record<string, string | boolean | null | undefined> = {};
       if (supabaseData.name !== undefined) updateData.name = supabaseData.name;
@@ -185,19 +179,14 @@ export const membersApi = {
       if ((supabaseData as any).intro !== undefined) (updateData as any).intro = (supabaseData as any).intro;
       if (supabaseData.status !== undefined) updateData.status = supabaseData.status;
       if (supabaseData.featured !== undefined) updateData.featured = supabaseData.featured;
-      
-      const { data, error } = await supabase
-        .from('members')
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+
+      const { data, error } = await supabase.from('members').update(updateData).eq('id', id).select().single();
 
       if (error) {
         handleSupabaseError(error, 'updating member');
         return null;
       }
-      
+
       return data ? adaptMemberFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'updating member');
@@ -207,10 +196,7 @@ export const membersApi = {
 
   async delete(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('members')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('members').delete().eq('id', id);
 
       if (error) {
         handleSupabaseError(error, 'deleting member');
@@ -221,5 +207,5 @@ export const membersApi = {
       handleSupabaseError(error, 'deleting member');
       return false;
     }
-  }
+  },
 };

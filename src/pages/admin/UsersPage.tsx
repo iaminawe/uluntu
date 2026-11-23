@@ -24,7 +24,7 @@ import {
   Phone,
   Globe,
   Save,
-  X
+  X,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -70,7 +70,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
     linkedin: user.member_profile?.linkedin || '',
     twitter: user.member_profile?.twitter || '',
     status: user.member_profile?.status || 'draft',
-    featured: user.member_profile?.featured || false
+    featured: user.member_profile?.featured || false,
   });
 
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set(user.roles));
@@ -81,17 +81,17 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
 
   const { data: availableRoles } = useQuery({
     queryKey: ['admin-roles'],
-    queryFn: () => adminRolesApi.getRoles()
+    queryFn: () => adminRolesApi.getRoles(),
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       await onSave(user.user_id, {
         profile: formData,
-        roles: Array.from(selectedRoles)
+        roles: Array.from(selectedRoles),
       });
       onClose();
     } catch (error) {
@@ -118,13 +118,15 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
           <h2 className="text-2xl font-bold text-white">Edit User Profile</h2>
           <p className="text-blue-100 text-sm mt-1">{user.email}</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Account Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b pb-2">Account Information</h3>
-              
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b pb-2">
+                Account Information
+              </h3>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
                 <input
@@ -134,7 +136,9 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
                   readOnly
                   disabled
                 />
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed here - managed by authentication system</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Email cannot be changed here - managed by authentication system
+                </p>
               </div>
 
               <div>
@@ -142,7 +146,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -152,16 +156,18 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
                 <input
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profile Status</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Profile Status
+                </label>
                 <select
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  onChange={e => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value="draft">Draft (Private)</option>
@@ -173,14 +179,16 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
 
             {/* Profile Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b pb-2">Profile Information</h3>
-              
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b pb-2">
+                Profile Information
+              </h3>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Job Title</label>
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -190,7 +198,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
                 <input
                   type="text"
                   value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  onChange={e => setFormData({ ...formData, company: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -200,7 +208,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
                 <input
                   type="text"
                   value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  onChange={e => setFormData({ ...formData, location: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -210,7 +218,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
                 <input
                   type="url"
                   value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  onChange={e => setFormData({ ...formData, website: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -222,7 +230,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bio</label>
             <textarea
               value={formData.bio}
-              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+              onChange={e => setFormData({ ...formData, bio: e.target.value })}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
@@ -235,7 +243,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
               <input
                 type="url"
                 value={formData.linkedin}
-                onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                onChange={e => setFormData({ ...formData, linkedin: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
@@ -245,7 +253,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
               <input
                 type="text"
                 value={formData.twitter}
-                onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
+                onChange={e => setFormData({ ...formData, twitter: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
@@ -257,7 +265,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
               <input
                 type="checkbox"
                 checked={formData.featured}
-                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                onChange={e => setFormData({ ...formData, featured: e.target.checked })}
                 className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Featured Member</span>
@@ -267,17 +275,20 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
           {/* Role Assignment */}
           {canEditRoles && (
             <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Role Assignment {isSuperAdmin && <span className="text-sm font-normal text-blue-600">(Super Admin)</span>}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                Role Assignment{' '}
+                {isSuperAdmin && <span className="text-sm font-normal text-blue-600">(Super Admin)</span>}
+              </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {availableRoles?.map(role => {
                   const hasRole = selectedRoles.has(role.id);
                   const canToggleRole = isSuperAdmin || role.id !== 'superadmin';
-                  
+
                   return (
                     <label
                       key={role.id}
                       className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                        hasRole 
+                        hasRole
                           ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-700'
                           : 'bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600'
                       } ${!canToggleRole ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-600'}`}
@@ -300,9 +311,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, cu
                 })}
               </div>
               {!isSuperAdmin && (
-                <p className="text-xs text-gray-500 mt-2">
-                  Note: Only Super Admins can assign the Super Admin role
-                </p>
+                <p className="text-xs text-gray-500 mt-2">Note: Only Super Admins can assign the Super Admin role</p>
               )}
             </div>
           )}
@@ -346,26 +355,26 @@ const UsersPage: React.FC = () => {
     queryKey: ['current-user-roles', currentUser?.id],
     queryFn: async () => {
       if (!currentUser?.id) return [];
-      const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', currentUser.id);
+      const { data } = await supabase.from('user_roles').select('role').eq('user_id', currentUser.id);
       return data?.map(r => r.role) || [];
     },
-    enabled: !!currentUser?.id
+    enabled: !!currentUser?.id,
   });
 
   const isSuperAdmin = currentUserRoles.includes('superadmin');
   const isAdmin = currentUserRoles.includes('admin') || isSuperAdmin;
 
   // Fetch users with their roles using the proper database function
-  const { data: users, isLoading, refetch } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['admin-users', searchTerm, selectedRole],
     queryFn: async () => {
       try {
         // First try the get_admin_users function
-        const { data: adminUsersData, error: functionError } = await supabase
-          .rpc('get_admin_users');
+        const { data: adminUsersData, error: functionError } = await supabase.rpc('get_admin_users');
 
         if (functionError) {
           console.warn('Database function failed:', functionError);
@@ -373,41 +382,41 @@ const UsersPage: React.FC = () => {
         }
 
         // Convert to our interface format
-        let usersArray: AdminUser[] = adminUsersData?.map(user => ({
-          user_id: user.user_id,
-          email: user.email,
-          name: user.name,
-          created_at: user.created_at,
-          last_sign_in_at: user.last_sign_in_at,
-          roles: user.roles || []
-        })) || [];
+        let usersArray: AdminUser[] =
+          adminUsersData?.map(user => ({
+            user_id: user.user_id,
+            email: user.email,
+            name: user.name,
+            created_at: user.created_at,
+            last_sign_in_at: user.last_sign_in_at,
+            roles: user.roles || [],
+          })) || [];
 
         // Get member profiles for each user
         const userIds = usersArray.map(u => u.user_id);
         if (userIds.length > 0) {
-          const { data: memberProfiles } = await supabase
-            .from('members')
-            .select('*')
-            .in('user_id', userIds);
+          const { data: memberProfiles } = await supabase.from('members').select('*').in('user_id', userIds);
 
           // Attach member profiles
           usersArray = usersArray.map(user => {
             const profile = memberProfiles?.find(p => p.user_id === user.user_id);
             return {
               ...user,
-              member_profile: profile ? {
-                id: profile.id,
-                location: profile.location,
-                title: profile.title,
-                company: profile.company,
-                bio: profile.bio,
-                phone: profile.phone,
-                website: profile.website,
-                linkedin: profile.linkedin,
-                twitter: profile.twitter,
-                status: profile.status,
-                featured: profile.featured
-              } : undefined
+              member_profile: profile
+                ? {
+                    id: profile.id,
+                    location: profile.location,
+                    title: profile.title,
+                    company: profile.company,
+                    bio: profile.bio,
+                    phone: profile.phone,
+                    website: profile.website,
+                    linkedin: profile.linkedin,
+                    twitter: profile.twitter,
+                    status: profile.status,
+                    featured: profile.featured,
+                  }
+                : undefined,
             };
           });
         }
@@ -416,18 +425,17 @@ const UsersPage: React.FC = () => {
         let filteredUsers = usersArray;
 
         if (searchTerm) {
-          filteredUsers = filteredUsers.filter(user =>
-            user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.member_profile?.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.member_profile?.location?.toLowerCase().includes(searchTerm.toLowerCase())
+          filteredUsers = filteredUsers.filter(
+            user =>
+              user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              user.member_profile?.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              user.member_profile?.location?.toLowerCase().includes(searchTerm.toLowerCase())
           );
         }
 
         if (selectedRole !== 'all') {
-          filteredUsers = filteredUsers.filter(user =>
-            user.roles.includes(selectedRole)
-          );
+          filteredUsers = filteredUsers.filter(user => user.roles.includes(selectedRole));
         }
 
         return filteredUsers;
@@ -437,24 +445,23 @@ const UsersPage: React.FC = () => {
         return [];
       }
     },
-    enabled: isAdmin
+    enabled: isAdmin,
   });
 
   // Fetch available roles
   const { data: roles } = useQuery({
     queryKey: ['admin-roles'],
-    queryFn: () => adminRolesApi.getRoles()
+    queryFn: () => adminRolesApi.getRoles(),
   });
 
   // Save user changes (profile + roles)
   const saveUserMutation = useMutation({
     mutationFn: async ({ userId, updates }: { userId: string; updates: { profile: any; roles: string[] } }) => {
       const { profile, roles } = updates;
-      
+
       // Update member profile
-      const { error: profileError } = await supabase
-        .from('members')
-        .upsert({
+      const { error: profileError } = await supabase.from('members').upsert(
+        {
           user_id: userId,
           name: profile.name,
           location: profile.location,
@@ -467,40 +474,35 @@ const UsersPage: React.FC = () => {
           twitter: profile.twitter,
           status: profile.status,
           featured: profile.featured,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id'
-        });
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'user_id',
+        }
+      );
 
       if (profileError) throw profileError;
 
       // Update user roles if user has permission
       if (canEditRoles && currentUser?.id !== userId) {
         // Get current roles
-        const { data: currentRolesData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', userId);
-        
+        const { data: currentRolesData } = await supabase.from('user_roles').select('role').eq('user_id', userId);
+
         const currentRoles = currentRolesData?.map(r => r.role) || [];
-        
+
         // Find roles to add and remove
         const rolesToAdd = roles.filter(r => !currentRoles.includes(r));
         const rolesToRemove = currentRoles.filter(r => !roles.includes(r));
-        
+
         // Only allow superadmin role changes if current user is superadmin
         const filteredRolesToAdd = rolesToAdd.filter(r => r !== 'superadmin' || isSuperAdmin);
         const filteredRolesToRemove = rolesToRemove.filter(r => r !== 'superadmin' || isSuperAdmin);
-        
+
         // Remove old roles
         if (filteredRolesToRemove.length > 0) {
-          await supabase
-            .from('user_roles')
-            .delete()
-            .eq('user_id', userId)
-            .in('role', filteredRolesToRemove);
+          await supabase.from('user_roles').delete().eq('user_id', userId).in('role', filteredRolesToRemove);
         }
-        
+
         // Add new roles
         if (filteredRolesToAdd.length > 0) {
           await supabase
@@ -514,10 +516,10 @@ const UsersPage: React.FC = () => {
       toast.success('User updated successfully');
       setEditingUser(null);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to update user:', error);
       toast.error('Failed to update user');
-    }
+    },
   });
 
   const canEditRoles = isAdmin;
@@ -529,13 +531,15 @@ const UsersPage: React.FC = () => {
       if (roleId === 'superadmin' && !isSuperAdmin) {
         throw new Error('Only Super Admins can assign Super Admin role');
       }
-      
-      const insertData = userIds.map(userId => ({ user_id: userId, role: roleId, created_at: new Date().toISOString() }));
-      
-      const { error } = await supabase
-        .from('user_roles')
-        .insert(insertData);
-      
+
+      const insertData = userIds.map(userId => ({
+        user_id: userId,
+        role: roleId,
+        created_at: new Date().toISOString(),
+      }));
+
+      const { error } = await supabase.from('user_roles').insert(insertData);
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -547,7 +551,7 @@ const UsersPage: React.FC = () => {
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to assign roles');
-    }
+    },
   });
 
   // Handle user selection
@@ -575,7 +579,7 @@ const UsersPage: React.FC = () => {
     if (bulkActionRole && selectedUsers.size > 0) {
       bulkAssignRoleMutation.mutate({
         userIds: Array.from(selectedUsers),
-        roleId: bulkActionRole
+        roleId: bulkActionRole,
       });
     }
   };
@@ -608,7 +612,8 @@ const UsersPage: React.FC = () => {
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">User Management
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            User Management
             {isSuperAdmin && <span className="text-sm font-normal text-blue-600 ml-2">(Super Admin)</span>}
           </h1>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -625,18 +630,20 @@ const UsersPage: React.FC = () => {
                 type="text"
                 placeholder="Search users by email, name, company, or location..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
             <select
               value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value)}
+              onChange={e => setSelectedRole(e.target.value)}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 dark:focus:ring-blue-500/20"
             >
               <option value="all">All Roles</option>
               {roles?.map(role => (
-                <option key={role.id} value={role.id}>{role.name}</option>
+                <option key={role.id} value={role.id}>
+                  {role.name}
+                </option>
               ))}
             </select>
             {selectedUsers.size > 0 && (
@@ -660,15 +667,18 @@ const UsersPage: React.FC = () => {
                   </span>
                   <select
                     value={bulkActionRole}
-                    onChange={(e) => setBulkActionRole(e.target.value)}
+                    onChange={e => setBulkActionRole(e.target.value)}
                     className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 dark:focus:ring-blue-500/20"
                   >
                     <option value="">Select role to assign</option>
-                    {roles?.filter(role => role.id !== 'superadmin' || isSuperAdmin).map(role => (
-                      <option key={role.id} value={role.id}>{role.name}
-                        {role.id === 'superadmin' && !isSuperAdmin ? ' (Not Available)' : ''}
-                      </option>
-                    ))}
+                    {roles
+                      ?.filter(role => role.id !== 'superadmin' || isSuperAdmin)
+                      .map(role => (
+                        <option key={role.id} value={role.id}>
+                          {role.name}
+                          {role.id === 'superadmin' && !isSuperAdmin ? ' (Not Available)' : ''}
+                        </option>
+                      ))}
                   </select>
                   <button
                     onClick={handleBulkAssign}
@@ -702,7 +712,7 @@ const UsersPage: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={(users?.length ?? 0) > 0 && selectedUsers.size === (users?.length ?? 0)}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    onChange={e => handleSelectAll(e.target.checked)}
                     className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                   />
                 </th>
@@ -751,12 +761,15 @@ const UsersPage: React.FC = () => {
                 users?.map(user => {
                   const profile = user.member_profile;
                   return (
-                    <tr key={user.user_id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <tr
+                      key={user.user_id}
+                      className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input
                           type="checkbox"
                           checked={selectedUsers.has(user.user_id)}
-                          onChange={(e) => handleUserSelect(user.user_id, e.target.checked)}
+                          onChange={e => handleUserSelect(user.user_id, e.target.checked)}
                           className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                         />
                       </td>
@@ -768,14 +781,8 @@ const UsersPage: React.FC = () => {
                             </div>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                              {user.email}
-                            </div>
-                            {user.name && (
-                              <div className="text-sm text-gray-500 dark:text-gray-400">
-                                {user.name}
-                              </div>
-                            )}
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.email}</div>
+                            {user.name && <div className="text-sm text-gray-500 dark:text-gray-400">{user.name}</div>}
                           </div>
                         </div>
                       </td>
@@ -797,11 +804,11 @@ const UsersPage: React.FC = () => {
                               <span
                                 key={roleId}
                                 className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                  roleId === 'superadmin' 
+                                  roleId === 'superadmin'
                                     ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
                                     : roleId === 'admin'
-                                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
-                                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                                      ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
+                                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                                 }`}
                               >
                                 {role?.name || roleId}
@@ -809,19 +816,19 @@ const UsersPage: React.FC = () => {
                               </span>
                             );
                           })}
-                          {user.roles.length === 0 && (
-                            <span className="text-xs text-gray-400 italic">No roles</span>
-                          )}
+                          {user.roles.length === 0 && <span className="text-xs text-gray-400 italic">No roles</span>}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                          profile?.status === 'published'
-                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                            : profile?.status === 'archived'
-                            ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                            : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            profile?.status === 'published'
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                              : profile?.status === 'archived'
+                                ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+                                : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                          }`}
+                        >
                           {profile?.status === 'published' && <CheckCircle className="h-3 w-3 mr-1" />}
                           {profile?.status === 'archived' && <Ban className="h-3 w-3 mr-1" />}
                           {profile?.status || 'Draft'}

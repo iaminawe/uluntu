@@ -46,7 +46,7 @@ describe('MenuApi', () => {
     featured: false,
     createdAt: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
-    children: []
+    children: [],
   };
 
   describe('getAll', () => {
@@ -55,11 +55,11 @@ describe('MenuApi', () => {
         select: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockSupabase.from.mockReturnValue(mockQuery as any);
       mockQuery.select.mockResolvedValue({
         data: [mockMenuItem],
-        error: null
+        error: null,
       });
 
       const result = await menuApi.getAll();
@@ -75,11 +75,11 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockSupabase.from.mockReturnValue(mockQuery as any);
       mockQuery.select.mockResolvedValue({
         data: [mockMenuItem],
-        error: null
+        error: null,
       });
 
       await menuApi.getAll({ menu_type: 'main' });
@@ -93,11 +93,11 @@ describe('MenuApi', () => {
         in: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockSupabase.from.mockReturnValue(mockQuery as any);
       mockQuery.select.mockResolvedValue({
         data: [mockMenuItem],
-        error: null
+        error: null,
       });
 
       await menuApi.getAll({ menu_type: ['main', 'footer'] });
@@ -111,11 +111,11 @@ describe('MenuApi', () => {
         or: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockSupabase.from.mockReturnValue(mockQuery as any);
       mockQuery.select.mockResolvedValue({
         data: [mockMenuItem],
-        error: null
+        error: null,
       });
 
       await menuApi.getAll({ search: 'test' });
@@ -131,10 +131,10 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: mockMenuItem,
-          error: null
-        })
+          error: null,
+        }),
       };
-      
+
       mockSupabase.from.mockReturnValue(mockQuery as any);
 
       const result = await menuApi.getById('123e4567-e89b-12d3-a456-426614174000');
@@ -150,10 +150,10 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: null,
-          error: { code: 'PGRST116' }
-        })
+          error: { code: 'PGRST116' },
+        }),
       };
-      
+
       mockSupabase.from.mockReturnValue(mockQuery as any);
 
       const result = await menuApi.getById('non-existent-id');
@@ -171,7 +171,7 @@ describe('MenuApi', () => {
       is_enabled: true,
       target: '_self',
       visibility: 'public',
-      is_external: false
+      is_external: false,
     };
 
     it('should create a new menu item with valid input', async () => {
@@ -182,10 +182,10 @@ describe('MenuApi', () => {
         is: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockGetAllQuery.select.mockResolvedValue({
         data: [],
-        error: null
+        error: null,
       });
 
       const mockCreateQuery = {
@@ -193,8 +193,8 @@ describe('MenuApi', () => {
         select: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: { ...mockMenuItem, ...validMenuInput },
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabase.from
@@ -211,7 +211,7 @@ describe('MenuApi', () => {
     it('should throw error for invalid URL format', async () => {
       const invalidInput: MenuItemInput = {
         ...validMenuInput,
-        url: 'invalid-url-format'
+        url: 'invalid-url-format',
       };
 
       await expect(menuApi.create(invalidInput)).rejects.toThrow(MenuApiError);
@@ -221,7 +221,7 @@ describe('MenuApi', () => {
       const invalidInput = {
         title: '', // Empty title should fail validation
         url: '/test',
-        menu_type: 'main'
+        menu_type: 'main',
       } as MenuItemInput;
 
       await expect(menuApi.create(invalidInput)).rejects.toThrow();
@@ -236,8 +236,8 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: mockMenuItem,
-          error: null
-        })
+          error: null,
+        }),
       };
 
       const mockUpdateQuery = {
@@ -246,8 +246,8 @@ describe('MenuApi', () => {
         select: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: { ...mockMenuItem, title: 'Updated Title' },
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabase.from
@@ -266,8 +266,8 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: null,
-          error: { code: 'PGRST116' }
-        })
+          error: { code: 'PGRST116' },
+        }),
       };
 
       mockSupabase.from.mockReturnValue(mockGetByIdQuery as any);
@@ -282,8 +282,8 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: mockMenuItem,
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabase.from.mockReturnValue(mockGetByIdQuery as any);
@@ -300,17 +300,17 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockGetAllQuery.select.mockResolvedValue({
         data: [],
-        error: null
+        error: null,
       });
 
       const mockDeleteQuery = {
         delete: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabase.from
@@ -330,10 +330,10 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockGetAllQuery.select.mockResolvedValue({
         data: [{ ...mockMenuItem, parent_id: mockMenuItem.id }],
-        error: null
+        error: null,
       });
 
       mockSupabase.from.mockReturnValue(mockGetAllQuery as any);
@@ -346,14 +346,14 @@ describe('MenuApi', () => {
     it('should reorder multiple menu items', async () => {
       const reorderData = [
         { id: '123e4567-e89b-12d3-a456-426614174001', sort_order: 200 },
-        { id: '123e4567-e89b-12d3-a456-426614174002', sort_order: 100 }
+        { id: '123e4567-e89b-12d3-a456-426614174002', sort_order: 100 },
       ];
 
       const mockUpdateQuery = {
         update: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabase.from.mockReturnValue(mockUpdateQuery as any);
@@ -365,9 +365,7 @@ describe('MenuApi', () => {
     });
 
     it('should validate reorder data using Zod schema', async () => {
-      const invalidData = [
-        { id: 'invalid-uuid', sort_order: 100 }
-      ];
+      const invalidData = [{ id: 'invalid-uuid', sort_order: 100 }];
 
       await expect(menuApi.bulkReorder(invalidData)).rejects.toThrow();
     });
@@ -377,14 +375,14 @@ describe('MenuApi', () => {
     it('should toggle enabled status for multiple items', async () => {
       const toggleData = [
         { id: '123e4567-e89b-12d3-a456-426614174001', is_enabled: false },
-        { id: '123e4567-e89b-12d3-a456-426614174002', is_enabled: true }
+        { id: '123e4567-e89b-12d3-a456-426614174002', is_enabled: true },
       ];
 
       const mockUpdateQuery = {
         update: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabase.from.mockReturnValue(mockUpdateQuery as any);
@@ -403,11 +401,11 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockSupabase.from.mockReturnValue(mockQuery as any);
       mockQuery.select.mockResolvedValue({
         data: [mockMenuItem],
-        error: null
+        error: null,
       });
 
       const result = await menuApi.getByType('main');
@@ -422,11 +420,11 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockSupabase.from.mockReturnValue(mockQuery as any);
       mockQuery.select.mockResolvedValue({
         data: [mockMenuItem],
-        error: null
+        error: null,
       });
 
       await menuApi.getByType('main', { includeDisabled: false });
@@ -442,12 +440,12 @@ describe('MenuApi', () => {
         select: jest.fn().mockResolvedValue({
           data: [
             { menu_type: 'main', is_enabled: true, visibility: 'public' },
-            { menu_type: 'footer', is_enabled: false, visibility: 'authenticated' }
+            { menu_type: 'footer', is_enabled: false, visibility: 'authenticated' },
           ],
-          error: null
-        })
+          error: null,
+        }),
       };
-      
+
       mockSupabase.from.mockReturnValue(mockQuery as any);
 
       const result = await menuApi.getStats();
@@ -456,7 +454,7 @@ describe('MenuApi', () => {
         total_items: 2,
         enabled_items: 1,
         by_type: { main: 1, footer: 1, mobile: 0, admin: 0 },
-        by_visibility: { public: 1, authenticated: 1, admin: 0, role_based: 0 }
+        by_visibility: { public: 1, authenticated: 1, admin: 0, role_based: 0 },
       });
     });
   });
@@ -469,8 +467,8 @@ describe('MenuApi', () => {
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: mockMenuItem,
-          error: null
-        })
+          error: null,
+        }),
       };
 
       // Mock create operation
@@ -480,10 +478,10 @@ describe('MenuApi', () => {
         is: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
       };
-      
+
       mockGetAllQuery.select.mockResolvedValue({
         data: [],
-        error: null
+        error: null,
       });
 
       const mockCreateQuery = {
@@ -491,8 +489,8 @@ describe('MenuApi', () => {
         select: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: { ...mockMenuItem, title: 'Test Menu Item (Copy)' },
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabase.from
@@ -516,7 +514,7 @@ describe('MenuApi', () => {
         canRead: true,
         canWrite: false,
         canDelete: false,
-        canManageAll: false
+        canManageAll: false,
       });
     });
   });
@@ -524,21 +522,21 @@ describe('MenuApi', () => {
   describe('URL validation', () => {
     it('should accept valid relative URLs', () => {
       const { validateMenuItemUrl } = require('../menuAdapter');
-      
+
       const result = validateMenuItemUrl('/about');
       expect(result.isValid).toBe(true);
     });
 
     it('should accept valid absolute URLs', () => {
       const { validateMenuItemUrl } = require('../menuAdapter');
-      
+
       const result = validateMenuItemUrl('https://example.com');
       expect(result.isValid).toBe(true);
     });
 
     it('should reject invalid URLs', () => {
       const { validateMenuItemUrl } = require('../menuAdapter');
-      
+
       const result = validateMenuItemUrl('invalid-url');
       expect(result.isValid).toBe(false);
       expect(result.error).toBeTruthy();

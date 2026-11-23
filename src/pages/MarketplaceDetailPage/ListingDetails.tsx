@@ -7,26 +7,18 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, getTypeIcon, o
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
       <div className="relative">
         {listing.images && listing.images.length > 0 && (
-          <img
-            src={listing.images[0]}
-            alt={listing.title}
-            className="w-full h-72 object-cover"
-          />
+          <img src={listing.images[0]} alt={listing.title} className="w-full h-72 object-cover" />
         )}
         <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg">
           ${listing.price.toLocaleString()}
         </div>
       </div>
-      
+
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-          {listing.title}
-        </h1>
-        
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{listing.title}</h1>
+
         <div className="flex items-center text-orange-500 mb-4">
-          <div className="flex items-center mr-4">
-            {getTypeIcon(listing.type)}
-          </div>
+          <div className="flex items-center mr-4">{getTypeIcon(listing.type)}</div>
         </div>
 
         <div className="space-y-4 mb-6">
@@ -57,7 +49,11 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, getTypeIcon, o
                 </ul>
               );
             }
-            return <p key={index} className="mb-4">{paragraph}</p>;
+            return (
+              <p key={index} className="mb-4">
+                {paragraph}
+              </p>
+            );
           })}
         </div>
 

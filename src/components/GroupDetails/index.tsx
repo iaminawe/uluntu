@@ -18,23 +18,14 @@ const GroupDetails = ({ groupId: _groupId }: GroupDetailsProps) => {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <GroupHeader group={group} />
       <GroupContent group={group} />
-      
+
       {/* Like and Comment Section */}
       <div className="mt-8 bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
         <div className="flex items-center gap-4 mb-6">
-          <LikeButton
-            entityType="group"
-            entityId={group.id.toString()}
-            initialLikeCount={group.like_count || 0}
-          />
+          <LikeButton entityType="group" entityId={group.id.toString()} initialLikeCount={group.like_count || 0} />
         </div>
-        
-        <CommentsList
-          entityType="group"
-          entityId={group.id.toString()}
-          showToggle
-          defaultExpanded={false}
-        />
+
+        <CommentsList entityType="group" entityId={group.id.toString()} showToggle defaultExpanded={false} />
       </div>
     </div>
   );

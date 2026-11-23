@@ -10,12 +10,7 @@ interface ComposeMessageModalProps {
   onClose: () => void;
 }
 
-export function ComposeMessageModal({
-  recipientId,
-  recipientName,
-  isOpen,
-  onClose
-}: ComposeMessageModalProps) {
+export function ComposeMessageModal({ recipientId, recipientName, isOpen, onClose }: ComposeMessageModalProps) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -25,7 +20,7 @@ export function ComposeMessageModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!message.trim()) {
       setError('Please enter a message');
       return;
@@ -36,9 +31,9 @@ export function ComposeMessageModal({
       const conversation = await createConversation.mutateAsync({
         type: 'direct',
         participant_ids: [recipientId],
-        initial_message: message.trim()
+        initial_message: message.trim(),
       });
-      
+
       // Navigate to messages page with the new conversation selected
       navigate(`/messages?conversation=${conversation.id}`);
       onClose();
@@ -57,20 +52,15 @@ export function ComposeMessageModal({
   return (
     <>
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
-        onClick={handleClose}
-      />
-      
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity" onClick={handleClose} />
+
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden">
           {/* Header */}
           <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-                New Message to {recipientName}
-              </h2>
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">New Message to {recipientName}</h2>
               <button
                 onClick={handleClose}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
@@ -83,26 +73,19 @@ export function ComposeMessageModal({
           {/* Body */}
           <form onSubmit={handleSubmit} className="p-6">
             <div className="mb-4">
-              <label 
-                htmlFor="message" 
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
-              >
+              <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Message
               </label>
               <textarea
                 id="message"
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={e => setMessage(e.target.value)}
                 placeholder={`Write your message to ${recipientName}...`}
                 className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white resize-none"
                 rows={6}
                 autoFocus
               />
-              {error && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-                  {error}
-                </p>
-              )}
+              {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
             </div>
 
             <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">

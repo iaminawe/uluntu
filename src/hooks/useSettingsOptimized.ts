@@ -1,10 +1,5 @@
 import { useCallback } from 'react';
-import type {
-  PublicSettings,
-  FeatureKey,
-  UseSettingsReturn,
-  UseFeatureToggleReturn,
-} from '@/types/settings';
+import type { PublicSettings, FeatureKey, UseSettingsReturn, UseFeatureToggleReturn } from '@/types/settings';
 
 /**
  * Optimized hook for accessing public settings - returns defaults immediately
@@ -64,10 +59,7 @@ export function useEnabledFeatures() {
     partners: true,
   };
 
-  const isFeatureEnabled = useCallback(
-    (feature: FeatureKey) => features[feature] || true,
-    []
-  );
+  const isFeatureEnabled = useCallback((feature: FeatureKey) => features[feature] || true, []);
 
   return {
     features,

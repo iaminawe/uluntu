@@ -1,11 +1,7 @@
-import {
-  createSlice,
-  PayloadAction
-} from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Utility function for array comparison
-const arrayEquals = (a: string[], b: string[]) => 
-  a.length === b.length && a.every((val, idx) => val === b[idx]);
+const arrayEquals = (a: string[], b: string[]) => a.length === b.length && a.every((val, idx) => val === b[idx]);
 
 export interface User {
   id: string;
@@ -42,8 +38,8 @@ const initialState: AuthState = {
     list: [],
     isAdmin: false,
     loading: false,
-    error: null
-  }
+    error: null,
+  },
 };
 
 const authSlice = createSlice({
@@ -80,7 +76,7 @@ const authSlice = createSlice({
     updateSession(state, action: PayloadAction<Session | null>) {
       const prevAuthenticated = state.status === 'authenticated';
       state.session = action.payload;
-      
+
       // Only update status if authentication state changes
       if (action.payload === null && prevAuthenticated) {
         state.status = 'idle';
@@ -114,8 +110,8 @@ const authSlice = createSlice({
     resetAuthState(state) {
       console.log('AUTH SLICE: resetAuthState action called, clearing all auth state');
       Object.assign(state, initialState);
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -126,7 +122,7 @@ export const {
   setAuthError,
   setRoles,
   setRolesError,
-  resetAuthState
+  resetAuthState,
 } = authSlice.actions;
 
 // Selectors

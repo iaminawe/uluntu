@@ -1,6 +1,6 @@
 /**
  * Security and Permission Tests for Menu Management
- * 
+ *
  * Tests role-based access control, permission validation,
  * data sanitization, and security vulnerabilities.
  */
@@ -33,9 +33,7 @@ describe('Menu Management Security Tests', () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
   beforeEach(() => {
@@ -53,7 +51,7 @@ describe('Menu Management Security Tests', () => {
     it('should deny access to users without admin roles', async () => {
       mockUseSession.mockReturnValue({ user: { id: 'user-1' } });
       mockUseAppSelector.mockReturnValue({
-        roles: { list: ['user'] } // Non-admin role
+        roles: { list: ['user'] }, // Non-admin role
       });
 
       render(
@@ -74,7 +72,7 @@ describe('Menu Management Security Tests', () => {
     it('should allow access to superadmin users', async () => {
       mockUseSession.mockReturnValue({ user: { id: 'admin-1' } });
       mockUseAppSelector.mockReturnValue({
-        roles: { list: ['superadmin'] }
+        roles: { list: ['superadmin'] },
       });
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue([]);
 
@@ -93,7 +91,7 @@ describe('Menu Management Security Tests', () => {
     it('should allow access to admin users', async () => {
       mockUseSession.mockReturnValue({ user: { id: 'admin-2' } });
       mockUseAppSelector.mockReturnValue({
-        roles: { list: ['admin'] }
+        roles: { list: ['admin'] },
       });
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue([]);
 
@@ -112,7 +110,7 @@ describe('Menu Management Security Tests', () => {
     it('should handle multiple roles correctly', async () => {
       mockUseSession.mockReturnValue({ user: { id: 'multi-role' } });
       mockUseAppSelector.mockReturnValue({
-        roles: { list: ['user', 'editor', 'admin'] }
+        roles: { list: ['user', 'editor', 'admin'] },
       });
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue([]);
 
@@ -131,7 +129,7 @@ describe('Menu Management Security Tests', () => {
     it('should deny access when user has no roles', async () => {
       mockUseSession.mockReturnValue({ user: { id: 'no-roles' } });
       mockUseAppSelector.mockReturnValue({
-        roles: { list: [] }
+        roles: { list: [] },
       });
 
       render(
@@ -148,7 +146,7 @@ describe('Menu Management Security Tests', () => {
     it('should deny access when roles are undefined', async () => {
       mockUseSession.mockReturnValue({ user: { id: 'undefined-roles' } });
       mockUseAppSelector.mockReturnValue({
-        roles: { list: undefined }
+        roles: { list: undefined },
       });
 
       render(
@@ -167,7 +165,7 @@ describe('Menu Management Security Tests', () => {
     it('should deny access to unauthenticated users', async () => {
       mockUseSession.mockReturnValue({ user: null });
       mockUseAppSelector.mockReturnValue({
-        roles: { list: [] }
+        roles: { list: [] },
       });
 
       render(
@@ -182,12 +180,12 @@ describe('Menu Management Security Tests', () => {
     });
 
     it('should handle expired sessions gracefully', async () => {
-      mockUseSession.mockReturnValue({ 
+      mockUseSession.mockReturnValue({
         user: { id: 'expired-session' },
-        error: { message: 'Session expired' }
+        error: { message: 'Session expired' },
       });
       mockUseAppSelector.mockReturnValue({
-        roles: { list: ['admin'] }
+        roles: { list: ['admin'] },
       });
 
       render(
@@ -206,12 +204,12 @@ describe('Menu Management Security Tests', () => {
       const maliciousUser = {
         id: 'hacker-attempt',
         email: '<script>alert("xss")</script>',
-        roles: ['superadmin'] // Trying to inject roles via user object
+        roles: ['superadmin'], // Trying to inject roles via user object
       };
 
       mockUseSession.mockReturnValue({ user: maliciousUser });
       mockUseAppSelector.mockReturnValue({
-        roles: { list: ['user'] } // Actual roles from secure store
+        roles: { list: ['user'] }, // Actual roles from secure store
       });
 
       render(
@@ -259,9 +257,7 @@ describe('Menu Management Security Tests', () => {
         await user.type(titleInput, maliciousTitle);
         await user.type(urlInput, '/safe-url');
 
-        mockMenuManagementAdapter.createMenuItem.mockResolvedValue(
-          createMockMenuItem({ title: maliciousTitle })
-        );
+        mockMenuManagementAdapter.createMenuItem.mockResolvedValue(createMockMenuItem({ title: maliciousTitle }));
 
         await user.click(screen.getByText('Create Menu Item'));
 
@@ -270,7 +266,7 @@ describe('Menu Management Security Tests', () => {
           expect(mockMenuManagementAdapter.createMenuItem).toHaveBeenCalledWith(
             expect.objectContaining({
               title: expect.any(String), // Exact sanitization depends on implementation
-              url: '/safe-url'
+              url: '/safe-url',
             })
           );
         });
@@ -310,7 +306,7 @@ describe('Menu Management Security Tests', () => {
           if (mockMenuManagementAdapter.createMenuItem.mock.calls.length > 0) {
             const lastCall = mockMenuManagementAdapter.createMenuItem.mock.calls.slice(-1)[0];
             const urlParam = lastCall[0].url;
-            
+
             // Should not contain dangerous protocols
             expect(urlParam).not.toMatch(/^(javascript|data|vbscript|file|ftp):/);
           }
@@ -343,9 +339,7 @@ describe('Menu Management Security Tests', () => {
         await user.type(titleInput, injection);
         await user.type(urlInput, '/safe-url');
 
-        mockMenuManagementAdapter.createMenuItem.mockResolvedValue(
-          createMockMenuItem({ title: injection })
-        );
+        mockMenuManagementAdapter.createMenuItem.mockResolvedValue(createMockMenuItem({ title: injection }));
 
         await user.click(screen.getByText('Create Menu Item'));
 
@@ -367,7 +361,7 @@ describe('Menu Management Security Tests', () => {
 
       await user.type(screen.getByPlaceholderText('Menu item title'), 'Role Test');
       await user.type(screen.getByPlaceholderText('/page or https://external-site.com'), '/role-test');
-      
+
       await user.selectOptions(screen.getByDisplayValue('Public'), 'role_based');
 
       // Try to inject admin role
@@ -383,9 +377,7 @@ describe('Menu Management Security Tests', () => {
       await waitFor(() => {
         expect(mockMenuManagementAdapter.createMenuItem).toHaveBeenCalledWith(
           expect.objectContaining({
-            required_roles: expect.arrayContaining([
-              expect.not.stringMatching(/<script>/i)
-            ])
+            required_roles: expect.arrayContaining([expect.not.stringMatching(/<script>/i)]),
           })
         );
       });
@@ -418,12 +410,12 @@ describe('Menu Management Security Tests', () => {
 
         // Should either prevent submission or sanitize the path
         await user.click(screen.getByText('Create Menu Item'));
-        
+
         await waitFor(() => {
           if (mockMenuManagementAdapter.createMenuItem.mock.calls.length > 0) {
             const lastCall = mockMenuManagementAdapter.createMenuItem.mock.calls.slice(-1)[0];
             const urlParam = lastCall[0].url;
-            
+
             // Should not contain path traversal patterns
             expect(urlParam).not.toMatch(/\.\.[\/\\]/);
           }
@@ -444,7 +436,7 @@ describe('Menu Management Security Tests', () => {
       const originalFetch = global.fetch;
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ success: true })
+        json: () => Promise.resolve({ success: true }),
       });
       global.fetch = mockFetch;
 
@@ -458,9 +450,7 @@ describe('Menu Management Security Tests', () => {
       await user.type(screen.getByPlaceholderText('Menu item title'), 'CSRF Test');
       await user.type(screen.getByPlaceholderText('/page or https://external-site.com'), '/csrf-test');
 
-      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(
-        createMockMenuItem({ title: 'CSRF Test' })
-      );
+      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(createMockMenuItem({ title: 'CSRF Test' }));
 
       await user.click(screen.getByText('Create Menu Item'));
 
@@ -477,7 +467,7 @@ describe('Menu Management Security Tests', () => {
       // Simulate CSRF attack
       mockMenuManagementAdapter.createMenuItem.mockRejectedValue({
         message: 'CSRF token mismatch',
-        status: 403
+        status: 403,
       });
 
       render(
@@ -510,7 +500,7 @@ describe('Menu Management Security Tests', () => {
       mockMenuManagementAdapter.getMenuItems.mockRejectedValue({
         message: 'Database connection failed: postgresql://user:password@localhost:5432/db',
         stack: 'Error stack trace with file paths and secrets',
-        query: 'SELECT * FROM menu_items WHERE api_key = "secret123"'
+        query: 'SELECT * FROM menu_items WHERE api_key = "secret123"',
       });
 
       render(
@@ -522,7 +512,7 @@ describe('Menu Management Security Tests', () => {
       await waitFor(() => {
         const errorMessage = screen.getByText(/Error Loading Menu/);
         expect(errorMessage).toBeInTheDocument();
-        
+
         // Should not expose sensitive database information
         expect(screen.queryByText(/postgresql:\/\//)).not.toBeInTheDocument();
         expect(screen.queryByText(/password/)).not.toBeInTheDocument();
@@ -537,7 +527,7 @@ describe('Menu Management Security Tests', () => {
         title: 'Public Menu Item',
         url: '/public',
         description: 'API_KEY=secret123 DB_PASSWORD=supersecret',
-        css_classes: 'background-image: url("data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9YWxlcnQoMSk+");'
+        css_classes: 'background-image: url("data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9YWxlcnQoMSk+");',
       });
 
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue([menuItemWithSensitiveData]);
@@ -551,7 +541,7 @@ describe('Menu Management Security Tests', () => {
       await waitFor(() => {
         // Menu item should be displayed
         expect(screen.getByText('Public Menu Item')).toBeInTheDocument();
-        
+
         // But sensitive data should be filtered or sanitized
         expect(screen.queryByText(/API_KEY/)).not.toBeInTheDocument();
         expect(screen.queryByText(/DB_PASSWORD/)).not.toBeInTheDocument();
@@ -576,7 +566,7 @@ describe('Menu Management Security Tests', () => {
 
       // Simulate rapid clicking
       const refreshButton = screen.getByText('Refresh Data');
-      
+
       // Click rapidly multiple times
       for (let i = 0; i < 10; i++) {
         await user.click(refreshButton);
@@ -596,22 +586,25 @@ describe('Menu Management Security Tests', () => {
       );
 
       const searchInput = screen.getByPlaceholderText('Search menu items...');
-      
+
       // Type rapidly
       await user.type(searchInput, 'rapid typing test');
-      
+
       // Should debounce the search
-      await waitFor(() => {
-        // Exact implementation depends on debounce logic
-        expect(mockMenuManagementAdapter.getMenuItems).toHaveBeenCalled();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          // Exact implementation depends on debounce logic
+          expect(mockMenuManagementAdapter.getMenuItems).toHaveBeenCalled();
+        },
+        { timeout: 1000 }
+      );
     });
   });
 
   describe('Audit Trail and Logging', () => {
     beforeEach(() => {
-      mockUseSession.mockReturnValue({ 
-        user: { id: 'admin-user', email: 'admin@test.com' } 
+      mockUseSession.mockReturnValue({
+        user: { id: 'admin-user', email: 'admin@test.com' },
       });
       mockUseAppSelector.mockReturnValue({ roles: { list: ['admin'] } });
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue([]);
@@ -619,7 +612,7 @@ describe('Menu Management Security Tests', () => {
 
     it('should log security-relevant actions', async () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      
+
       render(
         <TestWrapper>
           <AdminMenuManagementPage />
@@ -630,9 +623,7 @@ describe('Menu Management Security Tests', () => {
       await user.type(screen.getByPlaceholderText('Menu item title'), 'Audit Test');
       await user.type(screen.getByPlaceholderText('/page or https://external-site.com'), '/audit');
 
-      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(
-        createMockMenuItem({ title: 'Audit Test' })
-      );
+      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(createMockMenuItem({ title: 'Audit Test' }));
 
       await user.click(screen.getByText('Create Menu Item'));
 
@@ -647,7 +638,7 @@ describe('Menu Management Security Tests', () => {
 
     it('should not log sensitive information', async () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      
+
       // Attempt to create item with sensitive data
       render(
         <TestWrapper>
@@ -657,24 +648,22 @@ describe('Menu Management Security Tests', () => {
 
       await user.click(screen.getByText('Add Item'));
       await user.type(screen.getByPlaceholderText('Menu item title'), 'Sensitive Item');
-      
+
       // Switch to role-based and add sensitive roles
       await user.selectOptions(screen.getByDisplayValue('Public'), 'role_based');
       await user.type(
-        screen.getByPlaceholderText('admin, superadmin, editor (comma separated)'), 
+        screen.getByPlaceholderText('admin, superadmin, editor (comma separated)'),
         'admin, secret-role, api-key-holder'
       );
 
-      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(
-        createMockMenuItem({ title: 'Sensitive Item' })
-      );
+      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(createMockMenuItem({ title: 'Sensitive Item' }));
 
       await user.click(screen.getByText('Create Menu Item'));
 
       await waitFor(() => {
         if (consoleSpy.mock.calls.length > 0) {
           const loggedData = consoleSpy.mock.calls.flat().join(' ');
-          
+
           // Should not log sensitive role information
           expect(loggedData).not.toContain('secret-role');
           expect(loggedData).not.toContain('api-key-holder');
@@ -700,24 +689,22 @@ describe('Menu Management Security Tests', () => {
       );
 
       await user.click(screen.getByText('Add Item'));
-      
+
       // Try to add CSS with potentially dangerous content
       await user.type(screen.getByPlaceholderText('Menu item title'), 'CSP Test');
       await user.type(screen.getByPlaceholderText('/page or https://external-site.com'), '/csp-test');
-      
+
       const cssInput = screen.getByPlaceholder('Custom CSS classes');
       await user.type(cssInput, 'background: url("javascript:alert(1)");');
 
-      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(
-        createMockMenuItem({ css_classes: 'safe-class' })
-      );
+      mockMenuManagementAdapter.createMenuItem.mockResolvedValue(createMockMenuItem({ css_classes: 'safe-class' }));
 
       await user.click(screen.getByText('Create Menu Item'));
 
       await waitFor(() => {
         expect(mockMenuManagementAdapter.createMenuItem).toHaveBeenCalledWith(
           expect.objectContaining({
-            css_classes: expect.not.stringMatching(/javascript:/i)
+            css_classes: expect.not.stringMatching(/javascript:/i),
           })
         );
       });
@@ -738,7 +725,7 @@ describe('Menu Management Security Tests', () => {
       // Icon selection should be from predefined safe list
       const iconSelect = screen.getByDisplayValue('No Icon');
       const options = iconSelect.querySelectorAll('option');
-      
+
       options.forEach(option => {
         const value = option.getAttribute('value');
         if (value) {

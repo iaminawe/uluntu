@@ -24,14 +24,14 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
   onSetCover,
   showSelection = false,
   size = 'medium',
-  isCover = false
+  isCover = false,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const sizeClasses = {
     small: 'h-32',
     medium: 'h-48',
-    large: 'h-64'
+    large: 'h-64',
   };
 
   const handleSelect = (e: React.MouseEvent) => {
@@ -102,7 +102,7 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
               <Check className="h-4 w-4" />
             </button>
           )}
-          
+
           <div className="flex gap-1 ml-auto">
             {(onDelete || onSetCover) && (
               <div className="relative" ref={menuRef}>
@@ -114,10 +114,12 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
                 >
                   <MoreVertical className="h-4 w-4" />
                 </button>
-                
+
                 {showMenu && (
-                  <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg 
-                                border border-slate-200 dark:border-slate-700 py-1 z-50">
+                  <div
+                    className="absolute right-0 mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg 
+                                border border-slate-200 dark:border-slate-700 py-1 z-50"
+                  >
                     {onSetCover && !isCover && (
                       <button
                         onClick={handleSetCover}
@@ -147,15 +149,11 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
 
         {/* Bottom info */}
         <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-          {photo.title && (
-            <h4 className="text-sm font-medium truncate mb-1">{photo.title}</h4>
-          )}
+          {photo.title && <h4 className="text-sm font-medium truncate mb-1">{photo.title}</h4>}
           <div className="flex items-center justify-between text-xs text-white/80">
             <span>{formatFileSize(photo.file_size)}</span>
             <div className="flex items-center gap-3">
-              {photo.metadata?.camera && (
-                <span className="truncate max-w-[100px]">{photo.metadata.camera}</span>
-              )}
+              {photo.metadata?.camera && <span className="truncate max-w-[100px]">{photo.metadata.camera}</span>}
             </div>
           </div>
         </div>
@@ -167,7 +165,7 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
           <Check className="h-4 w-4" />
         </div>
       )}
-      
+
       {/* Cover indicator */}
       {isCover && (
         <div className="absolute top-2 right-2 p-2 rounded-full bg-yellow-500 text-white" title="Cover Photo">

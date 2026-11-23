@@ -39,10 +39,7 @@ interface DirectMessageButtonProps extends BaseMessageButtonProps {
   onThreadCreated?: (threadId: string) => void;
 }
 
-type MessageButtonProps = 
-  | MarketplaceMessageButtonProps 
-  | OpportunityMessageButtonProps 
-  | DirectMessageButtonProps;
+type MessageButtonProps = MarketplaceMessageButtonProps | OpportunityMessageButtonProps | DirectMessageButtonProps;
 
 /**
  * Smart message button that creates appropriate message threads based on context
@@ -57,7 +54,7 @@ export function MessageButton(props: MessageButtonProps) {
 
   const handleMarketplaceMessage = async () => {
     if (props.type !== 'marketplace') return;
-    
+
     if (!user) {
       toast.error('Please sign in to send messages');
       return;
@@ -75,7 +72,7 @@ export function MessageButton(props: MessageButtonProps) {
         sellerId: props.sellerId,
         buyerId: user.id,
         initialMessage: message,
-        itemPrice: props.itemPrice
+        itemPrice: props.itemPrice,
       });
 
       if (thread) {
@@ -92,7 +89,7 @@ export function MessageButton(props: MessageButtonProps) {
 
   const handleOpportunityMessage = async () => {
     if (props.type !== 'opportunity') return;
-    
+
     if (!user) {
       toast.error('Please sign in to send messages');
       return;
@@ -110,7 +107,7 @@ export function MessageButton(props: MessageButtonProps) {
         recruiterId: props.recruiterId,
         applicantId: user.id,
         initialMessage: message,
-        companyId: props.companyId
+        companyId: props.companyId,
       });
 
       if (thread) {
@@ -127,7 +124,7 @@ export function MessageButton(props: MessageButtonProps) {
 
   const handleDirectMessage = async () => {
     if (props.type !== 'direct') return;
-    
+
     // For direct messages, we'd need a different mutation
     // This is a placeholder for now
     toast('Direct messaging coming soon!');
@@ -212,41 +209,26 @@ export function MessageButton(props: MessageButtonProps) {
         <div className="absolute z-50 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200 right-0 top-0">
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <h3 className="font-medium text-gray-900">
-                {getButtonText()}
-              </h3>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
+              <h3 className="font-medium text-gray-900">{getButtonText()}</h3>
+              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600">
                 ×
               </button>
             </div>
-            
+
             <textarea
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={e => setMessage(e.target.value)}
               placeholder={getPlaceholderText()}
               className="w-full p-3 border border-gray-300 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={4}
               disabled={isLoading}
             />
-            
+
             <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsOpen(false)}
-                disabled={isLoading}
-              >
+              <Button variant="outline" size="sm" onClick={() => setIsOpen(false)} disabled={isLoading}>
                 Cancel
               </Button>
-              <Button
-                variant="default"
-                size="sm"
-                onClick={handleSubmit}
-                disabled={isLoading || !message.trim()}
-              >
+              <Button variant="default" size="sm" onClick={handleSubmit} disabled={isLoading || !message.trim()}>
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

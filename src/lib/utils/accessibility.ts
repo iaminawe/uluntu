@@ -36,7 +36,7 @@ export const ColorUtils = {
    */
   getLuminance(rgb: { r: number; g: number; b: number }): number {
     const { r, g, b } = rgb;
-    const sRGB = [r, g, b].map((val) => {
+    const sRGB = [r, g, b].map(val => {
       val = val / 255;
       return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
     });
@@ -97,9 +97,8 @@ export const ColorUtils = {
     if (!bgRgb || !fgRgb) return foreground;
 
     const bgLuminance = this.getLuminance(bgRgb);
-    const targetLuminance = bgLuminance > 0.5
-      ? (bgLuminance + 0.05) / targetRatio - 0.05
-      : targetRatio * (bgLuminance + 0.05) - 0.05;
+    const targetLuminance =
+      bgLuminance > 0.5 ? (bgLuminance + 0.05) / targetRatio - 0.05 : targetRatio * (bgLuminance + 0.05) - 0.05;
 
     // Adjust foreground color to meet target luminance
     const factor = targetLuminance / this.getLuminance(fgRgb);
@@ -157,7 +156,7 @@ export const KeyboardNav = {
 
     switch (key) {
       case this.KEYS.ARROW_UP:
-      case (horizontal ? this.KEYS.ARROW_LEFT : null):
+      case horizontal ? this.KEYS.ARROW_LEFT : null:
         event.preventDefault();
         newIndex = currentIndex - 1;
         if (newIndex < 0) {
@@ -166,7 +165,7 @@ export const KeyboardNav = {
         break;
 
       case this.KEYS.ARROW_DOWN:
-      case (horizontal ? this.KEYS.ARROW_RIGHT : null):
+      case horizontal ? this.KEYS.ARROW_RIGHT : null:
         event.preventDefault();
         newIndex = currentIndex + 1;
         if (newIndex >= itemCount) {
@@ -376,7 +375,7 @@ export const FocusUtils = {
    */
   isFocusable(element: HTMLElement): boolean {
     if (element.tabIndex >= 0) return true;
-    
+
     const focusableTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'];
     return focusableTags.includes(element.tagName) && !element.hasAttribute('disabled');
   },

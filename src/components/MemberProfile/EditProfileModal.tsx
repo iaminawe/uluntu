@@ -21,9 +21,9 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
     website: member.social?.website || '',
     skills: member.skills?.join(', ') || '',
     employmentStatus: member.employmentStatus,
-    openToVolunteering: member.openToVolunteering
+    openToVolunteering: member.openToVolunteering,
   });
-  
+
   // State for file uploads
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,16 +32,16 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       // Get the current user
       const { user, error: userError } = await getCurrentUser();
-      
+
       if (userError || !user) {
         console.error('Error getting current user:', userError);
         throw new Error('Could not authenticate user');
       }
-      
+
       // Upload profile image if a new one was selected
       let profileImageUrl = formData.image;
       if (profileImageFile) {
@@ -49,14 +49,14 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
         if (error) throw error;
         if (url) profileImageUrl = url;
       }
-      
+
       // Save the updated profile data
       onSave({
         ...formData,
         image: profileImageUrl,
-        skills: formData.skills.split(',').map(skill => skill.trim())
+        skills: formData.skills.split(',').map(skill => skill.trim()),
       });
-      
+
       onClose();
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -76,9 +76,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white dark:bg-slate-800 rounded-lg max-w-2xl w-full p-6 shadow-xl my-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Edit Profile
-          </h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Edit Profile</h2>
           <button
             onClick={onClose}
             className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white"
@@ -91,7 +89,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
           {/* Profile Images Section */}
           <div className="mb-6">
             <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Profile Images</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Profile Image */}
               <div>
@@ -100,7 +98,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
                   id="profileImage"
                   name="profileImage"
                   currentImage={formData.image}
-                  onChange={(file) => {
+                  onChange={file => {
                     setProfileImageFile(file);
                     // If user removes the image, clear the URL
                     if (!file && formData.image) {
@@ -115,14 +113,11 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
               </div>
             </div>
           </div>
-          
+
           <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Profile Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-              >
+              <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Name
               </label>
               <input
@@ -136,10 +131,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
             </div>
 
             <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-              >
+              <label htmlFor="title" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Professional Title
               </label>
               <input
@@ -153,10 +145,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
             </div>
 
             <div>
-              <label
-                htmlFor="location"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-              >
+              <label htmlFor="location" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Location
               </label>
               <input
@@ -170,10 +159,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
             </div>
 
             <div>
-              <label
-                htmlFor="website"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-              >
+              <label htmlFor="website" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Website
               </label>
               <input
@@ -187,10 +173,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
             </div>
 
             <div className="md:col-span-2">
-              <label
-                htmlFor="bio"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-              >
+              <label htmlFor="bio" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Bio
               </label>
               <textarea
@@ -204,10 +187,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
             </div>
 
             <div className="md:col-span-2">
-              <label
-                htmlFor="skills"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-              >
+              <label htmlFor="skills" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Skills (comma separated)
               </label>
               <input
@@ -250,10 +230,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
                 onChange={handleChange}
                 className="h-4 w-4 text-orange-500 focus:ring-orange-400 border-slate-300 rounded"
               />
-              <label
-                htmlFor="openToVolunteering"
-                className="ml-2 block text-sm text-slate-700 dark:text-slate-300"
-              >
+              <label htmlFor="openToVolunteering" className="ml-2 block text-sm text-slate-700 dark:text-slate-300">
                 Available for volunteer opportunities
               </label>
             </div>
@@ -264,7 +241,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
               {submitError}
             </div>
           )}
-          
+
           <div className="flex justify-end space-x-3 mt-6">
             <button
               type="button"
@@ -281,9 +258,25 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
             >
               {isSubmitting ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Saving...
                 </>

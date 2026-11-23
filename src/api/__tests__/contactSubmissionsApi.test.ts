@@ -8,26 +8,26 @@ const adminRolesApi = { checkPermission: jest.fn() };
 class ContactSubmissionsAPI {
   private validateContactData(data: any) {
     const errors: string[] = [];
-    
+
     if (!data.name || data.name.length < 2) {
       errors.push('Name must be at least 2 characters long');
     }
-    
+
     if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       errors.push('Valid email address is required');
     }
-    
+
     if (!data.subject || data.subject.length < 5) {
       errors.push('Subject must be at least 5 characters long');
     }
-    
+
     if (!data.message || data.message.length < 10) {
       errors.push('Message must be at least 10 characters long');
     }
-    
+
     return errors;
   }
-  
+
   private async checkRateLimit(clientInfo?: any) {
     if (clientInfo?.ip_address) {
       // Simulate checking recent submissions from same IP
@@ -35,12 +35,12 @@ class ContactSubmissionsAPI {
         .select('id')
         .eq('ip_address', clientInfo.ip_address)
         .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString());
-      
+
       return data && data.length >= 5;
     }
     return false;
   }
-  
+
   async create(data: any, clientInfo?: any) {
     try {
       // Validate input
@@ -50,10 +50,10 @@ class ContactSubmissionsAPI {
           success: false,
           data: null,
           message: '',
-          error: validationErrors.join('; ')
+          error: validationErrors.join('; '),
         };
       }
-      
+
       // Check rate limiting
       const rateLimited = await this.checkRateLimit(clientInfo);
       if (rateLimited) {
@@ -61,10 +61,10 @@ class ContactSubmissionsAPI {
           success: false,
           data: null,
           message: '',
-          error: 'Too many submissions. Please try again later.'
+          error: 'Too many submissions. Please try again later.',
         };
       }
-      
+
       // Simulate successful creation
       const mockSubmission = {
         id: '123',
@@ -74,23 +74,23 @@ class ContactSubmissionsAPI {
         created_at: '2023-01-01T00:00:00Z',
         updated_at: '2023-01-01T00:00:00Z',
       };
-      
+
       return {
         success: true,
         data: mockSubmission,
         message: 'Contact form submitted successfully',
-        error: null
+        error: null,
       };
     } catch (error) {
       return {
         success: false,
         data: null,
         message: '',
-        error: 'Failed to submit contact form'
+        error: 'Failed to submit contact form',
       };
     }
   }
-  
+
   async list(_filters?: any) {
     // Check admin permissions
     const hasPermission = await adminRolesApi.checkPermission('contact_submissions', 'read');
@@ -99,33 +99,33 @@ class ContactSubmissionsAPI {
         success: false,
         data: null,
         message: '',
-        error: 'Administrative privileges required'
+        error: 'Administrative privileges required',
       };
     }
-    
+
     const mockSubmissions = [
       { id: '1', name: 'John Doe', status: 'new' },
       { id: '2', name: 'Jane Smith', status: 'read' },
     ];
-    
+
     return {
       success: true,
       data: {
         data: mockSubmissions,
-        pagination: { total: 2 }
+        pagination: { total: 2 },
       },
-      error: null
+      error: null,
     };
   }
-  
+
   async getById(id: string) {
     return {
       success: true,
       data: { id, status: 'read' },
-      error: null
+      error: null,
     };
   }
-  
+
   async update(id: string, updates: any) {
     // Check admin permissions
     const hasPermission = await adminRolesApi.checkPermission('contact_submissions', 'update');
@@ -134,27 +134,27 @@ class ContactSubmissionsAPI {
         success: false,
         data: null,
         message: '',
-        error: 'Administrative privileges required'
+        error: 'Administrative privileges required',
       };
     }
-    
+
     return {
       success: true,
       data: { id, ...updates },
       message: 'Contact submission updated successfully',
-      error: null
+      error: null,
     };
   }
-  
+
   async addNote(id: string, content: string) {
     return {
       success: true,
       data: { id: 'note-123', submission_id: id, content },
       message: 'Note added successfully',
-      error: null
+      error: null,
     };
   }
-  
+
   async getStats() {
     return {
       success: true,
@@ -162,21 +162,21 @@ class ContactSubmissionsAPI {
         total: 42,
         by_status: { new: 15, read: 20, resolved: 7 },
         by_priority: { low: 10, medium: 25, high: 7 },
-        recent_activity: []
+        recent_activity: [],
       },
-      error: null
+      error: null,
     };
   }
-  
+
   async export(_filters?: any) {
     return {
       success: true,
       data: [
         ['Name', 'Email', 'Subject'],
         ['John Doe', 'john@example.com', 'Test Subject'],
-        ['Jane Smith', 'jane@example.com', 'Another Subject']
+        ['Jane Smith', 'jane@example.com', 'Another Subject'],
       ],
-      error: null
+      error: null,
     };
   }
 }
@@ -194,7 +194,7 @@ jest.mock('@/lib/supabase', () => ({
       invoke: jest.fn(),
     },
   },
-  handleSupabaseError: jest.fn((error) => {
+  handleSupabaseError: jest.fn(error => {
     throw new Error(error.message || 'Supabase error');
   }),
 }));
@@ -239,10 +239,12 @@ describe('ContactSubmissionsAPI', () => {
         }),
         insert: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
-            single: jest.fn().mockReturnValue(Promise.resolve({
-              data: mockSubmission,
-              error: null,
-            })),
+            single: jest.fn().mockReturnValue(
+              Promise.resolve({
+                data: mockSubmission,
+                error: null,
+              })
+            ),
           }),
         }),
       });
@@ -252,11 +254,13 @@ describe('ContactSubmissionsAPI', () => {
       const result = await api.create(validSubmissionData);
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual(expect.objectContaining({
-        ...validSubmissionData,
-        status: 'new',
-        priority: 'medium'
-      }));
+      expect(result.data).toEqual(
+        expect.objectContaining({
+          ...validSubmissionData,
+          status: 'new',
+          priority: 'medium',
+        })
+      );
       expect(result.message).toBe('Contact form submitted successfully');
     });
 
@@ -284,10 +288,12 @@ describe('ContactSubmissionsAPI', () => {
       mockSupabase.from.mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            gte: jest.fn().mockReturnValue(Promise.resolve({
-              data: recentSubmissions,
-              error: null,
-            })),
+            gte: jest.fn().mockReturnValue(
+              Promise.resolve({
+                data: recentSubmissions,
+                error: null,
+              })
+            ),
           }),
         }),
       });
@@ -305,10 +311,12 @@ describe('ContactSubmissionsAPI', () => {
         }),
         insert: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
-            single: jest.fn().mockReturnValue(Promise.resolve({
-              data: null,
-              error: { message: 'Database connection failed' },
-            })),
+            single: jest.fn().mockReturnValue(
+              Promise.resolve({
+                data: null,
+                error: { message: 'Database connection failed' },
+              })
+            ),
           }),
         }),
       });
@@ -344,7 +352,7 @@ describe('ContactSubmissionsAPI', () => {
 
     it('should apply filters correctly', async () => {
       mockAdminRolesApi.checkPermission.mockResolvedValue(true);
-      
+
       const filters = {
         status: ['new', 'read'],
         priority: ['high'],
@@ -390,20 +398,24 @@ describe('ContactSubmissionsAPI', () => {
       const mockQueryChain = {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        single: jest.fn().mockReturnValue(Promise.resolve({
-          data: mockSubmission,
-          error: null,
-        })),
+        single: jest.fn().mockReturnValue(
+          Promise.resolve({
+            data: mockSubmission,
+            error: null,
+          })
+        ),
       };
 
       const mockUpdateChain = {
         update: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
         select: jest.fn().mockReturnThis(),
-        single: jest.fn().mockReturnValue(Promise.resolve({
-          data: { ...mockSubmission, status: 'read' },
-          error: null,
-        })),
+        single: jest.fn().mockReturnValue(
+          Promise.resolve({
+            data: { ...mockSubmission, status: 'read' },
+            error: null,
+          })
+        ),
       };
 
       mockSupabase.from
@@ -420,10 +432,12 @@ describe('ContactSubmissionsAPI', () => {
       mockSupabase.from.mockReturnValue({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        single: jest.fn().mockReturnValue(Promise.resolve({
-          data: null,
-          error: { code: 'PGRST116' },
-        })),
+        single: jest.fn().mockReturnValue(
+          Promise.resolve({
+            data: null,
+            error: { code: 'PGRST116' },
+          })
+        ),
       });
 
       const result = await api.getById('nonexistent');
@@ -460,10 +474,12 @@ describe('ContactSubmissionsAPI', () => {
         update: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
         select: jest.fn().mockReturnThis(),
-        single: jest.fn().mockReturnValue(Promise.resolve({
-          data: mockUpdatedSubmission,
-          error: null,
-        })),
+        single: jest.fn().mockReturnValue(
+          Promise.resolve({
+            data: mockUpdatedSubmission,
+            error: null,
+          })
+        ),
       });
 
       mockSupabase.functions.invoke.mockResolvedValue({ error: null });
@@ -477,16 +493,18 @@ describe('ContactSubmissionsAPI', () => {
 
     it('should set resolved_at when status is resolved', async () => {
       const updates = { status: 'resolved' as const };
-      
+
       const mockUpdateCall = jest.fn().mockReturnThis();
       mockSupabase.from.mockReturnValue({
         update: mockUpdateCall,
         eq: jest.fn().mockReturnThis(),
         select: jest.fn().mockReturnThis(),
-        single: jest.fn().mockReturnValue(Promise.resolve({
-          data: { id: '123', status: 'resolved' },
-          error: null,
-        })),
+        single: jest.fn().mockReturnValue(
+          Promise.resolve({
+            data: { id: '123', status: 'resolved' },
+            error: null,
+          })
+        ),
       });
 
       mockSupabase.functions.invoke.mockResolvedValue({ error: null });
@@ -522,18 +540,22 @@ describe('ContactSubmissionsAPI', () => {
         .mockReturnValueOnce({
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
-          single: jest.fn().mockReturnValue(Promise.resolve({
-            data: { name: 'Admin User' },
-            error: null,
-          })),
+          single: jest.fn().mockReturnValue(
+            Promise.resolve({
+              data: { name: 'Admin User' },
+              error: null,
+            })
+          ),
         })
         .mockReturnValueOnce({
           insert: jest.fn().mockReturnThis(),
           select: jest.fn().mockReturnThis(),
-          single: jest.fn().mockReturnValue(Promise.resolve({
-            data: mockNote,
-            error: null,
-          })),
+          single: jest.fn().mockReturnValue(
+            Promise.resolve({
+              data: mockNote,
+              error: null,
+            })
+          ),
         });
 
       const result = await api.addNote('submission-123', content);
@@ -585,27 +607,26 @@ describe('ContactSubmissionsAPI', () => {
           select: jest.fn().mockReturnValue(Promise.resolve({ count: 100 })),
         })
         .mockReturnValueOnce({
-          select: jest.fn().mockReturnValue(Promise.resolve({
-            data: [
-              { status: 'new' }, { status: 'new' }, { status: 'read' },
-            ],
-          })),
+          select: jest.fn().mockReturnValue(
+            Promise.resolve({
+              data: [{ status: 'new' }, { status: 'new' }, { status: 'read' }],
+            })
+          ),
         })
         .mockReturnValueOnce({
-          select: jest.fn().mockReturnValue(Promise.resolve({
-            data: [
-              { priority: 'medium' }, { priority: 'high' },
-            ],
-          })),
+          select: jest.fn().mockReturnValue(
+            Promise.resolve({
+              data: [{ priority: 'medium' }, { priority: 'high' }],
+            })
+          ),
         })
         .mockReturnValueOnce({
           select: jest.fn().mockReturnThis(),
-          gte: jest.fn().mockReturnValue(Promise.resolve({
-            data: [
-              { created_at: '2023-01-01T10:00:00Z' },
-              { created_at: '2023-01-01T11:00:00Z' },
-            ],
-          })),
+          gte: jest.fn().mockReturnValue(
+            Promise.resolve({
+              data: [{ created_at: '2023-01-01T10:00:00Z' }, { created_at: '2023-01-01T11:00:00Z' }],
+            })
+          ),
         });
 
       const result = await api.getStats();
@@ -641,10 +662,12 @@ describe('ContactSubmissionsAPI', () => {
         eq: jest.fn().mockReturnThis(),
         gte: jest.fn().mockReturnThis(),
         lte: jest.fn().mockReturnThis(),
-        overlaps: jest.fn().mockReturnValue(Promise.resolve({
-          data: mockExportData,
-          error: null,
-        })),
+        overlaps: jest.fn().mockReturnValue(
+          Promise.resolve({
+            data: mockExportData,
+            error: null,
+          })
+        ),
       });
 
       const result = await api.export();
@@ -666,10 +689,12 @@ describe('ContactSubmissionsAPI', () => {
         limit: jest.fn().mockReturnThis(),
         in: jest.fn().mockReturnThis(),
         gte: jest.fn().mockReturnThis(),
-        lte: jest.fn().mockReturnValue(Promise.resolve({
-          data: [],
-          error: null,
-        })),
+        lte: jest.fn().mockReturnValue(
+          Promise.resolve({
+            data: [],
+            error: null,
+          })
+        ),
       };
 
       mockSupabase.from.mockReturnValue(mockQuery);

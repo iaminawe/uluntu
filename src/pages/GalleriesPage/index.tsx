@@ -12,13 +12,17 @@ const GalleriesPage: React.FC = () => {
   const user = useAppSelector(selectCurrentUser);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(12);
-  
-  const { data, isLoading: loading, error } = useGalleries({ 
+
+  const {
+    data,
+    isLoading: loading,
+    error,
+  } = useGalleries({
     privacy: 'public',
     page: currentPage,
-    limit: pageSize
+    limit: pageSize,
   });
-  
+
   const galleries = data?.galleries || [];
   const totalPages = data?.totalPages || 1;
   const totalCount = data?.totalCount || 0;
@@ -54,7 +58,7 @@ const GalleriesPage: React.FC = () => {
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+            {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} className="bg-white rounded-lg shadow-sm p-4">
                 <div className="aspect-video bg-gray-200 rounded mb-4"></div>
                 <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -72,10 +76,7 @@ const GalleriesPage: React.FC = () => {
       <ContentContainer>
         <div className="text-center py-12">
           <p className="text-red-600 mb-4">Error loading galleries</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="text-blue-600 hover:text-blue-700"
-          >
+          <button onClick={() => window.location.reload()} className="text-blue-600 hover:text-blue-700">
             Try Again
           </button>
         </div>
@@ -93,9 +94,7 @@ const GalleriesPage: React.FC = () => {
               <Camera className="w-8 h-8 text-blue-600" />
               Photo Galleries
             </h1>
-            <p className="text-gray-600">
-              Explore amazing photo collections from our community members
-            </p>
+            <p className="text-gray-600">Explore amazing photo collections from our community members</p>
           </div>
           <button
             onClick={handleCreateGallery}
@@ -110,9 +109,7 @@ const GalleriesPage: React.FC = () => {
         {galleries.length === 0 ? (
           <div className="text-center py-12 md:py-16 bg-gray-50 rounded-lg mx-4 md:mx-0">
             <ImageIcon className="w-12 h-12 md:w-16 md:h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg md:text-xl font-semibold text-gray-700 mb-2">
-              No galleries yet
-            </h3>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-700 mb-2">No galleries yet</h3>
             <p className="text-gray-600 mb-6 text-sm md:text-base px-4">
               Be the first to create a photo gallery and share your work!
             </p>
@@ -128,7 +125,7 @@ const GalleriesPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 px-4 md:px-0">
-            {galleries.map((gallery) => (
+            {galleries.map(gallery => (
               <div
                 key={gallery.id}
                 onClick={() => handleGalleryClick(gallery.id)}
@@ -148,7 +145,7 @@ const GalleriesPage: React.FC = () => {
                       <ImageIcon className="w-12 h-12 md:w-16 md:h-16 text-gray-300" />
                     </div>
                   )}
-                  
+
                   {/* Photo Count Overlay */}
                   <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs md:text-sm flex items-center gap-1">
                     <ImageIcon className="w-3 h-3 md:w-4 md:h-4" />
@@ -164,17 +161,13 @@ const GalleriesPage: React.FC = () => {
                     </h3>
                     {getPrivacyIcon(gallery.privacy_level)}
                   </div>
-                  
+
                   {gallery.description && (
-                    <p className="text-gray-600 text-xs md:text-sm line-clamp-2 mb-3">
-                      {gallery.description}
-                    </p>
+                    <p className="text-gray-600 text-xs md:text-sm line-clamp-2 mb-3">{gallery.description}</p>
                   )}
 
                   <div className="flex items-center justify-between text-xs md:text-sm text-gray-500">
-                    <span className="truncate flex-1 mr-2">
-                      By {gallery.owner?.name || 'Unknown'}
-                    </span>
+                    <span className="truncate flex-1 mr-2">By {gallery.owner?.name || 'Unknown'}</span>
                     <span className="whitespace-nowrap">
                       {formatDistanceToNow(new Date(gallery.created_at), { addSuffix: true })}
                     </span>
@@ -202,11 +195,11 @@ const GalleriesPage: React.FC = () => {
                   <ChevronLeft className="w-4 h-4" />
                   Prev
                 </button>
-                
+
                 <span className="px-3 py-2 text-sm font-medium">
                   {currentPage} / {totalPages}
                 </span>
-                
+
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
@@ -217,13 +210,14 @@ const GalleriesPage: React.FC = () => {
                 </button>
               </div>
             </div>
-            
+
             {/* Desktop pagination */}
             <div className="hidden md:flex items-center justify-between">
               <div className="text-sm text-gray-600">
-                Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} galleries
+                Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of{' '}
+                {totalCount} galleries
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
@@ -233,7 +227,7 @@ const GalleriesPage: React.FC = () => {
                   <ChevronLeft className="w-4 h-4" />
                   Previous
                 </button>
-                
+
                 <div className="flex items-center gap-1">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
@@ -246,15 +240,13 @@ const GalleriesPage: React.FC = () => {
                     } else {
                       pageNum = currentPage - 2 + i;
                     }
-                    
+
                     return (
                       <button
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
                         className={`w-8 h-8 text-sm rounded-md ${
-                          currentPage === pageNum
-                            ? 'bg-blue-600 text-white'
-                            : 'border border-gray-300 hover:bg-gray-50'
+                          currentPage === pageNum ? 'bg-blue-600 text-white' : 'border border-gray-300 hover:bg-gray-50'
                         }`}
                       >
                         {pageNum}
@@ -262,7 +254,7 @@ const GalleriesPage: React.FC = () => {
                     );
                   })}
                 </div>
-                
+
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}

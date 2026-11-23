@@ -14,7 +14,7 @@ export const useSocialLinks = (initialData?: Partial<SocialLinks>) => {
     website,
     linkedin,
     twitter,
-    github
+    github,
   });
 
   const setFormData = (data: Partial<SocialLinks>) => {
@@ -34,6 +34,6 @@ export const useSocialLinks = (initialData?: Partial<SocialLinks>) => {
     setTwitter,
     setGithub,
     getFormData,
-    setFormData
+    setFormData,
   };
 };

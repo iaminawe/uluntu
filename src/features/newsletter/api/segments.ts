@@ -1,12 +1,12 @@
 import { supabase } from '@/lib/supabase';
-import { 
+import {
   NewsletterSegment,
   CreateSegmentRequest,
   UpdateSegmentRequest,
   SegmentFilters,
   PaginatedSegments,
   SegmentationCriteria,
-  SegmentSubscriberStats
+  SegmentSubscriberStats,
 } from '@/types/newsletter';
 
 class NewsletterSegmentAPI {
@@ -21,23 +21,19 @@ class NewsletterSegmentAPI {
         criteria: request.criteria,
         is_dynamic: request.is_dynamic || false,
         color: request.color || '#3B82F6',
-        created_by: (await supabase.auth.getUser()).data.user?.id
+        created_by: (await supabase.auth.getUser()).data.user?.id,
       };
 
-      const { data, error } = await supabase
-        .from('newsletter_segments')
-        .insert(segmentData)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('newsletter_segments').insert(segmentData).select().single();
 
       if (error) throw error;
 
       // Calculate initial subscriber count
       const subscriberCount = await this.getSegmentSubscriberCount(data.id);
-      
+
       return {
         ...data,
-        subscriber_count: subscriberCount
+        subscriber_count: subscriberCount,
       } as NewsletterSegment;
     } catch (error) {
       console.error('Error creating segment:', error);
@@ -50,9 +46,7 @@ class NewsletterSegmentAPI {
    */
   async getSegments(filters: SegmentFilters = {}): Promise<PaginatedSegments | null> {
     try {
-      let query = supabase
-        .from('newsletter_segments')
-        .select('*', { count: 'exact' });
+      let query = supabase.from('newsletter_segments').select('*', { count: 'exact' });
 
       // Apply filters
       if (filters.is_dynamic !== undefined) {
@@ -81,9 +75,9 @@ class NewsletterSegmentAPI {
 
       // Calculate subscriber counts for each segment
       const segmentsWithCounts = await Promise.all(
-        (data || []).map(async (segment) => ({
+        (data || []).map(async segment => ({
           ...segment,
-          subscriber_count: await this.getSegmentSubscriberCount(segment.id)
+          subscriber_count: await this.getSegmentSubscriberCount(segment.id),
         }))
       );
 
@@ -92,7 +86,7 @@ class NewsletterSegmentAPI {
         total: count || 0,
         page: Math.floor(offset / limit) + 1,
         page_size: limit,
-        total_pages: Math.ceil((count || 0) / limit)
+        total_pages: Math.ceil((count || 0) / limit),
       };
     } catch (error) {
       console.error('Error getting segments:', error);
@@ -105,19 +99,15 @@ class NewsletterSegmentAPI {
    */
   async getSegment(id: string): Promise<NewsletterSegment | null> {
     try {
-      const { data, error } = await supabase
-        .from('newsletter_segments')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('newsletter_segments').select('*').eq('id', id).single();
 
       if (error) throw error;
 
       const subscriberCount = await this.getSegmentSubscriberCount(id);
-      
+
       return {
         ...data,
-        subscriber_count: subscriberCount
+        subscriber_count: subscriberCount,
       } as NewsletterSegment;
     } catch (error) {
       console.error('Error getting segment:', error);
@@ -130,20 +120,15 @@ class NewsletterSegmentAPI {
    */
   async updateSegment(id: string, updates: UpdateSegmentRequest): Promise<NewsletterSegment | null> {
     try {
-      const { data, error } = await supabase
-        .from('newsletter_segments')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('newsletter_segments').update(updates).eq('id', id).select().single();
 
       if (error) throw error;
 
       const subscriberCount = await this.getSegmentSubscriberCount(id);
-      
+
       return {
         ...data,
-        subscriber_count: subscriberCount
+        subscriber_count: subscriberCount,
       } as NewsletterSegment;
     } catch (error) {
       console.error('Error updating segment:', error);
@@ -157,16 +142,10 @@ class NewsletterSegmentAPI {
   async deleteSegment(id: string): Promise<boolean> {
     try {
       // First remove all segment assignments
-      await supabase
-        .from('newsletter_segment_assignments')
-        .delete()
-        .eq('segment_id', id);
+      await supabase.from('newsletter_segment_assignments').delete().eq('segment_id', id);
 
       // Then delete the segment
-      const { error } = await supabase
-        .from('newsletter_segments')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('newsletter_segments').delete().eq('id', id);
 
       if (error) throw error;
       return true;
@@ -210,7 +189,7 @@ class NewsletterSegmentAPI {
     try {
       const assignments = subscriptionIds.map(subscriptionId => ({
         segment_id: segmentId,
-        subscription_id: subscriptionId
+        subscription_id: subscriptionId,
       }));
 
       const { error } = await supabase
@@ -269,10 +248,7 @@ class NewsletterSegmentAPI {
       const newSubscriberIds = await this.calculateDynamicSegmentSubscribers(segment.criteria);
 
       // Clear existing assignments
-      await supabase
-        .from('newsletter_segment_assignments')
-        .delete()
-        .eq('segment_id', segmentId);
+      await supabase.from('newsletter_segment_assignments').delete().eq('segment_id', segmentId);
 
       // Add new assignments
       if (newSubscriberIds.length > 0) {
@@ -292,7 +268,7 @@ class NewsletterSegmentAPI {
   async getSegmentStats(segmentId: string): Promise<SegmentSubscriberStats | null> {
     try {
       const subscriberIds = await this.getSegmentSubscribers(segmentId);
-      
+
       if (subscriberIds.length === 0) {
         return {
           total_subscribers: 0,
@@ -300,7 +276,7 @@ class NewsletterSegmentAPI {
           engagement_rate: 0,
           avg_open_rate: 0,
           avg_click_rate: 0,
-          last_campaign_performance: null
+          last_campaign_performance: null,
         };
       }
 
@@ -340,7 +316,7 @@ class NewsletterSegmentAPI {
         engagement_rate: Math.round(engagement_rate * 100) / 100,
         avg_open_rate: Math.round(avg_open_rate * 100) / 100,
         avg_click_rate: Math.round(avg_click_rate * 100) / 100,
-        last_campaign_performance: lastCampaignPerformance
+        last_campaign_performance: lastCampaignPerformance,
       };
     } catch (error) {
       console.error('Error getting segment stats:', error);
@@ -384,9 +360,7 @@ class NewsletterSegmentAPI {
 
   private async calculateDynamicSegmentSubscribers(criteria: SegmentationCriteria): Promise<string[]> {
     try {
-      let query = supabase
-        .from('newsletter_subscriptions')
-        .select('id');
+      let query = supabase.from('newsletter_subscriptions').select('id');
 
       // Apply status filter
       if (criteria.status) {
@@ -419,9 +393,9 @@ class NewsletterSegmentAPI {
       // Apply content preferences filter
       if (criteria.content_preferences && criteria.content_preferences.length > 0) {
         // Filter by preferred content types
-        const contentFilter = criteria.content_preferences.map(pref => 
-          `preferences->'content_types' @> '"${pref}"'`
-        ).join(' OR ');
+        const contentFilter = criteria.content_preferences
+          .map(pref => `preferences->'content_types' @> '"${pref}"'`)
+          .join(' OR ');
         query = query.or(contentFilter);
       }
 
@@ -458,11 +432,13 @@ class NewsletterSegmentAPI {
       // Get the most recent campaign that was sent to these subscribers
       const { data: lastCampaign, error } = await supabase
         .from('newsletter_analytics')
-        .select(`
+        .select(
+          `
           campaign_id,
           newsletter_campaigns!inner(title, sent_at),
           event_type
-        `)
+        `
+        )
         .in('subscription_id', subscriberIds)
         .eq('event_type', 'sent')
         .order('occurred_at', { ascending: false })
@@ -473,7 +449,7 @@ class NewsletterSegmentAPI {
       }
 
       const campaignId = lastCampaign[0].campaign_id;
-      
+
       // Get analytics for this campaign and these subscribers
       const { data: analytics, error: analyticsError } = await supabase
         .from('newsletter_analytics')
@@ -495,7 +471,7 @@ class NewsletterSegmentAPI {
         campaign_title: (lastCampaign[0] as any).newsletter_campaigns.title,
         open_rate: Math.round(open_rate * 100) / 100,
         click_rate: Math.round(click_rate * 100) / 100,
-        sent_date: (lastCampaign[0] as any).newsletter_campaigns.sent_at
+        sent_date: (lastCampaign[0] as any).newsletter_campaigns.sent_at,
       };
     } catch (error) {
       console.error('Error getting last campaign performance:', error);

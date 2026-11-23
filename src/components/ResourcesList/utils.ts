@@ -8,17 +8,17 @@ type ResourceTypeAlias = Resource['type'];
 export const getTypeIcon = (type: ResourceTypeAlias): React.ReactNode => {
   switch (type) {
     case 'document':
-      return React.createElement(FileText, { className: "h-4 w-4" });
+      return React.createElement(FileText, { className: 'h-4 w-4' });
     case 'video':
-      return React.createElement(Video, { className: "h-4 w-4" });
+      return React.createElement(Video, { className: 'h-4 w-4' });
     case 'guide':
-      return React.createElement(BookOpen, { className: "h-4 w-4" });
+      return React.createElement(BookOpen, { className: 'h-4 w-4' });
     case 'tool':
-      return React.createElement(Wrench, { className: "h-4 w-4" });
+      return React.createElement(Wrench, { className: 'h-4 w-4' });
     case 'article':
-      return React.createElement(ArticleIcon, { className: "h-4 w-4" });
+      return React.createElement(ArticleIcon, { className: 'h-4 w-4' });
     default:
-      return React.createElement(FileText, { className: "h-4 w-4" });
+      return React.createElement(FileText, { className: 'h-4 w-4' });
   }
 };
 

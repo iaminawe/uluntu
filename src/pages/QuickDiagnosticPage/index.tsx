@@ -15,7 +15,7 @@ const QuickDiagnosticPage: React.FC = () => {
   const [connectionInfo, setConnectionInfo] = useState({
     url: import.meta.env.VITE_SUPABASE_URL || 'Not set',
     hasKey: !!import.meta.env.VITE_SUPABASE_ANON_KEY,
-    useSupabase: import.meta.env.VITE_USE_SUPABASE === 'true'
+    useSupabase: import.meta.env.VITE_USE_SUPABASE === 'true',
   });
 
   useEffect(() => {
@@ -26,39 +26,37 @@ const QuickDiagnosticPage: React.FC = () => {
       for (const table of tables) {
         try {
           console.log(`Testing table: ${table}`);
-          
+
           // Get count
-          const countResult = await supabase
-            .from(table as any)
-            .select('count', { count: 'exact', head: true });
-          
+          const countResult = await supabase.from(table as any).select('count', { count: 'exact', head: true });
+
           // Get sample data
           const dataResult = await supabase
             .from(table as any)
             .select('*')
             .limit(3);
-          
+
           results[table] = {
             count: countResult.count,
             error: countResult.error ? countResult.error.message : null,
-            sample: dataResult.data
+            sample: dataResult.data,
           };
-          
+
           console.log(`${table} result:`, results[table]);
         } catch (err) {
           console.error(`Error testing ${table}:`, err);
           results[table] = {
             count: null,
             error: err instanceof Error ? err.message : 'Unknown error',
-            sample: null
+            sample: null,
           };
         }
       }
-      
+
       setResults(results);
       setLoading(false);
     }
-    
+
     testTables();
   }, []);
 
@@ -71,22 +69,30 @@ const QuickDiagnosticPage: React.FC = () => {
               Back to Home
             </Link>
           </div>
-          
+
           <h1 className="text-3xl font-bold mb-6">Quick Supabase Diagnostic</h1>
-          
+
           <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow mb-6">
             <h2 className="text-xl font-bold mb-4">Environment Variables</h2>
             <div className="space-y-2">
-              <p><strong>VITE_SUPABASE_URL:</strong> {connectionInfo.url}</p>
-              <p><strong>VITE_SUPABASE_ANON_KEY:</strong> {connectionInfo.hasKey ? 'Present' : 'Missing'}</p>
-              <p><strong>VITE_USE_SUPABASE:</strong> {connectionInfo.useSupabase ? 'true' : 'false'}</p>
-              <p><strong>NODE_ENV:</strong> {import.meta.env.MODE}</p>
+              <p>
+                <strong>VITE_SUPABASE_URL:</strong> {connectionInfo.url}
+              </p>
+              <p>
+                <strong>VITE_SUPABASE_ANON_KEY:</strong> {connectionInfo.hasKey ? 'Present' : 'Missing'}
+              </p>
+              <p>
+                <strong>VITE_USE_SUPABASE:</strong> {connectionInfo.useSupabase ? 'true' : 'false'}
+              </p>
+              <p>
+                <strong>NODE_ENV:</strong> {import.meta.env.MODE}
+              </p>
             </div>
           </div>
-          
+
           <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow">
             <h2 className="text-xl font-bold mb-4">Table Tests</h2>
-            
+
             {loading ? (
               <div className="flex items-center justify-center p-8">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -97,7 +103,7 @@ const QuickDiagnosticPage: React.FC = () => {
                 {Object.entries(results).map(([table, result]) => (
                   <div key={table} className={`p-4 rounded-lg ${result.error ? 'bg-red-50' : 'bg-green-50'}`}>
                     <h3 className="text-lg font-semibold mb-2">{table}</h3>
-                    
+
                     {result.error ? (
                       <div className="text-red-600 mb-2">
                         <strong>Error:</strong> {result.error}
@@ -107,7 +113,7 @@ const QuickDiagnosticPage: React.FC = () => {
                         <strong>Count:</strong> {result.count !== null ? result.count : 'Unknown'}
                       </div>
                     )}
-                    
+
                     {result.sample && result.sample.length > 0 ? (
                       <div>
                         <h4 className="font-medium mb-1">Sample Data:</h4>
@@ -115,8 +121,8 @@ const QuickDiagnosticPage: React.FC = () => {
                           {JSON.stringify(result.sample, null, 2)}
                         </pre>
                       </div>
-                    ) : !result.error && (
-                      <div className="text-amber-600">No data available in this table</div>
+                    ) : (
+                      !result.error && <div className="text-amber-600">No data available in this table</div>
                     )}
                   </div>
                 ))}

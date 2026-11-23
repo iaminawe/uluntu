@@ -16,7 +16,7 @@ import {
   Download,
   Mail,
   Users,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 import { newsletterCampaignApi } from '@/features/newsletter/api/campaigns';
 import { NewsletterCampaign } from '@/types/newsletter';
@@ -33,7 +33,7 @@ interface CalendarEvent {
 
 const CampaignCalendar: React.FC = () => {
   const queryClient = useQueryClient();
-  
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'list'>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -50,7 +50,7 @@ const CampaignCalendar: React.FC = () => {
       status: 'scheduled',
       scheduledAt: new Date(2024, 7, 20, 10, 0),
       estimatedRecipients: 1240,
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
     },
     {
       id: '2',
@@ -59,7 +59,7 @@ const CampaignCalendar: React.FC = () => {
       status: 'scheduled',
       scheduledAt: new Date(2024, 7, 22, 14, 0),
       estimatedRecipients: 890,
-      color: 'bg-green-500'
+      color: 'bg-green-500',
     },
     {
       id: '3',
@@ -68,7 +68,7 @@ const CampaignCalendar: React.FC = () => {
       status: 'draft',
       scheduledAt: new Date(2024, 7, 25, 9, 0),
       estimatedRecipients: 2100,
-      color: 'bg-purple-500'
+      color: 'bg-purple-500',
     },
     {
       id: '4',
@@ -77,8 +77,8 @@ const CampaignCalendar: React.FC = () => {
       status: 'scheduled',
       scheduledAt: new Date(2024, 7, 28, 11, 0),
       estimatedRecipients: 1560,
-      color: 'bg-orange-500'
-    }
+      color: 'bg-orange-500',
+    },
   ];
 
   const getDaysInMonth = (date: Date) => {
@@ -96,9 +96,11 @@ const CampaignCalendar: React.FC = () => {
   const getEventsForDate = (date: Date) => {
     return mockEvents.filter(event => {
       const eventDate = event.scheduledAt;
-      return eventDate.getDate() === date.getDate() &&
-             eventDate.getMonth() === date.getMonth() &&
-             eventDate.getFullYear() === date.getFullYear();
+      return (
+        eventDate.getDate() === date.getDate() &&
+        eventDate.getMonth() === date.getMonth() &&
+        eventDate.getFullYear() === date.getFullYear()
+      );
     });
   };
 
@@ -116,7 +118,7 @@ const CampaignCalendar: React.FC = () => {
     const week = [];
     const startOfWeek = new Date(date);
     startOfWeek.setDate(date.getDate() - date.getDay());
-    
+
     for (let i = 0; i < 7; i++) {
       const day = new Date(startOfWeek);
       day.setDate(startOfWeek.getDate() + i);
@@ -126,7 +128,7 @@ const CampaignCalendar: React.FC = () => {
   };
 
   const EventCard = ({ event }: { event: CalendarEvent }) => (
-    <div 
+    <div
       className={`${event.color} text-white text-xs p-1 rounded mb-1 cursor-pointer hover:opacity-80 transition-opacity`}
       onClick={() => {
         setSelectedEvent(event);
@@ -135,9 +137,9 @@ const CampaignCalendar: React.FC = () => {
     >
       <div className="truncate font-medium">{event.title}</div>
       <div className="text-xs opacity-90">
-        {event.scheduledAt.toLocaleTimeString('en-US', { 
-          hour: 'numeric', 
-          minute: '2-digit' 
+        {event.scheduledAt.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
         })}
       </div>
     </div>
@@ -161,16 +163,14 @@ const CampaignCalendar: React.FC = () => {
       const isSelected = selectedDate?.toDateString() === date.toDateString();
 
       days.push(
-        <div 
-          key={day} 
+        <div
+          key={day}
           className={`h-32 border border-gray-200 p-1 cursor-pointer hover:bg-gray-50 transition-colors ${
             isSelected ? 'bg-blue-50 border-blue-300' : ''
           }`}
           onClick={() => setSelectedDate(date)}
         >
-          <div className={`text-sm font-medium mb-1 ${
-            isToday ? 'text-blue-600 font-bold' : 'text-gray-900'
-          }`}>
+          <div className={`text-sm font-medium mb-1 ${isToday ? 'text-blue-600 font-bold' : 'text-gray-900'}`}>
             {day}
           </div>
           <div className="space-y-1 overflow-y-auto max-h-20">
@@ -197,7 +197,7 @@ const CampaignCalendar: React.FC = () => {
 
   const WeekView = () => {
     const weekDates = getWeekDates(currentDate);
-    
+
     return (
       <div className="grid grid-cols-7 gap-0 border border-gray-200">
         {/* Header row */}
@@ -205,16 +205,14 @@ const CampaignCalendar: React.FC = () => {
           const isToday = date.toDateString() === new Date().toDateString();
           return (
             <div key={index} className="p-3 bg-gray-100 border-b border-gray-200 text-center">
-              <div className="text-sm text-gray-600">
-                {date.toLocaleDateString('en-US', { weekday: 'short' })}
-              </div>
+              <div className="text-sm text-gray-600">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
               <div className={`text-lg font-medium ${isToday ? 'text-blue-600' : 'text-gray-900'}`}>
                 {date.getDate()}
               </div>
             </div>
           );
         })}
-        
+
         {/* Event rows */}
         {weekDates.map((date, index) => {
           const events = getEventsForDate(date);
@@ -241,9 +239,7 @@ const CampaignCalendar: React.FC = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Campaign
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Scheduled Date
               </th>
@@ -259,7 +255,7 @@ const CampaignCalendar: React.FC = () => {
             {mockEvents
               .filter(event => filterStatus === 'all' || event.status === filterStatus)
               .sort((a, b) => a.scheduledAt.getTime() - b.scheduledAt.getTime())
-              .map((event) => (
+              .map(event => (
                 <tr key={event.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -271,28 +267,33 @@ const CampaignCalendar: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      event.status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
-                      event.status === 'sent' ? 'bg-green-100 text-green-800' :
-                      event.status === 'sending' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        event.status === 'scheduled'
+                          ? 'bg-blue-100 text-blue-800'
+                          : event.status === 'sent'
+                            ? 'bg-green-100 text-green-800'
+                            : event.status === 'sending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
                       {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div>
-                      {event.scheduledAt.toLocaleDateString('en-US', { 
+                      {event.scheduledAt.toLocaleDateString('en-US', {
                         weekday: 'short',
-                        month: 'short', 
+                        month: 'short',
                         day: 'numeric',
-                        year: 'numeric'
+                        year: 'numeric',
                       })}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {event.scheduledAt.toLocaleTimeString('en-US', { 
-                        hour: 'numeric', 
-                        minute: '2-digit' 
+                      {event.scheduledAt.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
                       })}
                     </div>
                   </td>
@@ -318,8 +319,7 @@ const CampaignCalendar: React.FC = () => {
                     </div>
                   </td>
                 </tr>
-              ))
-            }
+              ))}
           </tbody>
         </table>
       </div>
@@ -332,9 +332,7 @@ const CampaignCalendar: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Campaign Calendar</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Schedule and manage your newsletter campaigns
-          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Schedule and manage your newsletter campaigns</p>
         </div>
         <div className="flex items-center space-x-3">
           <button className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
@@ -357,22 +355,15 @@ const CampaignCalendar: React.FC = () => {
           <div className="flex items-center space-x-4">
             {/* Navigation */}
             <div className="flex items-center space-x-2">
-              <button
-                onClick={() => navigateMonth('prev')}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
+              <button onClick={() => navigateMonth('prev')} className="p-2 hover:bg-gray-100 rounded-lg">
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <h2 className="text-lg font-semibold text-gray-900 min-w-[200px] text-center">
-                {viewMode === 'week' 
+                {viewMode === 'week'
                   ? `Week of ${currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-                  : getMonthName(currentDate)
-                }
+                  : getMonthName(currentDate)}
               </h2>
-              <button
-                onClick={() => navigateMonth('next')}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
+              <button onClick={() => navigateMonth('next')} className="p-2 hover:bg-gray-100 rounded-lg">
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
@@ -390,7 +381,7 @@ const CampaignCalendar: React.FC = () => {
             {viewMode === 'list' && (
               <select
                 value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
+                onChange={e => setFilterStatus(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">All Status</option>
@@ -454,7 +445,7 @@ const CampaignCalendar: React.FC = () => {
                 </button>
               </div>
             </div>
-            
+
             <div className="px-6 py-4 space-y-4">
               <div>
                 <div className="flex items-center space-x-2 mb-2">
@@ -463,20 +454,25 @@ const CampaignCalendar: React.FC = () => {
                 </div>
                 <p className="text-sm text-gray-600 capitalize">{selectedEvent.type} campaign</p>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Status</label>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    selectedEvent.status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
-                    selectedEvent.status === 'sent' ? 'bg-green-100 text-green-800' :
-                    selectedEvent.status === 'sending' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      selectedEvent.status === 'scheduled'
+                        ? 'bg-blue-100 text-blue-800'
+                        : selectedEvent.status === 'sent'
+                          ? 'bg-green-100 text-green-800'
+                          : selectedEvent.status === 'sending'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
                     {selectedEvent.status.charAt(0).toUpperCase() + selectedEvent.status.slice(1)}
                   </span>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Recipients</label>
                   <div className="flex items-center text-sm text-gray-900">
@@ -485,24 +481,26 @@ const CampaignCalendar: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">Scheduled Time</label>
                 <div className="flex items-center text-sm text-gray-900">
                   <Clock className="w-4 h-4 mr-2" />
-                  {selectedEvent.scheduledAt.toLocaleDateString('en-US', { 
+                  {selectedEvent.scheduledAt.toLocaleDateString('en-US', {
                     weekday: 'long',
-                    month: 'long', 
+                    month: 'long',
                     day: 'numeric',
-                    year: 'numeric'
-                  })} at {selectedEvent.scheduledAt.toLocaleTimeString('en-US', { 
-                    hour: 'numeric', 
-                    minute: '2-digit' 
+                    year: 'numeric',
+                  })}{' '}
+                  at{' '}
+                  {selectedEvent.scheduledAt.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
                   })}
                 </div>
               </div>
             </div>
-            
+
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
               <button
                 onClick={() => {
@@ -539,7 +537,7 @@ const CampaignCalendar: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -555,7 +553,7 @@ const CampaignCalendar: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -571,7 +569,7 @@ const CampaignCalendar: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">

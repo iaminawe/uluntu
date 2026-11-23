@@ -22,17 +22,11 @@ import {
   Settings,
   ArrowRight,
   Check,
-  X
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/Badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -72,25 +66,38 @@ const EntityGalleryManager: React.FC = () => {
   // Entity type icons
   const getEntityIcon = (type: string) => {
     switch (type) {
-      case 'group': return Users;
-      case 'event': return Calendar;
-      case 'company': return Building;
-      case 'news': return FileText;
-      case 'marketplace': return ShoppingBag;
-      case 'resource': return BookOpen;
-      case 'page': return FileText;
-      case 'user': return User;
-      default: return FileText;
+      case 'group':
+        return Users;
+      case 'event':
+        return Calendar;
+      case 'company':
+        return Building;
+      case 'news':
+        return FileText;
+      case 'marketplace':
+        return ShoppingBag;
+      case 'resource':
+        return BookOpen;
+      case 'page':
+        return FileText;
+      case 'user':
+        return User;
+      default:
+        return FileText;
     }
   };
 
   // Fetch entities with gallery assignments
-  const { data: entitiesData, isLoading, refetch } = useQuery({
+  const {
+    data: entitiesData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['entity-galleries', activeTab, searchTerm],
     queryFn: async (): Promise<EntityWithGalleries[]> => {
       let tableName = '';
       let selectQuery = '';
-      
+
       switch (activeTab) {
         case 'groups':
           tableName = 'groups';
@@ -131,12 +138,17 @@ const EntityGalleryManager: React.FC = () => {
       let query = supabase.from(tableName).select(selectQuery);
 
       if (searchTerm) {
-        const searchField = activeTab === 'users' ? 'name' : activeTab === 'news' || activeTab === 'marketplace' || activeTab === 'resources' || activeTab === 'pages' ? 'title' : 'name';
+        const searchField =
+          activeTab === 'users'
+            ? 'name'
+            : activeTab === 'news' || activeTab === 'marketplace' || activeTab === 'resources' || activeTab === 'pages'
+              ? 'title'
+              : 'name';
         query = query.ilike(searchField, `%${searchTerm}%`);
       }
 
       const { data: entities, error } = await query.order('created_at', { ascending: false });
-      
+
       if (error) throw error;
 
       // One query for every gallery of this entity type, grouped by owner,
@@ -160,26 +172,26 @@ const EntityGalleryManager: React.FC = () => {
         galleriesByOwner.set(gallery.owner_id, list);
       }
 
-      const entitiesWithGalleries: EntityWithGalleries[] = (entities || []).map((entity) => {
-          const galleries = galleriesByOwner.get(entity.id);
+      const entitiesWithGalleries: EntityWithGalleries[] = (entities || []).map(entity => {
+        const galleries = galleriesByOwner.get(entity.id);
 
-          return {
-            id: entity.id,
-            name: entity.name || entity.title || entity.email,
-            slug: entity.slug || entity.id,
-            type: activeTab.slice(0, -1) as EntityWithGalleries['type'],
-            galleries: galleries || [],
-            assignedGalleries: galleries?.length || 0,
-            totalGalleries,
-            lastUpdated: entity.created_at,
-            status: entity.status || entity.published,
-            description: entity.description || entity.excerpt,
-            image: entity.hero_image || entity.thumbnail || entity.avatar_url || entity.logo || entity.images?.[0]
-          };
-        });
+        return {
+          id: entity.id,
+          name: entity.name || entity.title || entity.email,
+          slug: entity.slug || entity.id,
+          type: activeTab.slice(0, -1) as EntityWithGalleries['type'],
+          galleries: galleries || [],
+          assignedGalleries: galleries?.length || 0,
+          totalGalleries,
+          lastUpdated: entity.created_at,
+          status: entity.status || entity.published,
+          description: entity.description || entity.excerpt,
+          image: entity.hero_image || entity.thumbnail || entity.avatar_url || entity.logo || entity.images?.[0],
+        };
+      });
 
       return entitiesWithGalleries;
-    }
+    },
   });
 
   // Fetch available galleries for assignment
@@ -194,31 +206,39 @@ const EntityGalleryManager: React.FC = () => {
       if (error) throw error;
       return data || [];
     },
-    enabled: showAssignModal
+    enabled: showAssignModal,
   });
 
   // Assign/Unassign gallery to entity
   const assignGalleryMutation = useMutation({
-    mutationFn: async ({ entityId, galleryId, action }: { entityId: string; galleryId: string; action: 'assign' | 'unassign' }) => {
+    mutationFn: async ({
+      entityId,
+      galleryId,
+      action,
+    }: {
+      entityId: string;
+      galleryId: string;
+      action: 'assign' | 'unassign';
+    }) => {
       if (action === 'assign') {
         const { error } = await supabase
           .from('user_galleries')
           .update({
             owner_type: activeTab.slice(0, -1),
-            owner_id: entityId
+            owner_id: entityId,
           })
           .eq('id', galleryId);
-        
+
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('user_galleries')
           .update({
             owner_type: null,
-            owner_id: null
+            owner_id: null,
           })
           .eq('id', galleryId);
-        
+
         if (error) throw error;
       }
     },
@@ -226,7 +246,7 @@ const EntityGalleryManager: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['entity-galleries'] });
       queryClient.invalidateQueries({ queryKey: ['available-galleries'] });
       setShowAssignModal(false);
-    }
+    },
   });
 
   const handleBulkAssign = (entityIds: string[], galleryIds: string[]) => {
@@ -246,18 +266,10 @@ const EntityGalleryManager: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Entity Gallery Manager
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage gallery assignments across different entity types
-          </p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Entity Gallery Manager</h2>
+          <p className="text-gray-600 dark:text-gray-400">Manage gallery assignments across different entity types</p>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => refetch()}
-          disabled={isLoading}
-        >
+        <Button variant="outline" onClick={() => refetch()} disabled={isLoading}>
           <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
@@ -308,7 +320,7 @@ const EntityGalleryManager: React.FC = () => {
               <Input
                 placeholder={`Search ${activeTab}...`}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -330,7 +342,10 @@ const EntityGalleryManager: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
+                <div
+                  key={i}
+                  className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse"
+                >
                   <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded mb-4"></div>
                   <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
                   <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded"></div>
@@ -341,7 +356,7 @@ const EntityGalleryManager: React.FC = () => {
                 No {activeTab} found
               </div>
             ) : (
-              entitiesData?.map((entity) => (
+              entitiesData?.map(entity => (
                 <div
                   key={entity.id}
                   className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow"
@@ -350,7 +365,7 @@ const EntityGalleryManager: React.FC = () => {
                     <div className="flex items-center">
                       <Checkbox
                         checked={selectedEntities.includes(entity.id)}
-                        onCheckedChange={(checked) => {
+                        onCheckedChange={checked => {
                           if (checked) {
                             setSelectedEntities([...selectedEntities, entity.id]);
                           } else {
@@ -362,11 +377,7 @@ const EntityGalleryManager: React.FC = () => {
                       <div className="flex items-center">
                         <div className="h-12 w-12 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-600 mr-3 flex-shrink-0">
                           {entity.image ? (
-                            <img
-                              src={entity.image}
-                              alt={entity.name}
-                              className="h-full w-full object-cover"
-                            />
+                            <img src={entity.image} alt={entity.name} className="h-full w-full object-cover" />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center">
                               <EntityIcon className="h-6 w-6 text-gray-400" />
@@ -374,12 +385,8 @@ const EntityGalleryManager: React.FC = () => {
                           )}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
-                            {entity.name}
-                          </h3>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {entity.type}
-                          </p>
+                          <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{entity.name}</h3>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{entity.type}</p>
                         </div>
                       </div>
                     </div>
@@ -408,9 +415,7 @@ const EntityGalleryManager: React.FC = () => {
                   </div>
 
                   {entity.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                      {entity.description}
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{entity.description}</p>
                   )}
 
                   <div className="flex items-center justify-between mb-4">
@@ -419,18 +424,15 @@ const EntityGalleryManager: React.FC = () => {
                       <span>{entity.assignedGalleries} galleries</span>
                     </div>
                     {entity.status && (
-                      <Badge variant={entity.status === 'published' || entity.status === 'active' ? 'default' : 'secondary'}>
+                      <Badge
+                        variant={entity.status === 'published' || entity.status === 'active' ? 'default' : 'secondary'}
+                      >
                         {entity.status}
                       </Badge>
                     )}
                   </div>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => openAssignModal(entity)}
-                  >
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => openAssignModal(entity)}>
                     <Link className="h-4 w-4 mr-2" />
                     Manage Galleries
                     <ArrowRight className="h-4 w-4 ml-2" />
@@ -454,15 +456,10 @@ const EntityGalleryManager: React.FC = () => {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                       Manage Galleries for {selectedEntity.name}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Assign or remove gallery associations
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Assign or remove gallery associations</p>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  onClick={() => setShowAssignModal(false)}
-                >
+                <Button variant="ghost" onClick={() => setShowAssignModal(false)}>
                   <X className="h-5 w-5" />
                 </Button>
               </div>
@@ -476,7 +473,7 @@ const EntityGalleryManager: React.FC = () => {
                     Assigned Galleries ({selectedEntity.assignedGalleries})
                   </h4>
                   <div className="space-y-3">
-                    {selectedEntity.galleries.map((gallery) => (
+                    {selectedEntity.galleries.map(gallery => (
                       <div
                         key={gallery.id}
                         className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800"
@@ -496,92 +493,85 @@ const EntityGalleryManager: React.FC = () => {
                             )}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-gray-100">
-                              {gallery.title}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {gallery.photo_count} photos
-                            </p>
+                            <p className="font-medium text-gray-900 dark:text-gray-100">{gallery.title}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{gallery.photo_count} photos</p>
                           </div>
                         </div>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => assignGalleryMutation.mutate({
-                            entityId: selectedEntity.id,
-                            galleryId: gallery.id,
-                            action: 'unassign'
-                          })}
+                          onClick={() =>
+                            assignGalleryMutation.mutate({
+                              entityId: selectedEntity.id,
+                              galleryId: gallery.id,
+                              action: 'unassign',
+                            })
+                          }
                         >
                           <Unlink className="h-4 w-4" />
                         </Button>
                       </div>
                     ))}
                     {selectedEntity.galleries.length === 0 && (
-                      <p className="text-center text-gray-500 dark:text-gray-400 py-6">
-                        No galleries assigned
-                      </p>
+                      <p className="text-center text-gray-500 dark:text-gray-400 py-6">No galleries assigned</p>
                     )}
                   </div>
                 </div>
 
                 {/* Available Galleries */}
                 <div>
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-4">
-                    Available Galleries
-                  </h4>
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-4">Available Galleries</h4>
                   <div className="space-y-3">
-                    {galleriesForAssignment?.filter(g => !selectedEntity.galleries.find(sg => sg.id === g.id)).map((gallery) => (
-                      <div
-                        key={gallery.id}
-                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                      >
-                        <div className="flex items-center">
-                          <div className="h-10 w-10 rounded overflow-hidden bg-gray-200 dark:bg-gray-600 mr-3">
-                            {gallery.cover_photo_url ? (
-                              <img
-                                src={gallery.cover_photo_url}
-                                alt={gallery.title}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <div className="h-full w-full flex items-center justify-center">
-                                <ImageIcon className="h-4 w-4 text-gray-400" />
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900 dark:text-gray-100">
-                              {gallery.title}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {gallery.photo_count} photos • {gallery.privacy_level}
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => assignGalleryMutation.mutate({
-                            entityId: selectedEntity.id,
-                            galleryId: gallery.id,
-                            action: 'assign'
-                          })}
+                    {galleriesForAssignment
+                      ?.filter(g => !selectedEntity.galleries.find(sg => sg.id === g.id))
+                      .map(gallery => (
+                        <div
+                          key={gallery.id}
+                          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
                         >
-                          <Link className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
+                          <div className="flex items-center">
+                            <div className="h-10 w-10 rounded overflow-hidden bg-gray-200 dark:bg-gray-600 mr-3">
+                              {gallery.cover_photo_url ? (
+                                <img
+                                  src={gallery.cover_photo_url}
+                                  alt={gallery.title}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center">
+                                  <ImageIcon className="h-4 w-4 text-gray-400" />
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900 dark:text-gray-100">{gallery.title}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {gallery.photo_count} photos • {gallery.privacy_level}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              assignGalleryMutation.mutate({
+                                entityId: selectedEntity.id,
+                                galleryId: gallery.id,
+                                action: 'assign',
+                              })
+                            }
+                          >
+                            <Link className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end">
-              <Button
-                variant="outline"
-                onClick={() => setShowAssignModal(false)}
-              >
+              <Button variant="outline" onClick={() => setShowAssignModal(false)}>
                 Close
               </Button>
             </div>

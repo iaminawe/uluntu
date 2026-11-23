@@ -2,19 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FeatureErrorBoundary } from '@/components/ErrorBoundary';
 import { GalleryErrorFallback } from '@/components/ErrorBoundary/FeatureSpecificFallbacks';
-import { 
-  ArrowLeft, 
-  Download, 
-  Heart, 
-  MessageCircle, 
-  Share2, 
+import {
+  ArrowLeft,
+  Download,
+  Heart,
+  MessageCircle,
+  Share2,
   MoreVertical,
   Lock,
   Users,
   Edit,
   Trash2,
   Flag,
-  BookmarkPlus
+  BookmarkPlus,
 } from 'lucide-react';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { useAppSelector } from '@/store/hooks';
@@ -31,7 +31,7 @@ const GalleryDetailPageContent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAppSelector(selectCurrentUser);
-  
+
   const [gallery, setGallery] = useState<Gallery | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,14 +46,11 @@ const GalleryDetailPageContent: React.FC = () => {
 
   const loadGallery = async () => {
     if (!id) return;
-    
+
     try {
       setLoading(true);
-      const [galleryData, photosData] = await Promise.all([
-        galleryApi.getGallery(id),
-        galleryApi.getGalleryPhotos(id)
-      ]);
-      
+      const [galleryData, photosData] = await Promise.all([galleryApi.getGallery(id), galleryApi.getGalleryPhotos(id)]);
+
       setGallery(galleryData);
       setPhotos(photosData);
     } catch (err) {
@@ -64,27 +61,28 @@ const GalleryDetailPageContent: React.FC = () => {
     }
   };
 
-
   const handleLikePhoto = async (photoId: string) => {
     if (!user) {
       navigate('/login?redirect=' + window.location.pathname);
       return;
     }
-    
+
     try {
       const isLiked = await galleryApi.likePhoto(photoId);
       // Update the photo in the list
-      setPhotos(photos.map(photo => 
-        photo.id === photoId 
-          ? { 
-              ...photo, 
-              like_count: isLiked 
-                ? ((photo as any).like_count || 0) + 1 
-                : Math.max(((photo as any).like_count || 0) - 1, 0),
-              is_liked: isLiked
-            }
-          : photo
-      ));
+      setPhotos(
+        photos.map(photo =>
+          photo.id === photoId
+            ? {
+                ...photo,
+                like_count: isLiked
+                  ? ((photo as any).like_count || 0) + 1
+                  : Math.max(((photo as any).like_count || 0) - 1, 0),
+                is_liked: isLiked,
+              }
+            : photo
+        )
+      );
     } catch (err) {
       console.error('Error liking photo:', err);
     }
@@ -98,7 +96,7 @@ const GalleryDetailPageContent: React.FC = () => {
     if (!confirm('Are you sure you want to delete this gallery? This action cannot be undone.')) {
       return;
     }
-    
+
     try {
       await galleryApi.deleteGallery(id!);
       navigate('/my-galleries');
@@ -110,7 +108,7 @@ const GalleryDetailPageContent: React.FC = () => {
 
   const handleSetCoverPhoto = async (photoId: string) => {
     if (!id || !isOwner) return;
-    
+
     try {
       await galleryApi.setCoverPhoto(id, photoId);
       // Reload gallery to get updated cover photo
@@ -154,7 +152,7 @@ const GalleryDetailPageContent: React.FC = () => {
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="h-64 bg-gray-200 rounded mb-8"></div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
               <div key={i} className="aspect-square bg-gray-200 rounded"></div>
             ))}
           </div>
@@ -168,10 +166,7 @@ const GalleryDetailPageContent: React.FC = () => {
       <ContentContainer>
         <div className="text-center py-12">
           <p className="text-red-600 mb-4">{(error as any)?.message || 'Gallery not found'}</p>
-          <button
-            onClick={() => navigate('/galleries')}
-            className="text-blue-600 hover:text-blue-700"
-          >
+          <button onClick={() => navigate('/galleries')} className="text-blue-600 hover:text-blue-700">
             Back to Galleries
           </button>
         </div>
@@ -198,29 +193,26 @@ const GalleryDetailPageContent: React.FC = () => {
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold text-gray-900">
-                    {gallery.title}
-                  </h1>
+                  <h1 className="text-3xl font-bold text-gray-900">{gallery.title}</h1>
                   {getPrivacyIcon(gallery.privacy_level)}
                 </div>
                 <p className="text-gray-600 mb-4">{gallery.description}</p>
-                
+
                 <div className="flex items-center gap-6 text-sm text-gray-500 mb-4">
                   <div>
-                    By <AuthorLink userId={gallery.owner_id} className="font-medium text-gray-700" linkToProfile={true} />
+                    By{' '}
+                    <AuthorLink userId={gallery.owner_id} className="font-medium text-gray-700" linkToProfile={true} />
                   </div>
                   <div>
                     {photos.length} {photos.length === 1 ? 'photo' : 'photos'}
                   </div>
-                  <div>
-                    Created {formatDistanceToNow(new Date(gallery.created_at), { addSuffix: true })}
-                  </div>
+                  <div>Created {formatDistanceToNow(new Date(gallery.created_at), { addSuffix: true })}</div>
                   <div className="flex items-center gap-1">
                     {getPrivacyIcon(gallery.privacy_level)}
                     <span>{getPrivacyLabel(gallery.privacy_level)}</span>
                   </div>
                 </div>
-                
+
                 {/* Add to Resources Button */}
                 {!isOwner && gallery.privacy_level === 'public' && (
                   <AddToResourcesButton
@@ -241,13 +233,10 @@ const GalleryDetailPageContent: React.FC = () => {
                 >
                   <MoreVertical className="w-5 h-5 text-gray-600" />
                 </button>
-                
+
                 {showMoreMenu && (
                   <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setShowMoreMenu(false)}
-                    />
+                    <div className="fixed inset-0 z-10" onClick={() => setShowMoreMenu(false)} />
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-20 py-1">
                       <button className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2">
                         <Share2 className="w-4 h-4" />
@@ -306,7 +295,6 @@ const GalleryDetailPageContent: React.FC = () => {
             coverPhotoId={gallery.cover_photo_id}
           />
         )}
-
       </div>
     </ContentContainer>
   );
@@ -321,12 +309,7 @@ const GalleryDetailPage: React.FC = () => {
   return (
     <FeatureErrorBoundary
       featureName="Gallery"
-      fallback={
-        <GalleryErrorFallback
-          onRetry={() => window.location.reload()}
-          onGoBack={() => navigate('/gallery')}
-        />
-      }
+      fallback={<GalleryErrorFallback onRetry={() => window.location.reload()} onGoBack={() => navigate('/gallery')} />}
     >
       <GalleryDetailPageContent />
     </FeatureErrorBoundary>

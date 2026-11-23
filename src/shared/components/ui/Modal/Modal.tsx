@@ -31,7 +31,7 @@ const Modal: React.FC<ModalProps> = ({
     };
 
     document.addEventListener('keydown', handleEscKey);
-    
+
     // Lock body scroll when modal is open
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -39,7 +39,7 @@ const Modal: React.FC<ModalProps> = ({
 
     return () => {
       document.removeEventListener('keydown', handleEscKey);
-      
+
       // Restore body scroll when modal is closed
       document.body.style.overflow = '';
     };
@@ -57,40 +57,36 @@ const Modal: React.FC<ModalProps> = ({
 
   // Determine modal width based on size prop
   const sizeClass = {
-    'sm': 'max-w-sm',
-    'md': 'max-w-md',
-    'lg': 'max-w-lg',
-    'xl': 'max-w-xl',
-    'full': 'max-w-full mx-4',
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-xl',
+    full: 'max-w-full mx-4',
   }[size];
 
   // Determine vertical alignment
   const alignmentClass = centered ? 'items-center' : 'items-start pt-16';
 
   return (
-    <div 
+    <div
       className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex ${alignmentClass} justify-center overflow-y-auto ${overlayClassName}`}
       onClick={handleOverlayClick}
       aria-modal="true"
       role="dialog"
     >
-      <div 
+      <div
         ref={modalRef}
         className={`bg-white dark:bg-slate-800 rounded-lg shadow-xl ${sizeClass} w-full mx-auto my-8 relative ${className}`}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {/* Modal header */}
         {(title || showCloseButton || headerActions) && (
           <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-            {title && (
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white">
-                {title}
-              </h3>
-            )}
-            
+            {title && <h3 className="text-lg font-medium text-slate-900 dark:text-white">{title}</h3>}
+
             <div className="flex items-center ml-auto space-x-2">
               {headerActions}
-              
+
               {showCloseButton && (
                 <button
                   type="button"
@@ -104,18 +100,12 @@ const Modal: React.FC<ModalProps> = ({
             </div>
           </div>
         )}
-        
+
         {/* Modal body */}
-        <div className="px-6 py-4">
-          {children}
-        </div>
-        
+        <div className="px-6 py-4">{children}</div>
+
         {/* Modal footer */}
-        {footer && (
-          <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700">
-            {footer}
-          </div>
-        )}
+        {footer && <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700">{footer}</div>}
       </div>
     </div>
   );

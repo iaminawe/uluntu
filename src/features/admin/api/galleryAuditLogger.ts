@@ -7,13 +7,13 @@ import type { AdminAuditLog } from '@/types/adminGallery';
  * Extends the general admin activity logger with gallery-specific functionality
  */
 export class GalleryAuditLogger {
-  
   /**
    * Log photo-related admin actions
    */
   async logPhotoAction(params: {
     adminId: string;
-    action: 'CREATE_PHOTO' | 'UPDATE_PHOTO' | 'DELETE_PHOTO' | 'BULK_DELETE_PHOTOS' | 'MODERATE_PHOTO' | 'FEATURE_PHOTO';
+    action:
+      'CREATE_PHOTO' | 'UPDATE_PHOTO' | 'DELETE_PHOTO' | 'BULK_DELETE_PHOTOS' | 'MODERATE_PHOTO' | 'FEATURE_PHOTO';
     photoId?: string;
     photoIds?: string[];
     galleryId?: string;
@@ -45,21 +45,18 @@ export class GalleryAuditLogger {
           photo_id: params.photoId,
           photo_ids: params.photoIds,
           gallery_id: params.galleryId,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         },
         ip_address: params.ipAddress,
         user_agent: params.userAgent,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
-        .from('admin_activity_logs')
-        .insert([auditData]);
+      const { error } = await supabase.from('admin_activity_logs').insert([auditData]);
 
       if (error) {
         logger.error('Failed to log photo audit action', 'GALLERY_AUDIT', error);
       }
-
     } catch (error) {
       logger.error('Gallery photo audit logging failed', 'GALLERY_AUDIT', error);
     }
@@ -70,7 +67,13 @@ export class GalleryAuditLogger {
    */
   async logGalleryAction(params: {
     adminId: string;
-    action: 'CREATE_GALLERY' | 'UPDATE_GALLERY' | 'DELETE_GALLERY' | 'BULK_DELETE_GALLERIES' | 'FEATURE_GALLERY' | 'CHANGE_PRIVACY';
+    action:
+      | 'CREATE_GALLERY'
+      | 'UPDATE_GALLERY'
+      | 'DELETE_GALLERY'
+      | 'BULK_DELETE_GALLERIES'
+      | 'FEATURE_GALLERY'
+      | 'CHANGE_PRIVACY';
     galleryId?: string;
     galleryIds?: string[];
     details?: {
@@ -102,21 +105,18 @@ export class GalleryAuditLogger {
           ...params.details,
           gallery_id: params.galleryId,
           gallery_ids: params.galleryIds,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         },
         ip_address: params.ipAddress,
         user_agent: params.userAgent,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
-        .from('admin_activity_logs')
-        .insert([auditData]);
+      const { error } = await supabase.from('admin_activity_logs').insert([auditData]);
 
       if (error) {
         logger.error('Failed to log gallery audit action', 'GALLERY_AUDIT', error);
       }
-
     } catch (error) {
       logger.error('Gallery audit logging failed', 'GALLERY_AUDIT', error);
     }
@@ -159,21 +159,18 @@ export class GalleryAuditLogger {
           photo_id: params.photoId,
           photo_ids: params.photoIds,
           moderation_action: true,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         },
         ip_address: params.ipAddress,
         user_agent: params.userAgent,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
-        .from('admin_activity_logs')
-        .insert([auditData]);
+      const { error } = await supabase.from('admin_activity_logs').insert([auditData]);
 
       if (error) {
         logger.error('Failed to log moderation audit action', 'GALLERY_AUDIT', error);
       }
-
     } catch (error) {
       logger.error('Moderation audit logging failed', 'GALLERY_AUDIT', error);
     }
@@ -214,24 +211,22 @@ export class GalleryAuditLogger {
           total_requested: params.totalItems,
           successful_count: params.successfulItems.length,
           failed_count: params.failedItems.length,
-          success_rate: params.totalItems > 0 ? (params.successfulItems.length / params.totalItems * 100).toFixed(2) : 0,
+          success_rate:
+            params.totalItems > 0 ? ((params.successfulItems.length / params.totalItems) * 100).toFixed(2) : 0,
           successful_items: params.successfulItems,
           failed_items: params.failedItems,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         },
         ip_address: params.ipAddress,
         user_agent: params.userAgent,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
-        .from('admin_activity_logs')
-        .insert([auditData]);
+      const { error } = await supabase.from('admin_activity_logs').insert([auditData]);
 
       if (error) {
         logger.error('Failed to log bulk operation audit', 'GALLERY_AUDIT', error);
       }
-
     } catch (error) {
       logger.error('Bulk operation audit logging failed', 'GALLERY_AUDIT', error);
     }
@@ -242,7 +237,12 @@ export class GalleryAuditLogger {
    */
   async logSystemAction(params: {
     adminId: string;
-    action: 'CLEANUP_ORPHANED_FILES' | 'REGENERATE_THUMBNAILS' | 'UPDATE_STORAGE_QUOTA' | 'MIGRATE_GALLERIES' | 'BACKUP_GALLERIES';
+    action:
+      | 'CLEANUP_ORPHANED_FILES'
+      | 'REGENERATE_THUMBNAILS'
+      | 'UPDATE_STORAGE_QUOTA'
+      | 'MIGRATE_GALLERIES'
+      | 'BACKUP_GALLERIES';
     details?: {
       affected_galleries?: number;
       affected_photos?: number;
@@ -266,21 +266,18 @@ export class GalleryAuditLogger {
         details: {
           ...params.details,
           system_operation: true,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         },
         ip_address: params.ipAddress,
         user_agent: params.userAgent,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
-        .from('admin_activity_logs')
-        .insert([auditData]);
+      const { error } = await supabase.from('admin_activity_logs').insert([auditData]);
 
       if (error) {
         logger.error('Failed to log system audit action', 'GALLERY_AUDIT', error);
       }
-
     } catch (error) {
       logger.error('System audit logging failed', 'GALLERY_AUDIT', error);
     }
@@ -321,21 +318,18 @@ export class GalleryAuditLogger {
           gallery_id: params.galleryId,
           target_user_id: params.targetUserId,
           access_control_change: true,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         },
         ip_address: params.ipAddress,
         user_agent: params.userAgent,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
-        .from('admin_activity_logs')
-        .insert([auditData]);
+      const { error } = await supabase.from('admin_activity_logs').insert([auditData]);
 
       if (error) {
         logger.error('Failed to log access control audit action', 'GALLERY_AUDIT', error);
       }
-
     } catch (error) {
       logger.error('Access control audit logging failed', 'GALLERY_AUDIT', error);
     }
@@ -358,18 +352,25 @@ export class GalleryAuditLogger {
     try {
       let query = supabase
         .from('admin_activity_logs')
-        .select(`
+        .select(
+          `
           *,
           admin:members!admin_activity_logs_admin_id_fkey(name)
-        `, { count: 'exact' })
+        `,
+          { count: 'exact' }
+        )
         .eq('entity_type', params.entityType)
         .order('created_at', { ascending: false });
 
       // Entity-specific filtering
       if (params.entityType === 'photo') {
-        query = query.or(`entity_id.eq.${params.entityId},details->>photo_id.eq.${params.entityId},details->photo_ids.cs.["${params.entityId}"]`);
+        query = query.or(
+          `entity_id.eq.${params.entityId},details->>photo_id.eq.${params.entityId},details->photo_ids.cs.["${params.entityId}"]`
+        );
       } else {
-        query = query.or(`entity_id.eq.${params.entityId},details->>gallery_id.eq.${params.entityId},details->gallery_ids.cs.["${params.entityId}"]`);
+        query = query.or(
+          `entity_id.eq.${params.entityId},details->>gallery_id.eq.${params.entityId},details->gallery_ids.cs.["${params.entityId}"]`
+        );
       }
 
       if (params.startDate) {
@@ -385,7 +386,7 @@ export class GalleryAuditLogger {
       }
 
       if (params.offset) {
-        query = query.range(params.offset, (params.offset + (params.limit || 50)) - 1);
+        query = query.range(params.offset, params.offset + (params.limit || 50) - 1);
       }
 
       const { data, error, count } = await query;
@@ -406,14 +407,13 @@ export class GalleryAuditLogger {
         details: log.details || {},
         ip_address: log.ip_address,
         user_agent: log.user_agent,
-        created_at: log.created_at
+        created_at: log.created_at,
       }));
 
       return {
         logs,
-        total: count || 0
+        total: count || 0,
       };
-
     } catch (error) {
       logger.error('Failed to retrieve audit trail', 'GALLERY_AUDIT', error);
       throw error;
@@ -423,20 +423,14 @@ export class GalleryAuditLogger {
   /**
    * Get admin activity summary
    */
-  async getAdminActivitySummary(params: {
-    adminId?: string;
-    startDate?: string;
-    endDate?: string;
-  }): Promise<{
+  async getAdminActivitySummary(params: { adminId?: string; startDate?: string; endDate?: string }): Promise<{
     total_actions: number;
     actions_by_type: Array<{ action: string; count: number }>;
     entities_affected: Array<{ entity_type: string; count: number }>;
     recent_activity: AdminAuditLog[];
   }> {
     try {
-      let baseQuery = supabase
-        .from('admin_activity_logs')
-        .select('*');
+      let baseQuery = supabase.from('admin_activity_logs').select('*');
 
       if (params.adminId) {
         baseQuery = baseQuery.eq('admin_id', params.adminId);
@@ -451,12 +445,11 @@ export class GalleryAuditLogger {
       }
 
       // Get summary data using RPC function
-      const { data: summary, error: summaryError } = await supabase
-        .rpc('get_admin_activity_summary', {
-          p_admin_id: params.adminId,
-          p_start_date: params.startDate,
-          p_end_date: params.endDate
-        });
+      const { data: summary, error: summaryError } = await supabase.rpc('get_admin_activity_summary', {
+        p_admin_id: params.adminId,
+        p_start_date: params.startDate,
+        p_end_date: params.endDate,
+      });
 
       if (summaryError) {
         logger.error('Failed to get activity summary', 'GALLERY_AUDIT', summaryError);
@@ -465,10 +458,12 @@ export class GalleryAuditLogger {
 
       // Get recent activity
       const { data: recentActivity } = await baseQuery
-        .select(`
+        .select(
+          `
           *,
           admin:members!admin_activity_logs_admin_id_fkey(name)
-        `)
+        `
+        )
         .order('created_at', { ascending: false })
         .limit(10);
 
@@ -483,16 +478,15 @@ export class GalleryAuditLogger {
         details: log.details || {},
         ip_address: log.ip_address,
         user_agent: log.user_agent,
-        created_at: log.created_at
+        created_at: log.created_at,
       }));
 
       return {
         total_actions: summary?.total_actions || 0,
         actions_by_type: summary?.actions_by_type || [],
         entities_affected: summary?.entities_affected || [],
-        recent_activity: recentLogs
+        recent_activity: recentLogs,
       };
-
     } catch (error) {
       logger.error('Failed to get admin activity summary', 'GALLERY_AUDIT', error);
       throw error;

@@ -10,7 +10,7 @@ import {
   Filter,
   RefreshCw,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 
 const AuditPage: React.FC = () => {
@@ -19,7 +19,7 @@ const AuditPage: React.FC = () => {
     entityType: '',
     action: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(50);
@@ -27,13 +27,14 @@ const AuditPage: React.FC = () => {
   // Fetch audit logs
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['admin-audit-logs', filters, currentPage],
-    queryFn: () => adminAuditApi.getAuditLogs({
-      ...filters,
-      startDate: filters.startDate ? new Date(filters.startDate) : undefined,
-      endDate: filters.endDate ? new Date(filters.endDate) : undefined,
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize
-    })
+    queryFn: () =>
+      adminAuditApi.getAuditLogs({
+        ...filters,
+        startDate: filters.startDate ? new Date(filters.startDate) : undefined,
+        endDate: filters.endDate ? new Date(filters.endDate) : undefined,
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize,
+      }),
   });
 
   // Export audit logs
@@ -41,7 +42,7 @@ const AuditPage: React.FC = () => {
     const csv = await adminAuditApi.exportAuditLogs({
       ...filters,
       startDate: filters.startDate ? new Date(filters.startDate) : undefined,
-      endDate: filters.endDate ? new Date(filters.endDate) : undefined
+      endDate: filters.endDate ? new Date(filters.endDate) : undefined,
     });
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -55,7 +56,7 @@ const AuditPage: React.FC = () => {
     const colors: Record<string, string> = {
       create: 'bg-green-100 text-green-800',
       update: 'bg-blue-100 text-blue-800',
-      delete: 'bg-red-100 text-red-800'
+      delete: 'bg-red-100 text-red-800',
     };
     return colors[action] || 'bg-gray-100 text-gray-800';
   };
@@ -72,7 +73,7 @@ const AuditPage: React.FC = () => {
       opportunities: '💼',
       roles: '🛡️',
       user_roles: '👤🛡️',
-      admin_features: '⚙️'
+      admin_features: '⚙️',
     };
     return icons[type] || '📦';
   };
@@ -84,9 +85,7 @@ const AuditPage: React.FC = () => {
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Audit Log</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Track all administrative actions and changes
-          </p>
+          <p className="mt-2 text-sm text-gray-600">Track all administrative actions and changes</p>
         </div>
         <button
           onClick={handleExport}
@@ -101,24 +100,20 @@ const AuditPage: React.FC = () => {
       <div className="mb-6 bg-white rounded-lg shadow p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Admin User
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Admin User</label>
             <input
               type="text"
               placeholder="Filter by admin..."
               value={filters.adminId}
-              onChange={(e) => setFilters({ ...filters, adminId: e.target.value })}
+              onChange={e => setFilters({ ...filters, adminId: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Entity Type
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Entity Type</label>
             <select
               value={filters.entityType}
-              onChange={(e) => setFilters({ ...filters, entityType: e.target.value })}
+              onChange={e => setFilters({ ...filters, entityType: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Types</option>
@@ -136,12 +131,10 @@ const AuditPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Action
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
             <select
               value={filters.action}
-              onChange={(e) => setFilters({ ...filters, action: e.target.value })}
+              onChange={e => setFilters({ ...filters, action: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Actions</option>
@@ -151,24 +144,20 @@ const AuditPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
             <input
               type="date"
               value={filters.startDate}
-              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+              onChange={e => setFilters({ ...filters, startDate: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Date
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
             <input
               type="date"
               value={filters.endDate}
-              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+              onChange={e => setFilters({ ...filters, endDate: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -181,7 +170,7 @@ const AuditPage: React.FC = () => {
                 entityType: '',
                 action: '',
                 startDate: '',
-                endDate: ''
+                endDate: '',
               });
               setCurrentPage(1);
             }}
@@ -207,15 +196,9 @@ const AuditPage: React.FC = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Timestamp
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Admin
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Action
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Entity
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entity</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Details
               </th>
@@ -235,7 +218,7 @@ const AuditPage: React.FC = () => {
                 </td>
               </tr>
             ) : (
-              data?.data.map((log) => (
+              data?.data.map(log => (
                 <tr key={log.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div className="flex items-center">
@@ -250,7 +233,9 @@ const AuditPage: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getActionBadge(log.action)}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getActionBadge(log.action)}`}
+                    >
                       {log.action}
                     </span>
                   </td>
@@ -283,8 +268,7 @@ const AuditPage: React.FC = () => {
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
           <div className="text-sm text-gray-700">
-            Showing {((currentPage - 1) * pageSize) + 1} to{' '}
-            {Math.min(currentPage * pageSize, data?.count || 0)} of{' '}
+            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, data?.count || 0)} of{' '}
             {data?.count || 0} results
           </div>
           <div className="flex items-center space-x-2">

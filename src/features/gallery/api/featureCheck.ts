@@ -6,7 +6,7 @@ import { settingsApi } from '@/features/admin/api/settings';
  */
 export async function requirePhotoGalleriesFeature(): Promise<void> {
   const isEnabled = await settingsApi.isFeatureEnabled('photo_galleries');
-  
+
   if (!isEnabled) {
     throw new Error('Photo galleries feature is currently disabled. Please contact your administrator.');
   }

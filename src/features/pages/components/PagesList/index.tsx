@@ -11,23 +11,21 @@ interface PagesListProps {
   limit?: number;
 }
 
-export const PagesList: React.FC<PagesListProps> = ({
-  showFilters = true,
-  showActions = true,
-  limit,
-}) => {
+export const PagesList: React.FC<PagesListProps> = ({ showFilters = true, showActions = true, limit }) => {
   const dispatch = useAppDispatch();
-  const { pages, loading, error, filters, pagination } = useAppSelector((state) => state.pages);
-  
+  const { pages, loading, error, filters, pagination } = useAppSelector(state => state.pages);
+
   const [searchQuery, setSearchQuery] = useState(filters.search || '');
   const [selectedStatus, setSelectedStatus] = useState(filters.status || 'all');
 
   useEffect(() => {
-    dispatch(fetchPages({
-      filters,
-      page: pagination.page,
-      limit: limit || pagination.limit,
-    }));
+    dispatch(
+      fetchPages({
+        filters,
+        page: pagination.page,
+        limit: limit || pagination.limit,
+      })
+    );
   }, [dispatch, filters, pagination.page, limit]);
 
   const handleSearch = (query: string) => {
@@ -37,9 +35,11 @@ export const PagesList: React.FC<PagesListProps> = ({
 
   const handleStatusFilter = (status: string) => {
     setSelectedStatus(status as 'draft' | 'published' | 'archived' | 'all');
-    dispatch(setFilters({ 
-      status: status === 'all' ? undefined : status as PageFilters['status']
-    }));
+    dispatch(
+      setFilters({
+        status: status === 'all' ? undefined : (status as PageFilters['status']),
+      })
+    );
   };
 
   const handleSort = (sortBy: PageFilters['sort_by']) => {
@@ -66,7 +66,9 @@ export const PagesList: React.FC<PagesListProps> = ({
     };
 
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusStyles[status as keyof typeof statusStyles]}`}>
+      <span
+        className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusStyles[status as keyof typeof statusStyles]}`}
+      >
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     );
@@ -98,15 +100,15 @@ export const PagesList: React.FC<PagesListProps> = ({
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
+                onChange={e => handleSearch(e.target.value)}
                 placeholder="Search pages..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            
+
             <select
               value={selectedStatus}
-              onChange={(e) => handleStatusFilter(e.target.value)}
+              onChange={e => handleStatusFilter(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="all">All Status</option>
@@ -118,37 +120,26 @@ export const PagesList: React.FC<PagesListProps> = ({
         </div>
       )}
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
+      {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">{error}</div>}
 
       {/* Pages Grid */}
       {pages.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {pages.map((page) => (
+          {pages.map(page => (
             <div key={page.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
               {/* Hero Image */}
               {page.hero_image && (
                 <div className="aspect-video w-full overflow-hidden rounded-t-lg">
-                  <img
-                    src={page.hero_image}
-                    alt={page.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={page.hero_image} alt={page.title} className="w-full h-full object-cover" />
                 </div>
               )}
-              
+
               <div className="p-6">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      <Link
-                        to={`/pages/${page.slug}`}
-                        className="hover:text-blue-600 transition-colors"
-                      >
+                      <Link to={`/pages/${page.slug}`} className="hover:text-blue-600 transition-colors">
                         {page.title}
                       </Link>
                     </h3>
@@ -170,34 +161,23 @@ export const PagesList: React.FC<PagesListProps> = ({
 
                 {/* Meta Info */}
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                  <span>
-                    By {page.author ? `${page.author.first_name} ${page.author.last_name}` : 'Unknown'}
-                  </span>
+                  <span>By {page.author ? `${page.author.first_name} ${page.author.last_name}` : 'Unknown'}</span>
                   <span>{formatDate(page.updated_at)}</span>
                 </div>
 
                 {/* Actions */}
                 {showActions && (
                   <div className="flex items-center justify-between pt-4 border-t">
-                    <Link
-                      to={`/pages/${page.slug}`}
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                    >
+                    <Link to={`/pages/${page.slug}`} className="text-blue-600 hover:text-blue-700 text-sm font-medium">
                       View
                     </Link>
-                    
+
                     <div className="flex items-center space-x-2">
-                      <Link
-                        to={`/admin/pages/${page.id}/edit`}
-                        className="text-gray-600 hover:text-gray-700 text-sm"
-                      >
+                      <Link to={`/admin/pages/${page.id}/edit`} className="text-gray-600 hover:text-gray-700 text-sm">
                         Edit
                       </Link>
-                      
-                      <button
-                        onClick={() => handleDelete(page)}
-                        className="text-red-600 hover:text-red-700 text-sm"
-                      >
+
+                      <button onClick={() => handleDelete(page)} className="text-red-600 hover:text-red-700 text-sm">
                         Delete
                       </button>
                     </div>
@@ -210,12 +190,7 @@ export const PagesList: React.FC<PagesListProps> = ({
       ) : (
         <div className="text-center py-12">
           <div className="max-w-md mx-auto">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -260,22 +235,16 @@ export const PagesList: React.FC<PagesListProps> = ({
               Next
             </button>
           </div>
-          
+
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing{' '}
-                <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span>
-                {' '}to{' '}
-                <span className="font-medium">
-                  {Math.min(pagination.page * pagination.limit, pagination.total)}
-                </span>
-                {' '}of{' '}
-                <span className="font-medium">{pagination.total}</span>
-                {' '}results
+                Showing <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span> to{' '}
+                <span className="font-medium">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of{' '}
+                <span className="font-medium">{pagination.total}</span> results
               </p>
             </div>
-            
+
             <div>
               <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
                 {/* Pagination controls can be added here */}

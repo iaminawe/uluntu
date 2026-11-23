@@ -12,11 +12,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       className="flex bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/15 transition-colors"
     >
       <div className="w-24 h-24 flex-shrink-0">
-        <img
-          src={event.image}
-          alt={event.title}
-          className="w-full h-full object-cover"
-        />
+        <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
       </div>
       <div className="p-4">
         <h3 className="font-semibold mb-2">{event.title}</h3>

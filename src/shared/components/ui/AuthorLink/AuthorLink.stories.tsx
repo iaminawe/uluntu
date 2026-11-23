@@ -17,9 +17,7 @@ const queryClient = new QueryClient({
 const StoryWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <div className="p-4">
-        {children}
-      </div>
+      <div className="p-4">{children}</div>
     </BrowserRouter>
   </QueryClientProvider>
 );
@@ -28,7 +26,7 @@ const meta: Meta<typeof AuthorLink> = {
   title: 'Shared/UI/AuthorLink',
   component: AuthorLink,
   decorators: [
-    (Story) => (
+    Story => (
       <StoryWrapper>
         <Story />
       </StoryWrapper>
@@ -38,7 +36,8 @@ const meta: Meta<typeof AuthorLink> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'A flexible component for displaying author information with various display options and loading states.',
+        component:
+          'A flexible component for displaying author information with various display options and loading states.',
       },
     },
   },
@@ -68,7 +67,7 @@ const mockContent = {
   title: 'Sample Content',
   authorId: '123',
   author_id: '123',
-  created_by: '123'
+  created_by: '123',
 };
 
 // Basic stories
@@ -203,9 +202,7 @@ export const CommentAuthor: Story = {
             <AuthorName authorId="1" size="sm" className="font-medium" />
             <span className="text-xs text-gray-500">5 minutes ago</span>
           </div>
-          <p className="text-sm text-gray-700">
-            This is a great point! I've been thinking about this too.
-          </p>
+          <p className="text-sm text-gray-700">This is a great point! I've been thinking about this too.</p>
         </div>
       </div>
     </div>

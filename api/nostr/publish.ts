@@ -12,14 +12,7 @@ import { timingSafeEqual } from 'node:crypto';
 import TurndownService from 'turndown';
 import { finalizeEvent } from 'nostr-tools/pure';
 import { SimplePool } from 'nostr-tools/pool';
-import {
-  getUser,
-  isSiteAdmin,
-  secretRestSelect,
-  secretRestWrite,
-  type ApiReq,
-  type ApiRes,
-} from '../_lib/auth.js';
+import { getUser, isSiteAdmin, secretRestSelect, secretRestWrite, type ApiReq, type ApiRes } from '../_lib/auth.js';
 import {
   buildTemplates,
   planActions,
@@ -65,7 +58,7 @@ function buildContext(req: ApiReq): BuildContext {
   return {
     siteUrl: siteUrl(req),
     timezone: process.env.NOSTR_EVENT_TIMEZONE || undefined,
-    toMarkdown: (html) => (html ? turndown.turndown(html).trim() : ''),
+    toMarkdown: html => (html ? turndown.turndown(html).trim() : ''),
   };
 }
 
@@ -156,12 +149,12 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     res.status(503).json({ error: 'Could not read content or publication state' });
     return;
   }
-  const pending = items.filter((i) => i.action !== 'unchanged');
+  const pending = items.filter(i => i.action !== 'unchanged');
   const summary = {
-    create: items.filter((i) => i.action === 'create').length,
-    update: items.filter((i) => i.action === 'update').length,
-    delete: items.filter((i) => i.action === 'delete').length,
-    unchanged: items.filter((i) => i.action === 'unchanged').length,
+    create: items.filter(i => i.action === 'create').length,
+    update: items.filter(i => i.action === 'update').length,
+    delete: items.filter(i => i.action === 'delete').length,
+    unchanged: items.filter(i => i.action === 'unchanged').length,
   };
 
   if (dryRun) {
@@ -192,10 +185,8 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
   try {
     for (const item of pending.slice(0, MAX_SENDS_PER_RUN)) {
       const event = finalizeEvent({ ...item.template, created_at: now }, key.secretKey);
-      const results = await Promise.allSettled(
-        pool.publish(relays, event, { maxWait: RELAY_TIMEOUT_MS })
-      );
-      const accepted = results.filter((r) => r.status === 'fulfilled').length;
+      const results = await Promise.allSettled(pool.publish(relays, event, { maxWait: RELAY_TIMEOUT_MS }));
+      const accepted = results.filter(r => r.status === 'fulfilled').length;
       sent.push({ source_table: item.source_table, source_id: item.source_id, action: item.action, accepted });
       if (accepted === 0) continue;
       if (!(await record(item, event.id))) {

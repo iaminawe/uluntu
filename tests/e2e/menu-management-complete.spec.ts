@@ -1,6 +1,6 @@
 /**
  * End-to-End Tests for Complete Menu Management Workflow
- * 
+ *
  * Tests the entire admin workflow including navigation,
  * CRUD operations, drag & drop, permissions, and UI interactions.
  */
@@ -12,27 +12,59 @@ class MenuManagementPage {
   constructor(private page: Page) {}
 
   // Selectors
-  get menuManagementLink() { return this.page.getByText('Menu Management'); }
-  get addItemButton() { return this.page.getByRole('button', { name: 'Add Item' }); }
-  get titleInput() { return this.page.getByPlaceholder('Menu item title'); }
-  get urlInput() { return this.page.getByPlaceholder('/page or https://external-site.com'); }
-  get descriptionTextarea() { return this.page.getByPlaceholder('Optional description for admin reference'); }
-  get saveButton() { return this.page.getByRole('button', { name: 'Create Menu Item' }); }
-  get updateButton() { return this.page.getByRole('button', { name: 'Save Changes' }); }
-  get searchInput() { return this.page.getByPlaceholder('Search menu items...'); }
-  get visibilityFilter() { return this.page.getByDisplayValue('All Visibility'); }
-  get enabledFilter() { return this.page.getByDisplayValue('All Status'); }
-  
+  get menuManagementLink() {
+    return this.page.getByText('Menu Management');
+  }
+  get addItemButton() {
+    return this.page.getByRole('button', { name: 'Add Item' });
+  }
+  get titleInput() {
+    return this.page.getByPlaceholder('Menu item title');
+  }
+  get urlInput() {
+    return this.page.getByPlaceholder('/page or https://external-site.com');
+  }
+  get descriptionTextarea() {
+    return this.page.getByPlaceholder('Optional description for admin reference');
+  }
+  get saveButton() {
+    return this.page.getByRole('button', { name: 'Create Menu Item' });
+  }
+  get updateButton() {
+    return this.page.getByRole('button', { name: 'Save Changes' });
+  }
+  get searchInput() {
+    return this.page.getByPlaceholder('Search menu items...');
+  }
+  get visibilityFilter() {
+    return this.page.getByDisplayValue('All Visibility');
+  }
+  get enabledFilter() {
+    return this.page.getByDisplayValue('All Status');
+  }
+
   // Tab selectors
-  get mainMenuTab() { return this.page.getByText('Main Menu'); }
-  get footerMenuTab() { return this.page.getByText('Footer Menu'); }
-  get mobileMenuTab() { return this.page.getByText('Mobile Menu'); }
-  
+  get mainMenuTab() {
+    return this.page.getByText('Main Menu');
+  }
+  get footerMenuTab() {
+    return this.page.getByText('Footer Menu');
+  }
+  get mobileMenuTab() {
+    return this.page.getByText('Mobile Menu');
+  }
+
   // Bulk operation selectors
-  get enableAllButton() { return this.page.getByText('Enable All'); }
-  get disableAllButton() { return this.page.getByText('Disable All'); }
-  get deleteAllButton() { return this.page.getByText('Delete All'); }
-  
+  get enableAllButton() {
+    return this.page.getByText('Enable All');
+  }
+  get disableAllButton() {
+    return this.page.getByText('Disable All');
+  }
+  get deleteAllButton() {
+    return this.page.getByText('Delete All');
+  }
+
   // Navigation and authentication
   async navigate() {
     await this.page.goto('/admin/menu-management');
@@ -59,32 +91,32 @@ class MenuManagementPage {
     parent?: string;
   }) {
     await this.addItemButton.click();
-    
+
     await this.titleInput.fill(data.title);
     await this.urlInput.fill(data.url);
-    
+
     if (data.description) {
       await this.descriptionTextarea.fill(data.description);
     }
-    
+
     if (data.visibility && data.visibility !== 'public') {
       await this.page.getByDisplayValue('Public').selectOption(data.visibility);
     }
-    
+
     if (data.target && data.target !== '_self') {
       await this.page.getByDisplayValue('Same Window').selectOption(data.target);
     }
-    
+
     if (data.icon) {
       await this.page.getByDisplayValue('No Icon').selectOption(data.icon);
     }
-    
+
     if (data.parent) {
       await this.page.getByDisplayValue('No Parent (Top Level)').selectOption(data.parent);
     }
-    
+
     await this.saveButton.click();
-    
+
     // Wait for success toast and modal to close
     await expect(this.page.getByText('Menu item created successfully')).toBeVisible();
     await expect(this.titleInput).not.toBeVisible();
@@ -93,24 +125,24 @@ class MenuManagementPage {
   async editMenuItem(title: string, newData: { title?: string; url?: string; description?: string }) {
     const menuItem = this.page.getByText(title).locator('xpath=ancestor::div[contains(@class, "menu-item")]');
     await menuItem.getByTitle('Edit item').click();
-    
+
     if (newData.title) {
       await this.titleInput.clear();
       await this.titleInput.fill(newData.title);
     }
-    
+
     if (newData.url) {
       await this.urlInput.clear();
       await this.urlInput.fill(newData.url);
     }
-    
+
     if (newData.description) {
       await this.descriptionTextarea.clear();
       await this.descriptionTextarea.fill(newData.description);
     }
-    
+
     await this.updateButton.click();
-    
+
     await expect(this.page.getByText('Menu item updated successfully')).toBeVisible();
     await expect(this.titleInput).not.toBeVisible();
   }
@@ -118,9 +150,9 @@ class MenuManagementPage {
   async deleteMenuItem(title: string) {
     const menuItem = this.page.getByText(title).locator('xpath=ancestor::div[contains(@class, "menu-item")]');
     await menuItem.getByTitle('Delete item').click();
-    
+
     await this.page.getByRole('button', { name: 'Delete Menu Item' }).click();
-    
+
     await expect(this.page.getByText('Menu item deleted successfully')).toBeVisible();
   }
 
@@ -132,7 +164,7 @@ class MenuManagementPage {
   async duplicateMenuItem(title: string) {
     const menuItem = this.page.getByText(title).locator('xpath=ancestor::div[contains(@class, "menu-item")]');
     await menuItem.getByTitle('Duplicate item').click();
-    
+
     await expect(this.page.getByText('Menu item created successfully')).toBeVisible();
   }
 
@@ -176,7 +208,7 @@ class MenuManagementPage {
         await this.mobileMenuTab.click();
         break;
     }
-    
+
     await this.page.waitForTimeout(300);
   }
 
@@ -184,15 +216,15 @@ class MenuManagementPage {
   async dragMenuItem(sourceTitle: string, targetTitle: string) {
     const sourceItem = this.page.getByText(sourceTitle).locator('xpath=ancestor::div[contains(@class, "menu-item")]');
     const targetItem = this.page.getByText(targetTitle).locator('xpath=ancestor::div[contains(@class, "menu-item")]');
-    
+
     const sourceDragHandle = sourceItem.getByTestId('grip-icon');
     const targetBox = await targetItem.boundingBox();
-    
+
     if (targetBox) {
       await sourceDragHandle.dragTo(targetItem, {
-        targetPosition: { x: targetBox.width / 2, y: targetBox.height / 2 }
+        targetPosition: { x: targetBox.width / 2, y: targetBox.height / 2 },
       });
-      
+
       await expect(this.page.getByText('Menu items reordered successfully')).toBeVisible();
     }
   }
@@ -212,7 +244,9 @@ class MenuManagementPage {
   }
 
   async expectPreviewContains(text: string) {
-    await expect(this.page.getByText('Menu Preview').locator('xpath=following-sibling::*').getByText(text)).toBeVisible();
+    await expect(
+      this.page.getByText('Menu Preview').locator('xpath=following-sibling::*').getByText(text)
+    ).toBeVisible();
   }
 
   async expectStatistic(label: string, value: string) {
@@ -284,7 +318,7 @@ test.describe('Menu Management E2E Tests', () => {
 
       // Should create copy with "(Copy)" suffix
       await menuPage.expectMenuItemVisible('Original Item (Copy)');
-      
+
       // Both items should exist
       await menuPage.expectMenuItemVisible(originalItem.title);
     });
@@ -295,7 +329,7 @@ test.describe('Menu Management E2E Tests', () => {
         title: 'Parent Menu',
         url: '/parent',
       };
-      
+
       await menuPage.createMenuItem(parentItem);
 
       // Create child item
@@ -304,7 +338,7 @@ test.describe('Menu Management E2E Tests', () => {
         url: '/parent/child',
         parent: parentItem.title,
       };
-      
+
       await menuPage.createMenuItem(childItem);
 
       // Verify hierarchy in preview
@@ -329,7 +363,7 @@ test.describe('Menu Management E2E Tests', () => {
 
     test('should filter items by search term', async () => {
       await menuPage.searchMenuItems('admin');
-      
+
       await menuPage.expectMenuItemVisible('Admin Dashboard');
       await menuPage.expectMenuItemNotVisible('Community Events');
       await menuPage.expectMenuItemNotVisible('User Profile');
@@ -337,7 +371,7 @@ test.describe('Menu Management E2E Tests', () => {
 
     test('should filter items by visibility', async () => {
       await menuPage.filterByVisibility('admin');
-      
+
       await menuPage.expectMenuItemVisible('Admin Dashboard');
       await menuPage.expectMenuItemNotVisible('Community Events');
       await menuPage.expectMenuItemNotVisible('User Profile');
@@ -346,7 +380,7 @@ test.describe('Menu Management E2E Tests', () => {
     test('should combine search and visibility filters', async () => {
       await menuPage.searchMenuItems('user');
       await menuPage.filterByVisibility('authenticated');
-      
+
       await menuPage.expectMenuItemVisible('User Profile');
       await menuPage.expectMenuItemNotVisible('Community Events');
       await menuPage.expectMenuItemNotVisible('Admin Dashboard');
@@ -355,10 +389,10 @@ test.describe('Menu Management E2E Tests', () => {
     test('should filter by enabled status', async () => {
       // Disable one item
       await menuPage.toggleMenuItemStatus('Community Events');
-      
+
       // Filter to show only disabled items
       await menuPage.filterByStatus('false');
-      
+
       await menuPage.expectMenuItemVisible('Community Events');
       await menuPage.expectMenuItemNotVisible('Admin Dashboard');
       await menuPage.expectMenuItemNotVisible('User Profile');
@@ -372,13 +406,13 @@ test.describe('Menu Management E2E Tests', () => {
         title: 'Main Navigation',
         url: '/main',
       });
-      
+
       await menuPage.switchToTab('footer');
       await menuPage.createMenuItem({
         title: 'Footer Link',
         url: '/footer',
       });
-      
+
       await menuPage.switchToTab('mobile');
       await menuPage.createMenuItem({
         title: 'Mobile Menu',
@@ -389,11 +423,11 @@ test.describe('Menu Management E2E Tests', () => {
       await menuPage.switchToTab('main');
       await menuPage.expectMenuItemVisible('Main Navigation');
       await menuPage.expectMenuItemNotVisible('Footer Link');
-      
+
       await menuPage.switchToTab('footer');
       await menuPage.expectMenuItemVisible('Footer Link');
       await menuPage.expectMenuItemNotVisible('Main Navigation');
-      
+
       await menuPage.switchToTab('mobile');
       await menuPage.expectMenuItemVisible('Mobile Menu');
       await menuPage.expectMenuItemNotVisible('Footer Link');
@@ -444,9 +478,9 @@ test.describe('Menu Management E2E Tests', () => {
     test('should perform bulk enable operation', async () => {
       await menuPage.selectMenuItem('Enabled Item 2'); // Disabled item
       await menuPage.selectMenuItem('Enabled Item 3'); // Already enabled item
-      
+
       await menuPage.enableAllButton.click();
-      
+
       // Should only affect the disabled item
       await expect(menuPage.page.getByText('1 item enabled')).toBeVisible();
     });
@@ -454,21 +488,21 @@ test.describe('Menu Management E2E Tests', () => {
     test('should perform bulk disable operation', async () => {
       await menuPage.selectMenuItem('Enabled Item 1');
       await menuPage.selectMenuItem('Enabled Item 3');
-      
+
       await menuPage.disableAllButton.click();
-      
+
       await expect(menuPage.page.getByText('2 items disabled')).toBeVisible();
     });
 
     test('should perform bulk delete with confirmation', async () => {
       await menuPage.selectMenuItem('Enabled Item 1');
       await menuPage.selectMenuItem('Enabled Item 2');
-      
+
       // Handle confirmation dialog
       menuPage.page.on('dialog', dialog => dialog.accept());
-      
+
       await menuPage.deleteAllButton.click();
-      
+
       await menuPage.expectMenuItemNotVisible('Enabled Item 1');
       await menuPage.expectMenuItemNotVisible('Enabled Item 2');
       await menuPage.expectMenuItemVisible('Enabled Item 3');
@@ -477,12 +511,12 @@ test.describe('Menu Management E2E Tests', () => {
     test('should clear bulk selection', async () => {
       await menuPage.selectMenuItem('Enabled Item 1');
       await menuPage.selectMenuItem('Enabled Item 2');
-      
+
       // Should show bulk toolbar
       await expect(menuPage.page.getByText('2 items selected')).toBeVisible();
-      
+
       await menuPage.page.getByText('Clear').click();
-      
+
       // Should hide bulk toolbar
       await expect(menuPage.page.getByText('2 items selected')).not.toBeVisible();
     });
@@ -492,7 +526,7 @@ test.describe('Menu Management E2E Tests', () => {
     test('should reorder menu items via drag and drop', async () => {
       // Create ordered test items
       const items = ['First Item', 'Second Item', 'Third Item'];
-      
+
       for (const item of items) {
         await menuPage.createMenuItem({
           title: item,
@@ -502,11 +536,11 @@ test.describe('Menu Management E2E Tests', () => {
 
       // Drag first item to second position
       await menuPage.dragMenuItem('First Item', 'Second Item');
-      
+
       // Verify new order in the UI
       const menuItems = await menuPage.page.locator('[data-testid*="menu-item"] h3').allTextContents();
       expect(menuItems).toEqual(['Second Item', 'First Item', 'Third Item']);
-      
+
       // Verify in preview
       await menuPage.expectPreviewContains('Second Item');
     });
@@ -517,12 +551,12 @@ test.describe('Menu Management E2E Tests', () => {
         title: 'Parent Menu',
         url: '/parent',
       });
-      
+
       await menuPage.createMenuItem({
         title: 'Standalone Item',
         url: '/standalone',
       });
-      
+
       await menuPage.createMenuItem({
         title: 'Child Item',
         url: '/parent/child',
@@ -531,7 +565,7 @@ test.describe('Menu Management E2E Tests', () => {
 
       // Move standalone item under parent
       await menuPage.dragMenuItem('Standalone Item', 'Parent Menu');
-      
+
       // Should now be a child of Parent Menu
       await menuPage.expectPreviewContains('Standalone Item');
     });
@@ -546,13 +580,13 @@ test.describe('Menu Management E2E Tests', () => {
       };
 
       await menuPage.createMenuItem(testItem);
-      
+
       // Should appear in preview
       await menuPage.expectPreviewContains(testItem.title);
-      
+
       // Disable item
       await menuPage.toggleMenuItemStatus(testItem.title);
-      
+
       // Should disappear from preview (disabled items are filtered)
       await expect(
         menuPage.page.getByText('Menu Preview').locator('xpath=following-sibling::*').getByText(testItem.title)
@@ -565,17 +599,17 @@ test.describe('Menu Management E2E Tests', () => {
         title: 'Main Menu Item',
         url: '/main',
       });
-      
+
       await menuPage.expectPreviewContains('Main Menu Item');
       await expect(menuPage.page.getByText('Main Menu Preview')).toBeVisible();
-      
+
       // Switch to footer
       await menuPage.switchToTab('footer');
       await menuPage.createMenuItem({
         title: 'Footer Menu Item',
         url: '/footer',
       });
-      
+
       await menuPage.expectPreviewContains('Footer Menu Item');
       await expect(menuPage.page.getByText('Footer Menu Preview')).toBeVisible();
     });
@@ -587,10 +621,10 @@ test.describe('Menu Management E2E Tests', () => {
       await menuPage.createMenuItem({ title: 'Enabled Public', url: '/pub', visibility: 'public' });
       await menuPage.createMenuItem({ title: 'Enabled Admin', url: '/admin', visibility: 'admin' });
       await menuPage.createMenuItem({ title: 'Disabled Item', url: '/disabled' });
-      
+
       // Disable one item
       await menuPage.toggleMenuItemStatus('Disabled Item');
-      
+
       // Verify statistics
       await menuPage.expectStatistic('Total Items', '3');
       await menuPage.expectStatistic('Enabled', '2');
@@ -605,19 +639,19 @@ test.describe('Menu Management E2E Tests', () => {
 
       // Setup download handler
       const downloadPromise = page.waitForEvent('download');
-      
+
       await page.getByText('Export main Menu').click();
-      
+
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toMatch(/main-menu-\d{4}-\d{2}-\d{2}\.json/);
-      
+
       // Verify download content
       const downloadPath = await download.path();
       if (downloadPath) {
         const fs = await import('fs');
         const content = fs.readFileSync(downloadPath, 'utf-8');
         const menuData = JSON.parse(content);
-        
+
         expect(menuData).toBeInstanceOf(Array);
         expect(menuData.some((item: any) => item.title === 'Export Test Item')).toBe(true);
       }
@@ -631,10 +665,10 @@ test.describe('Menu Management E2E Tests', () => {
 
       // Click refresh button
       await page.getByRole('button', { name: 'Refresh Data' }).click();
-      
+
       // Should show loading state briefly
       await expect(page.getByText('Loading...')).toBeVisible();
-      
+
       // Should reload and show items
       await menuPage.expectMenuItemVisible('Refresh Test Item');
     });
@@ -643,25 +677,25 @@ test.describe('Menu Management E2E Tests', () => {
   test.describe('Form Validation and Error Handling', () => {
     test('should validate required fields', async ({ page }) => {
       await menuPage.addItemButton.click();
-      
+
       // Try to save without filling required fields
       await menuPage.saveButton.click();
-      
+
       await expect(page.getByText('Title and URL are required')).toBeVisible();
-      
+
       // Form should remain open
       await expect(menuPage.titleInput).toBeVisible();
     });
 
     test('should detect external URLs', async () => {
       await menuPage.addItemButton.click();
-      
+
       await menuPage.titleInput.fill('External Link');
       await menuPage.urlInput.fill('https://external-site.com');
-      
+
       // Should show external link indicator
       await expect(menuPage.page.getByText('External link detected')).toBeVisible();
-      
+
       // Should set target to _blank by default
       const targetSelect = menuPage.page.getByDisplayValue('New Window');
       await expect(targetSelect).toBeVisible();
@@ -669,21 +703,21 @@ test.describe('Menu Management E2E Tests', () => {
 
     test('should handle role-based visibility', async () => {
       await menuPage.addItemButton.click();
-      
+
       await menuPage.titleInput.fill('Role Based Item');
       await menuPage.urlInput.fill('/role-based');
-      
+
       // Select role-based visibility
       await menuPage.page.getByDisplayValue('Public').selectOption('role_based');
-      
+
       // Should show roles input
       await expect(menuPage.page.getByPlaceholder('admin, superadmin, editor (comma separated)')).toBeVisible();
-      
+
       // Add roles
       await menuPage.page.getByPlaceholder('admin, superadmin, editor (comma separated)').fill('admin, editor');
-      
+
       await menuPage.saveButton.click();
-      
+
       await expect(menuPage.page.getByText('Menu item created successfully')).toBeVisible();
     });
 
@@ -696,12 +730,12 @@ test.describe('Menu Management E2E Tests', () => {
       await menuPage.addItemButton.click();
       await menuPage.titleInput.fill('Test Item');
       await menuPage.urlInput.fill('/test');
-      
+
       await menuPage.saveButton.click();
-      
+
       // Should show error message
       await expect(page.getByText(/failed to create/i)).toBeVisible();
-      
+
       // Form should remain open for retry
       await expect(menuPage.titleInput).toBeVisible();
     });
@@ -710,31 +744,31 @@ test.describe('Menu Management E2E Tests', () => {
   test.describe('Responsive Design', () => {
     test('should adapt to mobile viewport', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 }); // iPhone SE
-      
+
       // Mobile layout should be active
       await expect(page.locator('.mobile-layout')).toBeVisible();
-      
+
       // Should still be functional
       await menuPage.createMenuItem({
         title: 'Mobile Test Item',
         url: '/mobile-test',
       });
-      
+
       await menuPage.expectMenuItemVisible('Mobile Test Item');
     });
 
     test('should adapt to tablet viewport', async ({ page }) => {
       await page.setViewportSize({ width: 768, height: 1024 }); // iPad
-      
+
       // Tablet layout adjustments
       await expect(page.locator('.tablet-layout')).toBeVisible();
-      
+
       // Drag and drop should still work
       await menuPage.createMenuItem({ title: 'Item 1', url: '/item1' });
       await menuPage.createMenuItem({ title: 'Item 2', url: '/item2' });
-      
+
       await menuPage.dragMenuItem('Item 1', 'Item 2');
-      
+
       await expect(page.getByText('Menu items reordered successfully')).toBeVisible();
     });
   });
@@ -743,23 +777,23 @@ test.describe('Menu Management E2E Tests', () => {
     test('should handle large menu structures efficiently', async ({ page }) => {
       // Create many menu items
       const itemCount = 50;
-      
+
       for (let i = 0; i < itemCount; i++) {
         await menuPage.createMenuItem({
           title: `Performance Test Item ${i + 1}`,
           url: `/perf-test-${i + 1}`,
         });
-        
+
         // Only wait every 10 items to speed up test
         if ((i + 1) % 10 === 0) {
           await page.waitForTimeout(100);
         }
       }
-      
+
       // Should still be responsive
       await menuPage.searchMenuItems('Performance Test Item 25');
       await menuPage.expectMenuItemVisible('Performance Test Item 25');
-      
+
       // Bulk operations should work
       await menuPage.selectAllVisibleItems();
       await expect(page.getByText('1 item selected')).toBeVisible();
@@ -767,12 +801,12 @@ test.describe('Menu Management E2E Tests', () => {
 
     test('should load quickly after navigation', async ({ page }) => {
       const startTime = Date.now();
-      
+
       await menuPage.navigate();
-      
+
       // Should load within reasonable time
       await expect(page.getByText('Menu Management')).toBeVisible();
-      
+
       const loadTime = Date.now() - startTime;
       expect(loadTime).toBeLessThan(3000); // Should load within 3 seconds
     });

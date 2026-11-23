@@ -8,34 +8,34 @@ const ResourceTypeSelect: React.FC<ResourceTypeSelectProps> = ({ formData, handl
       value: 'document',
       label: 'Document',
       icon: <FileText className="h-6 w-6" />,
-      iconColor: 'text-blue-500'
+      iconColor: 'text-blue-500',
     },
     {
       value: 'video',
       label: 'Video',
       icon: <Video className="h-6 w-6" />,
-      iconColor: 'text-red-500'
+      iconColor: 'text-red-500',
     },
     {
       value: 'guide',
       label: 'Guide',
       icon: <BookOpen className="h-6 w-6" />,
-      iconColor: 'text-green-500'
+      iconColor: 'text-green-500',
     },
     {
       value: 'tool',
       label: 'Tool',
       icon: <Wrench className="h-6 w-6" />,
-      iconColor: 'text-purple-500'
+      iconColor: 'text-purple-500',
     },
     {
       value: 'article',
       label: 'Article',
       icon: <ArticleIcon className="h-6 w-6" />,
-      iconColor: 'text-amber-500'
-    }
+      iconColor: 'text-amber-500',
+    },
   ];
-  
+
   return (
     <FormRadioCardGroup
       id="resource-type"

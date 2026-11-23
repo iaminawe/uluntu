@@ -12,7 +12,7 @@ interface SupabaseError {
 export function handleSupabaseError(error: Error | SupabaseError | unknown, context?: string): never {
   const contextMessage = context ? ` while ${context}` : '';
   console.error(`Supabase API Error${contextMessage}:`, error);
-  
+
   // Handle different error types
   if (error instanceof Error) {
     // Check for RLS policy errors and provide a more helpful message
@@ -29,7 +29,7 @@ export function handleSupabaseError(error: Error | SupabaseError | unknown, cont
     }
     throw new Error(error.message || `An error occurred${contextMessage}`);
   }
-  
+
   // Fallback for unknown error types
   throw new Error(`An unknown error occurred${contextMessage}`);
 }

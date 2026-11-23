@@ -13,25 +13,19 @@ interface TimeRangeSelectorProps {
   className?: string;
 }
 
-const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
-  value,
-  onChange,
-  className = ''
-}) => {
+const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({ value, onChange, className = '' }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(
     value.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   );
-  const [endDate, setEndDate] = useState(
-    value.endDate || new Date().toISOString().split('T')[0]
-  );
+  const [endDate, setEndDate] = useState(value.endDate || new Date().toISOString().split('T')[0]);
   const datePickerRef = useRef<HTMLDivElement>(null);
 
   const options = [
     { value: 'week' as const, label: 'Past Week' },
     { value: 'month' as const, label: 'Past Month' },
     { value: 'year' as const, label: 'Past Year' },
-    { value: 'custom' as const, label: 'Custom' }
+    { value: 'custom' as const, label: 'Custom' },
   ];
 
   // Close date picker when clicking outside
@@ -60,7 +54,7 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
       onChange({
         type: 'custom',
         startDate,
-        endDate
+        endDate,
       });
       setShowDatePicker(false);
     }
@@ -72,11 +66,11 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
       const end = new Date(value.endDate);
       const startFormatted = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const endFormatted = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      
+
       if (start.getFullYear() !== end.getFullYear()) {
         return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
       }
-      
+
       return `${startFormatted} - ${endFormatted}`;
     }
     return 'Custom';
@@ -85,10 +79,10 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
   return (
     <div className={`relative ${className}`}>
       <div className="flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-        {options.map((option) => {
+        {options.map(option => {
           const isActive = value.type === option.value;
           const label = option.value === 'custom' ? formatCustomLabel() : option.label;
-          
+
           return (
             <button
               key={option.value}
@@ -99,9 +93,7 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              {option.value === 'custom' && (
-                <Calendar className="w-3 h-3 mr-1 inline" />
-              )}
+              {option.value === 'custom' && <Calendar className="w-3 h-3 mr-1 inline" />}
               {label}
             </button>
           );
@@ -110,40 +102,36 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
 
       {/* Custom Date Range Picker */}
       {showDatePicker && (
-        <div 
+        <div
           ref={datePickerRef}
           className="absolute top-full mt-2 right-0 z-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 min-w-[300px]"
         >
           <div className="space-y-4">
             <h4 className="font-medium text-gray-900 dark:text-gray-100">Select Date Range</h4>
-            
+
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Start Date
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
                 <input
                   type="date"
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={e => setStartDate(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  End Date
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
                 <input
                   type="date"
                   value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  onChange={e => setEndDate(e.target.value)}
                   min={startDate}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
-            
+
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 onClick={() => setShowDatePicker(false)}

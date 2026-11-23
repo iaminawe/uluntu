@@ -20,7 +20,10 @@ const CommentModal = ({ onClose, onSubmit }: CommentModalProps) => {
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-lg w-full mx-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Add Comment</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -28,7 +31,7 @@ const CommentModal = ({ onClose, onSubmit }: CommentModalProps) => {
           <div className="mb-4">
             <textarea
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={e => setComment(e.target.value)}
               rows={4}
               className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md 
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
@@ -45,10 +48,7 @@ const CommentModal = ({ onClose, onSubmit }: CommentModalProps) => {
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md"
-            >
+            <button type="submit" className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md">
               Submit
             </button>
           </div>

@@ -1,12 +1,7 @@
 import { EventImageProps } from './types';
 import { FormImageUpload } from '@/shared/components/ui/Form';
 
-const EventImage: React.FC<EventImageProps> = ({ 
-  formData, 
-  handleChange, 
-  onImageChange, 
-  isSubmitting 
-}) => {
+const EventImage: React.FC<EventImageProps> = ({ formData, handleChange, onImageChange, isSubmitting }) => {
   return (
     <FormImageUpload
       id="event-image"

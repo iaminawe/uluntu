@@ -14,19 +14,12 @@ const SkeletonImage: React.FC<SkeletonImageProps> = ({
   colorMode,
 }) => {
   // Determine color class based on color mode or system preference
-  const colorClass = colorMode === 'light' 
-    ? 'bg-slate-200' 
-    : colorMode === 'dark' 
-      ? 'bg-slate-700' 
-      : 'bg-slate-200 dark:bg-slate-700';
+  const colorClass =
+    colorMode === 'light' ? 'bg-slate-200' : colorMode === 'dark' ? 'bg-slate-700' : 'bg-slate-200 dark:bg-slate-700';
 
   // Determine border radius class
-  const roundedClass = rounded === true 
-    ? 'rounded-lg' 
-    : typeof rounded === 'string' 
-      ? rounded 
-      : '';
-      
+  const roundedClass = rounded === true ? 'rounded-lg' : typeof rounded === 'string' ? rounded : '';
+
   // Handle aspect ratio
   let aspectRatioClass = '';
   switch (aspectRatio) {
@@ -54,7 +47,7 @@ const SkeletonImage: React.FC<SkeletonImageProps> = ({
   const heightClass = height || (aspectRatioClass ? '' : 'h-48');
 
   return (
-    <div 
+    <div
       className={`
         ${width} 
         ${heightClass} 

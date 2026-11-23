@@ -19,12 +19,18 @@ const ActionBar: React.FC<ActionBarProps> = ({
   selectedType,
   onTypeChange,
   remoteFilter,
-  onRemoteFilterChange
+  onRemoteFilterChange,
 }) => {
-  
   // Options for filter select elements
-  const typeOptions: (OpportunityType | 'all')[] = ['all', 'full-time', 'part-time', 'contract', 'volunteer', 'internship'];
-  
+  const typeOptions: (OpportunityType | 'all')[] = [
+    'all',
+    'full-time',
+    'part-time',
+    'contract',
+    'volunteer',
+    'internship',
+  ];
+
   // Get icon for opportunity type
   const getTypeIcon = (type: OpportunityType | 'all') => {
     switch (type) {
@@ -42,7 +48,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
         return <Briefcase className="h-4 w-4 mr-2" />;
     }
   };
-  
+
   const handleSearch = (value: string) => {
     onSearch(value);
   };
@@ -63,38 +69,42 @@ const ActionBar: React.FC<ActionBarProps> = ({
             <button
               onClick={() => onTypeChange('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 shadow-sm
-                ${selectedType === 'all'
-                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105'
-                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                ${
+                  selectedType === 'all'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105'
+                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                 }`}
             >
               <Briefcase className="h-4 w-4" />
               All Types
             </button>
-            
-            {typeOptions.filter(t => t !== 'all').map(type => (
-              <button
-                key={type}
-                onClick={() => onTypeChange(type)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 shadow-sm
-                  ${selectedType === type
-                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+
+            {typeOptions
+              .filter(t => t !== 'all')
+              .map(type => (
+                <button
+                  key={type}
+                  onClick={() => onTypeChange(type)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 shadow-sm
+                  ${
+                    selectedType === type
+                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                   }`}
-              >
-                {getTypeIcon(type)}
-                {getOpportunityTypeLabel(type)}
-              </button>
-            ))}
+                >
+                  {getTypeIcon(type)}
+                  {getOpportunityTypeLabel(type)}
+                </button>
+              ))}
           </div>
-          
+
           {/* Experience Level Filter removed */}
-          
+
           {/* Remote Filter */}
           <div className="relative">
             <select
               value={remoteFilter === 'all' ? 'all' : remoteFilter.toString()}
-              onChange={(e) => {
+              onChange={e => {
                 const value = e.target.value;
                 onRemoteFilterChange(value === 'all' ? 'all' : value === 'true');
               }}
@@ -106,7 +116,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
             </select>
             <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-orange-500" />
           </div>
-          
+
           {/* Additional filters can be added here in the future */}
         </div>
       }

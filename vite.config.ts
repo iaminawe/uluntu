@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { fileURLToPath } from 'node:url'
-import { dirname, resolve } from 'node:path'
-import type { UserConfig } from 'vite'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+import type { UserConfig } from 'vite';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // https://vitejs.dev/config/
 export default defineConfig((): UserConfig => ({
@@ -13,10 +13,10 @@ export default defineConfig((): UserConfig => ({
     react({
       babel: {
         parserOpts: {
-          plugins: ['decorators-legacy', 'classProperties']
-        }
-      }
-    })
+          plugins: ['decorators-legacy', 'classProperties'],
+        },
+      },
+    }),
   ],
   server: {
     port: 5555, // Using a different port to avoid conflicts
@@ -36,9 +36,7 @@ export default defineConfig((): UserConfig => ({
   optimizeDeps: {
     exclude: ['lucide-react'],
     // Entries to force include in optimization
-    entries: [
-      './src/main.tsx'
-    ],
+    entries: ['./src/main.tsx'],
     include: [
       'react',
       'react-dom',
@@ -51,7 +49,7 @@ export default defineConfig((): UserConfig => ({
     // Optimization settings
     esbuildOptions: {
       target: 'es2020',
-      keepNames: true
+      keepNames: true,
     },
   },
   build: {
@@ -79,7 +77,7 @@ export default defineConfig((): UserConfig => ({
         // Optimized chunk and asset naming
         chunkFileNames: 'js/[name]-[hash].js',
         entryFileNames: 'js/[name]-[hash].js',
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           const extType = assetInfo.name?.split('.').pop() || 'asset';
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
             return `images/[name]-[hash][extname]`;
@@ -103,12 +101,12 @@ export default defineConfig((): UserConfig => ({
     esbuild: {
       logOverride: { 'this-is-undefined-in-esm': 'silent' },
       legalComments: 'none',
-      treeShaking: true
-    }
+      treeShaking: true,
+    },
   },
   // Define environment variables
   define: {
-    '__APP_VERSION__': JSON.stringify(process.env.npm_package_version)
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
   },
   // Preview server configuration
   preview: {
@@ -125,12 +123,12 @@ export default defineConfig((): UserConfig => ({
   css: {
     devSourcemap: true,
     modules: {
-      localsConvention: 'camelCase'
-    }
+      localsConvention: 'camelCase',
+    },
   },
   // JSON handling
   json: {
     namedExports: true,
-    stringify: false
-  }
-}))
+    stringify: false,
+  },
+}));

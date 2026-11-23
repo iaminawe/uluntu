@@ -27,16 +27,14 @@ const CommentsSection = ({ article, onAddComment }: CommentsSectionProps) => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   return (
     <div className="pt-8 mt-8 border-t border-slate-200 dark:border-slate-700">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-          Comments ({article.comments.length})
-        </h2>
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Comments ({article.comments.length})</h2>
         <button
           onClick={onAddComment}
           className="flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 
@@ -49,13 +47,11 @@ const CommentsSection = ({ article, onAddComment }: CommentsSectionProps) => {
 
       {article.comments.length === 0 ? (
         <div className="text-center py-8 bg-slate-50 dark:bg-slate-800 rounded-lg">
-          <p className="text-slate-500 dark:text-slate-400">
-            Be the first to add a comment!
-          </p>
+          <p className="text-slate-500 dark:text-slate-400">Be the first to add a comment!</p>
         </div>
       ) : (
         <div className="space-y-6">
-          {article.comments.map((comment) => (
+          {article.comments.map(comment => (
             <div key={comment.id} className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
               <div className="flex items-start mb-3">
                 <Link to={getMemberProfileUrl(comment.author)}>
@@ -75,9 +71,7 @@ const CommentsSection = ({ article, onAddComment }: CommentsSectionProps) => {
                       >
                         {comment.author.name}
                       </Link>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {formatDate(comment.createdAt)}
-                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{formatDate(comment.createdAt)}</p>
                     </div>
                   </div>
                 </div>

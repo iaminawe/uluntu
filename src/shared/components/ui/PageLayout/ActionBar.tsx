@@ -77,7 +77,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
           {/* Create button and other actions */}
           <div className="flex flex-wrap items-center gap-3 ml-auto">
             {actions}
-            
+
             {createUrl && (
               <Link
                 to={createUrl}
@@ -91,11 +91,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
         </div>
 
         {/* Bottom row: Filters */}
-        {filters && (
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            {filters}
-          </div>
-        )}
+        {filters && <div className="flex flex-wrap items-center gap-2 pt-1">{filters}</div>}
       </div>
     </div>
   );

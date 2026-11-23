@@ -10,15 +10,15 @@ export default function CommunityMomentsSection() {
     queryFn: () => newsApi.getAll({ limit: 4 }),
     staleTime: 5 * 60 * 1000,
   });
-  
+
   const { data: galleriesResponse, isLoading: galleriesLoading } = useQuery({
     queryKey: ['galleries-home'],
     queryFn: () => galleryApi.getAllGalleries({ limit: 2 }),
     staleTime: 5 * 60 * 1000,
   });
-  
+
   const galleries = galleriesResponse?.galleries || [];
-  
+
   const communityMoments = useMemo(() => {
     // Get latest news articles
     const newsItems = news.slice(0, 4).map(article => ({
@@ -31,9 +31,9 @@ export default function CommunityMomentsSection() {
       category: article.tags?.includes('blog') ? 'Blog' : 'News',
       readTime: '5 min read',
       link: `/news/${article.slug || article.id}`,
-      type: 'news' as const
+      type: 'news' as const,
     }));
-    
+
     // Get featured galleries
     const galleryItems = galleries
       .filter(gallery => gallery.privacy === 'public' || gallery.privacy_level === 'public')
@@ -42,13 +42,13 @@ export default function CommunityMomentsSection() {
         const photos = gallery.photos || gallery.gallery_photos || [];
         // Use the cover photo URL if available (already determined by the API)
         let imageUrl = gallery.cover_photo_url || gallery.coverImage;
-        
+
         // Fallback to first photo if no cover photo URL from API
         if (!imageUrl && photos.length > 0) {
           const firstPhoto = photos[0];
           imageUrl = firstPhoto?.thumbnail_url || firstPhoto?.url || firstPhoto?.thumbnail_path;
         }
-        
+
         return {
           id: gallery.id,
           title: gallery.title,
@@ -59,10 +59,10 @@ export default function CommunityMomentsSection() {
           category: 'Gallery',
           readTime: `${gallery.photo_count || photos.length} photos`,
           link: `/galleries/${gallery.id}`,
-          type: 'gallery' as const
+          type: 'gallery' as const,
         };
       });
-    
+
     return [...newsItems, ...galleryItems]
       .sort((a, b) => new Date(b.date || '').getTime() - new Date(a.date || '').getTime())
       .slice(0, 6);
@@ -76,16 +76,14 @@ export default function CommunityMomentsSection() {
     <section className="py-20 bg-white dark:bg-slate-800">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-            Community Moments
-          </h2>
+          <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Community Moments</h2>
           <p className="text-xl text-slate-600 dark:text-slate-400">
             Latest news, blogs, and galleries from our community
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {communityMoments.map((item) => (
+          {communityMoments.map(item => (
             <DetailedCard
               key={`${item.type}-${item.id}`}
               id={item.id}

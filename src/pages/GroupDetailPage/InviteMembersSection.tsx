@@ -9,17 +9,10 @@ interface InviteMembersSectionProps {
   groupName: string;
 }
 
-const InviteMembersSection: React.FC<InviteMembersSectionProps> = ({
-  groupId,
-  groupName
-}) => {
+const InviteMembersSection: React.FC<InviteMembersSectionProps> = ({ groupId, groupName }) => {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  
-  const {
-    data: invitations = [],
-    isLoading,
-    refetch
-  } = useGroupInvitations(groupId);
+
+  const { data: invitations = [], isLoading, refetch } = useGroupInvitations(groupId);
 
   const pendingInvitations = invitations.filter(inv => inv.status === 'pending');
   const completedInvitations = invitations.filter(inv => inv.status !== 'pending');
@@ -29,9 +22,7 @@ const InviteMembersSection: React.FC<InviteMembersSectionProps> = ({
       {/* Header with Invite Button */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-            Member Invitations
-          </h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Member Invitations</h3>
           <p className="text-sm text-slate-600 dark:text-slate-400">
             Invite new members and manage pending invitations
           </p>
@@ -52,11 +43,7 @@ const InviteMembersSection: React.FC<InviteMembersSectionProps> = ({
             <Mail className="w-4 h-4 text-orange-500" />
             Pending Invitations ({pendingInvitations.length})
           </h4>
-          <InvitationsSection
-            invitations={pendingInvitations}
-            isLoading={isLoading}
-            onRefresh={refetch}
-          />
+          <InvitationsSection invitations={pendingInvitations} isLoading={isLoading} onRefresh={refetch} />
         </div>
       )}
 
@@ -66,11 +53,7 @@ const InviteMembersSection: React.FC<InviteMembersSectionProps> = ({
           <h4 className="text-md font-semibold text-slate-900 dark:text-white mb-4">
             Invitation History ({completedInvitations.length})
           </h4>
-          <InvitationsSection
-            invitations={completedInvitations}
-            isLoading={isLoading}
-            onRefresh={refetch}
-          />
+          <InvitationsSection invitations={completedInvitations} isLoading={isLoading} onRefresh={refetch} />
         </div>
       )}
 
@@ -79,9 +62,7 @@ const InviteMembersSection: React.FC<InviteMembersSectionProps> = ({
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8">
           <div className="text-center">
             <UserPlus className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-            <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-              No invitations yet
-            </h4>
+            <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">No invitations yet</h4>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
               Start building your community by inviting new members to join this group.
             </p>

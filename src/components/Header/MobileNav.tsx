@@ -8,13 +8,9 @@ interface MobileNavProps {
   onLinkClick: () => void;
 }
 
-const MobileNav: React.FC<MobileNavProps> = ({ 
-  isOpen, 
-  navLinks, 
-  onLinkClick 
-}) => {
+const MobileNav: React.FC<MobileNavProps> = ({ isOpen, navLinks, onLinkClick }) => {
   if (!isOpen) return null;
-  
+
   return (
     <div className="md:hidden bg-gradient-to-r from-orange-600 to-red-600">
       <div className="px-2 pt-2 pb-3 space-y-1">

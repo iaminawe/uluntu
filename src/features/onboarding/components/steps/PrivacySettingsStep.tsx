@@ -6,8 +6,8 @@ import type { OnboardingStepProps, PrivacySettings } from '../../types';
 
 const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
   const dispatch = useAppDispatch();
-  const { privacy } = useAppSelector((state) => state.onboarding.formData);
-  
+  const { privacy } = useAppSelector(state => state.onboarding.formData);
+
   const [settings, setSettings] = useState<PrivacySettings>(privacy);
 
   // Auto-save changes
@@ -28,8 +28,8 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
       ...prev,
       emailNotifications: {
         ...prev.emailNotifications,
-        [key]: value
-      }
+        [key]: value,
+      },
     }));
   };
 
@@ -38,28 +38,26 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
       value: 'public' as const,
       label: 'Public',
       description: 'Anyone can view your profile',
-      icon: <Eye className="w-5 h-5" />
+      icon: <Eye className="w-5 h-5" />,
     },
     {
       value: 'members' as const,
       label: 'Members Only',
       description: 'Only community members can view your profile',
-      icon: <Shield className="w-5 h-5" />
+      icon: <Shield className="w-5 h-5" />,
     },
     {
       value: 'private' as const,
       label: 'Private',
       description: 'Your profile is completely private',
-      icon: <EyeOff className="w-5 h-5" />
-    }
+      icon: <EyeOff className="w-5 h-5" />,
+    },
   ];
 
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-          Privacy & Visibility Settings
-        </h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Privacy & Visibility Settings</h2>
         <p className="text-slate-600 dark:text-slate-400">
           Control how your information is shared and who can see your profile
         </p>
@@ -68,11 +66,9 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
       <div className="space-y-8">
         {/* Profile Visibility */}
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
-            Profile Visibility
-          </h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">Profile Visibility</h3>
           <div className="space-y-3">
-            {visibilityOptions.map((option) => (
+            {visibilityOptions.map(option => (
               <div
                 key={option.value}
                 onClick={() => updateSetting('profileVisibility', option.value)}
@@ -83,20 +79,18 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`${
-                    settings.profileVisibility === option.value 
-                      ? 'text-orange-600 dark:text-orange-400' 
-                      : 'text-slate-500'
-                  }`}>
+                  <div
+                    className={`${
+                      settings.profileVisibility === option.value
+                        ? 'text-orange-600 dark:text-orange-400'
+                        : 'text-slate-500'
+                    }`}
+                  >
                     {option.icon}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-medium text-slate-900 dark:text-white">
-                      {option.label}
-                    </h4>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {option.description}
-                    </p>
+                    <h4 className="font-medium text-slate-900 dark:text-white">{option.label}</h4>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{option.description}</p>
                   </div>
                   {settings.profileVisibility === option.value && (
                     <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
@@ -111,9 +105,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
 
         {/* Contact Information Display */}
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
-            Contact Information Display
-          </h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">Contact Information Display</h3>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
             Choose what contact information to show on your profile
           </p>
@@ -131,7 +123,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings.showEmail}
-                  onChange={(e) => updateSetting('showEmail', e.target.checked)}
+                  onChange={e => updateSetting('showEmail', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
               </label>
@@ -150,7 +142,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings.showPhone}
-                  onChange={(e) => updateSetting('showPhone', e.target.checked)}
+                  onChange={e => updateSetting('showPhone', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
               </label>
@@ -169,7 +161,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings.showLocation}
-                  onChange={(e) => updateSetting('showLocation', e.target.checked)}
+                  onChange={e => updateSetting('showLocation', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
               </label>
@@ -179,9 +171,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
 
         {/* Communication Preferences */}
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
-            Communication Preferences
-          </h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">Communication Preferences</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-600 rounded-lg">
               <div className="flex items-center gap-3">
@@ -196,7 +186,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings.allowMessages}
-                  onChange={(e) => updateSetting('allowMessages', e.target.checked)}
+                  onChange={e => updateSetting('allowMessages', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
               </label>
@@ -215,7 +205,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings.allowConnectionRequests}
-                  onChange={(e) => updateSetting('allowConnectionRequests', e.target.checked)}
+                  onChange={e => updateSetting('allowConnectionRequests', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
               </label>
@@ -225,9 +215,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
 
         {/* Email Notifications */}
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
-            Email Notifications
-          </h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">Email Notifications</h3>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
             Choose what notifications you'd like to receive via email
           </p>
@@ -245,7 +233,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings.emailNotifications.newsletter}
-                  onChange={(e) => updateEmailNotification('newsletter', e.target.checked)}
+                  onChange={e => updateEmailNotification('newsletter', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
               </label>
@@ -264,7 +252,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings.emailNotifications.events}
-                  onChange={(e) => updateEmailNotification('events', e.target.checked)}
+                  onChange={e => updateEmailNotification('events', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
               </label>
@@ -275,7 +263,9 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                 <Bell className="w-5 h-5 text-slate-500" />
                 <div>
                   <h4 className="font-medium text-slate-900 dark:text-white">Opportunities</h4>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">New job postings and volunteer opportunities</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    New job postings and volunteer opportunities
+                  </p>
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -283,7 +273,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings.emailNotifications.opportunities}
-                  onChange={(e) => updateEmailNotification('opportunities', e.target.checked)}
+                  onChange={e => updateEmailNotification('opportunities', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
               </label>
@@ -294,7 +284,9 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                 <Bell className="w-5 h-5 text-slate-500" />
                 <div>
                   <h4 className="font-medium text-slate-900 dark:text-white">Messages</h4>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">New direct messages and connection requests</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    New direct messages and connection requests
+                  </p>
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -302,7 +294,7 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={settings.emailNotifications.messages}
-                  onChange={(e) => updateEmailNotification('messages', e.target.checked)}
+                  onChange={e => updateEmailNotification('messages', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
               </label>
@@ -315,12 +307,10 @@ const PrivacySettingsStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
           <div className="flex gap-3">
             <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
             <div>
-              <h4 className="font-medium text-blue-900 dark:text-blue-300 mb-1">
-                Your Privacy is Protected
-              </h4>
+              <h4 className="font-medium text-blue-900 dark:text-blue-300 mb-1">Your Privacy is Protected</h4>
               <p className="text-sm text-blue-700 dark:text-blue-400">
-                You can change these settings at any time from your profile page. We never share your 
-                personal information with third parties without your explicit consent.
+                You can change these settings at any time from your profile page. We never share your personal
+                information with third parties without your explicit consent.
               </p>
             </div>
           </div>

@@ -136,27 +136,32 @@ export const MenuItemUpdateSchema = MenuItemInputSchema.partial().extend({
   id: z.string().uuid(),
 });
 
-export const MenuBulkReorderSchema = z.array(z.object({
-  id: z.string().uuid(),
-  sort_order: z.number().int().min(0).max(9999),
-  parent_id: z.string().uuid().nullable().optional(),
-}));
+export const MenuBulkReorderSchema = z.array(
+  z.object({
+    id: z.string().uuid(),
+    sort_order: z.number().int().min(0).max(9999),
+    parent_id: z.string().uuid().nullable().optional(),
+  })
+);
 
-export const MenuBulkToggleSchema = z.array(z.object({
-  id: z.string().uuid(),
-  is_enabled: z.boolean(),
-}));
+export const MenuBulkToggleSchema = z.array(
+  z.object({
+    id: z.string().uuid(),
+    is_enabled: z.boolean(),
+  })
+);
 
 export const MenuFilterSchema = z.object({
-  menu_type: z.union([
-    z.enum(['main', 'footer', 'mobile', 'admin']),
-    z.array(z.enum(['main', 'footer', 'mobile', 'admin']))
-  ]).optional(),
+  menu_type: z
+    .union([z.enum(['main', 'footer', 'mobile', 'admin']), z.array(z.enum(['main', 'footer', 'mobile', 'admin']))])
+    .optional(),
   is_enabled: z.boolean().optional(),
-  visibility: z.union([
-    z.enum(['public', 'authenticated', 'admin', 'role_based']),
-    z.array(z.enum(['public', 'authenticated', 'admin', 'role_based']))
-  ]).optional(),
+  visibility: z
+    .union([
+      z.enum(['public', 'authenticated', 'admin', 'role_based']),
+      z.array(z.enum(['public', 'authenticated', 'admin', 'role_based'])),
+    ])
+    .optional(),
   parent_id: z.string().uuid().nullable().optional(),
   search: z.string().max(255).optional(),
   include_children: z.boolean().optional().default(false),

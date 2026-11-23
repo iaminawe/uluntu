@@ -25,11 +25,10 @@ const AdminGroupsPage: React.FC = () => {
           <div className="flex items-start">
             <Lock className="h-6 w-6 text-yellow-400 mr-3 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">
-                Groups Feature Disabled
-              </h3>
+              <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">Groups Feature Disabled</h3>
               <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                The groups & communities feature is currently disabled. Enable it in System Management → Features to access groups management.
+                The groups & communities feature is currently disabled. Enable it in System Management → Features to
+                access groups management.
               </p>
               <a
                 href="/admin/system/features"
@@ -53,14 +52,10 @@ const AdminGroupsPage: React.FC = () => {
             <Users className="w-4 h-4 mr-2 text-gray-500" />
             {value}
           </div>
-          {item.description && (
-            <div className="text-sm text-gray-500 truncate max-w-xs">
-              {item.description}
-            </div>
-          )}
+          {item.description && <div className="text-sm text-gray-500 truncate max-w-xs">{item.description}</div>}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'privacy_level',
@@ -69,11 +64,11 @@ const AdminGroupsPage: React.FC = () => {
         const privacyConfig = {
           public: { icon: Globe, text: 'Public', color: 'bg-green-100 text-green-800' },
           private: { icon: Lock, text: 'Private', color: 'bg-red-100 text-red-800' },
-          invite_only: { icon: Crown, text: 'Invite Only', color: 'bg-purple-100 text-purple-800' }
+          invite_only: { icon: Crown, text: 'Invite Only', color: 'bg-purple-100 text-purple-800' },
         };
         const config = privacyConfig[value as keyof typeof privacyConfig] || privacyConfig.public;
         const Icon = config.icon;
-        
+
         return (
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
             <Icon className="w-3 h-3 mr-1" />
@@ -81,7 +76,7 @@ const AdminGroupsPage: React.FC = () => {
           </span>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'member_count',
@@ -92,15 +87,17 @@ const AdminGroupsPage: React.FC = () => {
           {value || 0}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'is_active',
       label: 'Status',
       render: (value: boolean) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        }`}>
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}
+        >
           {value ? (
             <>
               <CheckCircle className="w-3 h-3 mr-1" />
@@ -114,14 +111,14 @@ const AdminGroupsPage: React.FC = () => {
           )}
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'created_at',
       label: 'Created',
       render: (value: string) => new Date(value).toLocaleDateString(),
-      sortable: true
-    }
+      sortable: true,
+    },
   ];
 
   return (

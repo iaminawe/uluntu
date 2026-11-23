@@ -72,39 +72,23 @@ const PageCard: React.FC<PageCardProps> = ({ page, onSelect, isSelected, depth =
                 )}
               </h3>
             </div>
-            
-            {page.excerpt && (
-              <p className="mt-1 text-sm text-gray-500 line-clamp-2">
-                {page.excerpt}
-              </p>
-            )}
-            
+
+            {page.excerpt && <p className="mt-1 text-sm text-gray-500 line-clamp-2">{page.excerpt}</p>}
+
             <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
               <span className={getStatusColor(page.status, (page as any).is_published)}>
                 {getStatusText(page.status, (page as any).is_published)}
               </span>
-              
-              {(page as any).template && (
-                <span>
-                  Template: {(page as any).template}
-                </span>
-              )}
-              
-              {page.updated_at && (
-                <span>
-                  Updated: {new Date(page.updated_at).toLocaleDateString()}
-                </span>
-              )}
+
+              {(page as any).template && <span>Template: {(page as any).template}</span>}
+
+              {page.updated_at && <span>Updated: {new Date(page.updated_at).toLocaleDateString()}</span>}
             </div>
 
-            {page.slug && (
-              <div className="mt-1 text-xs text-gray-400">
-                /{page.slug}
-              </div>
-            )}
+            {page.slug && <div className="mt-1 text-xs text-gray-400">/{page.slug}</div>}
           </div>
         </div>
-        
+
         <ChevronRightIcon className="w-5 h-5 text-gray-400" />
       </div>
     </div>
@@ -133,35 +117,28 @@ const PagesFilters: React.FC<{
     <div className="bg-gray-50 p-4 rounded-lg space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900">Filters</h3>
-        <button
-          onClick={handleClearFilters}
-          className="text-sm text-blue-600 hover:text-blue-500"
-        >
+        <button onClick={handleClearFilters} className="text-sm text-blue-600 hover:text-blue-500">
           Clear all
         </button>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Search
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
           <input
             type="text"
             value={localFilters.search || ''}
-            onChange={(e) => handleFilterChange('search', e.target.value)}
+            onChange={e => handleFilterChange('search', e.target.value)}
             placeholder="Search pages..."
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Status
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
           <select
             value={localFilters.status || ''}
-            onChange={(e) => handleFilterChange('status', e.target.value || undefined)}
+            onChange={e => handleFilterChange('status', e.target.value || undefined)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option value="">All statuses</option>
@@ -169,14 +146,12 @@ const PagesFilters: React.FC<{
             <option value="draft">Draft</option>
           </select>
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Template
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Template</label>
           <select
             value={localFilters.template || ''}
-            onChange={(e) => handleFilterChange('template', e.target.value || undefined)}
+            onChange={e => handleFilterChange('template', e.target.value || undefined)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option value="">All templates</option>
@@ -186,14 +161,12 @@ const PagesFilters: React.FC<{
             <option value="form">Form</option>
           </select>
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Published
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Published</label>
           <select
             value={localFilters.is_published === undefined ? '' : localFilters.is_published.toString()}
-            onChange={(e) => {
+            onChange={e => {
               const value = e.target.value;
               handleFilterChange('is_published', value === '' ? undefined : value === 'true');
             }}
@@ -213,7 +186,7 @@ export const PagesList: React.FC<PagesListProps> = ({
   showFilters = true,
   onPageSelect,
   selectedPageId,
-  className = ''
+  className = '',
 }) => {
   const {
     pages,
@@ -225,7 +198,7 @@ export const PagesList: React.FC<PagesListProps> = ({
     isLoading,
     loadPages,
     loadFilteredPages,
-    updateFilters
+    updateFilters,
   } = usePages();
 
   const [hasFilters, setHasFilters] = useState(false);
@@ -240,8 +213,8 @@ export const PagesList: React.FC<PagesListProps> = ({
 
   const handleFiltersChange = (newFilters: PageFilters) => {
     updateFilters(newFilters);
-    const hasActiveFilters = Object.values(newFilters).some(value => 
-      value !== undefined && value !== '' && value !== null
+    const hasActiveFilters = Object.values(newFilters).some(
+      value => value !== undefined && value !== '' && value !== null
     );
     setHasFilters(hasActiveFilters);
   };
@@ -262,7 +235,7 @@ export const PagesList: React.FC<PagesListProps> = ({
             </div>
           </div>
         )}
-        
+
         <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="border rounded-lg p-4 animate-pulse">
@@ -287,7 +260,7 @@ export const PagesList: React.FC<PagesListProps> = ({
         <div className="text-red-600 mb-2">Error loading pages</div>
         <div className="text-gray-500 text-sm">{error}</div>
         <button
-          onClick={() => hasFilters ? loadFilteredPages(filters) : loadPages()}
+          onClick={() => (hasFilters ? loadFilteredPages(filters) : loadPages())}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
         >
           Try Again
@@ -298,23 +271,16 @@ export const PagesList: React.FC<PagesListProps> = ({
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {showFilters && (
-        <PagesFilters
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-        />
-      )}
+      {showFilters && <PagesFilters filters={filters} onFiltersChange={handleFiltersChange} />}
 
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            Pages
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900">Pages</h2>
           <p className="text-sm text-gray-500 mt-1">
             {displayPages.length} page{displayPages.length !== 1 ? 's' : ''} found
           </p>
         </div>
-        
+
         <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
           <PlusIcon className="w-4 h-4 mr-2" />
           New Page
@@ -324,14 +290,11 @@ export const PagesList: React.FC<PagesListProps> = ({
       {displayPages.length === 0 ? (
         <div className="text-center py-12">
           <DocumentTextIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No pages found
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No pages found</h3>
           <p className="text-gray-500 mb-6">
-            {hasFilters 
+            {hasFilters
               ? 'Try adjusting your filters to see more results.'
-              : 'Get started by creating your first page.'
-            }
+              : 'Get started by creating your first page.'}
           </p>
           <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
             <PlusIcon className="w-4 h-4 mr-2" />
@@ -341,12 +304,7 @@ export const PagesList: React.FC<PagesListProps> = ({
       ) : (
         <div className="space-y-4">
           {displayPages.map(page => (
-            <PageCard
-              key={page.id}
-              page={page}
-              onSelect={onPageSelect}
-              isSelected={selectedPageId === page.id}
-            />
+            <PageCard key={page.id} page={page} onSelect={onPageSelect} isSelected={selectedPageId === page.id} />
           ))}
         </div>
       )}

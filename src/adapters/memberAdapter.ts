@@ -16,9 +16,11 @@ export function adaptMemberFromDatabase(dbMember: SupabaseMember): Member {
     skills: [], // This would need to be populated from member_skills table
     joinDate: dbMember.created_at || new Date().toISOString(),
     social: dbMember.website ? { website: dbMember.website } : undefined,
-    status: (['draft', 'published', 'archived', 'pending'].includes(dbMember.status ?? '') ? dbMember.status as ContentStatus : 'draft'), // Validate and cast
+    status: ['draft', 'published', 'archived', 'pending'].includes(dbMember.status ?? '')
+      ? (dbMember.status as ContentStatus)
+      : 'draft', // Validate and cast
     featured: dbMember.featured || false,
-    created_at: dbMember.created_at || new Date().toISOString()
+    created_at: dbMember.created_at || new Date().toISOString(),
   };
 }
 
@@ -32,7 +34,7 @@ export function adaptMemberToDatabase(member: Partial<Member>): Partial<Supabase
     intro: member.intro || undefined,
     website: member.social?.website || undefined,
     status: member.status || 'draft',
-    featured: member.featured || undefined
+    featured: member.featured || undefined,
   };
   return result;
 }
@@ -64,7 +66,7 @@ export function mapMemberToProfileMember(member: MemberLike): import('../compone
     image: member.image || '/placeholder-avatar.png',
     skills: member.skills || [],
     joinDate: member.joinDate || member.created_at || new Date().toISOString(), // Pass through from MainMember with fallback
-    status: member.status || 'published' as ContentStatus,     // Pass through from MainMember with default
+    status: member.status || ('published' as ContentStatus), // Pass through from MainMember with default
     // TODO(member-relationships): Populate relationship arrays from database
     // These fields require querying the member_organizations, member_groups, member_events tables
     // Current implementation: Empty arrays placeholder
@@ -82,13 +84,15 @@ export function mapMemberToProfileMember(member: MemberLike): import('../compone
     opportunities: [], // TODO: Populate from relationships
     achievements: [], // TODO: Populate from relationships
     // website: member.social?.website, // Removed as ProfileMember uses socialLinks array for website
-    socialLinks: member.social ? [
-      // Ensure 'Website' is capitalized consistently if it matters for platform identification
-      { platform: 'Website', url: member.social.website || '' }
-    ].filter(link => link.url) : [],
+    socialLinks: member.social
+      ? [
+          // Ensure 'Website' is capitalized consistently if it matters for platform identification
+          { platform: 'Website', url: member.social.website || '' },
+        ].filter(link => link.url)
+      : [],
     employmentStatus: 'not-looking' as const, // TODO(member-status): Map from member.employment_status field
     openToVolunteering: false, // TODO(member-volunteering): Add member.open_to_volunteering field to MemberLike type
-    arrivedInNelson: member.joinDate || member.created_at || new Date().toISOString()
+    arrivedInNelson: member.joinDate || member.created_at || new Date().toISOString(),
   };
 }
 
@@ -105,7 +109,7 @@ export interface AdaptedMember {
   employmentStatus: string;
   openToVolunteering: boolean;
   arrivedInNelson: string;
-  status: string; 
+  status: string;
   featured: boolean;
   createdAt: string;
   company: string;
@@ -131,15 +135,15 @@ export function adaptMemberFromSupabase(member: SupabaseMember): AdaptedMember {
     status: member.status || 'published',
     featured: member.featured || false,
     createdAt: member.created_at || new Date().toISOString(),
-    company: '', 
-    skills: [], 
-    joinDate: member.created_at || new Date().toISOString(), 
+    company: '',
+    skills: [],
+    joinDate: member.created_at || new Date().toISOString(),
     social: {
       linkedin: '', // Supabase 'members' table does not have a separate linkedin column
-      twitter: '',  // Supabase 'members' table does not have a separate twitter column
-      github: '',   // Supabase 'members' table does not have a separate github column
-      website: member.website || '' // Use the 'website' column from Supabase
-    }
+      twitter: '', // Supabase 'members' table does not have a separate twitter column
+      github: '', // Supabase 'members' table does not have a separate github column
+      website: member.website || '', // Use the 'website' column from Supabase
+    },
   };
   return adaptedMember;
 }
@@ -156,8 +160,8 @@ export function adaptMemberToSupabase(member: AdaptedMember): Database['public']
     employment_status: member.employmentStatus,
     open_to_volunteering: member.openToVolunteering,
     arrived_in_nelson: member.arrivedInNelson,
-    status: member.status, 
-    featured: member.featured
+    status: member.status,
+    featured: member.featured,
     // Supabase 'members' table does not have separate linkedin, twitter, github columns
     // The 'website' column is already mapped from member.website above
   };

@@ -28,15 +28,17 @@ class NewsletterContentApi {
 
       if (error && error.code !== 'PGRST116') throw error; // Ignore 'not found' errors
 
-      return data ? {
-        id: data.id,
-        content_type: data.content_type as NewsletterContent['content_type'],
-        date_range_start: data.date_range_start,
-        date_range_end: data.date_range_end,
-        content: data.content,
-        generated_at: data.generated_at,
-        expires_at: data.expires_at
-      } : null;
+      return data
+        ? {
+            id: data.id,
+            content_type: data.content_type as NewsletterContent['content_type'],
+            date_range_start: data.date_range_start,
+            date_range_end: data.date_range_end,
+            content: data.content,
+            generated_at: data.generated_at,
+            expires_at: data.expires_at,
+          }
+        : null;
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Get Cached Content');
       throw new Error(sanitized.userMessage);
@@ -64,7 +66,7 @@ class NewsletterContentApi {
         date_range_end: item.date_range_end,
         content: item.content,
         generated_at: item.generated_at,
-        expires_at: item.expires_at
+        expires_at: item.expires_at,
       }));
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Get All Cached Content');
@@ -85,14 +87,14 @@ class NewsletterContentApi {
           date_range_end: content.date_range_end || new Date().toISOString(),
           content: content.content,
           generated_at: new Date().toISOString(),
-          expires_at: content.expires_at || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours default
+          expires_at: content.expires_at || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours default
         })
         .select()
         .single();
 
       if (error) throw error;
       if (!data) throw new Error('Failed to cache content');
-      
+
       return {
         id: data.id,
         content_type: data.content_type as NewsletterContent['content_type'],
@@ -100,7 +102,7 @@ class NewsletterContentApi {
         date_range_end: data.date_range_end,
         content: data.content,
         generated_at: data.generated_at,
-        expires_at: data.expires_at
+        expires_at: data.expires_at,
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Cache Content');
@@ -119,7 +121,7 @@ class NewsletterContentApi {
       if (updates.date_range_end) updateData.date_range_end = updates.date_range_end;
       if (updates.content) updateData.content = updates.content;
       if (updates.expires_at) updateData.expires_at = updates.expires_at;
-      
+
       const { data, error } = await supabase
         .from('newsletter_content_cache')
         .update(updateData)
@@ -129,7 +131,7 @@ class NewsletterContentApi {
 
       if (error) throw error;
       if (!data) throw new Error('Failed to update content');
-      
+
       return {
         id: data.id,
         content_type: data.content_type as NewsletterContent['content_type'],
@@ -137,7 +139,7 @@ class NewsletterContentApi {
         date_range_end: data.date_range_end,
         content: data.content,
         generated_at: data.generated_at,
-        expires_at: data.expires_at
+        expires_at: data.expires_at,
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Update Cached Content');
@@ -150,10 +152,7 @@ class NewsletterContentApi {
    */
   async removeCachedContent(id: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('newsletter_content_cache')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('newsletter_content_cache').delete().eq('id', id);
 
       if (error) throw error;
     } catch (error) {

@@ -30,14 +30,25 @@ import {
   Building,
   ShoppingBag,
   FileText,
-  Star
+  Star,
 } from 'lucide-react';
 import { newsletterCampaignApi } from '@/features/newsletter/api/campaigns';
 import { NewsletterCampaign, CuratedContent } from '@/types/newsletter';
 
 interface EditorBlock {
   id: string;
-  type: 'text' | 'image' | 'events' | 'news' | 'opportunities' | 'marketplace' | 'members' | 'companies' | 'divider' | 'button' | 'social';
+  type:
+    | 'text'
+    | 'image'
+    | 'events'
+    | 'news'
+    | 'opportunities'
+    | 'marketplace'
+    | 'members'
+    | 'companies'
+    | 'divider'
+    | 'button'
+    | 'social';
   content: any;
   styles: {
     backgroundColor?: string;
@@ -68,15 +79,15 @@ const NewsletterEditor: React.FC = () => {
       primary_color: '#3B82F6',
       secondary_color: '#64748B',
       logo_url: '',
-      footer_text: 'Uluntu'
-    }
+      footer_text: 'Uluntu',
+    },
   });
 
   // Fetch campaign data
   const { data: campaign, isLoading } = useQuery({
     queryKey: ['newsletter-campaign', id],
-    queryFn: () => id ? newsletterCampaignApi.getCampaign(id) : null,
-    enabled: !!id
+    queryFn: () => (id ? newsletterCampaignApi.getCampaign(id) : null),
+    enabled: !!id,
   });
 
   // Save campaign mutation
@@ -87,7 +98,7 @@ const NewsletterEditor: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['newsletter-campaign', id] });
-    }
+    },
   });
 
   // Load campaign data into editor
@@ -98,10 +109,10 @@ const NewsletterEditor: React.FC = () => {
         preheader: campaign.template_data?.preheader || '',
         branding: {
           ...campaignSettings.branding,
-          ...campaign.branding
-        }
+          ...campaign.branding,
+        },
       });
-      
+
       // Convert campaign content to editor blocks
       const contentBlocks = convertContentToBlocks(campaign.content);
       setBlocks(contentBlocks);
@@ -110,19 +121,19 @@ const NewsletterEditor: React.FC = () => {
 
   const convertContentToBlocks = (content: CuratedContent): EditorBlock[] => {
     const blocks: EditorBlock[] = [];
-    
+
     // Header block
     blocks.push({
       id: 'header',
       type: 'text',
       content: {
-        html: `<h1 style="color: ${campaignSettings.branding.primary_color};">${campaign?.title || 'Newsletter'}</h1>`
+        html: `<h1 style="color: ${campaignSettings.branding.primary_color};">${campaign?.title || 'Newsletter'}</h1>`,
       },
       styles: {
         backgroundColor: '#f8fafc',
         padding: '20px',
-        textAlign: 'center'
-      }
+        textAlign: 'center',
+      },
     });
 
     // Custom message block
@@ -131,12 +142,12 @@ const NewsletterEditor: React.FC = () => {
         id: 'custom-message',
         type: 'text',
         content: {
-          html: `<p>${campaign.custom_message}</p>`
+          html: `<p>${campaign.custom_message}</p>`,
         },
         styles: {
           padding: '20px',
-          backgroundColor: '#fff'
-        }
+          backgroundColor: '#fff',
+        },
       });
     }
 
@@ -148,8 +159,8 @@ const NewsletterEditor: React.FC = () => {
         content: content.events,
         styles: {
           padding: '20px',
-          backgroundColor: '#fff'
-        }
+          backgroundColor: '#fff',
+        },
       });
     }
 
@@ -161,8 +172,8 @@ const NewsletterEditor: React.FC = () => {
         content: content.news,
         styles: {
           padding: '20px',
-          backgroundColor: '#f8fafc'
-        }
+          backgroundColor: '#f8fafc',
+        },
       });
     }
 
@@ -174,8 +185,8 @@ const NewsletterEditor: React.FC = () => {
         content: content.opportunities,
         styles: {
           padding: '20px',
-          backgroundColor: '#fff'
-        }
+          backgroundColor: '#fff',
+        },
       });
     }
 
@@ -189,10 +200,10 @@ const NewsletterEditor: React.FC = () => {
       content: getDefaultContent(type),
       styles: {
         padding: '20px',
-        backgroundColor: '#fff'
-      }
+        backgroundColor: '#fff',
+      },
     };
-    
+
     setBlocks([...blocks, newBlock]);
     setSelectedBlock(newBlock.id);
     setShowBlockLibrary(false);
@@ -209,12 +220,12 @@ const NewsletterEditor: React.FC = () => {
       case 'divider':
         return { style: 'solid', color: '#e5e7eb' };
       case 'social':
-        return { 
+        return {
           platforms: [
             { name: 'Facebook', url: '#', icon: 'facebook' },
             { name: 'Twitter', url: '#', icon: 'twitter' },
-            { name: 'LinkedIn', url: '#', icon: 'linkedin' }
-          ]
+            { name: 'LinkedIn', url: '#', icon: 'linkedin' },
+          ],
         };
       default:
         return {};
@@ -222,9 +233,7 @@ const NewsletterEditor: React.FC = () => {
   };
 
   const updateBlock = (blockId: string, updates: Partial<EditorBlock>) => {
-    setBlocks(blocks.map(block => 
-      block.id === blockId ? { ...block, ...updates } : block
-    ));
+    setBlocks(blocks.map(block => (block.id === blockId ? { ...block, ...updates } : block)));
   };
 
   const deleteBlock = (blockId: string) => {
@@ -252,17 +261,17 @@ const NewsletterEditor: React.FC = () => {
       subject: campaignSettings.subject,
       template_data: {
         preheader: campaignSettings.preheader,
-        blocks: blocks
+        blocks: blocks,
       },
-      branding: campaignSettings.branding
+      branding: campaignSettings.branding,
     };
-    
+
     saveMutation.mutate(campaignData);
   };
 
   const renderBlock = (block: EditorBlock) => {
     const isSelected = selectedBlock === block.id;
-    
+
     return (
       <div
         key={block.id}
@@ -276,7 +285,7 @@ const NewsletterEditor: React.FC = () => {
         {isSelected && (
           <div className="absolute -top-10 left-0 flex items-center space-x-2 bg-blue-600 text-white px-2 py-1 rounded text-xs">
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 moveBlock(block.id, 'up');
               }}
@@ -285,7 +294,7 @@ const NewsletterEditor: React.FC = () => {
               ↑
             </button>
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 moveBlock(block.id, 'down');
               }}
@@ -296,7 +305,7 @@ const NewsletterEditor: React.FC = () => {
             <GripVertical className="w-3 h-3" />
             <span className="capitalize">{block.type}</span>
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 deleteBlock(block.id);
               }}
@@ -306,11 +315,9 @@ const NewsletterEditor: React.FC = () => {
             </button>
           </div>
         )}
-        
+
         {/* Block Content */}
-        <div className="min-h-[40px]">
-          {renderBlockContent(block)}
-        </div>
+        <div className="min-h-[40px]">{renderBlockContent(block)}</div>
       </div>
     );
   };
@@ -322,15 +329,15 @@ const NewsletterEditor: React.FC = () => {
           <div
             contentEditable
             dangerouslySetInnerHTML={{ __html: block.content.html }}
-            onBlur={(e) => {
+            onBlur={e => {
               updateBlock(block.id, {
-                content: { ...block.content, html: e.currentTarget.innerHTML }
+                content: { ...block.content, html: e.currentTarget.innerHTML },
               });
             }}
             className="outline-none"
           />
         );
-      
+
       case 'events':
         return (
           <div>
@@ -351,7 +358,7 @@ const NewsletterEditor: React.FC = () => {
             </div>
           </div>
         );
-      
+
       case 'news':
         return (
           <div>
@@ -372,7 +379,7 @@ const NewsletterEditor: React.FC = () => {
             </div>
           </div>
         );
-      
+
       case 'opportunities':
         return (
           <div>
@@ -393,18 +400,12 @@ const NewsletterEditor: React.FC = () => {
             </div>
           </div>
         );
-      
+
       case 'image':
         return block.content.src ? (
           <div className="text-center">
-            <img
-              src={block.content.src}
-              alt={block.content.alt}
-              className="max-w-full h-auto mx-auto"
-            />
-            {block.content.caption && (
-              <p className="text-sm text-gray-600 mt-2">{block.content.caption}</p>
-            )}
+            <img src={block.content.src} alt={block.content.alt} className="max-w-full h-auto mx-auto" />
+            {block.content.caption && <p className="text-sm text-gray-600 mt-2">{block.content.caption}</p>}
           </div>
         ) : (
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
@@ -412,7 +413,7 @@ const NewsletterEditor: React.FC = () => {
             <p className="text-gray-500">Click to add an image</p>
           </div>
         );
-      
+
       case 'button':
         return (
           <div className="text-center">
@@ -426,18 +427,18 @@ const NewsletterEditor: React.FC = () => {
             </a>
           </div>
         );
-      
+
       case 'divider':
         return (
           <hr
             className="border-0 h-px"
             style={{
               backgroundColor: block.content.color,
-              borderStyle: block.content.style
+              borderStyle: block.content.style,
             }}
           />
         );
-      
+
       default:
         return <div className="text-gray-500 italic">Unsupported block type: {block.type}</div>;
     }
@@ -449,10 +450,7 @@ const NewsletterEditor: React.FC = () => {
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium text-gray-900">Add Content Block</h3>
-            <button
-              onClick={() => setShowBlockLibrary(false)}
-              className="text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={() => setShowBlockLibrary(false)} className="text-gray-400 hover:text-gray-600">
               <span className="sr-only">Close</span>
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -460,7 +458,7 @@ const NewsletterEditor: React.FC = () => {
             </button>
           </div>
         </div>
-        
+
         <div className="p-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {[
@@ -474,8 +472,8 @@ const NewsletterEditor: React.FC = () => {
               { type: 'companies', icon: Building, label: 'Companies', desc: 'Company profiles' },
               { type: 'button', icon: Link2, label: 'Button', desc: 'Call-to-action button' },
               { type: 'divider', icon: Layout, label: 'Divider', desc: 'Section separator' },
-              { type: 'social', icon: Link2, label: 'Social', desc: 'Social media links' }
-            ].map((blockType) => (
+              { type: 'social', icon: Link2, label: 'Social', desc: 'Social media links' },
+            ].map(blockType => (
               <button
                 key={blockType.type}
                 onClick={() => addBlock(blockType.type as EditorBlock['type'])}
@@ -516,7 +514,7 @@ const NewsletterEditor: React.FC = () => {
               Newsletter Editor: {campaign?.title}
             </h1>
           </div>
-          
+
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setEditorMode(editorMode === 'design' ? 'preview' : 'design')}
@@ -525,7 +523,7 @@ const NewsletterEditor: React.FC = () => {
               <Eye className="w-4 h-4 mr-2" />
               {editorMode === 'design' ? 'Preview' : 'Design'}
             </button>
-            
+
             <button
               onClick={handleSave}
               disabled={saveMutation.isPending}
@@ -548,31 +546,31 @@ const NewsletterEditor: React.FC = () => {
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Campaign Settings</h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Subject Line
-                    </label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Subject Line</label>
                     <input
                       type="text"
                       value={campaignSettings.subject}
-                      onChange={(e) => setCampaignSettings({
-                        ...campaignSettings,
-                        subject: e.target.value
-                      })}
+                      onChange={e =>
+                        setCampaignSettings({
+                          ...campaignSettings,
+                          subject: e.target.value,
+                        })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Preheader Text
-                    </label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Preheader Text</label>
                     <input
                       type="text"
                       value={campaignSettings.preheader}
-                      onChange={(e) => setCampaignSettings({
-                        ...campaignSettings,
-                        preheader: e.target.value
-                      })}
+                      onChange={e =>
+                        setCampaignSettings({
+                          ...campaignSettings,
+                          preheader: e.target.value,
+                        })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
                       placeholder="Preview text that appears after subject"
                     />
@@ -585,19 +583,19 @@ const NewsletterEditor: React.FC = () => {
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Branding</h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Primary Color
-                    </label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Primary Color</label>
                     <input
                       type="color"
                       value={campaignSettings.branding.primary_color}
-                      onChange={(e) => setCampaignSettings({
-                        ...campaignSettings,
-                        branding: {
-                          ...campaignSettings.branding,
-                          primary_color: e.target.value
-                        }
-                      })}
+                      onChange={e =>
+                        setCampaignSettings({
+                          ...campaignSettings,
+                          branding: {
+                            ...campaignSettings.branding,
+                            primary_color: e.target.value,
+                          },
+                        })
+                      }
                       className="w-full h-10 border border-gray-300 rounded-md"
                     />
                   </div>
@@ -621,38 +619,34 @@ const NewsletterEditor: React.FC = () => {
                   <h3 className="text-sm font-medium text-gray-900 mb-3">Block Properties</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Background Color
-                      </label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Background Color</label>
                       <input
                         type="color"
                         value={blocks.find(b => b.id === selectedBlock)?.styles.backgroundColor || '#ffffff'}
-                        onChange={(e) => {
+                        onChange={e => {
                           updateBlock(selectedBlock, {
                             styles: {
                               ...blocks.find(b => b.id === selectedBlock)?.styles,
-                              backgroundColor: e.target.value
-                            }
+                              backgroundColor: e.target.value,
+                            },
                           });
                         }}
                         className="w-full h-10 border border-gray-300 rounded-md"
                       />
                     </div>
-                    
+
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Text Alignment
-                      </label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Text Alignment</label>
                       <div className="flex space-x-1">
-                        {['left', 'center', 'right'].map((align) => (
+                        {['left', 'center', 'right'].map(align => (
                           <button
                             key={align}
                             onClick={() => {
                               updateBlock(selectedBlock, {
                                 styles: {
                                   ...blocks.find(b => b.id === selectedBlock)?.styles,
-                                  textAlign: align as 'left' | 'center' | 'right'
-                                }
+                                  textAlign: align as 'left' | 'center' | 'right',
+                                },
                               });
                             }}
                             className={`px-2 py-1 border rounded text-xs ${
@@ -688,16 +682,14 @@ const NewsletterEditor: React.FC = () => {
                   <strong>Subject:</strong> {campaignSettings.subject || 'Your Newsletter Subject'}
                 </div>
                 {campaignSettings.preheader && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    {campaignSettings.preheader}
-                  </div>
+                  <div className="text-xs text-gray-500 mt-1">{campaignSettings.preheader}</div>
                 )}
               </div>
 
               {/* Email Content */}
               <div ref={editorRef} className="min-h-[500px]">
                 {blocks.map(renderBlock)}
-                
+
                 {blocks.length === 0 && (
                   <div className="flex items-center justify-center h-64 text-gray-500">
                     <div className="text-center">
@@ -718,9 +710,17 @@ const NewsletterEditor: React.FC = () => {
               <div className="bg-gray-50 px-6 py-4 border-t text-center text-xs text-gray-500">
                 <p>{campaignSettings.branding.footer_text}</p>
                 <p className="mt-1">
-                  <a href="#" className="text-blue-600">Unsubscribe</a> | 
-                  <a href="#" className="text-blue-600 ml-1">Update Preferences</a> | 
-                  <a href="#" className="text-blue-600 ml-1">View in Browser</a>
+                  <a href="#" className="text-blue-600">
+                    Unsubscribe
+                  </a>{' '}
+                  |
+                  <a href="#" className="text-blue-600 ml-1">
+                    Update Preferences
+                  </a>{' '}
+                  |
+                  <a href="#" className="text-blue-600 ml-1">
+                    View in Browser
+                  </a>
                 </p>
               </div>
             </div>

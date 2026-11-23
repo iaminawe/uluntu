@@ -22,17 +22,17 @@ const FormModal: React.FC<FormModalProps> = ({
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Create a FormData object from the form
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    
+
     // Convert FormData to an object
     const data: Record<string, any> = {};
     formData.forEach((value, key) => {
       data[key] = value;
     });
-    
+
     // Call the onSubmit handler with the form data
     onSubmit(data);
   };
@@ -48,9 +48,7 @@ const FormModal: React.FC<FormModalProps> = ({
                  focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 
                  disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
       >
-        {isSubmitting && showLoadingIndicator && (
-          <Loader className="h-4 w-4 mr-2 animate-spin" />
-        )}
+        {isSubmitting && showLoadingIndicator && <Loader className="h-4 w-4 mr-2 animate-spin" />}
         {isSubmitting ? 'Submitting...' : submitText}
       </button>
       <button

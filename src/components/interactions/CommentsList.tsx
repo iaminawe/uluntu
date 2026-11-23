@@ -22,7 +22,7 @@ export function CommentsList({
   entityId,
   className,
   showToggle = true,
-  defaultExpanded = false
+  defaultExpanded = false,
 }: CommentsListProps) {
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -37,14 +37,16 @@ export function CommentsList({
 
   const fetchComments = async () => {
     setIsLoading(true);
-    
+
     try {
       // Fetch comments with user/member data
       const { data: commentsData, error } = await supabase
         .from('comments')
-        .select(`
+        .select(
+          `
           *
-        `)
+        `
+        )
         .eq('entity_type', entityType)
         .eq('entity_id', entityId)
         .eq('is_deleted', false)
@@ -65,12 +67,14 @@ export function CommentsList({
 
       // Fetch replies for each comment
       const commentsWithReplies = await Promise.all(
-        (commentsData || []).map(async (comment) => {
+        (commentsData || []).map(async comment => {
           const { data: replies } = await supabase
             .from('comments')
-            .select(`
+            .select(
+              `
               *
-            `)
+            `
+            )
             .eq('parent_id', comment.id)
             .eq('is_deleted', false)
             .order('created_at', { ascending: true });
@@ -80,19 +84,16 @@ export function CommentsList({
             entity_type: comment.entity_type as EntityType,
             replies: (replies || []).map(r => ({
               ...r,
-              entity_type: r.entity_type as EntityType
-            }))
+              entity_type: r.entity_type as EntityType,
+            })),
           };
         })
       );
 
       setComments(commentsWithReplies as Comment[]);
-      
+
       // Calculate total comment count including replies
-      const totalCount = commentsWithReplies.reduce(
-        (sum, comment) => sum + 1 + (comment.replies?.length || 0),
-        0
-      );
+      const totalCount = commentsWithReplies.reduce((sum, comment) => sum + 1 + (comment.replies?.length || 0), 0);
       setCommentCount(totalCount);
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -107,12 +108,12 @@ export function CommentsList({
   };
 
   const handleCommentDeleted = (commentId: string) => {
-    setComments(prevComments => 
+    setComments(prevComments =>
       prevComments
         .filter(c => c.id !== commentId)
         .map(c => ({
           ...c,
-          replies: c.replies?.filter(r => r.id !== commentId) || []
+          replies: c.replies?.filter(r => r.id !== commentId) || [],
         }))
     );
     setCommentCount(prev => Math.max(0, prev - 1));
@@ -121,11 +122,7 @@ export function CommentsList({
   if (showToggle && !isExpanded) {
     return (
       <div className={cn('border-t dark:border-gray-800', className)}>
-        <Button
-          variant="outline"
-          onClick={() => setIsExpanded(true)}
-          className="w-full justify-between py-4 text-left"
-        >
+        <Button variant="outline" onClick={() => setIsExpanded(true)} className="w-full justify-between py-4 text-left">
           <div className="flex items-center gap-2">
             <MessageCircle className="h-5 w-5" />
             <span>Comments ({commentCount})</span>
@@ -140,25 +137,13 @@ export function CommentsList({
     <div className={cn('border-t dark:border-gray-800', className)}>
       {showToggle && (
         <div className="flex items-center justify-between py-4">
-          <Button
-            variant="outline"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="gap-2"
-          >
+          <Button variant="outline" onClick={() => setIsExpanded(!isExpanded)} className="gap-2">
             <MessageCircle className="h-5 w-5" />
             <span>Comments ({commentCount})</span>
-            {isExpanded ? (
-              <ChevronUp className="h-5 w-5" />
-            ) : (
-              <ChevronDown className="h-5 w-5" />
-            )}
+            {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
           </Button>
           {user && !showCommentForm && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setShowCommentForm(true)}
-            >
+            <Button variant="secondary" size="sm" onClick={() => setShowCommentForm(true)}>
               Add Comment
             </Button>
           )}
@@ -187,19 +172,14 @@ export function CommentsList({
               <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p>No comments yet. Be the first to comment!</p>
               {user && !showCommentForm && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setShowCommentForm(true)}
-                  className="mt-4"
-                >
+                <Button variant="secondary" size="sm" onClick={() => setShowCommentForm(true)} className="mt-4">
                   Add Comment
                 </Button>
               )}
             </div>
           ) : (
             <div className="space-y-4">
-              {comments.map((comment) => (
+              {comments.map(comment => (
                 <CommentItem
                   key={comment.id}
                   comment={comment}

@@ -24,7 +24,7 @@ export const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
   deleteOptions,
   onClose,
   onDelete,
-  onOptionsChange
+  onOptionsChange,
 }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -60,7 +60,9 @@ export const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
                 />
                 <div className="ml-3">
                   <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Keep content as-is</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Content will remain but user profile will be deleted</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Content will remain but user profile will be deleted
+                  </p>
                 </div>
               </label>
 
@@ -74,7 +76,9 @@ export const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
                 />
                 <div className="ml-3">
                   <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Delete all content</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">All posts, events, groups, etc. will be permanently deleted</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    All posts, events, groups, etc. will be permanently deleted
+                  </p>
                 </div>
               </label>
 
@@ -98,24 +102,30 @@ export const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
                     type="radio"
                     name="deleteOption"
                     checked={!!deleteOptions.reassignTo}
-                    onChange={() => onOptionsChange({ deleteContent: false, reassignTo: 'select', makeAnonymous: false })}
+                    onChange={() =>
+                      onOptionsChange({ deleteContent: false, reassignTo: 'select', makeAnonymous: false })
+                    }
                     className="mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
                   <div className="ml-3 flex-1">
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Reassign to another user</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      Reassign to another user
+                    </span>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Transfer ownership to selected user</p>
                     {deleteOptions.reassignTo && (
                       <select
                         value={deleteOptions.reassignTo === 'select' ? '' : deleteOptions.reassignTo}
-                        onChange={(e) => onOptionsChange({ ...deleteOptions, reassignTo: e.target.value })}
+                        onChange={e => onOptionsChange({ ...deleteOptions, reassignTo: e.target.value })}
                         className="mt-2 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                       >
                         <option value="">Select a user...</option>
-                        {users?.filter(u => u.user_id !== user.user_id && u.email !== 'No account').map(u => (
-                          <option key={u.user_id} value={u.user_id}>
-                            {u.name || u.email}
-                          </option>
-                        ))}
+                        {users
+                          ?.filter(u => u.user_id !== user.user_id && u.email !== 'No account')
+                          .map(u => (
+                            <option key={u.user_id} value={u.user_id}>
+                              {u.name || u.email}
+                            </option>
+                          ))}
                       </select>
                     )}
                   </div>
@@ -135,7 +145,9 @@ export const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
             </button>
             <button
               onClick={onDelete}
-              disabled={deleteOptions.reassignTo === 'select' || (deleteOptions.reassignTo && !deleteOptions.reassignTo)}
+              disabled={
+                deleteOptions.reassignTo === 'select' || (deleteOptions.reassignTo && !deleteOptions.reassignTo)
+              }
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center"
             >
               <Trash2 className="h-4 w-4 mr-2" />

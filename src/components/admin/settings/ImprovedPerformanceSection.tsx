@@ -4,21 +4,21 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { 
-  TrendingUp, 
-  Database, 
-  Zap, 
+import {
+  TrendingUp,
+  Database,
+  Zap,
   Monitor,
   Activity,
   Server,
   Eye,
   EyeOff,
-  Save, 
-  RotateCcw, 
+  Save,
+  RotateCcw,
   Info,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -50,7 +50,7 @@ const cacheFields: SettingField[] = [
     key: 'enable_redis_cache',
     label: 'Enable Redis Cache',
     type: 'boolean',
-    description: 'Use Redis for caching to improve response times'
+    description: 'Use Redis for caching to improve response times',
   },
   {
     key: 'cache_ttl_minutes',
@@ -59,20 +59,20 @@ const cacheFields: SettingField[] = [
     placeholder: '60',
     unit: 'minutes',
     description: 'Default time-to-live for cached items',
-    validation: { min: 1, max: 1440, step: 1 }
+    validation: { min: 1, max: 1440, step: 1 },
   },
   {
     key: 'page_cache_enabled',
     label: 'Enable Page Caching',
     type: 'boolean',
-    description: 'Cache rendered pages for faster loading'
+    description: 'Cache rendered pages for faster loading',
   },
   {
     key: 'api_cache_enabled',
     label: 'Enable API Caching',
     type: 'boolean',
-    description: 'Cache API responses to reduce database load'
-  }
+    description: 'Cache API responses to reduce database load',
+  },
 ];
 
 const databaseFields: SettingField[] = [
@@ -83,7 +83,7 @@ const databaseFields: SettingField[] = [
     placeholder: '10',
     unit: 'connections',
     description: 'Number of database connections to maintain',
-    validation: { min: 1, max: 100, step: 1 }
+    validation: { min: 1, max: 100, step: 1 },
   },
   {
     key: 'query_timeout_seconds',
@@ -92,13 +92,13 @@ const databaseFields: SettingField[] = [
     placeholder: '30',
     unit: 'seconds',
     description: 'Maximum time to wait for database queries',
-    validation: { min: 5, max: 300, step: 5 }
+    validation: { min: 5, max: 300, step: 5 },
   },
   {
     key: 'enable_query_logging',
     label: 'Enable Slow Query Logging',
     type: 'boolean',
-    description: 'Log queries that take longer than threshold'
+    description: 'Log queries that take longer than threshold',
   },
   {
     key: 'slow_query_threshold_ms',
@@ -107,8 +107,8 @@ const databaseFields: SettingField[] = [
     placeholder: '1000',
     unit: 'milliseconds',
     description: 'Log queries slower than this threshold',
-    validation: { min: 100, max: 10000, step: 100 }
-  }
+    validation: { min: 100, max: 10000, step: 100 },
+  },
 ];
 
 const optimizationFields: SettingField[] = [
@@ -116,7 +116,7 @@ const optimizationFields: SettingField[] = [
     key: 'enable_compression',
     label: 'Enable Response Compression',
     type: 'boolean',
-    description: 'Compress HTTP responses to reduce bandwidth'
+    description: 'Compress HTTP responses to reduce bandwidth',
   },
   {
     key: 'compression_level',
@@ -126,14 +126,14 @@ const optimizationFields: SettingField[] = [
     options: [
       { value: '1', label: 'Level 1 - Fastest, least compression' },
       { value: '6', label: 'Level 6 - Balanced (recommended)' },
-      { value: '9', label: 'Level 9 - Best compression, slowest' }
-    ]
+      { value: '9', label: 'Level 9 - Best compression, slowest' },
+    ],
   },
   {
     key: 'enable_image_optimization',
     label: 'Enable Image Optimization',
     type: 'boolean',
-    description: 'Automatically optimize uploaded images'
+    description: 'Automatically optimize uploaded images',
   },
   {
     key: 'max_image_size_mb',
@@ -142,8 +142,8 @@ const optimizationFields: SettingField[] = [
     placeholder: '10',
     unit: 'MB',
     description: 'Maximum allowed image upload size',
-    validation: { min: 1, max: 100, step: 1 }
-  }
+    validation: { min: 1, max: 100, step: 1 },
+  },
 ];
 
 const monitoringFields: SettingField[] = [
@@ -151,7 +151,7 @@ const monitoringFields: SettingField[] = [
     key: 'enable_performance_monitoring',
     label: 'Enable Performance Monitoring',
     type: 'boolean',
-    description: 'Track response times and system metrics'
+    description: 'Track response times and system metrics',
   },
   {
     key: 'metrics_retention_days',
@@ -160,7 +160,7 @@ const monitoringFields: SettingField[] = [
     placeholder: '30',
     unit: 'days',
     description: 'How long to keep performance metrics',
-    validation: { min: 7, max: 365, step: 1 }
+    validation: { min: 7, max: 365, step: 1 },
   },
   {
     key: 'alert_threshold_response_time_ms',
@@ -169,8 +169,8 @@ const monitoringFields: SettingField[] = [
     placeholder: '2000',
     unit: 'milliseconds',
     description: 'Alert when response times exceed this threshold',
-    validation: { min: 500, max: 10000, step: 100 }
-  }
+    validation: { min: 500, max: 10000, step: 100 },
+  },
 ];
 
 const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
@@ -178,7 +178,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
   features,
   onUpdateSetting,
   onRefresh,
-  isLoading
+  isLoading,
 }) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
@@ -206,22 +206,22 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
     setSaving(true);
     try {
       const updates: UpdateSettingRequest[] = [];
-      
+
       for (const fieldKey of changedFields) {
         const [category, settingKey] = fieldKey.split('.');
         const value = formData[fieldKey];
-        
+
         const setting = settings.find(s => s.setting_key === settingKey && s.category === category);
         updates.push({
           setting_key: settingKey,
           setting_value: value,
           category: category as any,
-          data_type: (setting?.data_type as SettingDataType) || ('string' as SettingDataType)
+          data_type: (setting?.data_type as SettingDataType) || ('string' as SettingDataType),
         });
       }
-      
+
       await Promise.all(updates.map(update => onUpdateSetting(update)));
-      
+
       setChangedFields(new Set());
       toast.success(`Saved ${updates.length} performance settings successfully`);
       onRefresh();
@@ -248,14 +248,14 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
     const fieldKey = `${category}.${field.key}`;
     const value = formData[fieldKey];
     const hasChanged = changedFields.has(fieldKey);
-    
+
     return (
       <div key={fieldKey} className="space-y-3">
         <label className="block text-sm font-medium text-gray-700">
           {field.label}
           {field.unit && <span className="text-gray-500 ml-1">({field.unit})</span>}
         </label>
-        
+
         {field.type === 'boolean' ? (
           <div className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
             <div className="flex-1">
@@ -265,23 +265,23 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
                 ) : (
                   <XCircle className="h-4 w-4 text-gray-400" />
                 )}
-                <span className="text-sm font-medium">
-                  {value ? 'Enabled' : 'Disabled'}
-                </span>
+                <span className="text-sm font-medium">{value ? 'Enabled' : 'Disabled'}</span>
               </div>
             </div>
             <Switch
               checked={value || false}
-              onCheckedChange={(checked) => handleFieldChange(category, field.key, checked)}
+              onCheckedChange={checked => handleFieldChange(category, field.key, checked)}
               className={hasChanged ? 'ring-2 ring-green-300' : ''}
             />
           </div>
         ) : field.type === 'select' ? (
           <select
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors ${
-              hasChanged ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-300 dark:border-slate-600'
+              hasChanged
+                ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-slate-300 dark:border-slate-600'
             }`}
           >
             <option value="">Select an option...</option>
@@ -295,17 +295,19 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
           <input
             type="number"
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, parseInt(e.target.value) || 0)}
+            onChange={e => handleFieldChange(category, field.key, parseInt(e.target.value) || 0)}
             placeholder={field.placeholder}
             min={field.validation?.min}
             max={field.validation?.max}
             step={field.validation?.step}
             className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors ${
-              hasChanged ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-300 dark:border-slate-600'
+              hasChanged
+                ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-slate-300 dark:border-slate-600'
             }`}
           />
         )}
-        
+
         {field.description && (
           <p className="text-xs text-gray-500 flex items-start">
             <Info className="h-3 w-3 mt-0.5 mr-1 flex-shrink-0" />
@@ -352,11 +354,12 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
     return 'text-red-600';
   };
 
-  const performanceFeatures = features.filter(f => 
-    f.feature_key.includes('performance') || 
-    f.feature_key.includes('cache') || 
-    f.feature_key.includes('optimization') ||
-    f.feature_key.includes('monitoring')
+  const performanceFeatures = features.filter(
+    f =>
+      f.feature_key.includes('performance') ||
+      f.feature_key.includes('cache') ||
+      f.feature_key.includes('optimization') ||
+      f.feature_key.includes('monitoring')
   );
 
   return (
@@ -369,7 +372,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
             Configure caching, database optimization, and performance monitoring
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
@@ -379,19 +382,14 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
             {previewMode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             <span>{previewMode ? 'Hide Dashboard' : 'Show Dashboard'}</span>
           </Button>
-          
+
           {changedFields.size > 0 && (
             <>
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                disabled={saving}
-                className="flex items-center space-x-2"
-              >
+              <Button variant="outline" onClick={handleReset} disabled={saving} className="flex items-center space-x-2">
                 <RotateCcw className="h-4 w-4" />
                 <span>Reset</span>
               </Button>
-              
+
               <Button
                 onClick={handleSaveAll}
                 disabled={saving}
@@ -399,9 +397,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
               >
                 <Save className="h-4 w-4" />
                 <span>Save Changes</span>
-                <span className="ml-1 px-2 py-0.5 bg-green-500 text-xs rounded-full">
-                  {changedFields.size}
-                </span>
+                <span className="ml-1 px-2 py-0.5 bg-green-500 text-xs rounded-full">{changedFields.size}</span>
               </Button>
             </>
           )}
@@ -417,15 +413,12 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
           <CardContent className="space-y-6">
             {/* Performance Score */}
             <div className="text-center">
-              <div className={`text-4xl font-bold ${getScoreColor(performanceScore)}`}>
-                {performanceScore}%
-              </div>
+              <div className={`text-4xl font-bold ${getScoreColor(performanceScore)}`}>{performanceScore}%</div>
               <p className="text-sm text-gray-600">Performance Score</p>
               <div className="w-full bg-gray-200 rounded-full h-3 mt-2">
-                <div 
+                <div
                   className={`h-3 rounded-full transition-all duration-300 ${
-                    performanceScore >= 80 ? 'bg-green-500' :
-                    performanceScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                    performanceScore >= 80 ? 'bg-green-500' : performanceScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
                   }`}
                   style={{ width: `${performanceScore}%` }}
                 />
@@ -623,9 +616,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {monitoringFields.map(field => renderField('performance', field))}
-          </div>
+          <div className="space-y-6">{monitoringFields.map(field => renderField('performance', field))}</div>
         </CardContent>
       </Card>
 
@@ -643,24 +634,27 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {performanceFeatures.map((feature) => (
-                <div key={feature.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg bg-gray-50">
+              {performanceFeatures.map(feature => (
+                <div
+                  key={feature.id}
+                  className="flex items-center justify-between p-3 border border-gray-100 rounded-lg bg-gray-50"
+                >
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
                       <h4 className="font-medium text-gray-900 text-sm">
                         {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </h4>
                       {feature.enabled && (
-                        <Badge variant="success" size="sm">Active</Badge>
+                        <Badge variant="success" size="sm">
+                          Active
+                        </Badge>
                       )}
                     </div>
-                    {feature.description && (
-                      <p className="text-xs text-gray-500 mt-1">{feature.description}</p>
-                    )}
+                    {feature.description && <p className="text-xs text-gray-500 mt-1">{feature.description}</p>}
                   </div>
                   <Switch
                     checked={feature.enabled || false}
-                    onCheckedChange={(checked) => {
+                    onCheckedChange={checked => {
                       toast.success('Performance feature toggle functionality coming soon');
                     }}
                     disabled={isLoading}
@@ -682,12 +676,24 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
         </CardHeader>
         <CardContent>
           <ul className="list-disc list-inside space-y-2 text-sm text-green-700">
-            <li><strong>Enable caching:</strong> Redis caching can reduce response times by 60-80%</li>
-            <li><strong>Monitor database:</strong> Keep connection pools optimized and track slow queries</li>
-            <li><strong>Use compression:</strong> Gzip compression can reduce bandwidth usage by 50-70%</li>
-            <li><strong>Optimize images:</strong> Automatic image optimization saves storage and improves load times</li>
-            <li><strong>Set reasonable timeouts:</strong> Prevent long-running queries from blocking resources</li>
-            <li><strong>Monitor performance:</strong> Regular monitoring helps identify bottlenecks early</li>
+            <li>
+              <strong>Enable caching:</strong> Redis caching can reduce response times by 60-80%
+            </li>
+            <li>
+              <strong>Monitor database:</strong> Keep connection pools optimized and track slow queries
+            </li>
+            <li>
+              <strong>Use compression:</strong> Gzip compression can reduce bandwidth usage by 50-70%
+            </li>
+            <li>
+              <strong>Optimize images:</strong> Automatic image optimization saves storage and improves load times
+            </li>
+            <li>
+              <strong>Set reasonable timeouts:</strong> Prevent long-running queries from blocking resources
+            </li>
+            <li>
+              <strong>Monitor performance:</strong> Regular monitoring helps identify bottlenecks early
+            </li>
           </ul>
         </CardContent>
       </Card>
@@ -700,9 +706,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className={`text-2xl font-bold ${getScoreColor(performanceScore)}`}>
-                {performanceScore}%
-              </div>
+              <div className={`text-2xl font-bold ${getScoreColor(performanceScore)}`}>{performanceScore}%</div>
               <div className="text-sm text-gray-600">Performance Score</div>
             </div>
             <div className="text-center">
@@ -718,9 +722,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
               <div className="text-sm text-gray-600">Optimizations</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
-                {changedFields.size}
-              </div>
+              <div className="text-2xl font-bold text-orange-600">{changedFields.size}</div>
               <div className="text-sm text-gray-600">Unsaved Changes</div>
             </div>
           </div>

@@ -18,16 +18,11 @@ const getFilterCount = (filters: any): number => {
   return Object.values(filters).filter(value => value !== undefined && value !== null && value !== '').length;
 };
 
-export const ContentFilters: React.FC<ContentFiltersProps> = ({
-  activeTab,
-  filters,
-  onFiltersChange,
-  onClose
-}) => {
+export const ContentFilters: React.FC<ContentFiltersProps> = ({ activeTab, filters, onFiltersChange, onClose }) => {
   const handleFilterChange = (key: string, value: any) => {
     onFiltersChange({
       ...filters,
-      [key]: value
+      [key]: value,
     });
   };
 
@@ -38,10 +33,8 @@ export const ContentFilters: React.FC<ContentFiltersProps> = ({
   return (
     <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-slate-900 dark:text-white">
-          Advanced Filters
-        </h3>
-        <button 
+        <h3 className="text-sm font-medium text-slate-900 dark:text-white">Advanced Filters</h3>
+        <button
           onClick={onClose}
           className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
         >
@@ -52,12 +45,10 @@ export const ContentFilters: React.FC<ContentFiltersProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Status Filter */}
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-            Status
-          </label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Status</label>
           <select
             value={filters.status || ''}
-            onChange={(e) => handleFilterChange('status', e.target.value || undefined)}
+            onChange={e => handleFilterChange('status', e.target.value || undefined)}
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           >
             <option value="">All statuses</option>
@@ -71,15 +62,13 @@ export const ContentFilters: React.FC<ContentFiltersProps> = ({
 
         {/* Featured Toggle */}
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-            Featured
-          </label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Featured</label>
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
               id="featured"
               checked={filters.featured || false}
-              onChange={(e) => handleFilterChange('featured', e.target.checked || undefined)}
+              onChange={e => handleFilterChange('featured', e.target.checked || undefined)}
               className="rounded border-slate-300 dark:border-slate-600 text-orange-500 focus:ring-orange-500"
             />
             <label htmlFor="featured" className="text-sm text-slate-600 dark:text-slate-400">
@@ -90,25 +79,21 @@ export const ContentFilters: React.FC<ContentFiltersProps> = ({
 
         {/* Date Range - simplified for now */}
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-            Created After
-          </label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Created After</label>
           <input
             type="date"
             value={filters.createdAfter || ''}
-            onChange={(e) => handleFilterChange('createdAfter', e.target.value || undefined)}
+            onChange={e => handleFilterChange('createdAfter', e.target.value || undefined)}
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           />
         </div>
 
         {/* Sort Order */}
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-            Sort Order
-          </label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Sort Order</label>
           <select
             value={filters.sortOrder || 'desc'}
-            onChange={(e) => handleFilterChange('sortOrder', e.target.value)}
+            onChange={e => handleFilterChange('sortOrder', e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           >
             <option value="desc">Newest First</option>
@@ -125,9 +110,7 @@ export const ContentFilters: React.FC<ContentFiltersProps> = ({
         >
           Clear All
         </button>
-        <div className="text-xs text-slate-500 dark:text-slate-400">
-          {getFilterCount(filters)} filters applied
-        </div>
+        <div className="text-xs text-slate-500 dark:text-slate-400">{getFilterCount(filters)} filters applied</div>
       </div>
     </div>
   );

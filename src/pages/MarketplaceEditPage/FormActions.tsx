@@ -2,14 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { FormActions as SharedFormActions } from '@/shared/components/ui/Form';
 import { FormActionsProps } from './types';
 
-const FormActions: React.FC<FormActionsProps> = ({
-  isEditing,
-  isSubmitting,
-  formData,
-  setShowDeleteConfirm
-}) => {
+const FormActions: React.FC<FormActionsProps> = ({ isEditing, isSubmitting, formData, setShowDeleteConfirm }) => {
   const navigate = useNavigate();
-  
+
   // Determine the submit button text based on the form state
   const getSubmitText = () => {
     switch (formData.status) {
@@ -23,7 +18,7 @@ const FormActions: React.FC<FormActionsProps> = ({
         return 'Save';
     }
   };
-  
+
   return (
     <SharedFormActions
       // No onSubmit handler needed since this is handled by the form's onSubmit

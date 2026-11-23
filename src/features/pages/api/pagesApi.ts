@@ -12,20 +12,11 @@ export interface PagesResponse {
 class PagesApi {
   private tableName = 'pages';
 
-  async getPages(params?: {
-    filters?: PageFilters;
-    page?: number;
-    limit?: number;
-  }): Promise<PagesResponse> {
-    const {
-      filters = {},
-      page = 1,
-      limit = 12,
-    } = params || {};
+  async getPages(params?: { filters?: PageFilters; page?: number; limit?: number }): Promise<PagesResponse> {
+    const { filters = {}, page = 1, limit = 12 } = params || {};
 
-    let query = (supabase as any)
-      .from(this.tableName)
-      .select(`
+    let query = (supabase as any).from(this.tableName).select(
+      `
         *,
         author:members!pages_author_id_fkey(
           id,
@@ -33,7 +24,9 @@ class PagesApi {
           last_name,
           email
         )
-      `, { count: 'exact' });
+      `,
+      { count: 'exact' }
+    );
 
     // Apply filters
     if (filters.status && filters.status !== 'all') {
@@ -82,7 +75,8 @@ class PagesApi {
   async getPageById(id: string): Promise<Page> {
     const { data, error } = await (supabase as any)
       .from(this.tableName)
-      .select(`
+      .select(
+        `
         *,
         author:members!pages_author_id_fkey(
           id,
@@ -90,7 +84,8 @@ class PagesApi {
           last_name,
           email
         )
-      `)
+      `
+      )
       .eq('id', id)
       .single();
 
@@ -104,7 +99,8 @@ class PagesApi {
   async getPageBySlug(slug: string): Promise<Page> {
     const { data, error } = await (supabase as any)
       .from(this.tableName)
-      .select(`
+      .select(
+        `
         *,
         author:members!pages_author_id_fkey(
           id,
@@ -112,7 +108,8 @@ class PagesApi {
           last_name,
           email
         )
-      `)
+      `
+      )
       .eq('slug', slug)
       .single();
 
@@ -125,7 +122,9 @@ class PagesApi {
 
   async createPage(pageData: CreatePageData): Promise<Page> {
     // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       throw new Error('User not authenticated');
     }
@@ -141,7 +140,8 @@ class PagesApi {
     const { data, error } = await (supabase as any)
       .from(this.tableName)
       .insert(newPage)
-      .select(`
+      .select(
+        `
         *,
         author:members!pages_author_id_fkey(
           id,
@@ -149,7 +149,8 @@ class PagesApi {
           last_name,
           email
         )
-      `)
+      `
+      )
       .single();
 
     if (error) {
@@ -174,7 +175,8 @@ class PagesApi {
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .select(`
+      .select(
+        `
         *,
         author:members!pages_author_id_fkey(
           id,
@@ -182,7 +184,8 @@ class PagesApi {
           last_name,
           email
         )
-      `)
+      `
+      )
       .single();
 
     if (error) {
@@ -193,10 +196,7 @@ class PagesApi {
   }
 
   async deletePage(id: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from(this.tableName)
-      .delete()
-      .eq('id', id);
+    const { error } = await (supabase as any).from(this.tableName).delete().eq('id', id);
 
     if (error) {
       throw new Error(error.message);
@@ -222,12 +222,14 @@ class PagesApi {
   async getHomePage(): Promise<Page | null> {
     const { data, error } = await (supabase as any)
       .from(this.tableName)
-      .select(`
+      .select(
+        `
         *,
         author:members!pages_author_id_fkey(
           id, name, title, company, location, image
         )
-      `)
+      `
+      )
       .or('slug.eq.home,is_homepage.eq.true')
       .eq('status', 'published')
       .single();
@@ -245,12 +247,14 @@ class PagesApi {
   async getChildPages(parentId: string): Promise<Page[]> {
     const { data, error } = await (supabase as any)
       .from(this.tableName)
-      .select(`
+      .select(
+        `
         *,
         author:members!pages_author_id_fkey(
           id, name, title, company, location, image
         )
-      `)
+      `
+      )
       .eq('parent_id', parentId)
       .eq('status', 'published')
       .order('order_index', { ascending: true });
@@ -274,11 +278,7 @@ class PagesApi {
     let counter = 1;
 
     while (true) {
-      const { data } = await (supabase as any)
-        .from(this.tableName)
-        .select('id')
-        .eq('slug', slug)
-        .single();
+      const { data } = await (supabase as any).from(this.tableName).select('id').eq('slug', slug).single();
 
       if (!data) {
         break;
@@ -296,17 +296,15 @@ class PagesApi {
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
     const filePath = `pages/${fileName}`;
 
-    const { data, error } = await supabase.storage
-      .from('images')
-      .upload(filePath, file);
+    const { data, error } = await supabase.storage.from('images').upload(filePath, file);
 
     if (error) {
       throw new Error(`Failed to upload image: ${error.message}`);
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('images')
-      .getPublicUrl(data.path);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('images').getPublicUrl(data.path);
 
     return {
       url: publicUrl,
@@ -315,9 +313,7 @@ class PagesApi {
   }
 
   async deleteImage(path: string): Promise<void> {
-    const { error } = await supabase.storage
-      .from('images')
-      .remove([path]);
+    const { error } = await supabase.storage.from('images').remove([path]);
 
     if (error) {
       throw new Error(`Failed to delete image: ${error.message}`);

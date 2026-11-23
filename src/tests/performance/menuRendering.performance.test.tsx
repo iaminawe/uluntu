@@ -1,6 +1,6 @@
 /**
  * Performance Tests for Menu Rendering
- * 
+ *
  * Tests rendering performance, memory usage, optimization techniques,
  * and responsiveness under various load conditions.
  */
@@ -85,7 +85,7 @@ class MemoryMonitor {
         name,
         used: performance.memory.usedJSHeapSize,
         total: performance.memory.totalJSHeapSize,
-        timestamp: performance.now()
+        timestamp: performance.now(),
       });
     }
   }
@@ -93,7 +93,7 @@ class MemoryMonitor {
   getMemoryIncrease(startSnapshot: string, endSnapshot: string): number {
     const start = this.snapshots.find(s => s.name === startSnapshot);
     const end = this.snapshots.find(s => s.name === endSnapshot);
-    
+
     if (start && end) {
       return end.used - start.used;
     }
@@ -115,9 +115,7 @@ describe('Menu Rendering Performance Tests', () => {
   let memoryMonitor: MemoryMonitor;
 
   const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
   beforeEach(() => {
@@ -129,11 +127,11 @@ describe('Menu Rendering Performance Tests', () => {
     });
     perfMonitor = new PerformanceMonitor();
     memoryMonitor = new MemoryMonitor();
-    
+
     // Setup default mocks
     mockUseSession.mockReturnValue({ user: { id: 'admin' } });
     mockUseAppSelector.mockReturnValue({ roles: { list: ['admin'] } });
-    
+
     vi.clearAllMocks();
   });
 
@@ -175,7 +173,7 @@ describe('Menu Rendering Performance Tests', () => {
       // Performance assertions
       expect(renderTime).toBeLessThan(100); // Should render within 100ms
       expect(memoryIncrease).toBeLessThan(10 * 1024 * 1024); // Should use less than 10MB
-      
+
       // Verify all items are rendered
       const menuItems = container.querySelectorAll('[role="link"]');
       expect(menuItems).toHaveLength(100);
@@ -204,21 +202,17 @@ describe('Menu Rendering Performance Tests', () => {
 
       render(
         <TestWrapper>
-          <DynamicMenu 
-            menuType="main" 
-            virtualized={true}
-            maxVisibleItems={50}
-          />
+          <DynamicMenu menuType="main" virtualized={true} maxVisibleItems={50} />
         </TestWrapper>
       );
 
       perfMonitor.end('render-1000-items');
 
       const renderTime = perfMonitor.getMeasurement('render-1000-items');
-      
+
       // With virtualization, should still be fast
       expect(renderTime).toBeLessThan(150);
-      
+
       // Should only render visible items (not all 1000)
       const visibleItems = screen.getAllByRole('link');
       expect(visibleItems.length).toBeLessThanOrEqual(50);
@@ -259,10 +253,10 @@ describe('Menu Rendering Performance Tests', () => {
       perfMonitor.end('render-deep-nesting');
 
       const renderTime = perfMonitor.getMeasurement('render-deep-nesting');
-      
+
       // Deep nesting should not cause performance issues
       expect(renderTime).toBeLessThan(200);
-      
+
       // Should render all items
       const items = screen.getAllByRole('link');
       expect(items).toHaveLength(20);
@@ -301,7 +295,7 @@ describe('Menu Rendering Performance Tests', () => {
       });
 
       const searchInput = screen.getByPlaceholderText('Search menu items...');
-      
+
       perfMonitor.start('search-filtering');
 
       // Simulate typing "Item 1"
@@ -315,7 +309,7 @@ describe('Menu Rendering Performance Tests', () => {
       perfMonitor.end('search-filtering');
 
       const searchTime = perfMonitor.getMeasurement('search-filtering');
-      
+
       // Search should be responsive
       expect(searchTime).toBeLessThan(50);
     });
@@ -340,7 +334,7 @@ describe('Menu Rendering Performance Tests', () => {
       });
 
       const checkboxes = screen.getAllByRole('checkbox');
-      
+
       perfMonitor.start('bulk-selection');
 
       // Select 50 items
@@ -353,14 +347,14 @@ describe('Menu Rendering Performance Tests', () => {
       perfMonitor.end('bulk-selection');
 
       const selectionTime = perfMonitor.getMeasurement('bulk-selection');
-      
+
       // Bulk selection should be efficient
       expect(selectionTime).toBeLessThan(500);
     });
 
     it('should handle drag and drop performance', async () => {
       const dragTestItems = createInteractiveMenuItems(50);
-      
+
       const props = {
         items: dragTestItems,
         onReorder: vi.fn(),
@@ -381,10 +375,10 @@ describe('Menu Rendering Performance Tests', () => {
       perfMonitor.end('drag-drop-render');
 
       const renderTime = perfMonitor.getMeasurement('drag-drop-render');
-      
+
       // Drag and drop setup should be efficient
       expect(renderTime).toBeLessThan(200);
-      
+
       // All drag handles should be present
       const dragHandles = screen.getAllByTestId('grip-icon');
       expect(dragHandles).toHaveLength(50);
@@ -394,7 +388,7 @@ describe('Menu Rendering Performance Tests', () => {
   describe('Memory Usage Optimization', () => {
     it('should not have memory leaks when re-rendering', async () => {
       const testItems = createInteractiveMenuItems(100);
-      
+
       const TestComponent = ({ items }: { items: MenuItem[] }) => {
         mockUseMenu.mockReturnValue({
           menuItems: items,
@@ -402,7 +396,7 @@ describe('Menu Rendering Performance Tests', () => {
           error: null,
           refetch: vi.fn(),
         });
-        
+
         return (
           <TestWrapper>
             <DynamicMenu menuType="main" />
@@ -425,7 +419,7 @@ describe('Menu Rendering Performance Tests', () => {
       for (let i = 0; i < 10; i++) {
         const newItems = createInteractiveMenuItems(100);
         rerender(<TestComponent items={newItems} />);
-        
+
         if (i === 4) memoryMonitor.snapshot('mid-rerenders');
       }
 
@@ -439,7 +433,7 @@ describe('Menu Rendering Performance Tests', () => {
       memoryMonitor.snapshot('final-gc');
 
       const memoryGrowth = memoryMonitor.getMemoryIncrease('after-gc', 'final-gc');
-      
+
       // Memory growth should be minimal after GC
       expect(memoryGrowth).toBeLessThan(5 * 1024 * 1024); // Less than 5MB growth
     });
@@ -449,12 +443,12 @@ describe('Menu Rendering Performance Tests', () => {
       const originalAddEventListener = EventTarget.prototype.addEventListener;
       const originalRemoveEventListener = EventTarget.prototype.removeEventListener;
 
-      EventTarget.prototype.addEventListener = function(...args) {
+      EventTarget.prototype.addEventListener = function (...args) {
         eventListenerCount++;
         return originalAddEventListener.apply(this, args);
       };
 
-      EventTarget.prototype.removeEventListener = function(...args) {
+      EventTarget.prototype.removeEventListener = function (...args) {
         eventListenerCount--;
         return originalRemoveEventListener.apply(this, args);
       };
@@ -492,7 +486,7 @@ describe('Menu Rendering Performance Tests', () => {
   describe('Rendering Optimization Strategies', () => {
     it('should use React.memo effectively for menu items', async () => {
       let renderCount = 0;
-      
+
       // Mock a menu item component that counts renders
       const MockMenuItem = React.memo(({ item }: { item: MenuItem }) => {
         renderCount++;
@@ -500,28 +494,21 @@ describe('Menu Rendering Performance Tests', () => {
       });
 
       const testItems = createInteractiveMenuItems(20);
-      
-      const TestComponent = ({ items, highlightedId }: { items: MenuItem[], highlightedId?: string }) => (
+
+      const TestComponent = ({ items, highlightedId }: { items: MenuItem[]; highlightedId?: string }) => (
         <div>
           {items.map(item => (
-            <MockMenuItem 
-              key={item.id} 
-              item={item}
-            />
+            <MockMenuItem key={item.id} item={item} />
           ))}
         </div>
       );
 
-      const { rerender } = render(
-        <TestComponent items={testItems} highlightedId="interactive-0" />
-      );
+      const { rerender } = render(<TestComponent items={testItems} highlightedId="interactive-0" />);
 
       const initialRenderCount = renderCount;
 
       // Re-render with same props - should not re-render memoized components
-      rerender(
-        <TestComponent items={testItems} highlightedId="interactive-0" />
-      );
+      rerender(<TestComponent items={testItems} highlightedId="interactive-0" />);
 
       const afterMemoRenderCount = renderCount;
 
@@ -529,9 +516,7 @@ describe('Menu Rendering Performance Tests', () => {
       expect(afterMemoRenderCount).toBe(initialRenderCount);
 
       // Re-render with different highlightedId - should still not re-render items
-      rerender(
-        <TestComponent items={testItems} highlightedId="interactive-5" />
-      );
+      rerender(<TestComponent items={testItems} highlightedId="interactive-5" />);
 
       const afterPropChangeRenderCount = renderCount;
 
@@ -541,9 +526,9 @@ describe('Menu Rendering Performance Tests', () => {
 
     it('should implement efficient key strategies', async () => {
       const testItems = createInteractiveMenuItems(20);
-      
+
       perfMonitor.start('stable-keys-render');
-      
+
       const { rerender } = render(
         <TestWrapper>
           <DynamicMenu menuType="main" />
@@ -568,7 +553,7 @@ describe('Menu Rendering Performance Tests', () => {
       perfMonitor.end('stable-keys-render');
 
       const reorderTime = perfMonitor.getMeasurement('stable-keys-render');
-      
+
       // Reordering with stable keys should be fast
       expect(reorderTime).toBeLessThan(50);
     });
@@ -581,7 +566,7 @@ describe('Menu Rendering Performance Tests', () => {
           title: 'Parent with Many Children',
           url: '/parent',
           parent_id: null,
-        })
+        }),
       ];
 
       const childItems = Array.from({ length: 100 }, (_, i) =>
@@ -606,21 +591,17 @@ describe('Menu Rendering Performance Tests', () => {
 
       render(
         <TestWrapper>
-          <DynamicMenu 
-            menuType="main" 
-            showHierarchy={true}
-            lazyLoadChildren={true}
-          />
+          <DynamicMenu menuType="main" showHierarchy={true} lazyLoadChildren={true} />
         </TestWrapper>
       );
 
       perfMonitor.end('lazy-loading-render');
 
       const renderTime = perfMonitor.getMeasurement('lazy-loading-render');
-      
+
       // Initial render should be fast (children not rendered yet)
       expect(renderTime).toBeLessThan(50);
-      
+
       // Should only show parent initially
       expect(screen.getByText('Parent with Many Children')).toBeInTheDocument();
       expect(screen.queryByText('Child Item 1')).not.toBeInTheDocument();
@@ -639,14 +620,14 @@ describe('Menu Rendering Performance Tests', () => {
 
       // Mock performance observer for CLS (Cumulative Layout Shift)
       let cumulativeLayoutShift = 0;
-      const mockPerformanceObserver = vi.fn().mockImplementation((callback) => {
+      const mockPerformanceObserver = vi.fn().mockImplementation(callback => {
         // Simulate layout shift measurements
         setTimeout(() => {
           callback({
             getEntries: () => [
               { value: 0.02 }, // Small layout shift
-              { value: 0.01 }  // Another small shift
-            ]
+              { value: 0.01 }, // Another small shift
+            ],
           });
         }, 100);
       });
@@ -673,15 +654,15 @@ describe('Menu Rendering Performance Tests', () => {
 
     it('should have efficient paint times', async () => {
       const paintTimes: number[] = [];
-      
+
       // Mock performance entries
       const mockGetEntriesByType = vi.fn().mockReturnValue([
         { name: 'first-contentful-paint', startTime: 150 },
-        { name: 'largest-contentful-paint', startTime: 200 }
+        { name: 'largest-contentful-paint', startTime: 200 },
       ]);
 
       Object.defineProperty(performance, 'getEntriesByType', {
-        value: mockGetEntriesByType
+        value: mockGetEntriesByType,
       });
 
       const testItems = createInteractiveMenuItems(100);
@@ -708,7 +689,7 @@ describe('Menu Rendering Performance Tests', () => {
       if (fcpEntry) {
         expect(fcpEntry.startTime).toBeLessThan(1800); // FCP under 1.8s
       }
-      
+
       if (lcpEntry) {
         expect(lcpEntry.startTime).toBeLessThan(2500); // LCP under 2.5s
       }
@@ -753,7 +734,10 @@ describe('Menu Rendering Performance Tests', () => {
       operations.push(
         act(async () => {
           const visibilityFilter = screen.getByDisplayValue('All Visibility');
-          Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value')?.set?.call(visibilityFilter, 'public');
+          Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value')?.set?.call(
+            visibilityFilter,
+            'public'
+          );
           visibilityFilter.dispatchEvent(new Event('change', { bubbles: true }));
         })
       );
@@ -773,7 +757,7 @@ describe('Menu Rendering Performance Tests', () => {
       perfMonitor.end('concurrent-operations');
 
       const concurrentTime = perfMonitor.getMeasurement('concurrent-operations');
-      
+
       // Concurrent operations should complete within reasonable time
       expect(concurrentTime).toBeLessThan(300);
     });
@@ -781,10 +765,10 @@ describe('Menu Rendering Performance Tests', () => {
     it('should handle rapid state changes efficiently', async () => {
       let updateCount = 0;
       const testItems = createInteractiveMenuItems(50);
-      
+
       const TestComponent = () => {
         const [items, setItems] = React.useState(testItems);
-        
+
         React.useEffect(() => {
           mockUseMenu.mockReturnValue({
             menuItems: items,
@@ -822,7 +806,7 @@ describe('Menu Rendering Performance Tests', () => {
       perfMonitor.end('rapid-updates');
 
       const updateTime = perfMonitor.getMeasurement('rapid-updates');
-      
+
       // Should handle rapid updates without performance degradation
       expect(updateTime).toBeLessThan(1000);
       expect(updateCount).toBeGreaterThan(5); // Should have processed multiple updates

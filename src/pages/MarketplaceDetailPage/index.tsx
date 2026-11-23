@@ -60,7 +60,7 @@ export default function MarketplaceDetailPage() {
   if (featuresLoading) {
     return <LoadingState />;
   }
-  
+
   // Debug logging
   useEffect(() => {
     console.log('MarketplaceDetailPage Debug:', {
@@ -68,24 +68,24 @@ export default function MarketplaceDetailPage() {
       sourceData,
       isLoading,
       error,
-      hasListingData: !!sourceData
+      hasListingData: !!sourceData,
     });
   }, [id, sourceData, isLoading, error]);
-  
+
   // Convert API data to the expected Listing format
   const listing = useMemo(() => {
     if (!sourceData) return undefined;
-    
+
     // For debugging purposes, log what we're receiving
     console.log('Source data for listing:', JSON.stringify(sourceData, null, 2));
-    
+
     // Check if data is in database format (from Supabase) or frontend format
     const isDbFormat = 'created_at' in sourceData || 'seller_id' in sourceData;
-    
+
     if (isDbFormat) {
       // Handle database format (from Supabase)
       const dbData = sourceData as unknown as DatabaseListing;
-      
+
       return {
         id: dbData.id,
         title: dbData.title || '',
@@ -100,10 +100,10 @@ export default function MarketplaceDetailPage() {
           name: dbData.seller?.name || 'Unknown Seller',
           image: dbData.seller?.image || '/placeholder-avatar.png',
           title: '',
-          bio: ''
+          bio: '',
         },
         location: dbData.location || 'Unknown location',
-        tags: dbData.tags || []
+        tags: dbData.tags || [],
       } as Listing;
     } else {
       // Handle frontend format
@@ -121,14 +121,14 @@ export default function MarketplaceDetailPage() {
           name: sourceData.seller?.name || 'Unknown Seller',
           image: sourceData.seller?.image || '/placeholder-avatar.png',
           title: '',
-          bio: ''
+          bio: '',
         },
         location: sourceData.location || 'Unknown location',
-        tags: sourceData.tags || []
+        tags: sourceData.tags || [],
       } as Listing;
     }
   }, [sourceData]);
-  
+
   const getTypeIcon = (type: ListingType) => {
     switch (type) {
       case 'product':
@@ -141,7 +141,7 @@ export default function MarketplaceDetailPage() {
         return <Package className="h-5 w-5" />;
     }
   };
-  
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -154,27 +154,30 @@ export default function MarketplaceDetailPage() {
     <>
       <Helmet>
         <title>{listing.title} - Uluntu Marketplace</title>
-        <meta name="description" content={`${listing.title} - ${listing.price} - ${listing.description.substring(0, 150)}...`} />
+        <meta
+          name="description"
+          content={`${listing.title} - ${listing.price} - ${listing.description.substring(0, 150)}...`}
+        />
       </Helmet>
-      
+
       <ContentContainer>
         <PageHeader id={id as string} listing={listing} />
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <Card className="mb-8">
-              <ListingDetails 
-                listing={listing} 
-                getTypeIcon={getTypeIcon} 
-                onContactClick={() => setShowContactModal(true)} 
+              <ListingDetails
+                listing={listing}
+                getTypeIcon={getTypeIcon}
+                onContactClick={() => setShowContactModal(true)}
               />
             </Card>
-            
+
             <Card>
               <SellerInfo seller={listing.seller} />
             </Card>
           </div>
-          
+
           {/* Sidebar with related listings */}
           <div>
             <Card>
@@ -185,15 +188,9 @@ export default function MarketplaceDetailPage() {
             </Card>
           </div>
         </div>
-        
       </ContentContainer>
 
-      {showContactModal && (
-        <ContactModal
-          listing={listing}
-          onClose={() => setShowContactModal(false)}
-        />
-      )}
+      {showContactModal && <ContactModal listing={listing} onClose={() => setShowContactModal(false)} />}
     </>
   );
 }

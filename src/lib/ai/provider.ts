@@ -10,11 +10,9 @@ import { CoreMessage } from 'ai';
 // actually available is decided server-side; the client optimistically enables
 // the UI unless VITE_AI_ENABLED is explicitly 'false'.
 
-export const getAIProviderName = (): string =>
-  import.meta.env.VITE_AI_PROVIDER || 'openai';
+export const getAIProviderName = (): string => import.meta.env.VITE_AI_PROVIDER || 'openai';
 
-export const isAIEnabled = (): boolean =>
-  import.meta.env.VITE_AI_ENABLED !== 'false';
+export const isAIEnabled = (): boolean => import.meta.env.VITE_AI_ENABLED !== 'false';
 
 // AI request tuning (non-secret). The server applies its own defaults/caps too.
 export const getAIConfig = () => ({
@@ -35,7 +33,5 @@ export const createSystemPrompt = (context?: string): CoreMessage => ({
 // Helper to format user prompts
 export const formatUserPrompt = (prompt: string, selectedText?: string): CoreMessage => ({
   role: 'user',
-  content: selectedText
-    ? `${prompt}\n\nSelected text:\n${selectedText}`
-    : prompt,
+  content: selectedText ? `${prompt}\n\nSelected text:\n${selectedText}` : prompt,
 });

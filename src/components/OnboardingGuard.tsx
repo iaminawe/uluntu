@@ -25,7 +25,7 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
   // Check if we should show onboarding
   useEffect(() => {
     if (isLoading || authLoading || skipOnboarding) return;
-    
+
     // Don't show onboarding if user is not authenticated
     if (!user) return;
 
@@ -33,7 +33,7 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
     const userId = member?.user_id || member?.id;
     const userOnboardingKey = userId ? `onboarding_completed_${userId}` : 'onboarding_completed';
     const userSkipKey = userId ? `onboarding_skipped_${userId}` : 'onboarding_skipped';
-    
+
     // Check if user completed onboarding (persistent)
     const onboardingCompleted = localStorage.getItem(userOnboardingKey);
     // Check if user skipped in this session only (temporary)
@@ -46,8 +46,7 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
     if (shouldShowOnboardingFlow) {
       // Even if they skipped before, show again if profile is still incomplete
       // Only hide if profile is actually complete or they completed onboarding
-      const profileIsComplete = member?.bio && member?.image &&
-                               !member.image.includes('placeholder');
+      const profileIsComplete = member?.bio && member?.image && !member.image.includes('placeholder');
 
       if (!profileIsComplete && !onboardingCompleted && !onboardingSkipped) {
         setShowOnboarding(true);
@@ -74,7 +73,7 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
     const userId = member?.user_id || member?.id;
     const userOnboardingKey = userId ? `onboarding_completed_${userId}` : 'onboarding_completed';
     const userSkipKey = userId ? `onboarding_skipped_${userId}` : 'onboarding_skipped';
-    
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <ProfileOnboarding
@@ -139,7 +138,7 @@ export function useOnboardingTrigger() {
 export function useOnboardingStatus() {
   const { data: member, isLoading } = useCurrentMember();
   const { isComplete, completionPercentage, requiredFields } = useProfileCompletion(member);
-  
+
   const needsOnboarding = shouldShowOnboarding(member);
   const onboardingCompleted = localStorage.getItem('onboarding_completed');
   const onboardingSkipped = localStorage.getItem('onboarding_skipped');
@@ -152,6 +151,6 @@ export function useOnboardingStatus() {
     missingRequiredFields: requiredFields,
     hasCompletedOnboarding: !!onboardingCompleted,
     hasSkippedOnboarding: !!onboardingSkipped,
-    shouldShowPrompt: needsOnboarding && !onboardingCompleted && !onboardingSkipped
+    shouldShowPrompt: needsOnboarding && !onboardingCompleted && !onboardingSkipped,
   };
 }

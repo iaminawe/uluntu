@@ -41,9 +41,7 @@ interface ExtendedCompany {
 // Helper function to validate ContentStatus values
 const validateContentStatus = (status: string | null | undefined): ContentStatus | undefined => {
   const validStatuses: ContentStatus[] = ['draft', 'published', 'archived', 'pending'];
-  return status && validStatuses.includes(status as ContentStatus)
-    ? status as ContentStatus
-    : undefined;
+  return status && validStatuses.includes(status as ContentStatus) ? (status as ContentStatus) : undefined;
 };
 
 export default function CompanyEditPage() {
@@ -71,10 +69,7 @@ export default function CompanyEditPage() {
   const { data: entityTopics } = useEntityTopics('company', companyId || '');
   const setEntityTopicsMutation = useSetEntityTopics();
 
-  const {
-    data: company,
-    isLoading: companyLoading
-  } = useCompanyByIdOrSlug(slug);
+  const { data: company, isLoading: companyLoading } = useCompanyByIdOrSlug(slug);
 
   // Redirect if companies feature is disabled
   if (!featuresLoading && !companiesEnabled) {
@@ -92,7 +87,7 @@ export default function CompanyEditPage() {
       </div>
     );
   }
-  
+
   // Populate form with company data when in edit mode
   useEffect(() => {
     if (isEditMode && company) {
@@ -111,13 +106,13 @@ export default function CompanyEditPage() {
         social: {
           linkedin: '',
           twitter: '',
-          github: ''
+          github: '',
         },
         // Validate status is a valid ContentStatus value
         status: validateContentStatus(company.status) || initialFormData.status,
-        featured: company.featured !== null ? company.featured : initialFormData.featured
+        featured: company.featured !== null ? company.featured : initialFormData.featured,
       };
-      
+
       setFormData({
         name: typedCompany.name,
         slug: company.slug || generateSlug(typedCompany.name),
@@ -132,43 +127,43 @@ export default function CompanyEditPage() {
         social: {
           linkedin: typedCompany.social?.linkedin || '',
           twitter: typedCompany.social?.twitter || '',
-          github: typedCompany.social?.github || ''
+          github: typedCompany.social?.github || '',
         },
         // Ensure proper ContentStatus typing
-        status: typedCompany.status as ContentStatus || initialFormData.status,
-        featured: typedCompany.featured !== undefined ? typedCompany.featured : initialFormData.featured
+        status: (typedCompany.status as ContentStatus) || initialFormData.status,
+        featured: typedCompany.featured !== undefined ? typedCompany.featured : initialFormData.featured,
       });
     }
   }, [isEditMode, company]);
-  
+
   // Effect to populate topics
   useEffect(() => {
     if (entityTopics) {
       setSelectedTopicIds(entityTopics.map(topic => topic.id));
     }
   }, [entityTopics]);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
+
     if (name.startsWith('social.')) {
       const socialField = name.split('.')[1];
       setFormData(prev => ({
         ...prev,
         social: {
           ...prev.social,
-          [socialField]: value
-        }
+          [socialField]: value,
+        },
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
-      
+
       // Auto-generate slug when name changes and slug is empty
       if (name === 'name' && !formData.slug) {
         setFormData(prev => ({ ...prev, slug: generateSlug(value) }));
       }
     }
-    
+
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => {
@@ -178,7 +173,7 @@ export default function CompanyEditPage() {
       });
     }
   };
-  
+
   const handleLogoFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       setLogoFile(event.target.files[0]);
@@ -186,7 +181,7 @@ export default function CompanyEditPage() {
       setFormData(prev => ({ ...prev, logo: URL.createObjectURL(event.target.files![0]) }));
     }
   };
-  
+
   const handleCoverImageFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       setCoverImageFile(event.target.files[0]);
@@ -194,21 +189,21 @@ export default function CompanyEditPage() {
       setFormData(prev => ({ ...prev, coverImage: URL.createObjectURL(event.target.files![0]) }));
     }
   };
-  
+
   const handleAddIndustry = () => {
     if (!newIndustry.trim()) {
       setErrors(prev => ({ ...prev, industry: 'Industry cannot be empty' }));
       return;
     }
-    
+
     if (formData.industry.includes(newIndustry.trim())) {
       setErrors(prev => ({ ...prev, industry: 'Industry already exists' }));
       return;
     }
-    
+
     setFormData(prev => ({
       ...prev,
-      industry: [...prev.industry, newIndustry.trim()]
+      industry: [...prev.industry, newIndustry.trim()],
     }));
     setNewIndustry('');
     setErrors(prev => {
@@ -217,58 +212,58 @@ export default function CompanyEditPage() {
       return newErrors;
     });
   };
-  
+
   const handleRemoveIndustry = (industryToRemove: string) => {
     setFormData(prev => ({
       ...prev,
-      industry: prev.industry.filter(industry => industry !== industryToRemove)
+      industry: prev.industry.filter(industry => industry !== industryToRemove),
     }));
   };
-  
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData | 'social', string>> = {};
-    
+
     // Required fields
     if (!formData.name.trim()) {
       newErrors.name = 'Company name is required';
     }
-    
+
     if (!formData.slug.trim()) {
       newErrors.slug = 'URL slug is required';
     }
-    
+
     if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
     }
-    
+
     if (!formData.size.trim()) {
       newErrors.size = 'Company size is required';
     }
-    
+
     if (!formData.founded.trim()) {
       newErrors.founded = 'Founded year is required';
     }
-    
+
     if (!formData.location.trim()) {
       newErrors.location = 'Location is required';
     }
-    
+
     // Industry validation
     if (formData.industry.length === 0) {
       newErrors.industry = 'At least one industry is required';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
     let currentFormData = { ...formData }; // Renamed to avoid confusion, will be reassigned
 
@@ -310,30 +305,21 @@ export default function CompanyEditPage() {
       // 3. Perform database operation using our adapter functions
       let dbOperationError = null;
       let companyData = null;
-      
+
       if (isEditMode && slug) {
         // Use adapter function for update operations
         const updateData = convertFormDataToUpdate(currentFormData);
-        
-        const { data, error } = await supabase
-          .from('companies')
-          .update(updateData)
-          .eq('slug', slug)
-          .select()
-          .single();
-          
+
+        const { data, error } = await supabase.from('companies').update(updateData).eq('slug', slug).select().single();
+
         dbOperationError = error;
         companyData = data;
       } else {
         // Use adapter function for insert operations
         const insertData = convertFormDataToInsert(currentFormData);
-        
-        const { data, error } = await supabase
-          .from('companies')
-          .insert(insertData)
-          .select()
-          .single();
-          
+
+        const { data, error } = await supabase.from('companies').insert(insertData).select().single();
+
         dbOperationError = error;
         companyData = data;
       }
@@ -348,16 +334,16 @@ export default function CompanyEditPage() {
           await setEntityTopicsMutation.mutateAsync({
             entityType: 'company',
             entityId: companyData.id,
-            topicIds: selectedTopicIds
+            topicIds: selectedTopicIds,
           });
         } catch (topicError) {
           console.error('Error saving topics:', topicError);
         }
       }
-      
+
       // 5. Success handling
       setSubmitSuccess(true);
-      
+
       // Redirect after a short delay
       setTimeout(() => {
         // If we have a slug, navigate to the company detail page with slug
@@ -371,36 +357,33 @@ export default function CompanyEditPage() {
       }, 2000);
     } catch (error) {
       console.error('Error submitting company:', error);
-      setErrors(prev => ({ 
-        ...prev, 
-        form: error instanceof Error ? error.message : 'An unknown error occurred' 
+      setErrors(prev => ({
+        ...prev,
+        form: error instanceof Error ? error.message : 'An unknown error occurred',
       }));
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   const handleDelete = async () => {
     if (!slug) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const { error } = await supabase
-        .from('companies')
-        .delete()
-        .eq('slug', slug);
-        
+      const { error } = await supabase.from('companies').delete().eq('slug', slug);
+
       if (error) {
         throw error;
       }
-      
+
       navigate('/companies');
     } catch (error) {
       console.error('Error deleting company:', error);
-      setErrors(prev => ({ 
-        ...prev, 
-        form: error instanceof Error ? error.message : 'Failed to delete company' 
+      setErrors(prev => ({
+        ...prev,
+        form: error instanceof Error ? error.message : 'Failed to delete company',
       }));
       setShowDeleteConfirm(false);
     } finally {
@@ -413,12 +396,12 @@ export default function CompanyEditPage() {
       <Helmet>
         <title>{isEditMode ? 'Edit Company' : 'Add Company'} | Uluntu Community</title>
       </Helmet>
-      
+
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12">
         <div className="w-4/5 max-w-[80%] mx-auto bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
           <div className="px-6 py-4 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 flex items-center">
-            <Link 
-              to="/companies" 
+            <Link
+              to="/companies"
               className="mr-3 p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-slate-300" />
@@ -427,7 +410,7 @@ export default function CompanyEditPage() {
               {isEditMode ? 'Edit Company' : 'Add New Company'}
             </h1>
           </div>
-          
+
           {companyLoading && isEditMode ? (
             <div className="p-8">
               <div className="animate-pulse space-y-4">
@@ -448,12 +431,7 @@ export default function CompanyEditPage() {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <h3 className="mt-4 text-lg font-medium text-slate-900 dark:text-white">
@@ -465,20 +443,20 @@ export default function CompanyEditPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="p-6 space-y-8">
-              <BasicInfoSection 
-                  formData={formData} 
-                  errors={errors} 
-                  onChange={handleChange} 
-                  isSubmitting={isSubmitting} 
-                  logoFile={logoFile}
-                  coverImageFile={coverImageFile}
-                  onLogoFileChange={handleLogoFileChange}
-                  onCoverImageFileChange={handleCoverImageFileChange}
-                />
-              
+              <BasicInfoSection
+                formData={formData}
+                errors={errors}
+                onChange={handleChange}
+                isSubmitting={isSubmitting}
+                logoFile={logoFile}
+                coverImageFile={coverImageFile}
+                onLogoFileChange={handleLogoFileChange}
+                onCoverImageFileChange={handleCoverImageFileChange}
+              />
+
               <hr className="border-t border-slate-200 dark:border-slate-700" />
-              
-              <IndustrySection 
+
+              <IndustrySection
                 industries={formData.industry}
                 newIndustry={newIndustry}
                 setNewIndustry={setNewIndustry}
@@ -487,14 +465,12 @@ export default function CompanyEditPage() {
                 isSubmitting={isSubmitting}
                 error={errors.industry}
               />
-              
+
               <hr className="border-t border-slate-200 dark:border-slate-700" />
-              
+
               {/* Topics Section */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Topics
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topics</label>
                 <TopicSelector
                   selectedTopics={selectedTopicIds}
                   onTopicsChange={setSelectedTopicIds}
@@ -506,16 +482,16 @@ export default function CompanyEditPage() {
                   Add topics to help categorize this company and make it discoverable on topic pages.
                 </p>
               </div>
-              
+
               <hr className="border-t border-slate-200 dark:border-slate-700" />
-              
-              <SocialSection 
+
+              <SocialSection
                 social={formData.social}
                 onChange={handleChange}
                 errors={errors}
                 isSubmitting={isSubmitting}
               />
-              
+
               <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                 <button
                   type="button"
@@ -526,7 +502,7 @@ export default function CompanyEditPage() {
                 >
                   Cancel
                 </button>
-                
+
                 <div className="flex gap-2">
                   {isEditMode && (
                     <button
@@ -539,7 +515,7 @@ export default function CompanyEditPage() {
                       Delete
                     </button>
                   )}
-                  
+
                   {formData.status === 'published' ? (
                     <button
                       type="button"
@@ -562,7 +538,7 @@ export default function CompanyEditPage() {
                       Publish
                     </button>
                   )}
-                  
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -579,7 +555,7 @@ export default function CompanyEditPage() {
           )}
         </div>
       </div>
-      
+
       <DeleteConfirmModal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}

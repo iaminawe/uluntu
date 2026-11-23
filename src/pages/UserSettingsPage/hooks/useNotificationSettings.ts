@@ -21,8 +21,8 @@ export const useNotificationSettings = (initialData?: Partial<NotificationSettin
     ...initialData,
     email: {
       ...defaultNotificationSettings.email,
-      ...initialData?.email
-    }
+      ...initialData?.email,
+    },
   });
 
   const updateEmailSetting = (key: keyof NotificationSettings['email'], value: boolean) => {
@@ -30,15 +30,15 @@ export const useNotificationSettings = (initialData?: Partial<NotificationSettin
       ...prev,
       email: {
         ...prev.email,
-        [key]: value
-      }
+        [key]: value,
+      },
     }));
   };
 
   const updateFrequency = (frequency: NotificationSettings['frequency']) => {
     setNotificationSettings(prev => ({
       ...prev,
-      frequency
+      frequency,
     }));
   };
 
@@ -46,6 +46,6 @@ export const useNotificationSettings = (initialData?: Partial<NotificationSettin
     notificationSettings,
     setNotificationSettings,
     updateEmailSetting,
-    updateFrequency
+    updateFrequency,
   };
 };

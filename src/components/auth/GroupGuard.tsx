@@ -26,7 +26,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
   useEffect(() => {
     async function checkGroupAccess() {
       if (!slug || loading) return;
-      
+
       // First, resolve the slug to get the group ID
       const { data: group, foundBy } = await lookupContent('groups', slug, supabase);
       if (!group) {
@@ -35,7 +35,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
         setIsLoading(false);
         return;
       }
-      
+
       const id = group.id;
       setGroupId(id);
 
@@ -48,22 +48,14 @@ export default function GroupGuard({ children }: GroupGuardProps) {
 
         // If user is not authenticated, they only have access to open/closed groups
         if (!user) {
-          const { data: group } = await supabase
-            .from('groups')
-            .select('visibility')
-            .eq('id', id)
-            .single();
+          const { data: group } = await supabase.from('groups').select('visibility').eq('id', id).single();
 
           setHasAccess(group?.visibility === 'open' || group?.visibility === 'closed');
           return;
         }
 
         // Get the member ID for the current user
-        const { data: memberData } = await supabase
-          .from('members')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
+        const { data: memberData } = await supabase.from('members').select('id').eq('user_id', user.id).single();
 
         if (!memberData) {
           setHasAccess(false);
@@ -85,11 +77,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
         }
 
         // If not a member, check if the group is open or closed
-        const { data: group } = await supabase
-          .from('groups')
-          .select('visibility')
-          .eq('id', id)
-          .single();
+        const { data: group } = await supabase.from('groups').select('visibility').eq('id', id).single();
 
         setHasAccess(group?.visibility === 'open' || group?.visibility === 'closed');
       } catch (error) {

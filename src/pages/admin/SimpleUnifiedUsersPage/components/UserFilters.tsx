@@ -9,7 +9,7 @@ import {
   Ban,
   UserCheck,
   Archive,
-  Trash2
+  Trash2,
 } from 'lucide-react';
 
 export interface UserFiltersProps {
@@ -50,7 +50,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
   onExport,
   onFileUpload,
   onBulkActionsToggle,
-  onBulkAction
+  onBulkAction,
 }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
@@ -61,18 +61,20 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             type="text"
             placeholder="Search users by email, name, company, or location..."
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={e => onSearchChange(e.target.value)}
             className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           />
         </div>
         <select
           value={selectedRole}
-          onChange={(e) => onRoleChange(e.target.value)}
+          onChange={e => onRoleChange(e.target.value)}
           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 dark:focus:ring-blue-500/20"
         >
           <option value="all">All Roles</option>
           {roles?.map(role => (
-            <option key={role.id} value={role.id}>{role.name}</option>
+            <option key={role.id} value={role.id}>
+              {role.name}
+            </option>
           ))}
         </select>
         {selectedUsers.size > 0 && (
@@ -142,12 +144,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
           <label className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer flex items-center">
             <Upload className="h-4 w-4 mr-2" />
             Import
-            <input
-              type="file"
-              accept=".csv"
-              onChange={onFileUpload}
-              className="hidden"
-            />
+            <input type="file" accept=".csv" onChange={onFileUpload} className="hidden" />
           </label>
         </div>
       </div>

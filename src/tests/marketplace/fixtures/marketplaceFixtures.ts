@@ -21,20 +21,20 @@ export const testUsers = {
     id: 'buyer-123',
     email: 'buyer@test.com',
     full_name: 'Test Buyer',
-    role: 'user'
+    role: 'user',
   },
   seller: {
     id: 'seller-123',
     email: 'seller@test.com',
     full_name: 'Test Seller',
-    role: 'user'
+    role: 'user',
   },
   admin: {
     id: 'admin-123',
     email: 'admin@test.com',
     full_name: 'Test Admin',
-    role: 'admin'
-  }
+    role: 'admin',
+  },
 };
 
 // Test listings
@@ -42,21 +42,21 @@ export const createTestListing = (overrides: Partial<MarketplaceListing> = {}): 
   id: 'test-listing-1',
   title: 'Test Product',
   description: 'This is a test product description',
-  price: 50.00,
+  price: 50.0,
   type: 'product',
   condition: 'new',
   images: ['https://example.com/image1.jpg'],
   seller: {
     id: testUsers.seller.id,
     name: testUsers.seller.full_name,
-    image: 'https://example.com/avatar.jpg'
+    image: 'https://example.com/avatar.jpg',
   },
   location: 'Test City',
   tags: ['test', 'product'],
   status: 'published' as ContentStatus,
   featured: false,
   createdAt: '2024-01-01T00:00:00Z',
-  ...overrides
+  ...overrides,
 });
 
 export const testListings: MarketplaceListing[] = [
@@ -68,49 +68,49 @@ export const testListings: MarketplaceListing[] = [
     type: 'product',
     condition: 'new',
     tags: ['furniture', 'handmade', 'wood'],
-    location: 'Downtown'
+    location: 'Downtown',
   }),
   createTestListing({
     id: '2',
     title: 'Lawn Mowing Service',
     description: 'Professional lawn care and maintenance',
-    price: 50.00,
+    price: 50.0,
     type: 'service',
     condition: 'new',
     tags: ['lawn', 'garden', 'maintenance'],
-    location: 'Suburbs'
+    location: 'Suburbs',
   }),
   createTestListing({
     id: '3',
     title: 'Vintage Camera',
     description: 'Classic 35mm film camera in excellent condition',
-    price: 150.00,
+    price: 150.0,
     type: 'product',
     condition: 'used',
     tags: ['photography', 'vintage', 'camera'],
-    location: 'Old Town'
+    location: 'Old Town',
   }),
   createTestListing({
     id: '4',
     title: 'House Cleaning Service',
     description: 'Thorough home cleaning service',
-    price: 80.00,
+    price: 80.0,
     type: 'service',
     condition: 'new',
     tags: ['cleaning', 'home', 'service'],
-    location: 'City Center'
+    location: 'City Center',
   }),
   createTestListing({
     id: '5',
     title: 'Garden Tools Set',
     description: 'Complete set of garden tools',
-    price: 45.00,
+    price: 45.0,
     type: 'product',
     condition: 'used',
     tags: ['garden', 'tools', 'outdoor'],
     location: 'West Side',
-    status: 'archived' as ContentStatus
-  })
+    status: 'archived' as ContentStatus,
+  }),
 ];
 
 // Test filters
@@ -121,12 +121,12 @@ export const defaultFilters: MarketplaceFilters = {
   minPrice: 0,
   maxPrice: 0,
   seller: '',
-  tags: []
+  tags: [],
 };
 
 export const createTestFilters = (overrides: Partial<MarketplaceFilters> = {}): MarketplaceFilters => ({
   ...defaultFilters,
-  ...overrides
+  ...overrides,
 });
 
 // Test messages
@@ -137,7 +137,7 @@ export const testMessages = {
     sender_id: testUsers.buyer.id,
     recipient_id: testUsers.seller.id,
     message: 'Is this item still available?',
-    created_at: '2024-01-02T10:00:00Z'
+    created_at: '2024-01-02T10:00:00Z',
   },
   response: {
     id: 'msg-2',
@@ -145,8 +145,8 @@ export const testMessages = {
     sender_id: testUsers.seller.id,
     recipient_id: testUsers.buyer.id,
     message: 'Yes, it is still available. Would you like to see it?',
-    created_at: '2024-01-02T11:00:00Z'
-  }
+    created_at: '2024-01-02T11:00:00Z',
+  },
 };
 
 // Test form data
@@ -158,7 +158,7 @@ export const validListingFormData = {
   condition: 'new',
   location: 'Test Location',
   images: [],
-  tags: 'test, new, product'
+  tags: 'test, new, product',
 };
 
 export const invalidListingFormData = {
@@ -169,23 +169,20 @@ export const invalidListingFormData = {
   condition: '',
   location: '',
   images: [],
-  tags: ''
+  tags: '',
 };
 
 // Helper functions
-export const filterListings = (
-  listings: MarketplaceListing[], 
-  filters: MarketplaceFilters
-): MarketplaceListing[] => {
+export const filterListings = (listings: MarketplaceListing[], filters: MarketplaceFilters): MarketplaceListing[] => {
   return listings.filter(listing => {
     // Search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         listing.title.toLowerCase().includes(searchLower) ||
         listing.description.toLowerCase().includes(searchLower) ||
         listing.tags.some((tag: string) => tag.toLowerCase().includes(searchLower));
-      
+
       if (!matchesSearch) return false;
     }
 
@@ -214,9 +211,7 @@ export const filterListings = (
 
     // Tags filter
     if (filters.tags && filters.tags.length > 0) {
-      const hasMatchingTag = filters.tags.some((filterTag: string) =>
-        listing.tags.includes(filterTag)
-      );
+      const hasMatchingTag = filters.tags.some((filterTag: string) => listing.tags.includes(filterTag));
       if (!hasMatchingTag) return false;
     }
 
@@ -229,43 +224,43 @@ export const mockApiResponses = {
   success: {
     listings: {
       data: testListings,
-      error: null
+      error: null,
     },
     singleListing: {
       data: testListings[0],
-      error: null
+      error: null,
     },
     create: {
       data: createTestListing({ id: 'new-listing-id' }),
-      error: null
+      error: null,
     },
     update: {
       data: { ...testListings[0], title: 'Updated Title' },
-      error: null
+      error: null,
     },
     delete: {
       data: null,
-      error: null
-    }
+      error: null,
+    },
   },
   errors: {
     notFound: {
       data: null,
-      error: new Error('Listing not found')
+      error: new Error('Listing not found'),
     },
     unauthorized: {
       data: null,
-      error: new Error('Unauthorized')
+      error: new Error('Unauthorized'),
     },
     validation: {
       data: null,
-      error: new Error('Validation failed')
+      error: new Error('Validation failed'),
     },
     network: {
       data: null,
-      error: new Error('Network error')
-    }
-  }
+      error: new Error('Network error'),
+    },
+  },
 };
 
 // Validation helpers
@@ -294,6 +289,6 @@ export const validateListingData = (data: any): { isValid: boolean; errors: stri
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 };

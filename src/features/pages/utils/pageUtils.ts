@@ -15,7 +15,7 @@ export function buildPageTree(pages: Page[]): PageTreeNode[] {
   // Second pass: build the tree
   pages.forEach(page => {
     const node = pageMap.get(page.id)!;
-    
+
     if (!page.parent_id) {
       // Root page
       rootPages.push(node);
@@ -57,7 +57,7 @@ export function flattenPageTree(tree: PageTreeNode[], depth = 0): (PageTreeNode 
 
   tree.forEach(node => {
     result.push({ ...node, depth });
-    
+
     if (node.children && node.children.length > 0) {
       result.push(...flattenPageTree(node.children, depth + 1));
     }
@@ -137,9 +137,7 @@ export function generateUniqueSlug(title: string, existingPages: Page[], exclude
  * Check if a slug is already taken by another page
  */
 export function isSlugTaken(slug: string, pages: Page[], excludeId?: string): boolean {
-  return pages.some(page => 
-    page.slug === slug && page.id !== excludeId
-  );
+  return pages.some(page => page.slug === slug && page.id !== excludeId);
 }
 
 /**
@@ -148,11 +146,11 @@ export function isSlugTaken(slug: string, pages: Page[], excludeId?: string): bo
 export function getPageUrl(page: Page, pages: Page[]): string {
   const breadcrumbs = getPageBreadcrumbs(page.id, pages);
   const slugs = breadcrumbs.map(p => p.slug).filter(Boolean);
-  
+
   if (page.is_home) {
     return '/';
   }
-  
+
   return `/${slugs.join('/')}`;
 }
 
@@ -170,7 +168,10 @@ export function calculateReadingTime(content: string): number {
  * Extract plain text from HTML content
  */
 export function extractTextFromHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 /**
@@ -178,17 +179,15 @@ export function extractTextFromHtml(html: string): string {
  */
 export function generateMetaDescription(content: string, maxLength = 160): string {
   const text = extractTextFromHtml(content);
-  
+
   if (text.length <= maxLength) {
     return text;
   }
-  
+
   const truncated = text.substring(0, maxLength);
   const lastSpace = truncated.lastIndexOf(' ');
-  
-  return lastSpace > maxLength * 0.8 
-    ? truncated.substring(0, lastSpace) + '...'
-    : truncated + '...';
+
+  return lastSpace > maxLength * 0.8 ? truncated.substring(0, lastSpace) + '...' : truncated + '...';
 }
 
 /**
@@ -216,7 +215,7 @@ export function validatePage(page: Partial<Page>, existingPages: Page[] = []): P
     if (!/^[a-z0-9-]+$/.test(page.slug)) {
       errors.push({ field: 'slug', message: 'Slug can only contain lowercase letters, numbers, and hyphens' });
     }
-    
+
     if (isSlugTaken(page.slug, existingPages, page.id)) {
       errors.push({ field: 'slug', message: 'This slug is already in use' });
     }
@@ -244,11 +243,7 @@ export function validatePage(page: Partial<Page>, existingPages: Page[] = []): P
 export type PageSortField = keyof Pick<Page, 'title' | 'created_at' | 'updated_at' | 'status'>;
 export type SortDirection = 'asc' | 'desc';
 
-export function sortPages(
-  pages: Page[], 
-  field: PageSortField, 
-  direction: SortDirection = 'asc'
-): Page[] {
+export function sortPages(pages: Page[], field: PageSortField, direction: SortDirection = 'asc'): Page[] {
   return [...pages].sort((a, b) => {
     let aValue: any = a[field];
     let bValue: any = b[field];

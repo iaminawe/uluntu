@@ -12,9 +12,35 @@ import { jsonToHtml } from '../../utils/editorUtils';
  */
 const RICH_CONTENT_CONFIG = {
   ALLOWED_TAGS: [
-    'p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'a', 'img', 'table', 'tr',
-    'td', 'th', 'thead', 'tbody', 'div', 'span', 'hr',
+    'p',
+    'br',
+    'strong',
+    'em',
+    'u',
+    's',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'ul',
+    'ol',
+    'li',
+    'blockquote',
+    'code',
+    'pre',
+    'a',
+    'img',
+    'table',
+    'tr',
+    'td',
+    'th',
+    'thead',
+    'tbody',
+    'div',
+    'span',
+    'hr',
   ],
   ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
   ALLOW_DATA_ATTR: false,
@@ -28,13 +54,10 @@ interface PageDetailProps {
   showActions?: boolean;
 }
 
-export const PageDetail: React.FC<PageDetailProps> = ({
-  pageSlug,
-  showActions = false,
-}) => {
+export const PageDetail: React.FC<PageDetailProps> = ({ pageSlug, showActions = false }) => {
   const { slug } = useParams<{ slug: string }>();
   const dispatch = useAppDispatch();
-  const { currentPage, loading, error } = useAppSelector((state) => state.pages);
+  const { currentPage, loading, error } = useAppSelector(state => state.pages);
 
   const pageSlugToUse = pageSlug || slug;
 
@@ -72,7 +95,7 @@ export const PageDetail: React.FC<PageDetailProps> = ({
             <h2 className="text-lg font-semibold mb-2">Error Loading Page</h2>
             <p>{error}</p>
           </div>
-          
+
           <div className="mt-6">
             <Link
               to="/pages"
@@ -94,7 +117,7 @@ export const PageDetail: React.FC<PageDetailProps> = ({
             <h2 className="text-lg font-semibold mb-2">Page Not Found</h2>
             <p>The page you're looking for doesn't exist.</p>
           </div>
-          
+
           <div className="mt-6">
             <Link
               to="/pages"
@@ -116,11 +139,7 @@ export const PageDetail: React.FC<PageDetailProps> = ({
         {currentPage.status !== 'published' && (
           <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <div className="flex items-center">
-              <svg
-                className="w-5 h-5 text-yellow-600 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
+              <svg className="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -156,15 +175,9 @@ export const PageDetail: React.FC<PageDetailProps> = ({
 
         {/* Title and Meta */}
         <div className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-            {currentPage.title}
-          </h1>
-          
-          {currentPage.excerpt && (
-            <p className="text-xl text-gray-600 leading-relaxed">
-              {currentPage.excerpt}
-            </p>
-          )}
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">{currentPage.title}</h1>
+
+          {currentPage.excerpt && <p className="text-xl text-gray-600 leading-relaxed">{currentPage.excerpt}</p>}
 
           {/* Author and Date */}
           <div className="flex items-center justify-between py-4 border-b border-gray-200">
@@ -176,7 +189,7 @@ export const PageDetail: React.FC<PageDetailProps> = ({
                   </span>
                 </div>
               )}
-              
+
               <div className="text-sm text-gray-500">
                 {currentPage.published_at ? (
                   <>Published {formatDate(currentPage.published_at)}</>
@@ -211,10 +224,7 @@ export const PageDetail: React.FC<PageDetailProps> = ({
                * This protects against XSS if malicious content is stored in the database
                * or if jsonToHtml has vulnerabilities in href/src attribute handling.
                */
-              __html: DOMPurify.sanitize(
-                jsonToHtml(currentPage.content),
-                RICH_CONTENT_CONFIG
-              ),
+              __html: DOMPurify.sanitize(jsonToHtml(currentPage.content), RICH_CONTENT_CONFIG),
             }}
           />
         ) : (
@@ -226,21 +236,17 @@ export const PageDetail: React.FC<PageDetailProps> = ({
       {showActions && (currentPage.meta_title || currentPage.meta_description) && (
         <div className="mt-12 p-6 bg-gray-50 rounded-lg">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">SEO Information</h3>
-          
+
           {currentPage.meta_title && (
             <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Title
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
               <p className="text-sm text-gray-600">{currentPage.meta_title}</p>
             </div>
           )}
-          
+
           {currentPage.meta_description && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Description
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
               <p className="text-sm text-gray-600">{currentPage.meta_description}</p>
             </div>
           )}
@@ -249,22 +255,9 @@ export const PageDetail: React.FC<PageDetailProps> = ({
 
       {/* Navigation */}
       <div className="mt-12 pt-8 border-t border-gray-200">
-        <Link
-          to="/pages"
-          className="inline-flex items-center text-blue-600 hover:text-blue-700"
-        >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
+        <Link to="/pages" className="inline-flex items-center text-blue-600 hover:text-blue-700">
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           Back to Pages
         </Link>

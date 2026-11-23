@@ -1,6 +1,6 @@
 /**
  * Test Configuration for Menu Management System
- * 
+ *
  * Centralized configuration for all test types including
  * setup, teardown, and test environment management.
  */
@@ -16,14 +16,14 @@ export const testEnvironmentConfig = {
     staging: 'https://staging.example.com',
     production: 'https://example.com',
   },
-  
+
   // Database configuration for testing
   database: {
     testDb: 'postgresql://test:test@localhost:5432/menu_test',
     migrations: './supabase/migrations',
     seeds: './tests/seeds',
   },
-  
+
   // Authentication test credentials
   auth: {
     admin: {
@@ -32,7 +32,7 @@ export const testEnvironmentConfig = {
       roles: ['admin', 'superadmin'],
     },
     user: {
-      email: 'user@test.com', 
+      email: 'user@test.com',
       password: 'user123',
       roles: ['user'],
     },
@@ -42,7 +42,7 @@ export const testEnvironmentConfig = {
       roles: ['editor'],
     },
   },
-  
+
   // Timeout configurations
   timeouts: {
     unit: 5000,
@@ -50,7 +50,7 @@ export const testEnvironmentConfig = {
     e2e: 30000,
     performance: 60000,
   },
-  
+
   // Performance thresholds
   performance: {
     renderTime: 100, // ms
@@ -59,14 +59,14 @@ export const testEnvironmentConfig = {
     firstContentfulPaint: 1800, // ms
     largestContentfulPaint: 2500, // ms
   },
-  
+
   // Accessibility standards
   accessibility: {
     wcagLevel: 'AA',
     colorContrastRatio: 4.5,
     minTouchTargetSize: 44, // pixels
   },
-  
+
   // Browser support matrix
   browsers: {
     chrome: { min: '90', target: 'latest' },
@@ -74,7 +74,7 @@ export const testEnvironmentConfig = {
     safari: { min: '14', target: 'latest' },
     edge: { min: '90', target: 'latest' },
   },
-  
+
   // Mobile device configurations
   devices: {
     mobile: {
@@ -102,13 +102,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       reportsDirectory: './coverage',
-      exclude: [
-        'node_modules/**',
-        'tests/**',
-        '**/*.d.ts',
-        '**/*.config.*',
-        '**/coverage/**',
-      ],
+      exclude: ['node_modules/**', 'tests/**', '**/*.d.ts', '**/*.config.*', '**/coverage/**'],
       thresholds: {
         global: {
           branches: 80,
@@ -143,10 +137,7 @@ export default defineConfig({
       },
     },
     // Test file patterns
-    include: [
-      'src/**/*.{test,spec}.{js,ts,jsx,tsx}',
-      'tests/**/*.{test,spec}.{js,ts,jsx,tsx}',
-    ],
+    include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}', 'tests/**/*.{test,spec}.{js,ts,jsx,tsx}'],
     exclude: [
       'node_modules/**',
       'dist/**',
@@ -187,22 +178,9 @@ export const jestConfig = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@tests/(.*)$': '<rootDir>/tests/$1',
   },
-  testMatch: [
-    '<rootDir>/src/**/*.{test,spec}.{js,ts,jsx,tsx}',
-    '<rootDir>/tests/**/*.{test,spec}.{js,ts,jsx,tsx}',
-  ],
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/dist/',
-    '/build/',
-    '/coverage/',
-    '/tests/e2e/',
-  ],
-  collectCoverageFrom: [
-    'src/**/*.{js,ts,jsx,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/*.stories.{js,ts,jsx,tsx}',
-  ],
+  testMatch: ['<rootDir>/src/**/*.{test,spec}.{js,ts,jsx,tsx}', '<rootDir>/tests/**/*.{test,spec}.{js,ts,jsx,tsx}'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/build/', '/coverage/', '/tests/e2e/'],
+  collectCoverageFrom: ['src/**/*.{js,ts,jsx,tsx}', '!src/**/*.d.ts', '!src/**/*.stories.{js,ts,jsx,tsx}'],
   coverageThreshold: {
     global: {
       branches: 80,
@@ -255,7 +233,7 @@ export const playwrightConfig = {
       name: 'webkit',
       use: { ...testEnvironmentConfig.devices.desktop, channel: 'webkit' },
     },
-    
+
     // Mobile devices
     {
       name: 'Mobile Chrome',
@@ -271,7 +249,7 @@ export const playwrightConfig = {
         channel: 'webkit',
       },
     },
-    
+
     // Tablet devices
     {
       name: 'iPad',
@@ -306,18 +284,15 @@ export class TestEnvironment {
   }
 
   getBaseUrl(env: string = 'development'): string {
-    return this.config.baseUrls[env as keyof typeof this.config.baseUrls] || 
-           this.config.baseUrls.development;
+    return this.config.baseUrls[env as keyof typeof this.config.baseUrls] || this.config.baseUrls.development;
   }
 
   getTestCredentials(role: string) {
-    return this.config.auth[role as keyof typeof this.config.auth] || 
-           this.config.auth.user;
+    return this.config.auth[role as keyof typeof this.config.auth] || this.config.auth.user;
   }
 
   getTimeout(testType: string): number {
-    return this.config.timeouts[testType as keyof typeof this.config.timeouts] || 
-           this.config.timeouts.unit;
+    return this.config.timeouts[testType as keyof typeof this.config.timeouts] || this.config.timeouts.unit;
   }
 
   getPerformanceThreshold(metric: string): number {
@@ -329,8 +304,7 @@ export class TestEnvironment {
   }
 
   getDeviceConfig(device: string) {
-    return this.config.devices[device as keyof typeof this.config.devices] ||
-           this.config.devices.desktop;
+    return this.config.devices[device as keyof typeof this.config.devices] || this.config.devices.desktop;
   }
 
   // Test data cleanup utilities
@@ -382,11 +356,11 @@ export class TestRunner {
 
   async runUnitTests(options: { coverage?: boolean; watch?: boolean } = {}) {
     const { execSync } = await import('child_process');
-    
+
     let command = 'vitest run';
     if (options.coverage) command += ' --coverage';
     if (options.watch) command += ' --watch';
-    
+
     execSync(command, { stdio: 'inherit' });
   }
 
@@ -397,26 +371,26 @@ export class TestRunner {
 
   async runE2ETests(browser?: string) {
     const { execSync } = await import('child_process');
-    
+
     let command = 'playwright test';
     if (browser) command += ` --project=${browser}`;
-    
+
     execSync(command, { stdio: 'inherit' });
   }
 
   async runAllTests() {
     console.log('Running comprehensive test suite...');
-    
+
     try {
       console.log('1. Running unit tests...');
       await this.runUnitTests({ coverage: true });
-      
+
       console.log('2. Running integration tests...');
       await this.runIntegrationTests();
-      
+
       console.log('3. Running E2E tests...');
       await this.runE2ETests();
-      
+
       console.log('✅ All tests completed successfully!');
     } catch (error) {
       console.error('❌ Test suite failed:', error);

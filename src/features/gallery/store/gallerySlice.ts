@@ -20,7 +20,7 @@ const initialState: GalleryState = {
   uploadProgress: {},
   filters: {},
   status: 'idle',
-  error: null
+  error: null,
 };
 
 // Async thunks
@@ -77,31 +77,30 @@ export const updateGallery = createAsyncThunk(
   }
 );
 
-export const deleteGallery = createAsyncThunk(
-  'gallery/deleteGallery',
-  async (id: string, { rejectWithValue }) => {
-    try {
-      await galleryApi.deleteGallery(id);
-      return id;
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete gallery');
-    }
+export const deleteGallery = createAsyncThunk('gallery/deleteGallery', async (id: string, { rejectWithValue }) => {
+  try {
+    await galleryApi.deleteGallery(id);
+    return id;
+  } catch (error) {
+    return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete gallery');
   }
-);
+});
 
 export const uploadPhoto = createAsyncThunk(
   'gallery/uploadPhoto',
   async (input: PhotoUploadInput, { dispatch, rejectWithValue }) => {
     const tempId = `temp-${Date.now()}`;
-    
+
     try {
       // Set initial upload progress
-      dispatch(setUploadProgress({
-        photoId: tempId,
-        fileName: input.file.name,
-        progress: 0,
-        status: 'uploading'
-      }));
+      dispatch(
+        setUploadProgress({
+          photoId: tempId,
+          fileName: input.file.name,
+          progress: 0,
+          status: 'uploading',
+        })
+      );
 
       // Simulate progress updates (in real app, use XMLHttpRequest or fetch with progress)
       const progressInterval = setInterval(() => {
@@ -109,16 +108,18 @@ export const uploadPhoto = createAsyncThunk(
       }, 500);
 
       const photo = await galleryApi.uploadPhoto(input);
-      
+
       clearInterval(progressInterval);
-      
+
       // Update progress to completed
-      dispatch(setUploadProgress({
-        photoId: tempId,
-        fileName: input.file.name,
-        progress: 100,
-        status: 'completed'
-      }));
+      dispatch(
+        setUploadProgress({
+          photoId: tempId,
+          fileName: input.file.name,
+          progress: 100,
+          status: 'completed',
+        })
+      );
 
       // Clear progress after delay
       setTimeout(() => {
@@ -127,13 +128,15 @@ export const uploadPhoto = createAsyncThunk(
 
       return photo;
     } catch (error) {
-      dispatch(setUploadProgress({
-        photoId: tempId,
-        fileName: input.file.name,
-        progress: 0,
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Upload failed'
-      }));
+      dispatch(
+        setUploadProgress({
+          photoId: tempId,
+          fileName: input.file.name,
+          progress: 0,
+          status: 'error',
+          error: error instanceof Error ? error.message : 'Upload failed',
+        })
+      );
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to upload photo');
     }
   }
@@ -162,19 +165,19 @@ export const batchOperation = createAsyncThunk(
         case 'delete':
           await galleryApi.batchDeletePhotos(operation.photoIds);
           return { type: 'delete', photoIds: operation.photoIds, galleryId: currentGalleryId };
-        
+
         case 'move':
           // Implementation depends on your backend
           throw new Error('Move operation not implemented');
-        
+
         case 'tag':
           // Implementation depends on your backend
           throw new Error('Tag operation not implemented');
-        
+
         case 'privacy':
           // Implementation depends on your backend
           throw new Error('Privacy operation not implemented');
-        
+
         default:
           throw new Error('Unknown operation type');
       }
@@ -186,7 +189,10 @@ export const batchOperation = createAsyncThunk(
 
 export const reorderPhotos = createAsyncThunk(
   'gallery/reorderPhotos',
-  async ({ galleryId, photoOrders }: { galleryId: string; photoOrders: { id: string; order: number }[] }, { rejectWithValue }) => {
+  async (
+    { galleryId, photoOrders }: { galleryId: string; photoOrders: { id: string; order: number }[] },
+    { rejectWithValue }
+  ) => {
     try {
       await galleryApi.reorderPhotos(galleryId, photoOrders);
       return { galleryId, photoOrders };
@@ -204,7 +210,7 @@ const gallerySlice = createSlice({
     setFilters: (state, action: PayloadAction<GalleryFilters>) => {
       state.filters = action.payload;
     },
-    clearFilters: (state) => {
+    clearFilters: state => {
       state.filters = {};
     },
     togglePhotoSelection: (state, action: PayloadAction<string>) => {
@@ -216,12 +222,12 @@ const gallerySlice = createSlice({
         state.selectedPhotos.push(photoId);
       }
     },
-    selectAllPhotos: (state) => {
+    selectAllPhotos: state => {
       if (state.currentGallery) {
         state.selectedPhotos = (state.currentGallery.photos || []).map(p => p.id);
       }
     },
-    clearSelection: (state) => {
+    clearSelection: state => {
       state.selectedPhotos = [];
     },
     setUploadProgress: (state, action: PayloadAction<UploadProgress>) => {
@@ -234,12 +240,12 @@ const gallerySlice = createSlice({
     },
     removeUploadProgress: (state, action: PayloadAction<string>) => {
       delete state.uploadProgress[action.payload];
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       // fetchGalleries
-      .addCase(fetchGalleries.pending, (state) => {
+      .addCase(fetchGalleries.pending, state => {
         state.status = 'loading';
       })
       .addCase(fetchGalleries.fulfilled, (state, action) => {
@@ -251,9 +257,9 @@ const gallerySlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      
+
       // fetchGalleryById
-      .addCase(fetchGalleryById.pending, (state) => {
+      .addCase(fetchGalleryById.pending, state => {
         state.status = 'loading';
       })
       .addCase(fetchGalleryById.fulfilled, (state, action) => {
@@ -269,13 +275,13 @@ const gallerySlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      
+
       // createGallery
       .addCase(createGallery.fulfilled, (state, action) => {
         state.galleries.unshift(action.payload);
         state.currentGallery = action.payload;
       })
-      
+
       // updateGallery
       .addCase(updateGallery.fulfilled, (state, action) => {
         const index = state.galleries.findIndex(g => g.id === action.payload.id);
@@ -286,7 +292,7 @@ const gallerySlice = createSlice({
           state.currentGallery = action.payload;
         }
       })
-      
+
       // deleteGallery
       .addCase(deleteGallery.fulfilled, (state, action) => {
         state.galleries = state.galleries.filter(g => g.id !== action.payload);
@@ -294,17 +300,23 @@ const gallerySlice = createSlice({
           state.currentGallery = null;
         }
       })
-      
+
       // uploadPhoto
       .addCase(uploadPhoto.fulfilled, (state, action) => {
-        if (state.currentGallery && ((action.payload as any).gallery_id || (action.payload as any).galleryId) === state.currentGallery.id) {
+        if (
+          state.currentGallery &&
+          ((action.payload as any).gallery_id || (action.payload as any).galleryId) === state.currentGallery.id
+        ) {
           (state.currentGallery.photos || []).push(action.payload);
         }
       })
-      
+
       // deletePhoto
       .addCase(deletePhoto.fulfilled, (state, action) => {
-        if (state.currentGallery && ((action.payload as any).gallery_id || (action.payload as any).galleryId) === state.currentGallery.id) {
+        if (
+          state.currentGallery &&
+          ((action.payload as any).gallery_id || (action.payload as any).galleryId) === state.currentGallery.id
+        ) {
           state.currentGallery.photos = (state.currentGallery.photos || []).filter(
             p => p.id !== action.payload.photoId
           );
@@ -312,7 +324,7 @@ const gallerySlice = createSlice({
         // Remove from selection
         state.selectedPhotos = state.selectedPhotos.filter(id => id !== action.payload.photoId);
       })
-      
+
       // batchOperation
       .addCase(batchOperation.fulfilled, (state, action) => {
         if (action.payload.type === 'delete' && state.currentGallery) {
@@ -322,10 +334,13 @@ const gallerySlice = createSlice({
           state.selectedPhotos = [];
         }
       })
-      
+
       // reorderPhotos
       .addCase(reorderPhotos.fulfilled, (state, action) => {
-        if (state.currentGallery && ((action.payload as any).gallery_id || (action.payload as any).galleryId) === state.currentGallery.id) {
+        if (
+          state.currentGallery &&
+          ((action.payload as any).gallery_id || (action.payload as any).galleryId) === state.currentGallery.id
+        ) {
           // Update photo order in current gallery
           action.payload.photoOrders.forEach(({ id, order }) => {
             const photo = (state.currentGallery!.photos || []).find(p => p.id === id);
@@ -337,7 +352,7 @@ const gallerySlice = createSlice({
           (state.currentGallery.photos || []).sort((a, b) => (a.order || 0) - (b.order || 0));
         }
       });
-  }
+  },
 });
 
 // Export actions and reducer
@@ -349,7 +364,7 @@ export const {
   clearSelection,
   setUploadProgress,
   updateUploadProgress,
-  removeUploadProgress
+  removeUploadProgress,
 } = gallerySlice.actions;
 
 // Export selectors

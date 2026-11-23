@@ -12,10 +12,7 @@ interface DashboardHeaderProps {
   onMobileMenuToggle?: () => void;
 }
 
-export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
-  user,
-  onMobileMenuToggle
-}) => {
+export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ user, onMobileMenuToggle }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [showSearch, setShowSearch] = React.useState(false);
 
@@ -25,20 +22,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         <div className="flex justify-between h-16">
           {/* Left side */}
           <div className="flex items-center">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden mr-2"
-              onClick={onMobileMenuToggle}
-            >
+            <Button variant="ghost" size="sm" className="lg:hidden mr-2" onClick={onMobileMenuToggle}>
               <Menu className="h-5 w-5" />
             </Button>
-            
+
             <div className="flex items-center">
-              <Link 
-                to="/dashboard" 
-                className="text-xl font-semibold text-gray-900 dark:text-white"
-              >
+              <Link to="/dashboard" className="text-xl font-semibold text-gray-900 dark:text-white">
                 Dashboard
               </Link>
             </div>
@@ -56,17 +45,14 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   placeholder="Search your content..."
                   className="pl-10 block w-full"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   onFocus={() => setShowSearch(true)}
                   onBlur={() => setTimeout(() => setShowSearch(false), 150)}
                 />
               </div>
-              
+
               {showSearch && searchQuery && (
-                <QuickSearchDropdown 
-                  query={searchQuery} 
-                  onSelect={() => setShowSearch(false)}
-                />
+                <QuickSearchDropdown query={searchQuery} onSelect={() => setShowSearch(false)} />
               )}
             </div>
           </div>
@@ -74,7 +60,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           {/* Right side */}
           <div className="flex items-center space-x-2">
             <NotificationDropdown />
-            
+
             <Link to="/dashboard/settings">
               <Button variant="ghost" size="sm">
                 <Settings className="h-5 w-5" />

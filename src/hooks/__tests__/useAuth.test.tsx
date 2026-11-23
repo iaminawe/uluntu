@@ -2,14 +2,14 @@
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
-    auth: { getUser: jest.fn() }
+    auth: { getUser: jest.fn() },
   },
-  sessionCache: new WeakMap()
+  sessionCache: new WeakMap(),
 }));
 
 jest.mock('@/config/env', () => ({
   getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
-  IS_SUPABASE_ENABLED: false
+  IS_SUPABASE_ENABLED: false,
 }));
 
 import React from 'react';
@@ -21,7 +21,7 @@ import { mockSupabaseClient } from '../../__mocks__/supabaseClient';
 
 // Mock the actual Supabase client module before importing useAuth
 jest.mock('@supabase/supabase-js', () => ({
-  createClient: () => mockSupabaseClient
+  createClient: () => mockSupabaseClient,
 }));
 
 // Import useAuth after mocking Supabase
@@ -36,17 +36,17 @@ describe('useAuth Hook with Redux', () => {
   const mockUser: User = {
     id: '123',
     email: 'test@example.com',
-    role: 'user'
+    role: 'user',
   };
 
   const mockSession: Session = {
     access_token: 'mock-token',
-    expires_at: new Date().toISOString()
+    expires_at: new Date().toISOString(),
   };
 
   const wrapper = ({ children }: { children: React.ReactNode }) => {
     const store = configureStore({
-      reducer: { auth: authReducer }
+      reducer: { auth: authReducer },
     });
     return <Provider store={store}>{children}</Provider>;
   };
@@ -62,18 +62,18 @@ describe('useAuth Hook with Redux', () => {
   describe('Sign In', () => {
     it('should handle successful sign in', async () => {
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValueOnce({
-        data: { 
-          user: { 
+        data: {
+          user: {
             id: mockUser.id,
             email: mockUser.email,
-            user_metadata: { role: mockUser.role }
+            user_metadata: { role: mockUser.role },
           },
-          session: { 
+          session: {
             access_token: mockSession.access_token,
-            expires_at: new Date(mockSession.expires_at).getTime()
-          }
+            expires_at: new Date(mockSession.expires_at).getTime(),
+          },
         },
-        error: null
+        error: null,
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -92,7 +92,7 @@ describe('useAuth Hook with Redux', () => {
       const mockError = { message: 'Invalid credentials' };
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValueOnce({
         data: { user: null, session: null },
-        error: mockError
+        error: mockError,
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -111,18 +111,18 @@ describe('useAuth Hook with Redux', () => {
   describe('Sign Up', () => {
     it('should handle successful sign up', async () => {
       mockSupabaseClient.auth.signUp.mockResolvedValueOnce({
-        data: { 
-          user: { 
+        data: {
+          user: {
             id: mockUser.id,
             email: mockUser.email,
-            user_metadata: { role: mockUser.role }
-          },  
+            user_metadata: { role: mockUser.role },
+          },
           session: {
             access_token: mockSession.access_token,
-            expires_at: new Date(mockSession.expires_at).getTime()
-          }
+            expires_at: new Date(mockSession.expires_at).getTime(),
+          },
         },
-        error: null
+        error: null,
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -141,7 +141,7 @@ describe('useAuth Hook with Redux', () => {
       const mockError = { message: 'Email already exists' };
       mockSupabaseClient.auth.signUp.mockResolvedValueOnce({
         data: { user: null, session: null },
-        error: mockError
+        error: mockError,
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -160,9 +160,9 @@ describe('useAuth Hook with Redux', () => {
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValueOnce({
         data: {
           user: { id: mockUser.id, email: mockUser.email, user_metadata: { role: mockUser.role } },
-          session: { access_token: mockSession.access_token, expires_at: new Date(mockSession.expires_at).getTime() }
+          session: { access_token: mockSession.access_token, expires_at: new Date(mockSession.expires_at).getTime() },
         },
-        error: null
+        error: null,
       });
       mockSupabaseClient.auth.signOut.mockResolvedValueOnce({ error: null });
 
@@ -201,7 +201,7 @@ describe('useAuth Hook with Redux', () => {
   describe('Password Reset', () => {
     it('should handle successful password reset request', async () => {
       mockSupabaseClient.auth.resetPasswordForEmail.mockResolvedValueOnce({
-        error: null
+        error: null,
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -211,15 +211,13 @@ describe('useAuth Hook with Redux', () => {
       });
 
       expect(result.current.error).toBeNull();
-      expect(mockSupabaseClient.auth.resetPasswordForEmail).toHaveBeenCalledWith(
-        'test@example.com'
-      );
+      expect(mockSupabaseClient.auth.resetPasswordForEmail).toHaveBeenCalledWith('test@example.com');
     });
 
     it('should handle password reset error', async () => {
       const mockError = { message: 'User not found' };
       mockSupabaseClient.auth.resetPasswordForEmail.mockResolvedValueOnce({
-        error: mockError
+        error: mockError,
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -236,17 +234,17 @@ describe('useAuth Hook with Redux', () => {
     it('should handle session refresh', async () => {
       const newSession = {
         access_token: 'new-token',
-        expires_at: new Date().toISOString()
+        expires_at: new Date().toISOString(),
       };
 
       mockSupabaseClient.auth.getSession.mockResolvedValueOnce({
-        data: { 
+        data: {
           session: {
             access_token: newSession.access_token,
-            expires_at: new Date(newSession.expires_at).getTime()
-          }
+            expires_at: new Date(newSession.expires_at).getTime(),
+          },
         },
-        error: null
+        error: null,
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -261,7 +259,7 @@ describe('useAuth Hook with Redux', () => {
     it('should handle expired session', async () => {
       mockSupabaseClient.auth.getSession.mockResolvedValueOnce({
         data: { session: null },
-        error: null
+        error: null,
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -282,9 +280,9 @@ describe('useAuth Hook with Redux', () => {
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValueOnce({
         data: {
           user: { id: adminUser.id, email: adminUser.email, user_metadata: { role: 'admin' } },
-          session: { access_token: mockSession.access_token, expires_at: new Date(mockSession.expires_at).getTime() }
+          session: { access_token: mockSession.access_token, expires_at: new Date(mockSession.expires_at).getTime() },
         },
-        error: null
+        error: null,
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });

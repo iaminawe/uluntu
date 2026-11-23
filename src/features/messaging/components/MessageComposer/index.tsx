@@ -13,7 +13,7 @@ export default function MessageComposer({
   onCancelReply,
   onCancelEdit,
   disabled = false,
-  className = ''
+  className = '',
 }: MessageComposerProps) {
   const [message, setMessage] = useState('');
 
@@ -38,7 +38,7 @@ export default function MessageComposer({
           <button onClick={onCancelReply}>Cancel</button>
         </div>
       )}
-      
+
       {editingMessage && (
         <div className="editing">
           Editing message
@@ -49,16 +49,12 @@ export default function MessageComposer({
       <form onSubmit={handleSubmit} className="composer-form">
         <textarea
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={e => setMessage(e.target.value)}
           placeholder="Type a message..."
           disabled={disabled}
           className="message-input"
         />
-        <button 
-          type="submit" 
-          disabled={disabled || !message.trim()}
-          className="send-button"
-        >
+        <button type="submit" disabled={disabled || !message.trim()} className="send-button">
           {editingMessage ? 'Update' : 'Send'}
         </button>
       </form>

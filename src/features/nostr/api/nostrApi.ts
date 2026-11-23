@@ -3,12 +3,7 @@ import { supabase } from '@/shared/api';
 // NIP-07 browser signer (Alby, nos2x, etc.).
 interface Nip07Signer {
   getPublicKey(): Promise<string>;
-  signEvent(event: {
-    kind: number;
-    created_at: number;
-    tags: string[][];
-    content: string;
-  }): Promise<unknown>;
+  signEvent(event: { kind: number; created_at: number; tags: string[][]; content: string }): Promise<unknown>;
 }
 
 declare global {

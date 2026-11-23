@@ -19,7 +19,7 @@ export function EmployeesSection({ employees, isLoading, error }: EmployeesSecti
           Team Members
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3].map(i => (
             <SkeletonCard key={i} className="h-32" />
           ))}
         </div>
@@ -34,9 +34,7 @@ export function EmployeesSection({ employees, isLoading, error }: EmployeesSecti
           <Users className="w-6 h-6" />
           Team Members
         </h2>
-        <div className="text-center py-8 text-slate-600 dark:text-slate-400">
-          Failed to load team members
-        </div>
+        <div className="text-center py-8 text-slate-600 dark:text-slate-400">Failed to load team members</div>
       </div>
     );
   }
@@ -52,7 +50,7 @@ export function EmployeesSection({ employees, isLoading, error }: EmployeesSecti
         Team Members ({employees.length})
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {employees.map((employee) => (
+        {employees.map(employee => (
           <Link
             key={`${employee.company_id}-${employee.member_id}`}
             to={`/directory/${employee.member_id}`}

@@ -3,13 +3,7 @@
  * Handles conversation CRUD operations, archiving, and specialized thread creation
  */
 
-import {
-  useQuery,
-  UseQueryResult,
-  useMutation,
-  UseMutationResult,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useQuery, UseQueryResult, useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query';
 import { messagingApi } from '@/features/messaging/api/messagingApi';
 import {
   Conversation,
@@ -41,7 +35,7 @@ export function useConversations(filters?: ConversationFilters): UseQueryResult<
         return false;
       }
       return failureCount < 3;
-    }
+    },
   });
 }
 
@@ -74,7 +68,7 @@ export function useConversation(id: string): UseQueryResult<Conversation | null,
       }
       return failureCount < 2;
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000)
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 3000),
   });
 }
 
@@ -84,7 +78,7 @@ export function useConversation(id: string): UseQueryResult<Conversation | null,
 export function useExistingConversation(participantId?: string): UseQueryResult<Conversation | null, Error> {
   return useQuery({
     queryKey: messagingQueryKeys.existingConversation(participantId || ''),
-    queryFn: () => participantId ? messagingApi.findExistingConversation(participantId) : Promise.resolve(null),
+    queryFn: () => (participantId ? messagingApi.findExistingConversation(participantId) : Promise.resolve(null)),
     enabled: !!participantId,
     staleTime: 30 * 1000, // 30 seconds
     gcTime: 2 * 60 * 1000, // 2 minutes
@@ -99,69 +93,69 @@ export function useCreateConversation(): UseMutationResult<Conversation, Error, 
 
   return useMutation({
     mutationFn: (input: CreateConversationInput) => messagingApi.createConversation(input),
-    onSuccess: (newConversation) => {
+    onSuccess: newConversation => {
       logger.debug(`Created conversation ${newConversation.id}`, 'MESSAGING');
 
       // Invalidate conversations list
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
 
       // Add the new conversation to cache
-      queryClient.setQueryData(
-        messagingQueryKeys.conversation(newConversation.id),
-        newConversation
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversation(newConversation.id), newConversation);
 
       // Update unread count
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.unreadCount });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to create conversation:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
 /**
  * Hook to update a conversation
  */
-export function useUpdateConversation(): UseMutationResult<Conversation, Error, { id: string } & UpdateConversationInput> {
+export function useUpdateConversation(): UseMutationResult<
+  Conversation,
+  Error,
+  { id: string } & UpdateConversationInput
+> {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...input }: { id: string } & UpdateConversationInput) => messagingApi.updateConversation(id, input),
+    mutationFn: ({ id, ...input }: { id: string } & UpdateConversationInput) =>
+      messagingApi.updateConversation(id, input),
     onSuccess: (updatedConversation, variables) => {
       logger.debug(`Updated conversation ${variables.id}`, 'MESSAGING');
 
       // Update conversations list cache
-      queryClient.setQueryData(
-        messagingQueryKeys.conversations,
-        (oldData: Conversation[] | undefined) => {
-          if (!oldData) return oldData;
-          return oldData.map((conversation: Conversation) =>
-            conversation.id === variables.id ? updatedConversation : conversation
-          );
-        }
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversations, (oldData: Conversation[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map((conversation: Conversation) =>
+          conversation.id === variables.id ? updatedConversation : conversation
+        );
+      });
 
       // Update specific conversation cache
-      queryClient.setQueryData(
-        messagingQueryKeys.conversation(variables.id),
-        updatedConversation
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversation(variables.id), updatedConversation);
 
       // Invalidate conversations to refresh any filtered views
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
     },
-    onError: (error) => {
+    onError: error => {
       // Enhanced error logging with RLS context
-      logger.error('Failed to update conversation:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-        isRLSError: error.code === '42501' || error.message?.includes('RLS'),
-        is406Error: error.code === 'PGRST106' || error.message?.includes('JSON object requested'),
-        isPermissionError: error.message?.includes('permission') || error.message?.includes('authorized')
-      }, 'MESSAGING');
+      logger.error(
+        'Failed to update conversation:',
+        {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+          isRLSError: error.code === '42501' || error.message?.includes('RLS'),
+          is406Error: error.code === 'PGRST106' || error.message?.includes('JSON object requested'),
+          isPermissionError: error.message?.includes('permission') || error.message?.includes('authorized'),
+        },
+        'MESSAGING'
+      );
 
       // Provide user-friendly error messages
       if (error.message?.includes('permission') || error.message?.includes('authorized')) {
@@ -169,7 +163,8 @@ export function useUpdateConversation(): UseMutationResult<Conversation, Error, 
       } else if (error.message?.includes('temporarily unavailable')) {
         error.message = 'Conversation update is temporarily unavailable. Please try again in a moment.';
       } else if (error.code === '42501' || error.message?.includes('security restrictions')) {
-        error.message = 'Unable to update conversation due to security restrictions. Please contact support if this persists.';
+        error.message =
+          'Unable to update conversation due to security restrictions. Please contact support if this persists.';
       } else if (error.code === 'PGRST106') {
         error.message = 'Conversation update failed due to a database issue. Please try again.';
       }
@@ -190,7 +185,7 @@ export function useUpdateConversation(): UseMutationResult<Conversation, Error, 
       // Standard retry logic for other errors
       return failureCount < 2;
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000)
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 5000),
   });
 }
 
@@ -206,13 +201,10 @@ export function useDeleteConversation(): UseMutationResult<void, Error, string> 
       logger.debug(`Deleted conversation ${conversationId}`, 'MESSAGING');
 
       // Remove from conversations list cache
-      queryClient.setQueryData(
-        messagingQueryKeys.conversations,
-        (oldData: Conversation[] | undefined) => {
-          if (!oldData) return oldData;
-          return oldData.filter((conversation: Conversation) => conversation.id !== conversationId);
-        }
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversations, (oldData: Conversation[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.filter((conversation: Conversation) => conversation.id !== conversationId);
+      });
 
       // Remove specific conversation cache
       queryClient.removeQueries({ queryKey: messagingQueryKeys.conversation(conversationId) });
@@ -223,9 +215,9 @@ export function useDeleteConversation(): UseMutationResult<void, Error, string> 
       // Invalidate conversations to refresh any filtered views
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to delete conversation:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -241,13 +233,10 @@ export function useDeleteConversations(): UseMutationResult<void, Error, string[
       logger.debug(`Bulk deleted ${conversationIds.length} conversations`, 'MESSAGING');
 
       // Remove from conversations list cache
-      queryClient.setQueryData(
-        messagingQueryKeys.conversations,
-        (oldData: Conversation[] | undefined) => {
-          if (!oldData) return oldData;
-          return oldData.filter((conversation: Conversation) => !conversationIds.includes(conversation.id));
-        }
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversations, (oldData: Conversation[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.filter((conversation: Conversation) => !conversationIds.includes(conversation.id));
+      });
 
       // Remove specific conversation caches
       conversationIds.forEach(conversationId => {
@@ -258,9 +247,9 @@ export function useDeleteConversations(): UseMutationResult<void, Error, string[
       // Invalidate conversations to refresh any filtered views
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to bulk delete conversations:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -276,22 +265,19 @@ export function useDeleteConversationEnhanced(): UseMutationResult<void, Error, 
       logger.debug(`Deleted conversation ${variables.id} (${variables.deleteType})`, 'MESSAGING');
 
       // Remove conversation from cache
-      queryClient.setQueryData(
-        messagingQueryKeys.conversations,
-        (oldData: Conversation[] | undefined) => {
-          if (!oldData) return oldData;
-          return oldData.filter((conversation: Conversation) => conversation.id !== variables.id);
-        }
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversations, (oldData: Conversation[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.filter((conversation: Conversation) => conversation.id !== variables.id);
+      });
 
       // Remove specific conversation cache
       queryClient.removeQueries({
-        queryKey: messagingQueryKeys.conversation(variables.id)
+        queryKey: messagingQueryKeys.conversation(variables.id),
       });
 
       // Remove messages cache for this conversation
       queryClient.removeQueries({
-        queryKey: messagingQueryKeys.messages(variables.id)
+        queryKey: messagingQueryKeys.messages(variables.id),
       });
 
       // Refresh conversations list
@@ -300,9 +286,9 @@ export function useDeleteConversationEnhanced(): UseMutationResult<void, Error, 
       // Update unread count
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.unreadCount });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to delete conversation:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -318,30 +304,27 @@ export function useLeaveConversation(): UseMutationResult<void, Error, string> {
       logger.debug(`Left conversation ${conversationId}`, 'MESSAGING');
 
       // Remove conversation from cache
-      queryClient.setQueryData(
-        messagingQueryKeys.conversations,
-        (oldData: Conversation[] | undefined) => {
-          if (!oldData) return oldData;
-          return oldData.filter((conversation: Conversation) => conversation.id !== conversationId);
-        }
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversations, (oldData: Conversation[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.filter((conversation: Conversation) => conversation.id !== conversationId);
+      });
 
       // Remove specific conversation cache
       queryClient.removeQueries({
-        queryKey: messagingQueryKeys.conversation(conversationId)
+        queryKey: messagingQueryKeys.conversation(conversationId),
       });
 
       // Remove messages cache for this conversation
       queryClient.removeQueries({
-        queryKey: messagingQueryKeys.messages(conversationId)
+        queryKey: messagingQueryKeys.messages(conversationId),
       });
 
       // Refresh conversations list
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to leave conversation:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -357,18 +340,15 @@ export function useArchiveConversation(): UseMutationResult<void, Error, string>
       logger.debug(`Archived conversation ${conversationId}`, 'MESSAGING');
 
       // Update conversation in cache to reflect archived status
-      queryClient.setQueryData(
-        messagingQueryKeys.conversations,
-        (oldData: Conversation[] | undefined) => {
-          if (!oldData) return oldData;
-          return oldData.map((conversation: Conversation) => {
-            if (conversation.id === conversationId) {
-              return { ...conversation, is_archived: true };
-            }
-            return conversation;
-          });
-        }
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversations, (oldData: Conversation[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map((conversation: Conversation) => {
+          if (conversation.id === conversationId) {
+            return { ...conversation, is_archived: true };
+          }
+          return conversation;
+        });
+      });
 
       // Update specific conversation cache
       queryClient.setQueryData(
@@ -382,9 +362,9 @@ export function useArchiveConversation(): UseMutationResult<void, Error, string>
       // Invalidate conversations list to refresh filtered views
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to archive conversation:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -400,18 +380,15 @@ export function useUnarchiveConversation(): UseMutationResult<void, Error, strin
       logger.debug(`Unarchived conversation ${conversationId}`, 'MESSAGING');
 
       // Update conversation in cache to reflect unarchived status
-      queryClient.setQueryData(
-        messagingQueryKeys.conversations,
-        (oldData: Conversation[] | undefined) => {
-          if (!oldData) return oldData;
-          return oldData.map((conversation: Conversation) => {
-            if (conversation.id === conversationId) {
-              return { ...conversation, is_archived: false };
-            }
-            return conversation;
-          });
-        }
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversations, (oldData: Conversation[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map((conversation: Conversation) => {
+          if (conversation.id === conversationId) {
+            return { ...conversation, is_archived: false };
+          }
+          return conversation;
+        });
+      });
 
       // Update specific conversation cache
       queryClient.setQueryData(
@@ -425,9 +402,9 @@ export function useUnarchiveConversation(): UseMutationResult<void, Error, strin
       // Invalidate conversations list to refresh filtered views
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to unarchive conversation:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -448,9 +425,9 @@ export function useMarkAsRead(): UseMutationResult<void, Error, string> {
       // Update conversations list to reflect read status
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to mark conversation as read:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -462,24 +439,21 @@ export function useCreateMarketplaceThread(): UseMutationResult<Conversation, Er
 
   return useMutation({
     mutationFn: (input: CreateMarketplaceThreadInput) => messagingApi.createMarketplaceThread(input),
-    onSuccess: (newConversation) => {
+    onSuccess: newConversation => {
       logger.debug(`Created marketplace thread ${newConversation.id}`, 'MESSAGING');
 
       // Invalidate conversations list to show new thread
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
 
       // Add the new conversation to cache
-      queryClient.setQueryData(
-        messagingQueryKeys.conversation(newConversation.id),
-        newConversation
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversation(newConversation.id), newConversation);
 
       // Update unread count
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.unreadCount });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to create marketplace thread:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -491,23 +465,20 @@ export function useCreateOpportunityThread(): UseMutationResult<Conversation, Er
 
   return useMutation({
     mutationFn: (input: CreateOpportunityThreadInput) => messagingApi.createOpportunityThread(input),
-    onSuccess: (newConversation) => {
+    onSuccess: newConversation => {
       logger.debug(`Created opportunity thread ${newConversation.id}`, 'MESSAGING');
 
       // Invalidate conversations list to show new thread
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
 
       // Add the new conversation to cache
-      queryClient.setQueryData(
-        messagingQueryKeys.conversation(newConversation.id),
-        newConversation
-      );
+      queryClient.setQueryData(messagingQueryKeys.conversation(newConversation.id), newConversation);
 
       // Update unread count
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.unreadCount });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to create opportunity thread:', 'MESSAGING', error);
-    }
+    },
   });
 }

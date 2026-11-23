@@ -78,12 +78,12 @@ export const FormImageUpload: React.FC<FormImageUploadProps> = ({
   const [localError, setLocalError] = useState<string>('');
   const [preview, setPreview] = useState<string | null>(currentImage || null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
   // Update preview when currentImage prop changes
   useEffect(() => {
     setPreview(currentImage || null);
   }, [currentImage]);
-  
+
   // Clean up object URLs on unmount
   useEffect(() => {
     return () => {
@@ -92,88 +92,88 @@ export const FormImageUpload: React.FC<FormImageUploadProps> = ({
       }
     };
   }, [preview]);
-  
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (disabled) return;
-    
+
     if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
     } else if (e.type === 'dragleave') {
       setDragActive(false);
     }
   };
-  
+
   const validateFile = (file: File): boolean => {
     // Check file type
     if (!acceptedTypes.includes(file.type)) {
       setLocalError(`File type not supported. Please upload: ${acceptedTypes.join(', ')}`);
       return false;
     }
-    
+
     // Check file size
     if (file.size > maxSize) {
       setLocalError(`File is too large. Maximum size is ${maxSize / (1024 * 1024)}MB`);
       return false;
     }
-    
+
     setLocalError('');
     return true;
   };
-  
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (disabled) return;
-    
+
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      
+
       if (validateFile(file)) {
         handleFile(file);
       }
     }
   };
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (disabled) return;
-    
+
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      
+
       if (validateFile(file)) {
         handleFile(file);
       }
     }
   };
-  
+
   const handleFile = (file: File) => {
     // Create a preview
     const objectUrl = URL.createObjectURL(file);
     setPreview(objectUrl);
-    
+
     // Call the onChange handler with the file
     onChange(file);
   };
-  
+
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (disabled) return;
-    
+
     setPreview(null);
     if (inputRef.current) {
       inputRef.current.value = '';
     }
     onChange(null);
   };
-  
+
   const effectiveError = error || localError;
-  
+
   return (
     <div className={`mb-4 ${className}`}>
       {label && (
@@ -181,7 +181,7 @@ export const FormImageUpload: React.FC<FormImageUploadProps> = ({
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
+
       <div
         className={`border-2 border-dashed rounded-lg p-4 text-center
                   transition-colors
@@ -204,15 +204,11 @@ export const FormImageUpload: React.FC<FormImageUploadProps> = ({
           onChange={handleChange}
           disabled={disabled}
         />
-        
+
         {preview ? (
           <div className="relative">
-            <img 
-              src={preview} 
-              alt="Preview" 
-              className="max-h-48 mx-auto rounded-md object-contain" 
-            />
-            
+            <img src={preview} alt="Preview" className="max-h-48 mx-auto rounded-md object-contain" />
+
             {!disabled && (
               <button
                 type="button"
@@ -240,14 +236,10 @@ export const FormImageUpload: React.FC<FormImageUploadProps> = ({
           </div>
         )}
       </div>
-      
-      {helperText && !effectiveError && (
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
-      )}
-      
-      {effectiveError && (
-        <p className="mt-1 text-xs text-red-500">{effectiveError}</p>
-      )}
+
+      {helperText && !effectiveError && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{helperText}</p>}
+
+      {effectiveError && <p className="mt-1 text-xs text-red-500">{effectiveError}</p>}
     </div>
   );
 };

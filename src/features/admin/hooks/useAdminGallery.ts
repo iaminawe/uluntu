@@ -11,7 +11,7 @@ import type {
   AdminPhotosResponse,
   ModerationQueueResponse,
   StorageAnalytics,
-  BatchOperationResult
+  BatchOperationResult,
 } from '@/types/adminGallery';
 import { PaginationParams } from '@/shared/api/types';
 import { logger } from '@/utils/logger';
@@ -32,7 +32,7 @@ export const useAdminGalleries = (
     queryFn: () => adminGalleryApi.getAllGalleriesAdmin(filters),
     enabled: options?.enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -48,9 +48,9 @@ export const useDeleteGalleryAdmin = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
       queryClient.invalidateQueries({ queryKey: ['storage-analytics'] });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to delete gallery', 'ADMIN_GALLERY_HOOKS', error);
-    }
+    },
   });
 };
 
@@ -58,11 +58,11 @@ export const useUpdateGalleryAdmin = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
-      galleryId, 
-      updates 
-    }: { 
-      galleryId: string; 
+    mutationFn: ({
+      galleryId,
+      updates,
+    }: {
+      galleryId: string;
       updates: {
         title?: string;
         description?: string;
@@ -70,19 +70,16 @@ export const useUpdateGalleryAdmin = () => {
         visibility?: 'visible' | 'hidden' | 'archived';
         tags?: string[];
         is_featured?: boolean;
-      }
+      };
     }) => adminGalleryApi.updateGalleryAdmin(galleryId, updates),
     onSuccess: (result, variables) => {
       // Update specific gallery in cache
       queryClient.invalidateQueries({ queryKey: ['admin-galleries'] });
-      queryClient.setQueryData(
-        ['admin-gallery', variables.galleryId],
-        result.data
-      );
+      queryClient.setQueryData(['admin-gallery', variables.galleryId], result.data);
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to update gallery', 'ADMIN_GALLERY_HOOKS', error);
-    }
+    },
   });
 };
 
@@ -111,9 +108,9 @@ export const useDeletePhotoAdmin = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-galleries'] });
       queryClient.invalidateQueries({ queryKey: ['storage-analytics'] });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to delete photo', 'ADMIN_GALLERY_HOOKS', error);
-    }
+    },
   });
 };
 
@@ -121,11 +118,11 @@ export const useUpdatePhotoAdmin = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
-      photoId, 
-      updates 
-    }: { 
-      photoId: string; 
+    mutationFn: ({
+      photoId,
+      updates,
+    }: {
+      photoId: string;
       updates: {
         title?: string;
         description?: string;
@@ -133,15 +130,15 @@ export const useUpdatePhotoAdmin = () => {
         visibility?: 'visible' | 'hidden';
         moderation_status?: 'pending' | 'approved' | 'rejected' | 'flagged';
         moderation_notes?: string;
-      }
+      };
     }) => adminGalleryApi.updatePhotoAdmin(photoId, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-gallery-photos'] });
       queryClient.invalidateQueries({ queryKey: ['moderation-queue'] });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to update photo', 'ADMIN_GALLERY_HOOKS', error);
-    }
+    },
   });
 };
 
@@ -149,16 +146,15 @@ export const useReorderGalleryPhotos = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (request: PhotoReorderRequest) =>
-      adminGalleryApi.reorderGalleryPhotos(request),
+    mutationFn: (request: PhotoReorderRequest) => adminGalleryApi.reorderGalleryPhotos(request),
     onSuccess: (result, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ['admin-gallery-photos', variables.gallery_id] 
+      queryClient.invalidateQueries({
+        queryKey: ['admin-gallery-photos', variables.gallery_id],
       });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to reorder photos', 'ADMIN_GALLERY_HOOKS', error);
-    }
+    },
   });
 };
 
@@ -174,7 +170,7 @@ export const useBulkDeletePhotos = () => {
   const mutation = useMutation({
     mutationFn: async ({ photoIds, reason }: { photoIds: string[]; reason?: string }) => {
       setProgress({ isLoading: true, processed: 0, total: photoIds.length });
-      
+
       try {
         const result = await adminGalleryApi.bulkDeletePhotos(photoIds, reason);
         setProgress({ isLoading: false, processed: photoIds.length, total: photoIds.length });
@@ -189,15 +185,15 @@ export const useBulkDeletePhotos = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-galleries'] });
       queryClient.invalidateQueries({ queryKey: ['storage-analytics'] });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to bulk delete photos', 'ADMIN_GALLERY_HOOKS', error);
-    }
+    },
   });
 
   return {
     ...mutation,
     progress,
-    resetProgress: () => setProgress({ isLoading: false, processed: 0, total: 0 })
+    resetProgress: () => setProgress({ isLoading: false, processed: 0, total: 0 }),
   };
 };
 
@@ -212,7 +208,7 @@ export const useBulkUploadPhotos = () => {
   const mutation = useMutation({
     mutationFn: async ({ galleryId, files }: { galleryId: string; files: File[] }) => {
       setProgress({ isLoading: true, processed: 0, total: files.length });
-      
+
       try {
         const result = await adminGalleryApi.bulkUploadPhotosAdmin(galleryId, files);
         setProgress({ isLoading: false, processed: files.length, total: files.length });
@@ -223,21 +219,21 @@ export const useBulkUploadPhotos = () => {
       }
     },
     onSuccess: (result, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ['admin-gallery-photos', variables.galleryId] 
+      queryClient.invalidateQueries({
+        queryKey: ['admin-gallery-photos', variables.galleryId],
       });
       queryClient.invalidateQueries({ queryKey: ['admin-galleries'] });
       queryClient.invalidateQueries({ queryKey: ['storage-analytics'] });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to bulk upload photos', 'ADMIN_GALLERY_HOOKS', error);
-    }
+    },
   });
 
   return {
     ...mutation,
     progress,
-    resetProgress: () => setProgress({ isLoading: false, processed: 0, total: 0 })
+    resetProgress: () => setProgress({ isLoading: false, processed: 0, total: 0 }),
   };
 };
 
@@ -247,7 +243,7 @@ export const useStorageAnalytics = () => {
     queryKey: ['storage-analytics'],
     queryFn: () => adminGalleryApi.getStorageAnalytics(),
     staleTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -341,7 +337,7 @@ export const useAdminSelection = <T extends { id: string }>() => {
 
   const toggleAll = (items: T[]) => {
     const itemIds = items.map(item => item.id);
-    
+
     if (selectAll) {
       setSelectedItems(new Set());
       setSelectAll(false);
@@ -357,9 +353,9 @@ export const useAdminSelection = <T extends { id: string }>() => {
   };
 
   const isSelected = (id: string) => selectedItems.has(id);
-  
+
   const selectedCount = selectedItems.size;
-  
+
   const selectedArray = Array.from(selectedItems);
 
   return {
@@ -370,6 +366,6 @@ export const useAdminSelection = <T extends { id: string }>() => {
     toggleItem,
     toggleAll,
     clearSelection,
-    hasSelection: selectedCount > 0
+    hasSelection: selectedCount > 0,
   };
 };

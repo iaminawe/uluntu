@@ -19,10 +19,14 @@ interface EventsCalendarProps {
   error?: any;
 }
 
-const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: propEvents, isLoading: propIsLoading, error: propError }) => {
+const EventsCalendar: React.FC<EventsCalendarProps> = ({
+  events: propEvents,
+  isLoading: propIsLoading,
+  error: propError,
+}) => {
   // Use hybrid approach for events data if not provided via props
   const { events: reduxEvents, isLoading: reduxIsLoading, error: reduxError } = useEventsHybrid();
-  
+
   // Use props if provided, otherwise use Redux state
   const events = propEvents || reduxEvents;
   const isLoading = propIsLoading !== undefined ? propIsLoading : reduxIsLoading;
@@ -47,14 +51,14 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: propEvents, isL
 
   const handleEventClick = (event: any, e: React.SyntheticEvent) => {
     setSelectedEvent(event.resource);
-    
+
     // Calculate position for popover
     const rect = (e.target as HTMLElement).getBoundingClientRect();
     setPopoverPosition({
       top: rect.top + window.scrollY,
       left: rect.left + window.scrollX,
     });
-    
+
     setShowPopover(true);
   };
 
@@ -93,7 +97,11 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: propEvents, isL
           className="flex items-center px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+              clipRule="evenodd"
+            />
           </svg>
           Subscribe to Calendar
         </button>
@@ -115,19 +123,10 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: propEvents, isL
       />
 
       {showPopover && selectedEvent && (
-        <EventPopover
-          event={selectedEvent}
-          position={popoverPosition}
-          onClose={handleClosePopover}
-        />
+        <EventPopover event={selectedEvent} position={popoverPosition} onClose={handleClosePopover} />
       )}
 
-      {showSubscribeModal && (
-        <SubscribeModal
-          events={events}
-          onClose={() => setShowSubscribeModal(false)}
-        />
-      )}
+      {showSubscribeModal && <SubscribeModal events={events} onClose={() => setShowSubscribeModal(false)} />}
     </div>
   );
 };

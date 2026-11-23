@@ -8,12 +8,13 @@ interface CompanyCardProps {
 }
 
 const CompanyCard = ({ company }: CompanyCardProps) => {
-  const defaultCoverImage = 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+  const defaultCoverImage =
+    'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
   const defaultLogo = 'https://images.unsplash.com/photo-1568952433726-3896e3881c65?w=100&h=100&fit=crop';
 
   // Calculate member count (mock data for now)
   const memberCount = Math.floor(Math.random() * 50) + 5;
-  
+
   return (
     <Link
       to={`/companies/${company.slug || company.id}`}
@@ -35,7 +36,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-        
+
         {/* Stats Overlay */}
         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white/90">
           <div className="flex items-center gap-3">
@@ -55,11 +56,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
       <div className="flex justify-center -mt-12 relative z-10 px-6">
         <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 shadow-xl border-4 border-white dark:border-slate-800 group-hover:shadow-2xl transition-all duration-300">
           {company.logo ? (
-            <img
-              src={company.logo}
-              alt={`${company.name} logo`}
-              className="w-full h-full object-contain rounded-xl"
-            />
+            <img src={company.logo} alt={`${company.name} logo`} className="w-full h-full object-contain rounded-xl" />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center">
               <Building2 className="h-10 w-10 text-white" />
@@ -88,12 +85,12 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
             )}
           </div>
         </div>
-        
+
         {/* Description */}
         <p className="text-slate-600 dark:text-slate-300 text-sm line-clamp-3 mb-4 text-center leading-relaxed">
           {truncateDescription(company.description, 120)}
         </p>
-        
+
         {/* Location & Website */}
         <div className="space-y-2 mb-4">
           <div className="flex items-center justify-center text-sm text-slate-600 dark:text-slate-400">
@@ -109,7 +106,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
             </div>
           )}
         </div>
-        
+
         {/* Industries - Enhanced */}
         {company.industry && company.industry.length > 0 && (
           <div className="mt-auto">

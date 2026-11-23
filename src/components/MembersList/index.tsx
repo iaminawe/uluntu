@@ -6,36 +6,31 @@ import { Member, MembersListProps, FilterOptions } from '@/features/directory/co
 import { filterMembers, sortMembersByName } from '@/features/directory/components/MembersList/utils';
 import { useMembersHybrid } from '@/features/directory/hooks/useMembersHybrid';
 
-const MembersList = ({ 
-  initialSearch = '', 
+const MembersList = ({
+  initialSearch = '',
   initialSkills,
-  companyId, 
+  companyId,
   members: parentMembers = [],
   loading: parentLoading,
-  error: parentError
+  error: parentError,
 }: MembersListProps) => {
   // State for search and filters
   const [filters, setFilters] = useState<FilterOptions>({
     search: initialSearch,
-    skills: initialSkills
+    skills: initialSkills,
   });
-  
+
   // Use hybrid approach for filtered members if no parent members are provided
-  const { 
-    members: reduxMembers = [], 
-    setSearchTerm,
-    setSkills,
-    clearAllFilters
-  } = useMembersHybrid();
-  
+  const { members: reduxMembers = [], setSearchTerm, setSkills, clearAllFilters } = useMembersHybrid();
+
   // Determine if we should use parent props or Redux state
   const useParentData = parentMembers.length > 0 || parentLoading !== undefined;
-  
+
   // State logic handled through useParentData and individual selectors
-  
+
   // Filtered members based on current filters (for parent members mode)
   const [localFilteredMembers, setLocalFilteredMembers] = useState<Member[]>([]);
-  
+
   // Apply hybrid filters when they change
   useEffect(() => {
     if (!useParentData) {
@@ -43,34 +38,34 @@ const MembersList = ({
       setSkills(filters.skills);
     }
   }, [filters, setSearchTerm, setSkills, useParentData]);
-  
+
   // Apply local filters when parent members or filters change
   useEffect(() => {
     if (useParentData && parentMembers.length) {
       // Apply filters and sort by name
       const filtered = filterMembers(parentMembers, filters, companyId);
       const sorted = sortMembersByName(filtered);
-      
+
       setLocalFilteredMembers(sorted);
     }
   }, [parentMembers, filters, companyId, useParentData]);
-  
+
   // Determine which filtered members to use
   const filteredMembers = useParentData ? localFilteredMembers : reduxMembers;
-  
+
   // Reset all filters
   const clearFilters = () => {
     setFilters({
       search: '',
-      skills: undefined
+      skills: undefined,
     });
-    
+
     // If using Redux, also clear filters there
     if (!useParentData) {
       clearAllFilters();
     }
   };
-  
+
   // Render loading state
   if (parentLoading) {
     return (
@@ -99,28 +94,30 @@ const MembersList = ({
       </div>
     );
   }
-  
+
   // Render error state
   if (parentError) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
-                    rounded-lg p-6 text-center">
+      <div
+        className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
+                    rounded-lg p-6 text-center"
+      >
         <AlertTriangle className="h-10 w-10 text-red-500 dark:text-red-400 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-2">Error Loading Members</h3>
-        <p className="text-red-600 dark:text-red-400">{parentError.message || 'Failed to load members. Please try again later.'}</p>
+        <p className="text-red-600 dark:text-red-400">
+          {parentError.message || 'Failed to load members. Please try again later.'}
+        </p>
       </div>
     );
   }
-  
+
   return (
-    <div className="space-y-8">      
+    <div className="space-y-8">
       {/* Results */}
       {filteredMembers.length === 0 ? (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 text-center">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
-            No members found matching your criteria.
-          </p>
-          <button 
+          <p className="text-slate-600 dark:text-slate-400 mb-4">No members found matching your criteria.</p>
+          <button
             onClick={clearFilters}
             className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
           >
@@ -134,12 +131,12 @@ const MembersList = ({
           ))}
         </div>
       )}
-      
+
       {/* Results summary */}
       {filteredMembers.length > 0 && (
         <div className="text-center text-sm text-slate-500 dark:text-slate-400">
           Showing {filteredMembers.length} {filteredMembers.length === 1 ? 'member' : 'members'}
-          {(filters.search || filters.skills?.length) ? ' matching your filters' : ''}
+          {filters.search || filters.skills?.length ? ' matching your filters' : ''}
         </div>
       )}
     </div>

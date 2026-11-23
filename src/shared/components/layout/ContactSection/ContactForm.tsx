@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
 import { ContactFormProps, FormData, VolunteerType } from './types';
 
-const ContactForm: React.FC<ContactFormProps> = ({ 
-  volunteerOptions, 
-  onSubmit,
-  initialData
-}) => {
-  const [formData, setFormData] = useState<FormData>(initialData || {
-    volunteerType: 'attend',
-    name: '',
-    email: '',
-    message: ''
-  });
-  
+const ContactForm: React.FC<ContactFormProps> = ({ volunteerOptions, onSubmit, initialData }) => {
+  const [formData, setFormData] = useState<FormData>(
+    initialData || {
+      volunteerType: 'attend',
+      name: '',
+      email: '',
+      message: '',
+    }
+  );
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  
+
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, volunteerType: e.target.value as VolunteerType });
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
@@ -32,7 +30,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
       <div className="mb-6">
         <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">I would like to:</h3>
         <div className="space-y-2">
-          {volunteerOptions.map((option) => (
+          {volunteerOptions.map(option => (
             <div key={option.value} className="flex items-center">
               <input
                 type="radio"
@@ -50,7 +48,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
           ))}
         </div>
       </div>
-      
+
       <div className="mb-4">
         <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           Name
@@ -65,7 +63,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
           required
         />
       </div>
-      
+
       <div className="mb-4">
         <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           Email
@@ -80,7 +78,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
           required
         />
       </div>
-      
+
       <div className="mb-6">
         <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           Message
@@ -92,11 +90,13 @@ const ContactForm: React.FC<ContactFormProps> = ({
           value={formData.message}
           onChange={handleChange}
           className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-          placeholder={formData.volunteerType === 'present' ? 'Tell us about your proposed talk' : 'How can we help you?'}
+          placeholder={
+            formData.volunteerType === 'present' ? 'Tell us about your proposed talk' : 'How can we help you?'
+          }
           required
         />
       </div>
-      
+
       <button
         type="submit"
         className="w-full px-4 py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors font-medium"

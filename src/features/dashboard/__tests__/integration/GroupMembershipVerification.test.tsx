@@ -10,12 +10,12 @@ import { describe, test, expect, beforeEach, jest, afterEach } from '@jest/globa
 
 import { UserDashboard } from '../../components/UserDashboard';
 import { contentManagementApi } from '../../api/contentManagementApi';
-import { 
-  createTestWrapper, 
-  createTestUser, 
-  createTestContent, 
+import {
+  createTestWrapper,
+  createTestUser,
+  createTestContent,
   createTestGroup,
-  mockSupabaseResponse 
+  mockSupabaseResponse,
 } from '../../../shared/test-utils/testHelpers';
 
 // Mock the APIs
@@ -25,9 +25,9 @@ jest.mock('@/lib/supabase', () => ({
     from: jest.fn(),
     auth: {
       getUser: jest.fn(),
-      getSession: jest.fn()
-    }
-  }
+      getSession: jest.fn(),
+    },
+  },
 }));
 
 const mockApi = contentManagementApi as jest.Mocked<typeof contentManagementApi>;
@@ -41,34 +41,34 @@ describe('Group Membership Verification Tests', () => {
       memberId: 'member-public',
       role: 'member',
       groups: ['public-group'],
-      companies: []
+      companies: [],
     }),
-    
+
     privateGroupMember: createTestUser({
-      id: 'user-private', 
+      id: 'user-private',
       email: 'private@example.com',
       memberId: 'member-private',
       role: 'member',
       groups: ['public-group', 'private-group'],
-      companies: []
+      companies: [],
     }),
-    
+
     multiGroupMember: createTestUser({
       id: 'user-multi',
-      email: 'multi@example.com', 
+      email: 'multi@example.com',
       memberId: 'member-multi',
       role: 'member',
       groups: ['public-group', 'private-group', 'special-group', 'admin-group'],
-      companies: []
+      companies: [],
     }),
-    
+
     noGroupMember: createTestUser({
       id: 'user-none',
       email: 'none@example.com',
-      memberId: 'member-none', 
+      memberId: 'member-none',
       role: 'member',
       groups: [],
-      companies: []
+      companies: [],
     }),
 
     groupAdmin: createTestUser({
@@ -77,8 +77,8 @@ describe('Group Membership Verification Tests', () => {
       memberId: 'member-admin',
       role: 'admin',
       groups: ['public-group', 'private-group', 'special-group', 'admin-group'],
-      companies: []
-    })
+      companies: [],
+    }),
   };
 
   // Test groups with different visibility settings
@@ -89,35 +89,35 @@ describe('Group Membership Verification Tests', () => {
       description: 'Open to all members',
       visibility: 'public',
       members: ['member-public', 'member-private', 'member-multi', 'member-admin'],
-      admins: ['member-admin']
+      admins: ['member-admin'],
     }),
-    
+
     privateGroup: createTestGroup({
       id: 'private-group',
       name: 'Private Planning Group',
       description: 'Invitation only',
       visibility: 'private',
       members: ['member-private', 'member-multi', 'member-admin'],
-      admins: ['member-admin']
+      admins: ['member-admin'],
     }),
-    
+
     specialGroup: createTestGroup({
-      id: 'special-group', 
+      id: 'special-group',
       name: 'Special Projects Group',
       description: 'For special projects only',
       visibility: 'private',
       members: ['member-multi', 'member-admin'],
-      admins: ['member-admin']
+      admins: ['member-admin'],
     }),
 
     adminGroup: createTestGroup({
       id: 'admin-group',
-      name: 'Admin Only Group', 
+      name: 'Admin Only Group',
       description: 'Administrator discussions',
       visibility: 'private',
       members: ['member-admin'],
-      admins: ['member-admin']
-    })
+      admins: ['member-admin'],
+    }),
   };
 
   // Test content associated with different groups
@@ -129,59 +129,59 @@ describe('Group Membership Verification Tests', () => {
           type: 'group',
           title: 'Public Group Discussion',
           groupId: 'public-group',
-          status: 'published'
+          status: 'published',
         }),
         createTestContent('member-private', {
-          id: 'content-public-2', 
+          id: 'content-public-2',
           type: 'group',
           title: 'Another Public Post',
           groupId: 'public-group',
-          status: 'published'
-        })
+          status: 'published',
+        }),
       ],
-      
+
       privateGroupContent: [
         createTestContent('member-private', {
           id: 'content-private-1',
           type: 'group',
           title: 'Private Group Planning',
-          groupId: 'private-group', 
-          status: 'published'
+          groupId: 'private-group',
+          status: 'published',
         }),
         createTestContent('member-multi', {
           id: 'content-private-2',
-          type: 'group', 
+          type: 'group',
           title: 'Private Discussion Topic',
           groupId: 'private-group',
-          status: 'published'
-        })
+          status: 'published',
+        }),
       ],
-      
+
       specialGroupContent: [
         createTestContent('member-multi', {
           id: 'content-special-1',
           type: 'group',
           title: 'Special Project Update',
           groupId: 'special-group',
-          status: 'published'
-        })
+          status: 'published',
+        }),
       ],
-      
+
       adminGroupContent: [
         createTestContent('member-admin', {
           id: 'content-admin-1',
           type: 'group',
           title: 'Admin Only Discussion',
           groupId: 'admin-group',
-          status: 'published'
-        })
-      ]
+          status: 'published',
+        }),
+      ],
     };
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Default API responses
     mockApi.getAllUserContent.mockResolvedValue({
       data: [],
@@ -192,9 +192,9 @@ describe('Group Membership Verification Tests', () => {
         limit: 20,
         total: 0,
         total_pages: 0,
-        has_more: false
+        has_more: false,
       },
-      filters_applied: {}
+      filters_applied: {},
     });
 
     mockApi.getContentStatistics.mockResolvedValue({
@@ -203,8 +203,8 @@ describe('Group Membership Verification Tests', () => {
         total_content: 0,
         total_views: 0,
         total_engagement: 0,
-        growth_percentage: 0
-      }
+        growth_percentage: 0,
+      },
     });
   });
 
@@ -212,13 +212,10 @@ describe('Group Membership Verification Tests', () => {
     test('User sees only group content they have access to', async () => {
       const groupContent = createGroupContent();
       const user = testUsers.privateGroupMember;
-      
+
       // Mock API to return content from groups user belongs to
       mockApi.getAllUserContent.mockResolvedValue({
-        data: [
-          ...groupContent.publicGroupContent,
-          ...groupContent.privateGroupContent
-        ],
+        data: [...groupContent.publicGroupContent, ...groupContent.privateGroupContent],
         error: null,
         status: 200,
         pagination: {
@@ -226,21 +223,18 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 4,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       await waitFor(() => {
         // Should see public group content
         expect(screen.getByText('Public Group Discussion')).toBeInTheDocument();
         expect(screen.getByText('Another Public Post')).toBeInTheDocument();
-        
+
         // Should see private group content (user is member)
         expect(screen.getByText('Private Group Planning')).toBeInTheDocument();
         expect(screen.getByText('Private Discussion Topic')).toBeInTheDocument();
@@ -248,7 +242,7 @@ describe('Group Membership Verification Tests', () => {
 
       // Should NOT see special group content (not a member)
       expect(screen.queryByText('Special Project Update')).not.toBeInTheDocument();
-      
+
       // Should NOT see admin group content (not an admin)
       expect(screen.queryByText('Admin Only Discussion')).not.toBeInTheDocument();
     });
@@ -256,13 +250,13 @@ describe('Group Membership Verification Tests', () => {
     test('Multi-group member sees content from all their groups', async () => {
       const groupContent = createGroupContent();
       const user = testUsers.multiGroupMember;
-      
+
       // Mock API to return content from all groups user belongs to
       mockApi.getAllUserContent.mockResolvedValue({
         data: [
           ...groupContent.publicGroupContent,
           ...groupContent.privateGroupContent,
-          ...groupContent.specialGroupContent
+          ...groupContent.specialGroupContent,
           // Admin content still excluded as user is not admin role
         ],
         error: null,
@@ -272,15 +266,12 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 5,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       await waitFor(() => {
         // Should see all group content they have access to
@@ -295,15 +286,15 @@ describe('Group Membership Verification Tests', () => {
 
     test('User with no groups sees no group content', async () => {
       const user = testUsers.noGroupMember;
-      
+
       // User has their own personal content but no group content access
       mockApi.getAllUserContent.mockResolvedValue({
         data: [
           createTestContent('member-none', {
             type: 'photo',
             title: 'My Personal Photo',
-            status: 'published'
-          })
+            status: 'published',
+          }),
         ],
         error: null,
         status: 200,
@@ -312,15 +303,12 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 1,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       await waitFor(() => {
         // Should see their own content
@@ -336,14 +324,14 @@ describe('Group Membership Verification Tests', () => {
     test('Group admin sees admin-level group content', async () => {
       const groupContent = createGroupContent();
       const user = testUsers.groupAdmin;
-      
+
       // Admin should see all group content including admin-only
       mockApi.getAllUserContent.mockResolvedValue({
         data: [
           ...groupContent.publicGroupContent,
           ...groupContent.privateGroupContent,
           ...groupContent.specialGroupContent,
-          ...groupContent.adminGroupContent
+          ...groupContent.adminGroupContent,
         ],
         error: null,
         status: 200,
@@ -352,15 +340,12 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 6,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       await waitFor(() => {
         // Should see all content including admin-only
@@ -375,7 +360,7 @@ describe('Group Membership Verification Tests', () => {
   describe('Group Content Creation Permissions', () => {
     test('User can create content in groups they belong to', async () => {
       const user = testUsers.privateGroupMember;
-      
+
       mockApi.getAllUserContent.mockResolvedValue({
         data: [],
         error: null,
@@ -385,15 +370,12 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 0,
           total_pages: 0,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       // Find create button
       await waitFor(() => {
@@ -413,7 +395,7 @@ describe('Group Membership Verification Tests', () => {
       // User should see their groups as options
       expect(screen.getByText('Public Discussion Group')).toBeInTheDocument();
       expect(screen.getByText('Private Planning Group')).toBeInTheDocument();
-      
+
       // Should NOT see groups they don't belong to
       expect(screen.queryByText('Special Projects Group')).not.toBeInTheDocument();
       expect(screen.queryByText('Admin Only Group')).not.toBeInTheDocument();
@@ -421,7 +403,7 @@ describe('Group Membership Verification Tests', () => {
 
     test('User cannot create content in groups they do not belong to', async () => {
       const user = testUsers.publicGroupMember;
-      
+
       // Mock API call to verify group membership during content creation
       mockApi.updateContentItem.mockImplementation(async (contentId, contentType, updates) => {
         // Simulate server-side validation
@@ -435,7 +417,7 @@ describe('Group Membership Verification Tests', () => {
       await expect(
         mockApi.updateContentItem('new-content', 'group', {
           title: 'Unauthorized Post',
-          groupId: 'private-group'
+          groupId: 'private-group',
         })
       ).rejects.toThrow('User is not a member of the specified group');
     });
@@ -445,9 +427,13 @@ describe('Group Membership Verification Tests', () => {
     test('Group filter shows only groups user belongs to', async () => {
       const user = testUsers.multiGroupMember;
       const groupContent = createGroupContent();
-      
+
       mockApi.getAllUserContent.mockResolvedValue({
-        data: [...groupContent.publicGroupContent, ...groupContent.privateGroupContent, ...groupContent.specialGroupContent],
+        data: [
+          ...groupContent.publicGroupContent,
+          ...groupContent.privateGroupContent,
+          ...groupContent.specialGroupContent,
+        ],
         error: null,
         status: 200,
         pagination: {
@@ -455,15 +441,12 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 5,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       // Navigate to groups tab
       await waitFor(() => {
@@ -497,7 +480,7 @@ describe('Group Membership Verification Tests', () => {
     test('Filtering by specific group shows only that group content', async () => {
       const user = testUsers.privateGroupMember;
       const groupContent = createGroupContent();
-      
+
       // Initial load with all accessible content
       mockApi.getAllUserContent.mockResolvedValue({
         data: [...groupContent.publicGroupContent, ...groupContent.privateGroupContent],
@@ -508,15 +491,12 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 4,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       await waitFor(() => {
         expect(screen.getByText('Public Group Discussion')).toBeInTheDocument();
@@ -538,9 +518,9 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: { groupId: 'private-group' }
+        filters_applied: { groupId: 'private-group' },
       });
 
       // Select private group filter (this would trigger re-fetch)
@@ -556,7 +536,7 @@ describe('Group Membership Verification Tests', () => {
     test('Content access updates when user joins a group', async () => {
       const user = testUsers.publicGroupMember;
       const groupContent = createGroupContent();
-      
+
       // Initially user only sees public group content
       mockApi.getAllUserContent.mockResolvedValue({
         data: groupContent.publicGroupContent,
@@ -567,15 +547,12 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      const { rerender } = render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      const { rerender } = render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       await waitFor(() => {
         expect(screen.getByText('Public Group Discussion')).toBeInTheDocument();
@@ -585,7 +562,7 @@ describe('Group Membership Verification Tests', () => {
       // Simulate user joining private group
       const updatedUser = {
         ...user,
-        groups: ['public-group', 'private-group']
+        groups: ['public-group', 'private-group'],
       };
 
       // Update API response to include new group content
@@ -598,16 +575,13 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 4,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       // Re-render with updated user
-      rerender(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(updatedUser) }
-      );
+      rerender(<UserDashboard />, { wrapper: createTestWrapper(updatedUser) });
 
       // Should now see private group content too
       await waitFor(() => {
@@ -619,9 +593,9 @@ describe('Group Membership Verification Tests', () => {
     test('Content access removes when user leaves a group', async () => {
       const user = {
         ...testUsers.privateGroupMember,
-        groups: ['public-group'] // Removed from private group
+        groups: ['public-group'], // Removed from private group
       };
-      
+
       const groupContent = createGroupContent();
 
       // Should only see public group content now
@@ -634,20 +608,17 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       await waitFor(() => {
         // Should see public content
         expect(screen.getByText('Public Group Discussion')).toBeInTheDocument();
-        
+
         // Should NOT see private content anymore
         expect(screen.queryByText('Private Group Planning')).not.toBeInTheDocument();
       });
@@ -658,7 +629,7 @@ describe('Group Membership Verification Tests', () => {
     test('Group moderators can moderate group content', async () => {
       const moderator = testUsers.groupAdmin;
       const groupContent = createGroupContent();
-      
+
       mockApi.getAllUserContent.mockResolvedValue({
         data: [...groupContent.publicGroupContent, ...groupContent.privateGroupContent],
         error: null,
@@ -668,9 +639,9 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 4,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       mockApi.getContentPermissions.mockResolvedValue({
@@ -678,13 +649,10 @@ describe('Group Membership Verification Tests', () => {
         can_delete: true,
         can_publish: true,
         can_feature: true,
-        can_view_analytics: true
+        can_view_analytics: true,
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(moderator) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(moderator) });
 
       await waitFor(() => {
         expect(screen.getByText('Public Group Discussion')).toBeInTheDocument();
@@ -702,7 +670,7 @@ describe('Group Membership Verification Tests', () => {
     test('Regular group members cannot moderate others group content', async () => {
       const regularMember = testUsers.privateGroupMember;
       const groupContent = createGroupContent();
-      
+
       mockApi.getAllUserContent.mockResolvedValue({
         data: groupContent.privateGroupContent,
         error: null,
@@ -712,27 +680,24 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       // Mock permissions for regular member - can edit own content only
-      mockApi.getContentPermissions.mockImplementation(async (contentId) => {
+      mockApi.getContentPermissions.mockImplementation(async contentId => {
         const isOwnContent = contentId === 'content-private-1'; // Created by member-private
         return {
           can_edit: isOwnContent,
           can_delete: isOwnContent,
           can_publish: isOwnContent,
           can_feature: false,
-          can_view_analytics: isOwnContent
+          can_view_analytics: isOwnContent,
         };
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(regularMember) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(regularMember) });
 
       await waitFor(() => {
         expect(screen.getByText('Private Group Planning')).toBeInTheDocument();
@@ -748,13 +713,13 @@ describe('Group Membership Verification Tests', () => {
   describe('Edge Cases and Error Handling', () => {
     test('Handles invalid group IDs gracefully', async () => {
       const user = testUsers.privateGroupMember;
-      
+
       // Mock content with invalid group ID
       const invalidGroupContent = createTestContent('member-private', {
         type: 'group',
         title: 'Content with Invalid Group',
         groupId: 'non-existent-group',
-        status: 'published'
+        status: 'published',
       });
 
       mockApi.getAllUserContent.mockResolvedValue({
@@ -766,15 +731,12 @@ describe('Group Membership Verification Tests', () => {
           limit: 20,
           total: 1,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       // Should handle gracefully, either show with warning or filter out
       await waitFor(() => {
@@ -789,14 +751,11 @@ describe('Group Membership Verification Tests', () => {
 
     test('Handles group membership API failures', async () => {
       const user = testUsers.privateGroupMember;
-      
+
       // Mock API failure for group membership verification
       mockApi.getAllUserContent.mockRejectedValue(new Error('Group membership verification failed'));
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(user) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(user) });
 
       await waitFor(() => {
         // Should show error state

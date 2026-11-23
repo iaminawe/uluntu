@@ -93,16 +93,16 @@ const UserSettingsPageContent: React.FC = () => {
         website: member.website || '',
         employmentStatus: member.employment_status || '',
         arrivedInNelson: member.arrived_in_nelson || '',
-        interests: Array.isArray((member as any).interests) ? (member as any).interests : []
+        interests: Array.isArray((member as any).interests) ? (member as any).interests : [],
       });
 
       // Load social links
-      const socialData = member.social as Record<string, any> || {};
+      const socialData = (member.social as Record<string, any>) || {};
       socialLinks.setFormData({
         website: member.website || '',
         linkedin: socialData.linkedin || '',
         twitter: socialData.twitter || '',
-        github: socialData.github || ''
+        github: socialData.github || '',
       });
 
       // Load privacy settings
@@ -138,10 +138,10 @@ const UserSettingsPageContent: React.FC = () => {
             news: subscription.preferences?.content_types?.includes('news') ?? true,
             opportunities: subscription.preferences?.content_types?.includes('opportunities') ?? true,
             marketplace: subscription.preferences?.content_types?.includes('marketplace') ?? true,
-            members: subscription.preferences?.content_types?.includes('members') ?? false
+            members: subscription.preferences?.content_types?.includes('members') ?? false,
           },
           format: subscription.preferences?.format || 'digest',
-          locationFilter: subscription.preferences?.location_filter ?? true
+          locationFilter: subscription.preferences?.location_filter ?? true,
         });
       }
     } catch (error) {
@@ -168,10 +168,10 @@ const UserSettingsPageContent: React.FC = () => {
               content_types: contentTypes as any,
               format: newsletterPreferences.format,
               location_filter: newsletterPreferences.locationFilter,
-              language: 'en'
+              language: 'en',
             },
             status: 'active',
-            member_id: user.id
+            member_id: user.id,
           });
         } else {
           const newSubscription = await newsletterSubscriptionApi.subscribe({
@@ -182,8 +182,8 @@ const UserSettingsPageContent: React.FC = () => {
               content_types: contentTypes as any,
               format: newsletterPreferences.format,
               location_filter: newsletterPreferences.locationFilter,
-              language: 'en'
-            }
+              language: 'en',
+            },
           });
 
           if (newSubscription?.confirmation_token) {
@@ -239,10 +239,10 @@ const UserSettingsPageContent: React.FC = () => {
           linkedin: socialLinks.linkedin,
           twitter: socialLinks.twitter,
           github: socialLinks.github,
-          website: socialLinks.website
+          website: socialLinks.website,
         },
         status: 'published',
-        featured: false
+        featured: false,
       };
 
       let profileId = member?.id;
@@ -260,7 +260,7 @@ const UserSettingsPageContent: React.FC = () => {
           await setEntityTopicsMutation.mutateAsync({
             entityType: 'member',
             entityId: profileId,
-            topicIds: selectedTopicIds
+            topicIds: selectedTopicIds,
           });
         } catch (topicError) {
           console.error('Error saving topics:', topicError);
@@ -361,7 +361,10 @@ const UserSettingsPageContent: React.FC = () => {
 
           {/* Tabs */}
           <div className="border-b border-slate-200 dark:border-slate-700">
-            <nav className="flex space-x-4 sm:space-x-6 px-6 overflow-x-auto pb-0.5 settings-scrollbar" aria-label="Settings tabs">
+            <nav
+              className="flex space-x-4 sm:space-x-6 px-6 overflow-x-auto pb-0.5 settings-scrollbar"
+              aria-label="Settings tabs"
+            >
               {tabs.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
@@ -397,10 +400,7 @@ const UserSettingsPageContent: React.FC = () => {
             )}
             {activeTab === 'social' && <SocialTab {...socialLinks} />}
             {activeTab === 'privacy' && (
-              <PrivacyTab
-                privacySettings={privacySettings}
-                setPrivacySettings={setPrivacySettings}
-              />
+              <PrivacyTab privacySettings={privacySettings} setPrivacySettings={setPrivacySettings} />
             )}
             {activeTab === 'newsletters' && (
               <NewslettersTab
@@ -475,10 +475,7 @@ const UserSettingsPage: React.FC = () => {
     <FeatureErrorBoundary
       featureName="User Settings"
       fallback={
-        <SettingsErrorFallback
-          onRetry={() => window.location.reload()}
-          onGoBack={() => window.history.back()}
-        />
+        <SettingsErrorFallback onRetry={() => window.location.reload()} onGoBack={() => window.history.back()} />
       }
     >
       <UserSettingsPageContent />

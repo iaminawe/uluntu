@@ -1,21 +1,23 @@
 import { supabase } from '@/lib/supabase';
-import { 
-  DashboardOverview, 
-  UserContent, 
-  ActivityItem, 
-  ContentFilters, 
+import {
+  DashboardOverview,
+  UserContent,
+  ActivityItem,
+  ContentFilters,
   PaginatedResponse,
   NotificationItem,
   ContentRecommendation,
   BulkOperationRequest,
   BulkOperationResponse,
-  AnalyticsData
+  AnalyticsData,
 } from '../types';
 
 class DashboardApi {
   async getOverview(): Promise<DashboardOverview> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         return {
           totalContent: 0,
@@ -28,11 +30,11 @@ class DashboardApi {
               totalViews: 0,
               totalLikes: 0,
               totalComments: 0,
-              totalShares: 0
+              totalShares: 0,
             },
             contentViews: [],
-            topContent: []
-          }
+            topContent: [],
+          },
         };
       }
 
@@ -54,7 +56,7 @@ class DashboardApi {
         totalEngagement,
         recentActivity,
         contentSummary,
-        analytics
+        analytics,
       };
     } catch (error) {
       console.error('Error fetching dashboard overview:', error);
@@ -72,17 +74,17 @@ class DashboardApi {
             totalComments: 0,
             totalShares: 0,
             engagementRate: 0,
-            avgTimeOnContent: 0
+            avgTimeOnContent: 0,
           },
           growth: {
             contentGrowth: 0,
             viewsGrowth: 0,
             engagementGrowth: 0,
-            period: 'month' as const
+            period: 'month' as const,
           },
           contentViews: [],
-          topContent: []
-        }
+          topContent: [],
+        },
       };
     }
   }
@@ -93,7 +95,9 @@ class DashboardApi {
     limit: number = 20
   ): Promise<PaginatedResponse<UserContent>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       const offset = (page - 1) * limit;
@@ -108,11 +112,11 @@ class DashboardApi {
         this.getGroups(user.id, filters),
         this.getMarketplaceItems(user.id, filters),
         this.getOpportunities(user.id, filters),
-        this.getMessages(user.id, filters)
+        this.getMessages(user.id, filters),
       ];
 
       // Filter queries based on content type filter
-      const activeQueries = filters.type?.length 
+      const activeQueries = filters.type?.length
         ? contentQueries.filter((_, index) => {
             const types = ['gallery', 'event', 'news', 'resource', 'group', 'marketplace', 'opportunity', 'message'];
             return filters.type!.includes(types[index] as any);
@@ -121,25 +125,20 @@ class DashboardApi {
 
       // Execute queries in parallel
       const results = await Promise.all(activeQueries);
-      
+
       // Combine and sort results
-      allContent = results.flat().sort((a, b) => 
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
+      allContent = results.flat().sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
       // Apply additional filters
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
-        allContent = allContent.filter(item => 
-          item.title.toLowerCase().includes(searchLower) ||
-          item.excerpt?.toLowerCase().includes(searchLower)
+        allContent = allContent.filter(
+          item => item.title.toLowerCase().includes(searchLower) || item.excerpt?.toLowerCase().includes(searchLower)
         );
       }
 
       if (filters.status?.length) {
-        allContent = allContent.filter(item => 
-          filters.status!.includes(item.status)
-        );
+        allContent = allContent.filter(item => filters.status!.includes(item.status));
       }
 
       if (filters.featured !== undefined) {
@@ -150,7 +149,7 @@ class DashboardApi {
       if (filters.sortBy) {
         allContent.sort((a, b) => {
           let aVal: any, bVal: any;
-          
+
           switch (filters.sortBy) {
             case 'title':
               aVal = a.title.toLowerCase();
@@ -191,8 +190,8 @@ class DashboardApi {
           limit,
           total,
           totalPages: Math.ceil(total / limit),
-          hasMore: offset + limit < total
-        }
+          hasMore: offset + limit < total,
+        },
       };
     } catch (error) {
       console.error('Error fetching user content:', error);
@@ -202,7 +201,9 @@ class DashboardApi {
 
   async getActivityFeed(limit: number = 10): Promise<ActivityItem[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       return this.getRecentActivity(user.id, limit);
@@ -218,17 +219,17 @@ class DashboardApi {
       // For now, returning mock data
       const mockData: AnalyticsData[] = [];
       const today = new Date();
-      
+
       for (let i = 29; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
-        
+
         mockData.push({
           date: date.toISOString().split('T')[0],
           views: Math.floor(Math.random() * 100) + 10,
           likes: Math.floor(Math.random() * 20) + 1,
           comments: Math.floor(Math.random() * 10),
-          shares: Math.floor(Math.random() * 5)
+          shares: Math.floor(Math.random() * 5),
         });
       }
 
@@ -241,7 +242,9 @@ class DashboardApi {
 
   async getNotifications(): Promise<NotificationItem[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       // Mock notifications - replace with actual implementation
@@ -254,7 +257,7 @@ class DashboardApi {
           timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
           read: false,
           actionUrl: '/events/community-meetup',
-          actionLabel: 'View Comment'
+          actionLabel: 'View Comment',
         },
         {
           id: '2',
@@ -263,8 +266,8 @@ class DashboardApi {
           message: 'Your gallery "Summer Events" is now live',
           timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
           read: false,
-          actionUrl: '/galleries/summer-events'
-        }
+          actionUrl: '/galleries/summer-events',
+        },
       ];
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -283,7 +286,7 @@ class DashboardApi {
           reason: 'Based on your recent event photos',
           score: 0.9,
           url: '/galleries/create',
-          thumbnail: '/images/gallery-suggestion.jpg'
+          thumbnail: '/images/gallery-suggestion.jpg',
         },
         {
           id: '2',
@@ -291,8 +294,8 @@ class DashboardApi {
           type: 'resource',
           reason: 'You have knowledge in tech leadership',
           score: 0.8,
-          url: '/resources/create'
-        }
+          url: '/resources/create',
+        },
       ] as ContentRecommendation[];
     } catch (error) {
       console.error('Error fetching recommendations:', error);
@@ -302,7 +305,9 @@ class DashboardApi {
 
   async bulkOperation(request: BulkOperationRequest): Promise<BulkOperationResponse> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       // Implementation would depend on the operation and content types
@@ -326,7 +331,7 @@ class DashboardApi {
         success: failed === 0,
         processed,
         failed,
-        errors: errors.length > 0 ? errors : undefined
+        errors: errors.length > 0 ? errors : undefined,
       };
     } catch (error) {
       console.error('Error performing bulk operation:', error);
@@ -345,7 +350,7 @@ class DashboardApi {
         groupsCount,
         marketplaceCount,
         opportunitiesCount,
-        messagesCount
+        messagesCount,
       ] = await Promise.all([
         this.getContentCount('photo_galleries', userId),
         this.getContentCount('events', userId),
@@ -354,7 +359,7 @@ class DashboardApi {
         this.getContentCount('groups', userId),
         this.getContentCount('marketplace_listings', userId),
         this.getContentCount('opportunities', userId),
-        this.getContentCount('conversations', userId)
+        this.getContentCount('conversations', userId),
       ]);
 
       return [
@@ -365,7 +370,7 @@ class DashboardApi {
         { type: 'group' as const, ...groupsCount },
         { type: 'marketplace' as const, ...marketplaceCount },
         { type: 'opportunity' as const, ...opportunitiesCount },
-        { type: 'message' as const, ...messagesCount }
+        { type: 'message' as const, ...messagesCount },
       ];
     } catch (error) {
       console.error('Error getting content summary:', error);
@@ -378,7 +383,7 @@ class DashboardApi {
         { type: 'group' as const, count: 0, featured: 0, draft: 0, published: 0 },
         { type: 'marketplace' as const, count: 0, featured: 0, draft: 0, published: 0 },
         { type: 'opportunity' as const, count: 0, featured: 0, draft: 0, published: 0 },
-        { type: 'message' as const, count: 0, featured: 0, draft: 0, published: 0 }
+        { type: 'message' as const, count: 0, featured: 0, draft: 0, published: 0 },
       ];
     }
   }
@@ -386,7 +391,7 @@ class DashboardApi {
   private async getContentCount(table: string, userId: string) {
     try {
       let query = supabase.from(table).select('id', { count: 'exact', head: true });
-      
+
       // Handle different user column names and table names that might not exist
       if (table === 'conversations') {
         // Check if conversations table exists, if not return 0
@@ -400,7 +405,7 @@ class DashboardApi {
       }
 
       const { count, error } = await query;
-      
+
       if (error) {
         console.error(`Error counting ${table}:`, error);
         return { count: 0, featured: 0, draft: 0, published: 0 };
@@ -411,7 +416,7 @@ class DashboardApi {
         count: count || 0,
         featured: 0, // Would need separate queries
         draft: 0,
-        published: count || 0
+        published: count || 0,
       };
     } catch (error) {
       console.error(`Error in getContentCount for ${table}:`, error);
@@ -429,7 +434,7 @@ class DashboardApi {
         description: 'Summer Events Gallery',
         timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
         contentType: 'gallery',
-        priority: 'medium'
+        priority: 'medium',
       },
       {
         id: '2',
@@ -438,8 +443,8 @@ class DashboardApi {
         description: 'Community Meetup',
         timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
         contentType: 'event',
-        priority: 'low'
-      }
+        priority: 'low',
+      },
     ];
   }
 
@@ -453,15 +458,15 @@ class DashboardApi {
         totalComments: 34,
         totalShares: 12,
         engagementRate: 10.8,
-        avgTimeOnContent: 180
+        avgTimeOnContent: 180,
       },
       growth: {
         contentGrowth: 15.2,
         viewsGrowth: 8.7,
         engagementGrowth: 12.3,
-        period: 'month' as const
+        period: 'month' as const,
       },
-      topContent: []
+      topContent: [],
     };
   }
 
@@ -471,7 +476,7 @@ class DashboardApi {
       // Note: photo_galleries table doesn't exist yet
       // Return empty array for now
       return [];
-      
+
       /* Will use this when table exists:
       const { data, error } = await supabase
         .from('photo_galleries')
@@ -544,8 +549,8 @@ class DashboardApi {
         author: {
           id: userId,
           name: 'User',
-          avatar: undefined
-        }
+          avatar: undefined,
+        },
       }));
     } catch (error) {
       console.error('Error in getEvents:', error);
@@ -585,8 +590,8 @@ class DashboardApi {
         author: {
           id: userId,
           name: 'User',
-          avatar: undefined
-        }
+          avatar: undefined,
+        },
       }));
     } catch (error) {
       console.error('Error in getNews:', error);
@@ -625,8 +630,8 @@ class DashboardApi {
         author: {
           id: userId,
           name: 'User',
-          avatar: undefined
-        }
+          avatar: undefined,
+        },
       }));
     } catch (error) {
       console.error('Error in getResources:', error);
@@ -666,8 +671,8 @@ class DashboardApi {
         author: {
           id: userId,
           name: 'User',
-          avatar: undefined
-        }
+          avatar: undefined,
+        },
       }));
     } catch (error) {
       console.error('Error in getGroups:', error);
@@ -706,8 +711,8 @@ class DashboardApi {
         author: {
           id: userId,
           name: 'User',
-          avatar: undefined
-        }
+          avatar: undefined,
+        },
       }));
     } catch (error) {
       console.error('Error in getMarketplaceItems:', error);
@@ -746,8 +751,8 @@ class DashboardApi {
         author: {
           id: userId,
           name: 'User',
-          avatar: undefined
-        }
+          avatar: undefined,
+        },
       }));
     } catch (error) {
       console.error('Error in getOpportunities:', error);
@@ -786,8 +791,8 @@ class DashboardApi {
         author: {
           id: userId,
           name: 'User',
-          avatar: undefined
-        }
+          avatar: undefined,
+        },
       }));
     } catch (error) {
       console.error('Error in getMessages:', error);

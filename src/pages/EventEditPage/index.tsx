@@ -31,7 +31,7 @@ const initialFormData: FormData = {
   url: '',
   organizerId: '1', // Use string ID to match expected type
   sessions: [],
-  status: 'draft'
+  status: 'draft',
 };
 
 export default function EventEditPage() {
@@ -42,7 +42,7 @@ export default function EventEditPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: member } = useMemberByUserId(user?.id);
-  
+
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,56 +50,57 @@ export default function EventEditPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
-  
+
   // Use hybrid approach for event data
   const { event, isLoading: eventLoading, updateEvent } = useEventHybrid(isEditMode ? id : undefined);
   const { createEvent } = useEventsHybrid();
-  
+
   // Topic management
   const { data: entityTopics } = useEntityTopics('event', eventIdString);
   const setEntityTopicsMutation = useSetEntityTopics();
-  
+
   // Populate form with event data when in edit mode
   useEffect(() => {
     // Debug logging
     console.log('EventEditPage - Event ID:', eventIdString);
     console.log('EventEditPage - Event data:', event);
     console.log('EventEditPage - Event loading:', eventLoading);
-    
+
     if (isEditMode && event) {
       console.log('EventEditPage - Setting form data from event');
       setFormData({
         title: event.title,
         slug: event.slug || generateSlug(event.title),
         date: event.date,
-        endDate: event.endDate || format(new Date(new Date(event.date).getTime() + 2 * 60 * 60 * 1000), "yyyy-MM-dd'T'HH:mm"),
+        endDate:
+          event.endDate || format(new Date(new Date(event.date).getTime() + 2 * 60 * 60 * 1000), "yyyy-MM-dd'T'HH:mm"),
         location: event.location,
         description: event.description,
         image: event.image || '',
         type: event.type,
         url: event.url || '',
         organizerId: String(event.organizer.id), // Ensure organizerId is a string
-        sessions: event.sessions || []
+        sessions: event.sessions || [],
       });
     }
   }, [isEditMode, event, eventIdString, eventLoading]);
-  
+
   // Populate topics when entity topics are loaded
   useEffect(() => {
     if (entityTopics) {
       setSelectedTopicIds(entityTopics.map(topic => topic.id));
     }
   }, [entityTopics]);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Auto-generate slug when title changes and slug is empty
     if (name === 'title' && !formData.slug) {
       setFormData(prev => ({ ...prev, slug: generateSlug(value) }));
     }
-    
+
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
@@ -112,70 +113,70 @@ export default function EventEditPage() {
       const objectUrl = URL.createObjectURL(file);
       setFormData(prev => ({
         ...prev,
-        image: objectUrl
+        image: objectUrl,
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        image: ''
+        image: '',
       }));
     }
   };
-  
+
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
-    
+
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
     }
-    
+
     if (!formData.date) {
       newErrors.date = 'Start date is required';
     }
-    
+
     if (!formData.location.trim()) {
       newErrors.location = 'Location is required';
     }
-    
+
     if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
     }
-    
+
     if (formData.type === 'online' && !formData.url) {
       newErrors.url = 'URL is required for online events';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
     let finalImageUrl = formData.image;
-    
+
     try {
       // Upload image if a new file was selected
       if (imageFile) {
         setIsUploadingImage(true);
         const eventId = id || `temp-${Date.now()}`;
         const { url, error } = await uploadEventImage(imageFile, eventId);
-        
+
         if (error) {
           console.error('Error uploading image:', error);
           setErrors(prev => ({ ...prev, image: 'Failed to upload image. Please try again.' }));
           return;
         }
-        
+
         finalImageUrl = url || '';
         setIsUploadingImage(false);
       }
-      
+
       let eventResult;
       if (isEditMode && id) {
         // Update existing event using hybrid hook
@@ -187,7 +188,7 @@ export default function EventEditPage() {
           location: formData.location,
           image: finalImageUrl,
           url: formData.url || undefined,
-          organizer_id: formData.organizerId || member?.id || ''
+          organizer_id: formData.organizerId || member?.id || '',
         });
         eventResult = { id }; // Use existing ID for topic update
       } else {
@@ -196,7 +197,7 @@ export default function EventEditPage() {
           console.error('Member not found for event creation');
           return;
         }
-        
+
         const eventData: EventInput = {
           title: formData.title,
           description: formData.description,
@@ -206,23 +207,23 @@ export default function EventEditPage() {
           image: finalImageUrl,
           url: formData.url || undefined,
           organizer_id: member.id,
-          status: 'published'
+          status: 'published',
         };
 
         eventResult = await createEvent(eventData);
       }
-      
+
       // Save topics after successful event save
       if (eventResult && selectedTopicIds.length > 0) {
         await setEntityTopicsMutation.mutateAsync({
           entityType: 'event',
           entityId: eventResult.id,
-          topicIds: selectedTopicIds
+          topicIds: selectedTopicIds,
         });
       }
-      
+
       setSubmitSuccess(true);
-      
+
       // Navigate back after success
       setTimeout(() => {
         navigate(isEditMode ? `/events/${id}` : '/events');
@@ -235,76 +236,59 @@ export default function EventEditPage() {
       setIsUploadingImage(false);
     }
   };
-  
+
   if (eventLoading && isEditMode) {
     return <LoadingState />;
   }
-  
+
   return (
     <>
       <Helmet>
-        <title>
-          {isEditMode 
-            ? `Edit Event: ${event?.title || 'Loading...'}`
-            : 'Create New Event'
-          } - Uluntu
-        </title>
+        <title>{isEditMode ? `Edit Event: ${event?.title || 'Loading...'}` : 'Create New Event'} - Uluntu</title>
       </Helmet>
-      
+
       <div className="container mx-auto px-4 py-12">
         <div className="w-4/5 max-w-[80%] mx-auto">
-          <FormHeader 
-            isEditMode={isEditMode} 
-            title={event?.title || ''} 
-          />
-          
+          <FormHeader isEditMode={isEditMode} title={event?.title || ''} />
+
           {submitSuccess ? (
             <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6">
               <div className="flex">
                 <div>
                   <p className="text-sm text-green-700 dark:text-green-400">
-                    {isEditMode 
-                      ? 'Event updated successfully!' 
-                      : 'Event created successfully!'
-                    } Redirecting...
+                    {isEditMode ? 'Event updated successfully!' : 'Event created successfully!'} Redirecting...
                   </p>
                 </div>
               </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 shadow-md rounded-lg p-6 space-y-6">
-              <EventDetails 
-                formData={formData}
-                handleChange={handleChange}
-                errors={errors}
-              />
-              
-              <EventImage 
+              <EventDetails formData={formData} handleChange={handleChange} errors={errors} />
+
+              <EventImage
                 formData={formData}
                 handleChange={handleChange}
                 onImageChange={handleImageChange}
                 isSubmitting={isSubmitting || isUploadingImage}
               />
-              
+
               <OrganizerSelect
                 organizer={{
                   id: formData.organizerId,
                   name: event?.organizer?.name || '',
-                  image: event?.organizer?.image || ''
+                  image: event?.organizer?.image || '',
                 }}
-                onOrganizerChange={(organizer) => setFormData({ ...formData, organizerId: organizer.id })}
+                onOrganizerChange={organizer => setFormData({ ...formData, organizerId: organizer.id })}
               />
-              
+
               <SessionsManager
                 sessions={formData.sessions || []}
-                onSessionsChange={(sessions) => setFormData({ ...formData, sessions })}
+                onSessionsChange={sessions => setFormData({ ...formData, sessions })}
               />
-              
+
               {/* Topics Section */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Topics
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topics</label>
                 <TopicSelector
                   selectedTopics={selectedTopicIds}
                   onTopicsChange={setSelectedTopicIds}
@@ -316,14 +300,14 @@ export default function EventEditPage() {
                   Add topics to help categorize this event and make it discoverable on topic pages.
                 </p>
               </div>
-              
-              <FormActions 
+
+              <FormActions
                 isEditMode={isEditMode}
                 isSubmitting={isSubmitting}
                 navigate={navigate}
                 id={id}
                 status={formData.status}
-                onStatusChange={(status) => setFormData({ ...formData, status })}
+                onStatusChange={status => setFormData({ ...formData, status })}
               />
             </form>
           )}

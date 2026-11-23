@@ -23,20 +23,15 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
   const [listing, setListing] = useState<Listing | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Use the React Query hook for fetching the item
-  const {
-    data: item,
-    isLoading: queryIsLoading,
-    error: queryError,
-    refetch
-  } = useMarketplaceItem(itemId);
-  
+  const { data: item, isLoading: queryIsLoading, error: queryError, refetch } = useMarketplaceItem(itemId);
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         if (import.meta.env.VITE_USE_SUPABASE === 'true') {
           // If item is already loaded from React Query
@@ -48,7 +43,7 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
             setIsLoading(false);
             return;
           }
-          
+
           // Fallback to direct API call if React Query hasn't loaded yet
           console.log('Fetching marketplace item directly from API');
           const result = await marketplaceApi.getById(itemId);
@@ -70,7 +65,7 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
   }, [itemId, item]);
 
@@ -78,7 +73,7 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
   if (isLoading || queryIsLoading) {
     return <MarketplaceItemSkeleton />;
   }
-  
+
   if (error || queryError) {
     return (
       <QueryError
@@ -88,30 +83,29 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
       />
     );
   }
-  
+
   if (!listing) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8 text-center">
         <h2 className="text-2xl font-bold mb-4">Item Not Found</h2>
         <p className="mb-6">The marketplace item you're looking for doesn't exist or has been removed.</p>
-        <Link to="/marketplace" className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+        <Link
+          to="/marketplace"
+          className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+        >
           Back to Marketplace
         </Link>
       </div>
     );
   }
-  
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left column - Image gallery */}
         <div>
           <div className="mb-4 overflow-hidden rounded-lg">
-            <img
-              src={listing.images[currentImageIndex]}
-              alt={listing.title}
-              className="w-full h-96 object-cover"
-            />
+            <img src={listing.images[currentImageIndex]} alt={listing.title} className="w-full h-96 object-cover" />
           </div>
           {listing.images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-2">
@@ -135,11 +129,10 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                  {listing.title}
-                </h1>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{listing.title}</h1>
                 <p className="text-2xl text-orange-600 dark:text-orange-400">
-                  ${listing.price}{listing.type === 'service' && '/hr'}
+                  ${listing.price}
+                  {listing.type === 'service' && '/hr'}
                 </p>
               </div>
               <div className="p-2 bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-lg">
@@ -175,7 +168,11 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
                     </ul>
                   );
                 }
-                return <p key={index} className="mb-4">{paragraph}</p>;
+                return (
+                  <p key={index} className="mb-4">
+                    {paragraph}
+                  </p>
+                );
               })}
             </div>
 
@@ -202,11 +199,7 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">About the Seller</h2>
               <div className="flex items-start space-x-4">
                 <Link to={getMemberProfileUrl(listing.seller)}>
-                  <img
-                    src={listing.seller.image}
-                    alt={listing.seller.name}
-                    className="w-12 h-12 rounded-full"
-                  />
+                  <img src={listing.seller.image} alt={listing.seller.name} className="w-12 h-12 rounded-full" />
                 </Link>
                 <div>
                   <Link
@@ -215,9 +208,7 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
                   >
                     {listing.seller.name}
                   </Link>
-                  {listing.seller.title && (
-                    <p className="text-slate-600 dark:text-slate-300">{listing.seller.title}</p>
-                  )}
+                  {listing.seller.title && <p className="text-slate-600 dark:text-slate-300">{listing.seller.title}</p>}
                   {listing.seller.bio && (
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{listing.seller.bio}</p>
                   )}
@@ -228,12 +219,7 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
         </div>
       </div>
 
-      {showContactModal && (
-        <ContactModal
-          listing={listing}
-          onClose={() => setShowContactModal(false)}
-        />
-      )}
+      {showContactModal && <ContactModal listing={listing} onClose={() => setShowContactModal(false)} />}
     </div>
   );
 };
@@ -249,7 +235,7 @@ const MarketplaceItemSkeleton = () => {
             <SkeletonImage height="24rem" width="100%" className="rounded-lg" />
           </div>
           <div className="flex gap-2 overflow-x-auto pb-2">
-            {[1, 2, 3].map((index) => (
+            {[1, 2, 3].map(index => (
               <div key={index} className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden">
                 <SkeletonImage height="5rem" width="5rem" className="rounded-md" />
               </div>
@@ -285,7 +271,7 @@ const MarketplaceItemSkeleton = () => {
             </div>
 
             <div className="flex flex-wrap gap-2 mb-6">
-              {[1, 2, 3].map((index) => (
+              {[1, 2, 3].map(index => (
                 <div key={index} className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-full h-6 w-20"></div>
               ))}
             </div>

@@ -24,5 +24,5 @@ export type {
   BatchUploadQueue,
   FileValidationResult,
   BatchUploadHooks,
-  BatchUploadResult
+  BatchUploadResult,
 } from '../types';

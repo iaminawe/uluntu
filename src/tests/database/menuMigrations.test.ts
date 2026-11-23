@@ -1,6 +1,6 @@
 /**
  * Database Migration Tests for Menu Management
- * 
+ *
  * Tests database schema migrations, data integrity,
  * rollback procedures, and upgrade paths.
  */
@@ -14,12 +14,12 @@ const mockSupabase = {
   rpc: vi.fn(),
   sql: vi.fn(),
   auth: {
-    getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'admin' } } })
-  }
+    getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'admin' } } }),
+  },
 };
 
 vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn(() => mockSupabase)
+  createClient: vi.fn(() => mockSupabase),
 }));
 
 // Database test utilities
@@ -40,18 +40,18 @@ class DatabaseTestHelper {
       eq: vi.fn().mockReturnThis(),
       in: vi.fn().mockReturnThis(),
       order: vi.fn().mockReturnThis(),
-      single: vi.fn().mockImplementation(() => 
-        Promise.resolve({ 
-          data: this.mockData[table]?.[0] || null, 
-          error: null 
+      single: vi.fn().mockImplementation(() =>
+        Promise.resolve({
+          data: this.mockData[table]?.[0] || null,
+          error: null,
         })
       ),
-      then: vi.fn().mockImplementation((callback) => 
-        callback({ 
-          data: this.mockData[table] || [], 
-          error: null 
+      then: vi.fn().mockImplementation(callback =>
+        callback({
+          data: this.mockData[table] || [],
+          error: null,
         })
-      )
+      ),
     }));
 
     mockSupabase.sql.mockImplementation((query: string) => {
@@ -165,10 +165,10 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should create menu_items table with correct structure', async () => {
       const result = await dbHelper.executeMigration(menuTableMigration);
-      
+
       expect(result.success).toBe(true);
       expect(await dbHelper.verifyTableExists('menu_items')).toBe(true);
-      
+
       // Verify essential columns
       expect(await dbHelper.verifyColumnExists('menu_items', 'id')).toBe(true);
       expect(await dbHelper.verifyColumnExists('menu_items', 'title')).toBe(true);
@@ -179,9 +179,9 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should create necessary indexes for performance', async () => {
       await dbHelper.executeMigration(menuTableMigration);
-      
+
       const queries = dbHelper.getExecutedQueries();
-      
+
       expect(queries.some(q => q.includes('idx_menu_items_menu_type'))).toBe(true);
       expect(queries.some(q => q.includes('idx_menu_items_parent_id'))).toBe(true);
       expect(queries.some(q => q.includes('idx_menu_items_sort_order'))).toBe(true);
@@ -190,9 +190,9 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should create proper constraints', async () => {
       await dbHelper.executeMigration(menuTableMigration);
-      
+
       const queries = dbHelper.getExecutedQueries();
-      
+
       expect(queries.some(q => q.includes('menu_items_menu_type_check'))).toBe(true);
       expect(queries.some(q => q.includes('menu_items_target_check'))).toBe(true);
       expect(queries.some(q => q.includes('menu_items_visibility_check'))).toBe(true);
@@ -279,9 +279,9 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should create utility functions successfully', async () => {
       const result = await dbHelper.executeMigration(utilityFunctionsMigration);
-      
+
       expect(result.success).toBe(true);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('update_menu_items_order'))).toBe(true);
       expect(queries.some(q => q.includes('get_menu_hierarchy'))).toBe(true);
@@ -290,18 +290,18 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should create triggers for automatic timestamp updates', async () => {
       await dbHelper.executeMigration(utilityFunctionsMigration);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('menu_items_update_timestamp'))).toBe(true);
     });
 
     it('should handle recursive hierarchy queries', async () => {
       await dbHelper.executeMigration(utilityFunctionsMigration);
-      
+
       // Test the hierarchy function
       const hierarchyQuery = "SELECT * FROM get_menu_hierarchy('main');";
       const result = await dbHelper.executeMigration(hierarchyQuery);
-      
+
       expect(result.success).toBe(true);
     });
   });
@@ -327,9 +327,9 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should rollback all menu-related database objects', async () => {
       const result = await dbHelper.executeMigration(rollbackMigration);
-      
+
       expect(result.success).toBe(true);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('DROP TABLE IF EXISTS menu_items'))).toBe(true);
       expect(queries.some(q => q.includes('DROP FUNCTION'))).toBe(true);
@@ -339,7 +339,7 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should use CASCADE to handle dependencies', async () => {
       await dbHelper.executeMigration(rollbackMigration);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('CASCADE'))).toBe(true);
     });
@@ -365,7 +365,7 @@ describe('Menu Management Database Migration Tests', () => {
       const homeId = crypto.randomUUID();
       const aboutId = crypto.randomUUID();
       const servicesId = crypto.randomUUID();
-      
+
       dbHelper.setTableData('menu_items', [
         { id: homeId, title: 'Home', url: '/', menu_type: 'main', sort_order: 0, slug: 'home' },
         { id: aboutId, title: 'About', url: '/about', menu_type: 'main', sort_order: 1, slug: 'about' },
@@ -375,9 +375,9 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should migrate sample data without errors', async () => {
       const result = await dbHelper.executeMigration(sampleDataMigration);
-      
+
       expect(result.success).toBe(true);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('INSERT INTO menu_items'))).toBe(true);
       expect(queries.some(q => q.includes('UPDATE menu_items SET parent_id'))).toBe(true);
@@ -385,13 +385,13 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should maintain referential integrity with parent-child relationships', async () => {
       await dbHelper.executeMigration(sampleDataMigration);
-      
+
       // Test that foreign key constraints work
       const invalidParentQuery = `
         INSERT INTO menu_items (title, url, parent_id) 
         VALUES ('Invalid Child', '/invalid', '99999999-9999-9999-9999-999999999999');
       `;
-      
+
       // This should fail due to foreign key constraint (in real database)
       const result = await dbHelper.executeMigration(invalidParentQuery);
       // In our mock, it succeeds, but in real DB it would fail
@@ -400,7 +400,7 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should handle circular reference prevention', async () => {
       await dbHelper.executeMigration(sampleDataMigration);
-      
+
       // Attempt to create circular reference
       const circularReferenceQuery = `
         -- Create circular reference using URL-based lookups
@@ -408,9 +408,9 @@ describe('Menu Management Database Migration Tests', () => {
         SET parent_id = (SELECT id FROM menu_items WHERE url = '/services/web-design')
         WHERE url = '/services';
       `;
-      
+
       const result = await dbHelper.executeMigration(circularReferenceQuery);
-      
+
       // In a real implementation, this should be prevented by triggers or constraints
       expect(result.success).toBe(true);
     });
@@ -418,16 +418,16 @@ describe('Menu Management Database Migration Tests', () => {
     it('should preserve data during schema changes', async () => {
       // Insert initial data
       await dbHelper.executeMigration(sampleDataMigration);
-      
+
       // Add new column migration
       const addColumnMigration = `
         ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT false;
         UPDATE menu_items SET featured = true WHERE title = 'Home';
       `;
-      
+
       const result = await dbHelper.executeMigration(addColumnMigration);
       expect(result.success).toBe(true);
-      
+
       // Verify column was added
       expect(await dbHelper.verifyColumnExists('menu_items', 'featured')).toBe(true);
     });
@@ -449,10 +449,10 @@ describe('Menu Management Database Migration Tests', () => {
         CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_menu_items_external 
           ON menu_items(is_external) WHERE is_external = true;
       `;
-      
+
       const result = await dbHelper.executeMigration(performanceIndexMigration);
       expect(result.success).toBe(true);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('idx_menu_items_type_enabled_order'))).toBe(true);
       expect(queries.some(q => q.includes('idx_menu_items_parent_order'))).toBe(true);
@@ -495,10 +495,10 @@ describe('Menu Management Database Migration Tests', () => {
         END;
         $$ LANGUAGE plpgsql;
       `;
-      
+
       const result = await dbHelper.executeMigration(hierarchyOptimizationMigration);
       expect(result.success).toBe(true);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('CREATE MATERIALIZED VIEW'))).toBe(true);
       expect(queries.some(q => q.includes('refresh_menu_hierarchy_cache'))).toBe(true);
@@ -555,14 +555,14 @@ describe('Menu Management Database Migration Tests', () => {
     it('should enable row level security', async () => {
       const result = await dbHelper.executeMigration(securityMigration);
       expect(result.success).toBe(true);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('ENABLE ROW LEVEL SECURITY'))).toBe(true);
     });
 
     it('should create appropriate access policies', async () => {
       await dbHelper.executeMigration(securityMigration);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('CREATE POLICY'))).toBe(true);
       expect(queries.some(q => q.includes('Public can view enabled menu items'))).toBe(true);
@@ -572,7 +572,7 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should create role-based access control functions', async () => {
       await dbHelper.executeMigration(securityMigration);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('check_menu_access'))).toBe(true);
       expect(queries.some(q => q.includes('SECURITY DEFINER'))).toBe(true);
@@ -597,10 +597,10 @@ describe('Menu Management Database Migration Tests', () => {
         END;
         $$ LANGUAGE plpgsql;
       `;
-      
+
       const result = await dbHelper.executeMigration(backupMigration);
       expect(result.success).toBe(true);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('menu_items_backup_'))).toBe(true);
       expect(queries.some(q => q.includes('backup_menu_data'))).toBe(true);
@@ -618,10 +618,10 @@ describe('Menu Management Database Migration Tests', () => {
         
         COMMIT;
       `;
-      
+
       // In a real scenario, this would rollback due to the failed INSERT
       const result = await dbHelper.executeMigration(failingMigration);
-      
+
       // Our mock doesn't simulate transaction failures, but in practice:
       // 1. The transaction would rollback
       // 2. No changes would be applied
@@ -662,7 +662,7 @@ describe('Menu Management Database Migration Tests', () => {
     it('should track applied migrations', async () => {
       const result = await dbHelper.executeMigration(versionTrackingMigration);
       expect(result.success).toBe(true);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('CREATE TABLE IF NOT EXISTS schema_migrations'))).toBe(true);
       expect(queries.some(q => q.includes('INSERT INTO schema_migrations'))).toBe(true);
@@ -670,14 +670,14 @@ describe('Menu Management Database Migration Tests', () => {
 
     it('should provide migration status information', async () => {
       await dbHelper.executeMigration(versionTrackingMigration);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('get_applied_migrations'))).toBe(true);
     });
 
     it('should prevent duplicate migration application', async () => {
       await dbHelper.executeMigration(versionTrackingMigration);
-      
+
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => q.includes('ON CONFLICT (version) DO NOTHING'))).toBe(true);
     });
@@ -696,10 +696,10 @@ describe('Menu Management Database Migration Tests', () => {
           menu_type VARCHAR(50) NOT NULL DEFAULT 'main'
         );
       `;
-      
+
       const result = await dbHelper.executeMigration(compatibleMigration);
       expect(result.success).toBe(true);
-      
+
       // Should not contain PostgreSQL-specific syntax
       const queries = dbHelper.getExecutedQueries();
       expect(queries.some(q => !q.includes('gen_random_uuid()'))).toBe(true);
@@ -718,7 +718,7 @@ describe('Menu Management Database Migration Tests', () => {
           END IF;
         END $$;
       `;
-      
+
       const result = await dbHelper.executeMigration(conditionalMigration);
       expect(result.success).toBe(true);
     });

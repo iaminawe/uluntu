@@ -83,25 +83,26 @@ export class StorageService {
    * Load storage configuration from database
    */
   private async loadStorageConfig(): Promise<void> {
-    const { data, error } = await (supabase as any)
-      .from('storage_config')
-      .select('config_key, config_value');
+    const { data, error } = await (supabase as any).from('storage_config').select('config_key, config_value');
 
     if (error) {
       throw error;
     }
 
-    const configMap = data.reduce((acc: Record<string, any>, item: ConfigItem) => {
-      acc[item.config_key] = item.config_value;
-      return acc;
-    }, {} as Record<string, any>);
+    const configMap = data.reduce(
+      (acc: Record<string, any>, item: ConfigItem) => {
+        acc[item.config_key] = item.config_value;
+        return acc;
+      },
+      {} as Record<string, any>
+    );
 
     this.config = {
       maxFileSize: parseInt(configMap.max_file_size || '52428800'),
       allowedMimeTypes: configMap.allowed_mime_types || this.getDefaultConfig().allowedMimeTypes,
       thumbnailSizes: configMap.thumbnail_sizes || this.getDefaultConfig().thumbnailSizes,
       autoCleanupEnabled: configMap.auto_cleanup_enabled === true,
-      cleanupAgeHours: parseInt(configMap.cleanup_age_hours || '24')
+      cleanupAgeHours: parseInt(configMap.cleanup_age_hours || '24'),
     };
   }
 
@@ -111,21 +112,13 @@ export class StorageService {
   private getDefaultConfig(): StorageConfig {
     return {
       maxFileSize: 52428800, // 50MB
-      allowedMimeTypes: [
-        'image/jpeg',
-        'image/jpg', 
-        'image/png',
-        'image/webp',
-        'image/gif',
-        'image/bmp',
-        'image/tiff'
-      ],
+      allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/bmp', 'image/tiff'],
       thumbnailSizes: {
         thumb: { width: 300, height: 300 },
-        medium: { width: 800, height: 800 }
+        medium: { width: 800, height: 800 },
       },
       autoCleanupEnabled: true,
-      cleanupAgeHours: 24
+      cleanupAgeHours: 24,
     };
   }
 
@@ -142,9 +135,9 @@ export class StorageService {
     const timestamp = Date.now();
     const extension = filename.split('.').pop()?.toLowerCase() || 'jpg';
     const baseName = filename.split('.').slice(0, -1).join('.');
-    
+
     const finalFilename = `${this.sanitizeFilename(baseName)}_${timestamp}.${extension}`;
-    
+
     return `users/${userId}/galleries/${galleryId}/${sizeVariant}/${finalFilename}`;
   }
 
@@ -156,9 +149,9 @@ export class StorageService {
     const timestamp = Date.now();
     const extension = filename.split('.').pop()?.toLowerCase() || 'jpg';
     const baseName = filename.split('.').slice(0, -1).join('.');
-    
+
     const finalFilename = `${this.sanitizeFilename(baseName)}_${timestamp}.${extension}`;
-    
+
     return `users/${userId}/temp/${finalFilename}`;
   }
 
@@ -182,7 +175,7 @@ export class StorageService {
     if (file.size > config.maxFileSize) {
       return {
         valid: false,
-        error: `File size (${(file.size / 1048576).toFixed(2)}MB) exceeds maximum allowed size of ${(config.maxFileSize / 1048576)}MB`
+        error: `File size (${(file.size / 1048576).toFixed(2)}MB) exceeds maximum allowed size of ${config.maxFileSize / 1048576}MB`,
       };
     }
 
@@ -190,7 +183,7 @@ export class StorageService {
     if (!config.allowedMimeTypes.includes(file.type)) {
       return {
         valid: false,
-        error: `File type '${file.type}' is not allowed. Allowed types: ${config.allowedMimeTypes.join(', ')}`
+        error: `File type '${file.type}' is not allowed. Allowed types: ${config.allowedMimeTypes.join(', ')}`,
       };
     }
 
@@ -200,7 +193,7 @@ export class StorageService {
     if (!extension || !allowedExtensions.includes(extension)) {
       return {
         valid: false,
-        error: `Invalid file extension. Allowed extensions: ${allowedExtensions.join(', ')}`
+        error: `Invalid file extension. Allowed extensions: ${allowedExtensions.join(', ')}`,
       };
     }
 
@@ -219,18 +212,14 @@ export class StorageService {
       }
 
       // Generate storage path
-      const storagePath = this.generateStoragePath(
-        options.userId,
-        options.galleryId,
-        options.file.name
-      );
+      const storagePath = this.generateStoragePath(options.userId, options.galleryId, options.file.name);
 
       // Upload to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('gallery-photos')
         .upload(storagePath, options.file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
         });
 
       if (uploadError) {
@@ -239,15 +228,15 @@ export class StorageService {
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('gallery-photos')
-        .getPublicUrl(storagePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('gallery-photos').getPublicUrl(storagePath);
 
       const data: NonNullable<UploadResult['data']> = {
         path: storagePath,
         url: publicUrl,
         size: options.file.size,
-        mimeType: options.file.type
+        mimeType: options.file.type,
       };
 
       // Generate thumbnails if requested
@@ -282,29 +271,29 @@ export class StorageService {
 
     try {
       // Create thumbnail versions; each size is independent.
-      await Promise.all(Object.entries(config.thumbnailSizes).map(async ([sizeKey, dimensions]) => {
-        const thumbnailFile = await this.resizeImage(originalFile, dimensions);
-        
-        if (thumbnailFile) {
-          const folder = sizeKey === 'thumb' ? 'thumbs' : 'medium';
-          const thumbnailPath = this.generateStoragePath(
-            userId,
-            galleryId,
-            `${sizeKey}_${originalFile.name}`,
-            folder
-          );
+      await Promise.all(
+        Object.entries(config.thumbnailSizes).map(async ([sizeKey, dimensions]) => {
+          const thumbnailFile = await this.resizeImage(originalFile, dimensions);
 
-          const { error } = await supabase.storage
-            .from('gallery-photos')
-            .upload(thumbnailPath, thumbnailFile, {
+          if (thumbnailFile) {
+            const folder = sizeKey === 'thumb' ? 'thumbs' : 'medium';
+            const thumbnailPath = this.generateStoragePath(
+              userId,
+              galleryId,
+              `${sizeKey}_${originalFile.name}`,
+              folder
+            );
+
+            const { error } = await supabase.storage.from('gallery-photos').upload(thumbnailPath, thumbnailFile, {
               cacheControl: '3600',
-              upsert: false
+              upsert: false,
             });
-          if (!error) {
-            uploaded[folder] = thumbnailPath;
+            if (!error) {
+              uploaded[folder] = thumbnailPath;
+            }
           }
-        }
-      }));
+        })
+      );
       return uploaded;
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Storage Service - Generate Thumbnails');
@@ -316,7 +305,7 @@ export class StorageService {
    * Resize image using Canvas API
    */
   private async resizeImage(file: File, dimensions: { width: number; height: number }): Promise<File | null> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
@@ -325,10 +314,10 @@ export class StorageService {
         // Calculate dimensions maintaining aspect ratio
         const { width: targetWidth, height: targetHeight } = dimensions;
         const aspectRatio = img.width / img.height;
-        
+
         let newWidth = targetWidth;
         let newHeight = targetHeight;
-        
+
         if (aspectRatio > 1) {
           // Landscape
           newHeight = targetWidth / aspectRatio;
@@ -344,17 +333,21 @@ export class StorageService {
         ctx?.drawImage(img, 0, 0, newWidth, newHeight);
 
         // Convert to blob
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const resizedFile = new File([blob], file.name, {
-              type: 'image/webp',
-              lastModified: Date.now()
-            });
-            resolve(resizedFile);
-          } else {
-            resolve(null);
-          }
-        }, 'image/webp', 0.85);
+        canvas.toBlob(
+          blob => {
+            if (blob) {
+              const resizedFile = new File([blob], file.name, {
+                type: 'image/webp',
+                lastModified: Date.now(),
+              });
+              resolve(resizedFile);
+            } else {
+              resolve(null);
+            }
+          },
+          'image/webp',
+          0.85
+        );
       };
 
       img.onerror = () => resolve(null);
@@ -367,9 +360,7 @@ export class StorageService {
    */
   public async deleteFile(bucket: string, path: string): Promise<boolean> {
     try {
-      const { error } = await supabase.storage
-        .from(bucket)
-        .remove([path]);
+      const { error } = await supabase.storage.from(bucket).remove([path]);
 
       if (error) {
         logAndSanitizeError(error, 'Storage Service - Delete File');
@@ -391,7 +382,7 @@ export class StorageService {
       const patterns = [
         `users/${userId}/galleries/${galleryId}/originals/`,
         `users/${userId}/galleries/${galleryId}/thumbs/`,
-        `users/${userId}/galleries/${galleryId}/medium/`
+        `users/${userId}/galleries/${galleryId}/medium/`,
       ];
 
       let allSuccess = true;
@@ -401,7 +392,7 @@ export class StorageService {
         const { data: files, error: listError } = await supabase.storage
           .from('gallery-photos')
           .list(`users/${userId}/galleries/${galleryId}`, {
-            search: pattern
+            search: pattern,
           });
 
         if (listError) {
@@ -412,10 +403,8 @@ export class StorageService {
 
         if (files && files.length > 0) {
           const filePaths = files.map(file => `${pattern}${file.name}`);
-          
-          const { error: deleteError } = await supabase.storage
-            .from('gallery-photos')
-            .remove(filePaths);
+
+          const { error: deleteError } = await supabase.storage.from('gallery-photos').remove(filePaths);
 
           if (deleteError) {
             logAndSanitizeError(deleteError, 'Storage Service - Batch Delete');
@@ -439,11 +428,11 @@ export class StorageService {
       // RPC function not available - return mock usage for now
       // const { data, error } = await supabase
       //   .rpc('get_user_storage_usage', { user_uuid: userId });
-      
+
       return {
         totalFiles: 0,
         totalSizeBytes: 0,
-        totalSizeMB: 0
+        totalSizeMB: 0,
       };
     } catch (error) {
       logAndSanitizeError(error, 'Storage Service - Get Usage Failed');
@@ -476,9 +465,7 @@ export class StorageService {
    * Get public URL for storage object
    */
   public getPublicUrl(bucket: string, path: string): string {
-    const { data } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(path);
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
 
     return data.publicUrl;
   }
@@ -490,13 +477,13 @@ export class StorageService {
     const pathParts = originalPath.split('/');
     const filename = pathParts[pathParts.length - 1];
     const baseName = filename.split('.')[0];
-    
+
     // Replace 'originals' with size variant
     pathParts[4] = size === 'thumb' ? 'thumbs' : 'medium';
-    
+
     // Create optimized filename
     pathParts[pathParts.length - 1] = `${baseName}_${size}.webp`;
-    
+
     return pathParts.join('/');
   }
 
@@ -505,11 +492,9 @@ export class StorageService {
    */
   public async fileExists(bucket: string, path: string): Promise<boolean> {
     try {
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .list(path.substring(0, path.lastIndexOf('/')), {
-          search: path.substring(path.lastIndexOf('/') + 1)
-        });
+      const { data, error } = await supabase.storage.from(bucket).list(path.substring(0, path.lastIndexOf('/')), {
+        search: path.substring(path.lastIndexOf('/') + 1),
+      });
 
       return !error && data && data.length > 0;
     } catch (error) {
@@ -523,9 +508,7 @@ export class StorageService {
    */
   public async getSignedUrl(bucket: string, path: string, expiresIn: number = 3600): Promise<string | null> {
     try {
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .createSignedUrl(path, expiresIn);
+      const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn);
 
       if (error) {
         logAndSanitizeError(error, 'Storage Service - Get Signed URL');

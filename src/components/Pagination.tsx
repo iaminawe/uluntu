@@ -5,14 +5,10 @@ interface PaginationProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   itemsPerPage?: number; // Optional: for future use or display
-  totalItems?: number;   // Optional: for future use or display
+  totalItems?: number; // Optional: for future use or display
 }
 
-const Pagination: React.FC<PaginationProps> = ({
-  currentPage,
-  totalPages,
-  onPageChange,
-}) => {
+const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
   if (totalPages <= 1) {
     return null; // Don't render pagination if there's only one page or less
   }
@@ -64,7 +60,7 @@ const Pagination: React.FC<PaginationProps> = ({
           </>
         )}
 
-        {pageNumbers.map((number) => (
+        {pageNumbers.map(number => (
           <li key={number}>
             <button
               onClick={() => onPageChange(number)}

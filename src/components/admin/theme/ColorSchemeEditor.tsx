@@ -1,13 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { 
-  Palette, 
-  Pipette, 
-  RefreshCw, 
-  Copy, 
-  Check,
-  Info,
-  Sparkles
-} from 'lucide-react';
+import { Palette, Pipette, RefreshCw, Copy, Check, Info, Sparkles } from 'lucide-react';
 import { Theme, ColorPalette } from './types';
 
 interface ColorSchemeEditorProps {
@@ -22,49 +14,49 @@ const colorPalettes: ColorPalette[] = [
     colors: {
       primary: '#F97316',
       secondary: '#FED7AA',
-      accent: '#FB923C'
-    }
+      accent: '#FB923C',
+    },
   },
   {
     name: 'Professional Blue',
     colors: {
       primary: '#3B82F6',
       secondary: '#DBEAFE',
-      accent: '#60A5FA'
-    }
+      accent: '#60A5FA',
+    },
   },
   {
     name: 'Nature Green',
     colors: {
       primary: '#10B981',
       secondary: '#D1FAE5',
-      accent: '#34D399'
-    }
+      accent: '#34D399',
+    },
   },
   {
     name: 'Royal Purple',
     colors: {
       primary: '#8B5CF6',
       secondary: '#EDE9FE',
-      accent: '#A78BFA'
-    }
+      accent: '#A78BFA',
+    },
   },
   {
     name: 'Elegant Gray',
     colors: {
       primary: '#6B7280',
       secondary: '#F3F4F6',
-      accent: '#9CA3AF'
-    }
+      accent: '#9CA3AF',
+    },
   },
   {
     name: 'Warm Pink',
     colors: {
       primary: '#EC4899',
       secondary: '#FCE7F3',
-      accent: '#F472B6'
-    }
-  }
+      accent: '#F472B6',
+    },
+  },
 ];
 
 export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: ColorSchemeEditorProps) {
@@ -72,9 +64,12 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
   const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
   const [customPalette, setCustomPalette] = useState<string[]>([]);
 
-  const handleColorChange = useCallback((key: keyof Theme['colors'], value: string) => {
-    onChange({ [key]: value });
-  }, [onChange]);
+  const handleColorChange = useCallback(
+    (key: keyof Theme['colors'], value: string) => {
+      onChange({ [key]: value });
+    },
+    [onChange]
+  );
 
   const copyToClipboard = useCallback((color: string) => {
     navigator.clipboard.writeText(color);
@@ -82,13 +77,16 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
     setTimeout(() => setCopiedColor(null), 2000);
   }, []);
 
-  const applyPalette = useCallback((palette: ColorPalette) => {
-    onChange({
-      primary: palette.colors.primary,
-      secondary: palette.colors.secondary,
-      accent: palette.colors.accent
-    });
-  }, [onChange]);
+  const applyPalette = useCallback(
+    (palette: ColorPalette) => {
+      onChange({
+        primary: palette.colors.primary,
+        secondary: palette.colors.secondary,
+        accent: palette.colors.accent,
+      });
+    },
+    [onChange]
+  );
 
   const generateComplementaryColors = useCallback(() => {
     // Simple complementary color generation based on primary color
@@ -103,21 +101,23 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
 
     onChange({
       secondary: complementary,
-      accent: triadic1
+      accent: triadic1,
     });
   }, [colors.primary, onChange]);
 
   const hexToRgb = (hex: string) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : null;
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
   };
 
   const rgbToHex = (r: number, g: number, b: number) => {
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   };
 
   const colorGroups = [
@@ -127,8 +127,8 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
       colors: [
         { key: 'primary', label: 'Primary', description: 'Main brand color used for CTAs and important elements' },
         { key: 'secondary', label: 'Secondary', description: 'Supporting color for less prominent elements' },
-        { key: 'accent', label: 'Accent', description: 'Highlight color for special elements and hover states' }
-      ]
+        { key: 'accent', label: 'Accent', description: 'Highlight color for special elements and hover states' },
+      ],
     },
     {
       title: 'UI Colors',
@@ -136,15 +136,13 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
       colors: [
         { key: 'background', label: 'Background', description: 'Main page background color' },
         { key: 'surface', label: 'Surface', description: 'Card and container background color' },
-        { key: 'border', label: 'Border', description: 'Default border color for elements' }
-      ]
+        { key: 'border', label: 'Border', description: 'Default border color for elements' },
+      ],
     },
     {
       title: 'Text Colors',
       description: 'Colors for typography',
-      colors: [
-        { key: 'text', label: 'Text', description: 'Primary text color' }
-      ]
+      colors: [{ key: 'text', label: 'Text', description: 'Primary text color' }],
     },
     {
       title: 'Status Colors',
@@ -153,9 +151,9 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
         { key: 'error', label: 'Error', description: 'Error messages and destructive actions' },
         { key: 'success', label: 'Success', description: 'Success messages and positive feedback' },
         { key: 'warning', label: 'Warning', description: 'Warning messages and alerts' },
-        { key: 'info', label: 'Info', description: 'Informational messages' }
-      ]
-    }
+        { key: 'info', label: 'Info', description: 'Informational messages' },
+      ],
+    },
   ];
 
   return (
@@ -177,30 +175,28 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
             </button>
           </div>
         </div>
-        
+
         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {colorPalettes.map((palette) => (
+          {colorPalettes.map(palette => (
             <button
               key={palette.name}
               onClick={() => applyPalette(palette)}
               className="text-left p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-all group"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="font-medium text-gray-900 group-hover:text-orange-700">
-                  {palette.name}
-                </span>
+                <span className="font-medium text-gray-900 group-hover:text-orange-700">{palette.name}</span>
                 <div className="flex space-x-1">
-                  <div 
-                    className="w-6 h-6 rounded-full border border-gray-200" 
-                    style={{ backgroundColor: palette.colors.primary }} 
+                  <div
+                    className="w-6 h-6 rounded-full border border-gray-200"
+                    style={{ backgroundColor: palette.colors.primary }}
                   />
-                  <div 
-                    className="w-6 h-6 rounded-full border border-gray-200" 
-                    style={{ backgroundColor: palette.colors.secondary }} 
+                  <div
+                    className="w-6 h-6 rounded-full border border-gray-200"
+                    style={{ backgroundColor: palette.colors.secondary }}
                   />
-                  <div 
-                    className="w-6 h-6 rounded-full border border-gray-200" 
-                    style={{ backgroundColor: palette.colors.accent }} 
+                  <div
+                    className="w-6 h-6 rounded-full border border-gray-200"
+                    style={{ backgroundColor: palette.colors.accent }}
                   />
                 </div>
               </div>
@@ -217,44 +213,42 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
       </div>
 
       {/* Color Groups */}
-      {colorGroups.map((group) => (
+      {colorGroups.map(group => (
         <div key={group.title} className="bg-white rounded-lg border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <h4 className="font-medium text-gray-900">{group.title}</h4>
             <p className="text-sm text-gray-500 mt-1">{group.description}</p>
           </div>
-          
+
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {group.colors.map((colorItem) => {
+            {group.colors.map(colorItem => {
               const colorKey = colorItem.key as keyof Theme['colors'];
               const colorValue = colors[colorKey];
-              
+
               return (
                 <div key={colorKey} className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    {colorItem.label}
-                  </label>
-                  
+                  <label className="block text-sm font-medium text-gray-700">{colorItem.label}</label>
+
                   <div className="flex items-center space-x-2">
                     <div className="relative">
                       <input
                         type="color"
                         value={colorValue}
-                        onChange={(e) => handleColorChange(colorKey, e.target.value)}
+                        onChange={e => handleColorChange(colorKey, e.target.value)}
                         className="h-10 w-16 border border-gray-300 rounded cursor-pointer"
                       />
                       <Pipette className="absolute top-2 right-1 h-5 w-5 text-white pointer-events-none mix-blend-difference" />
                     </div>
-                    
+
                     <input
                       type="text"
                       value={colorValue}
-                      onChange={(e) => handleColorChange(colorKey, e.target.value)}
+                      onChange={e => handleColorChange(colorKey, e.target.value)}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 font-mono text-sm"
                       placeholder="#000000"
                       pattern="^#[0-9A-Fa-f]{6}$"
                     />
-                    
+
                     <button
                       onClick={() => copyToClipboard(colorValue)}
                       className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
@@ -267,7 +261,7 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
                       )}
                     </button>
                   </div>
-                  
+
                   <p className="text-xs text-gray-500">{colorItem.description}</p>
                 </div>
               );
@@ -279,73 +273,46 @@ export default function ColorSchemeEditor({ colors, onChange, isDarkMode }: Colo
       {/* Color Preview */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h4 className="font-medium text-gray-900 mb-4">Live Color Preview</h4>
-        
-        <div 
-          className="rounded-lg p-6 space-y-4"
-          style={{ backgroundColor: colors.background }}
-        >
-          <div 
+
+        <div className="rounded-lg p-6 space-y-4" style={{ backgroundColor: colors.background }}>
+          <div
             className="rounded-lg p-4 shadow-sm"
             style={{ backgroundColor: colors.surface, borderColor: colors.border }}
           >
-            <h3 
-              className="text-lg font-semibold mb-2"
-              style={{ color: colors.text }}
-            >
+            <h3 className="text-lg font-semibold mb-2" style={{ color: colors.text }}>
               Sample Card Title
             </h3>
-            <p 
-              className="mb-4"
-              style={{ color: colors.text, opacity: 0.8 }}
-            >
+            <p className="mb-4" style={{ color: colors.text, opacity: 0.8 }}>
               This is a preview of how your color scheme will look in the interface.
             </p>
-            
+
             <div className="flex flex-wrap gap-2">
-              <button 
-                className="px-4 py-2 rounded text-white font-medium"
-                style={{ backgroundColor: colors.primary }}
-              >
+              <button className="px-4 py-2 rounded text-white font-medium" style={{ backgroundColor: colors.primary }}>
                 Primary Button
               </button>
-              <button 
+              <button
                 className="px-4 py-2 rounded font-medium"
                 style={{ backgroundColor: colors.secondary, color: colors.text }}
               >
                 Secondary Button
               </button>
-              <button 
-                className="px-4 py-2 rounded text-white font-medium"
-                style={{ backgroundColor: colors.accent }}
-              >
+              <button className="px-4 py-2 rounded text-white font-medium" style={{ backgroundColor: colors.accent }}>
                 Accent Button
               </button>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <div 
-              className="rounded p-2 text-white text-sm text-center"
-              style={{ backgroundColor: colors.error }}
-            >
+            <div className="rounded p-2 text-white text-sm text-center" style={{ backgroundColor: colors.error }}>
               Error
             </div>
-            <div 
-              className="rounded p-2 text-white text-sm text-center"
-              style={{ backgroundColor: colors.success }}
-            >
+            <div className="rounded p-2 text-white text-sm text-center" style={{ backgroundColor: colors.success }}>
               Success
             </div>
-            <div 
-              className="rounded p-2 text-white text-sm text-center"
-              style={{ backgroundColor: colors.warning }}
-            >
+            <div className="rounded p-2 text-white text-sm text-center" style={{ backgroundColor: colors.warning }}>
               Warning
             </div>
-            <div 
-              className="rounded p-2 text-white text-sm text-center"
-              style={{ backgroundColor: colors.info }}
-            >
+            <div className="rounded p-2 text-white text-sm text-center" style={{ backgroundColor: colors.info }}>
               Info
             </div>
           </div>

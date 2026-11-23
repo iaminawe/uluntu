@@ -14,10 +14,10 @@ interface TopicsUIState {
 const initialState: TopicsUIState = {
   filters: {
     sortBy: 'sortOrder',
-    isActive: true
+    isActive: true,
   },
   selectedTopicIds: [],
-  viewMode: 'grid'
+  viewMode: 'grid',
 };
 
 const topicsUISlice = createSlice({
@@ -27,7 +27,7 @@ const topicsUISlice = createSlice({
     updateFilters: (state, action: PayloadAction<Partial<TopicsUIState['filters']>>) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    resetFilters: (state) => {
+    resetFilters: state => {
       state.filters = initialState.filters;
     },
     setSelectedTopicIds: (state, action: PayloadAction<string[]>) => {
@@ -42,13 +42,13 @@ const topicsUISlice = createSlice({
         state.selectedTopicIds.push(topicId);
       }
     },
-    clearSelectedTopics: (state) => {
+    clearSelectedTopics: state => {
       state.selectedTopicIds = [];
     },
     setViewMode: (state, action: PayloadAction<'grid' | 'list'>) => {
       state.viewMode = action.payload;
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -57,7 +57,7 @@ export const {
   setSelectedTopicIds,
   toggleTopicSelection,
   clearSelectedTopics,
-  setViewMode
+  setViewMode,
 } = topicsUISlice.actions;
 
 // Selectors

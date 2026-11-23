@@ -38,13 +38,11 @@ jest.mock('@/lib/supabase', () => ({
 
 const renderWithProviders = (ui: React.ReactElement, initialState = {}) => {
   const store = createTestStore(initialState);
-  
+
   return render(
     <Provider store={store}>
       <BrowserRouter>
-        <AuthContextProvider>
-          {ui}
-        </AuthContextProvider>
+        <AuthContextProvider>{ui}</AuthContextProvider>
       </BrowserRouter>
     </Provider>
   );
@@ -205,11 +203,18 @@ describe('UserMenu Integration Tests', () => {
       // Mock delayed member fetch
       const mockSelect = vi.fn(() => ({
         eq: vi.fn(() => ({
-          single: jest.fn().mockImplementation(() => 
-            new Promise(resolve => setTimeout(() => resolve({
-              data: { id: 'member123', name: 'Test User' },
-              error: null,
-            }), 100))
+          single: jest.fn().mockImplementation(
+            () =>
+              new Promise(resolve =>
+                setTimeout(
+                  () =>
+                    resolve({
+                      data: { id: 'member123', name: 'Test User' },
+                      error: null,
+                    }),
+                  100
+                )
+              )
           ),
         })),
       }));
@@ -233,9 +238,12 @@ describe('UserMenu Integration Tests', () => {
       expect(screen.queryByText('Your Profile')).not.toBeInTheDocument();
 
       // Wait for member data to load
-      await waitFor(() => {
-        expect(screen.getByText('Your Profile')).toBeInTheDocument();
-      }, { timeout: 200 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Your Profile')).toBeInTheDocument();
+        },
+        { timeout: 200 }
+      );
     });
   });
 

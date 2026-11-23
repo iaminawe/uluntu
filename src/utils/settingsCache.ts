@@ -23,7 +23,7 @@ class SettingsCache {
    */
   get<T = any>(key: string): T | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return null;
     }
@@ -63,7 +63,7 @@ class SettingsCache {
    */
   clearExpired(): void {
     const now = Date.now();
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (now - entry.timestamp > entry.ttl) {
         this.cache.delete(key);
@@ -103,7 +103,7 @@ class SettingsCache {
    */
   getWithStats<T = any>(key: string): T | null {
     const value = this.get<T>(key);
-    
+
     if (value !== null) {
       this.hitCount++;
     } else {
@@ -141,11 +141,11 @@ export class SettingsCacheManager {
    */
   static cachePublicSettings(settings: PublicSettings): void {
     settingsCache.set(CACHE_KEYS.PUBLIC_SETTINGS, settings);
-    
+
     // Also cache individual category settings
     Object.entries(settings).forEach(([category, categorySettings]) => {
       settingsCache.set(CACHE_KEYS.CATEGORY_SETTINGS(category), categorySettings);
-      
+
       // Cache individual setting values
       Object.entries(categorySettings).forEach(([key, value]) => {
         settingsCache.set(CACHE_KEYS.SETTING_VALUE(category, key), value);
@@ -165,7 +165,7 @@ export class SettingsCacheManager {
    */
   static cacheEnabledFeatures(features: Record<string, boolean>): void {
     settingsCache.set(CACHE_KEYS.ENABLED_FEATURES, features);
-    
+
     // Cache individual feature states
     Object.entries(features).forEach(([feature, enabled]) => {
       settingsCache.set(CACHE_KEYS.FEATURE_TOGGLE(feature), enabled);
@@ -257,7 +257,7 @@ export class PersistentSettingsCache {
         timestamp: Date.now(),
         settings,
       };
-      
+
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
       console.warn('Failed to save settings to localStorage:', error);
@@ -270,13 +270,13 @@ export class PersistentSettingsCache {
   static loadFromStorage(): Partial<PublicSettings> | null {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
-      
+
       if (!stored) {
         return null;
       }
 
       const data = JSON.parse(stored);
-      
+
       // Check version compatibility
       if (data.version !== this.VERSION) {
         this.clearStorage();

@@ -16,7 +16,7 @@ import type {
   AdminPhotosResponse,
   ModerationQueueResponse,
   GallerySystemSettings,
-  PhotoUploadValidation
+  PhotoUploadValidation,
 } from '@/types/adminGallery';
 import { logger } from '@/utils/logger';
 import { storedFilePaths } from '@/features/gallery/api/storagePaths';
@@ -30,7 +30,6 @@ import { ApiResponse, PaginationParams } from '@/shared/api/types';
  * Provides comprehensive admin functionality for gallery and photo management
  */
 export class AdminGalleryAPI {
-  
   /**
    * PHOTO MANAGEMENT ENDPOINTS
    */
@@ -52,18 +51,23 @@ export class AdminGalleryAPI {
       // Build the query with admin-specific data
       let query = supabase
         .from('gallery_photos')
-        .select(`
+        .select(
+          `
           *,
           user:members!gallery_photos_user_id_fkey(id, name),
           gallery:user_galleries!gallery_photos_gallery_id_fkey(id, title, privacy_level),
           photo_likes(count),
           photo_comments(count)
-        `, { count: 'exact' })
+        `,
+          { count: 'exact' }
+        )
         .eq('gallery_id', galleryId);
 
       // Apply filters
       if (filters?.search) {
-        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,file_name.ilike.%${filters.search}%`);
+        query = query.or(
+          `title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,file_name.ilike.%${filters.search}%`
+        );
       }
 
       if (filters?.moderation_status) {
@@ -111,9 +115,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to fetch gallery photos',
             code: 'FETCH_ERROR',
-            details: error
+            details: error,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -131,13 +135,13 @@ export class AdminGalleryAPI {
         moderation_status: photo.moderation_status || 'pending',
         user: {
           id: photo.user.id,
-          name: photo.user.name
+          name: photo.user.name,
         },
         gallery: {
           id: photo.gallery.id,
           title: photo.gallery.title,
-          privacy_level: photo.gallery.privacy_level
-        }
+          privacy_level: photo.gallery.privacy_level,
+        },
       }));
 
       const totalCount = count || 0;
@@ -150,12 +154,11 @@ export class AdminGalleryAPI {
           current_page: page,
           total_pages: totalPages,
           has_more: page < totalPages,
-          filters_applied: filters || {}
+          filters_applied: filters || {},
         },
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('getGalleryPhotosAdmin', error);
       return {
@@ -163,9 +166,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -176,12 +179,14 @@ export class AdminGalleryAPI {
    */
   async deletePhotoAdmin(photoId: string, reason?: string): Promise<ApiResponse<{ success: boolean }>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         return {
           data: null,
           error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
-          status: 401
+          status: 401,
         };
       }
 
@@ -196,16 +201,14 @@ export class AdminGalleryAPI {
         return {
           data: null,
           error: { message: 'Photo not found', code: 'NOT_FOUND' },
-          status: 404
+          status: 404,
         };
       }
 
       // Delete every size from storage first
       const filePaths = storedFilePaths([photo]);
       if (filePaths.length > 0) {
-        const { error: storageError } = await supabase.storage
-          .from('gallery-photos')
-          .remove(filePaths);
+        const { error: storageError } = await supabase.storage.from('gallery-photos').remove(filePaths);
 
         if (storageError) {
           logger.warn('Failed to delete photo from storage', 'ADMIN_GALLERY', storageError);
@@ -213,10 +216,7 @@ export class AdminGalleryAPI {
       }
 
       // Delete from database
-      const { error: deleteError } = await supabase
-        .from('gallery_photos')
-        .delete()
-        .eq('id', photoId);
+      const { error: deleteError } = await supabase.from('gallery_photos').delete().eq('id', photoId);
 
       if (deleteError) {
         logger.apiError('deletePhotoAdmin', deleteError);
@@ -225,9 +225,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to delete photo',
             code: 'DELETE_ERROR',
-            details: deleteError
+            details: deleteError,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -241,16 +241,15 @@ export class AdminGalleryAPI {
           photo_name: photo.file_name,
           gallery_title: photo.gallery?.title,
           user_name: photo.user?.name,
-          reason: reason
-        }
+          reason: reason,
+        },
       });
 
       return {
         data: { success: true },
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('deletePhotoAdmin', error);
       return {
@@ -258,9 +257,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -270,7 +269,7 @@ export class AdminGalleryAPI {
    * PATCH /api/admin/photos/{photoId}
    */
   async updatePhotoAdmin(
-    photoId: string, 
+    photoId: string,
     updates: {
       title?: string;
       description?: string;
@@ -281,35 +280,35 @@ export class AdminGalleryAPI {
     }
   ): Promise<ApiResponse<AdminPhotoStats>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         return {
           data: null,
           error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
-          status: 401
+          status: 401,
         };
       }
 
       // Get current photo data for audit log
-      const { data: currentPhoto } = await supabase
-        .from('gallery_photos')
-        .select('*')
-        .eq('id', photoId)
-        .single();
+      const { data: currentPhoto } = await supabase.from('gallery_photos').select('*').eq('id', photoId).single();
 
       // Update photo
       const { data: updatedPhoto, error: updateError } = await supabase
         .from('gallery_photos')
         .update({
           ...updates,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', photoId)
-        .select(`
+        .select(
+          `
           *,
           user:members!gallery_photos_user_id_fkey(id, name),
           gallery:user_galleries!gallery_photos_gallery_id_fkey(id, title, privacy_level)
-        `)
+        `
+        )
         .single();
 
       if (updateError) {
@@ -319,9 +318,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to update photo',
             code: 'UPDATE_ERROR',
-            details: updateError
+            details: updateError,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -334,8 +333,8 @@ export class AdminGalleryAPI {
         details: {
           old_values: currentPhoto,
           new_values: updates,
-          photo_name: updatedPhoto.file_name
-        }
+          photo_name: updatedPhoto.file_name,
+        },
       });
 
       // Transform to admin format
@@ -352,21 +351,20 @@ export class AdminGalleryAPI {
         moderation_status: updatedPhoto.moderation_status || 'pending',
         user: {
           id: updatedPhoto.user.id,
-          name: updatedPhoto.user.name
+          name: updatedPhoto.user.name,
         },
         gallery: {
           id: updatedPhoto.gallery.id,
           title: updatedPhoto.gallery.title,
-          privacy_level: updatedPhoto.gallery.privacy_level
-        }
+          privacy_level: updatedPhoto.gallery.privacy_level,
+        },
       };
 
       return {
         data: adminPhoto,
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('updatePhotoAdmin', error);
       return {
@@ -374,9 +372,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -387,12 +385,14 @@ export class AdminGalleryAPI {
    */
   async reorderGalleryPhotos(request: PhotoReorderRequest): Promise<ApiResponse<{ success: boolean }>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         return {
           data: null,
           error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
-          status: 401
+          status: 401,
         };
       }
 
@@ -407,7 +407,7 @@ export class AdminGalleryAPI {
         return {
           data: null,
           error: { message: 'Gallery not found', code: 'NOT_FOUND' },
-          status: 404
+          status: 404,
         };
       }
 
@@ -428,9 +428,9 @@ export class AdminGalleryAPI {
           data: null,
           error: {
             message: 'Failed to reorder some photos',
-            code: 'REORDER_ERROR'
+            code: 'REORDER_ERROR',
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -443,16 +443,15 @@ export class AdminGalleryAPI {
         details: {
           gallery_title: gallery.title,
           photos_reordered: request.photo_orders.length,
-          new_order: request.photo_orders
-        }
+          new_order: request.photo_orders,
+        },
       });
 
       return {
         data: { success: true },
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('reorderGalleryPhotos', error);
       return {
@@ -460,9 +459,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -473,12 +472,14 @@ export class AdminGalleryAPI {
    */
   async bulkDeletePhotos(photoIds: string[], reason?: string): Promise<ApiResponse<BatchOperationResult>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         return {
           data: null,
           error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
-          status: 401
+          status: 401,
         };
       }
 
@@ -489,7 +490,9 @@ export class AdminGalleryAPI {
       // Get photo details for cleanup and audit
       const { data: photos, error: fetchError } = await supabase
         .from('gallery_photos')
-        .select('id, file_name, storage_path, medium_path, thumbnail_path, user:members(name), gallery:user_galleries(title)')
+        .select(
+          'id, file_name, storage_path, medium_path, thumbnail_path, user:members(name), gallery:user_galleries(title)'
+        )
         .in('id', photoIds);
 
       if (fetchError) {
@@ -498,9 +501,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to fetch photos for deletion',
             code: 'FETCH_ERROR',
-            details: fetchError
+            details: fetchError,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -521,18 +524,14 @@ export class AdminGalleryAPI {
           } else {
             failedItems.push({
               id: photo.id,
-              error: deleteError?.message || 'Photo was not deleted'
+              error: deleteError?.message || 'Photo was not deleted',
             });
           }
         }
 
-        const paths = storedFilePaths(
-          (photos || []).filter(photo => deletedIds.has(photo.id))
-        );
+        const paths = storedFilePaths((photos || []).filter(photo => deletedIds.has(photo.id)));
         if (paths.length > 0) {
-          const { error: storageError } = await supabase.storage
-            .from('gallery-photos')
-            .remove(paths);
+          const { error: storageError } = await supabase.storage.from('gallery-photos').remove(paths);
 
           if (storageError) {
             logger.warn(`Failed to delete ${paths.length} storage files`, 'ADMIN_GALLERY', storageError);
@@ -550,8 +549,8 @@ export class AdminGalleryAPI {
           successful_deletions: successfulItems.length,
           failed_deletions: failedItems.length,
           reason: reason,
-          operation_id: operationId
-        }
+          operation_id: operationId,
+        },
       });
 
       const result: BatchOperationResult = {
@@ -561,15 +560,14 @@ export class AdminGalleryAPI {
         successful_items: successfulItems,
         failed_items: failedItems,
         operation_id: operationId,
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
       };
 
       return {
         data: result,
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('bulkDeletePhotos', error);
       return {
@@ -577,9 +575,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -602,12 +600,11 @@ export class AdminGalleryAPI {
       const to = from + limit - 1;
 
       // Use RPC function for complex admin query with stats
-      const { data, error, count } = await supabase
-        .rpc('get_admin_galleries', {
-          p_filters: filters || {},
-          p_limit: limit,
-          p_offset: from
-        });
+      const { data, error, count } = await supabase.rpc('get_admin_galleries', {
+        p_filters: filters || {},
+        p_limit: limit,
+        p_offset: from,
+      });
 
       if (error) {
         logger.apiError('getAllGalleriesAdmin', error);
@@ -616,9 +613,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to fetch galleries',
             code: 'FETCH_ERROR',
-            details: error
+            details: error,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -632,12 +629,11 @@ export class AdminGalleryAPI {
           current_page: page,
           total_pages: totalPages,
           has_more: page < totalPages,
-          filters_applied: filters || {}
+          filters_applied: filters || {},
         },
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('getAllGalleriesAdmin', error);
       return {
@@ -645,9 +641,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -658,23 +654,27 @@ export class AdminGalleryAPI {
    */
   async deleteGalleryAdmin(galleryId: string, reason?: string): Promise<ApiResponse<{ success: boolean }>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         return {
           data: null,
           error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
-          status: 401
+          status: 401,
         };
       }
 
       // Get gallery and photo details for cleanup and audit
       const { data: gallery, error: galleryError } = await supabase
         .from('user_galleries')
-        .select(`
+        .select(
+          `
           *,
           user:members(name),
           gallery_photos(id, storage_path, medium_path, thumbnail_path, file_name)
-        `)
+        `
+        )
         .eq('id', galleryId)
         .single();
 
@@ -682,16 +682,14 @@ export class AdminGalleryAPI {
         return {
           data: null,
           error: { message: 'Gallery not found', code: 'NOT_FOUND' },
-          status: 404
+          status: 404,
         };
       }
 
       // Delete all photos from storage
       const photoPaths = storedFilePaths(gallery.gallery_photos || []);
       if (photoPaths.length > 0) {
-        const { error: storageError } = await supabase.storage
-          .from('gallery-photos')
-          .remove(photoPaths);
+        const { error: storageError } = await supabase.storage.from('gallery-photos').remove(photoPaths);
 
         if (storageError) {
           logger.warn('Failed to delete some photos from storage', 'ADMIN_GALLERY', storageError);
@@ -699,10 +697,7 @@ export class AdminGalleryAPI {
       }
 
       // Delete gallery (cascade will delete photos)
-      const { error: deleteError } = await supabase
-        .from('user_galleries')
-        .delete()
-        .eq('id', galleryId);
+      const { error: deleteError } = await supabase.from('user_galleries').delete().eq('id', galleryId);
 
       if (deleteError) {
         logger.apiError('deleteGalleryAdmin', deleteError);
@@ -711,9 +706,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to delete gallery',
             code: 'DELETE_ERROR',
-            details: deleteError
+            details: deleteError,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -727,16 +722,15 @@ export class AdminGalleryAPI {
           gallery_title: gallery.title,
           user_name: gallery.user?.name,
           photos_deleted: gallery.gallery_photos?.length || 0,
-          reason: reason
-        }
+          reason: reason,
+        },
       });
 
       return {
         data: { success: true },
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('deleteGalleryAdmin', error);
       return {
@@ -744,9 +738,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -767,34 +761,34 @@ export class AdminGalleryAPI {
     }
   ): Promise<ApiResponse<AdminGalleryStats>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         return {
           data: null,
           error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
-          status: 401
+          status: 401,
         };
       }
 
       // Get current gallery data for audit
-      const { data: currentGallery } = await supabase
-        .from('user_galleries')
-        .select('*')
-        .eq('id', galleryId)
-        .single();
+      const { data: currentGallery } = await supabase.from('user_galleries').select('*').eq('id', galleryId).single();
 
       // Update gallery
       const { data: updatedGallery, error: updateError } = await supabase
         .from('user_galleries')
         .update({
           ...updates,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', galleryId)
-        .select(`
+        .select(
+          `
           *,
           user:members(id, name)
-        `)
+        `
+        )
         .single();
 
       if (updateError) {
@@ -804,9 +798,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to update gallery',
             code: 'UPDATE_ERROR',
-            details: updateError
+            details: updateError,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -819,8 +813,8 @@ export class AdminGalleryAPI {
         details: {
           old_values: currentGallery,
           new_values: updates,
-          gallery_title: updatedGallery.title
-        }
+          gallery_title: updatedGallery.title,
+        },
       });
 
       // Transform to admin format
@@ -837,18 +831,17 @@ export class AdminGalleryAPI {
         updated_at: updatedGallery.updated_at,
         user: {
           id: updatedGallery.user.id,
-          name: updatedGallery.user.name
+          name: updatedGallery.user.name,
         },
         recent_activity: updatedGallery.updated_at,
-        flagged_photos_count: 0 // TODO: Calculate
+        flagged_photos_count: 0, // TODO: Calculate
       };
 
       return {
         data: adminGallery,
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('updateGalleryAdmin', error);
       return {
@@ -856,9 +849,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -869,12 +862,14 @@ export class AdminGalleryAPI {
    */
   async bulkUploadPhotosAdmin(galleryId: string, files: File[]): Promise<ApiResponse<BatchOperationResult>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         return {
           data: null,
           error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
-          status: 401
+          status: 401,
         };
       }
 
@@ -889,7 +884,7 @@ export class AdminGalleryAPI {
         return {
           data: null,
           error: { message: 'Gallery not found', code: 'NOT_FOUND' },
-          status: 404
+          status: 404,
         };
       }
 
@@ -909,7 +904,7 @@ export class AdminGalleryAPI {
         } catch (error) {
           failedItems.push({
             id: file.name,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? error.message : 'Unknown error',
           });
         }
       }
@@ -925,8 +920,8 @@ export class AdminGalleryAPI {
           total_files: files.length,
           successful_uploads: successfulItems.length,
           failed_uploads: failedItems.length,
-          operation_id: operationId
-        }
+          operation_id: operationId,
+        },
       });
 
       const result: BatchOperationResult = {
@@ -936,15 +931,14 @@ export class AdminGalleryAPI {
         successful_items: successfulItems,
         failed_items: failedItems,
         operation_id: operationId,
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
       };
 
       return {
         data: result,
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('bulkUploadPhotosAdmin', error);
       return {
@@ -952,9 +946,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -965,8 +959,7 @@ export class AdminGalleryAPI {
    */
   async getStorageAnalytics(): Promise<ApiResponse<StorageAnalytics>> {
     try {
-      const { data, error } = await supabase
-        .rpc('get_storage_analytics');
+      const { data, error } = await supabase.rpc('get_storage_analytics');
 
       if (error) {
         logger.apiError('getStorageAnalytics', error);
@@ -975,9 +968,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to fetch storage analytics',
             code: 'FETCH_ERROR',
-            details: error
+            details: error,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -989,12 +982,11 @@ export class AdminGalleryAPI {
           average_file_size: 0,
           storage_by_user: [],
           storage_by_month: [],
-          largest_files: []
+          largest_files: [],
         },
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('getStorageAnalytics', error);
       return {
@@ -1002,9 +994,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -1022,12 +1014,11 @@ export class AdminGalleryAPI {
       const from = (page - 1) * limit;
       const to = from + limit - 1;
 
-      const { data, error, count } = await supabase
-        .rpc('get_photo_moderation_queue', {
-          p_status: filters?.status,
-          p_limit: limit,
-          p_offset: from
-        });
+      const { data, error, count } = await supabase.rpc('get_photo_moderation_queue', {
+        p_status: filters?.status,
+        p_limit: limit,
+        p_offset: from,
+      });
 
       if (error) {
         logger.apiError('getModerationQueue', error);
@@ -1036,9 +1027,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to fetch moderation queue',
             code: 'FETCH_ERROR',
-            details: error
+            details: error,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -1046,8 +1037,7 @@ export class AdminGalleryAPI {
       const totalPages = Math.ceil(totalCount / limit);
 
       // Get status counts
-      const { data: statusCounts } = await supabase
-        .rpc('get_moderation_status_counts');
+      const { data: statusCounts } = await supabase.rpc('get_moderation_status_counts');
 
       return {
         data: {
@@ -1055,12 +1045,11 @@ export class AdminGalleryAPI {
           total_pending: statusCounts?.pending || 0,
           total_under_review: statusCounts?.under_review || 0,
           current_page: page,
-          total_pages: totalPages
+          total_pages: totalPages,
         },
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('getModerationQueue', error);
       return {
@@ -1068,9 +1057,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }
@@ -1096,10 +1085,13 @@ export class AdminGalleryAPI {
 
       let query = supabase
         .from('admin_activity_logs')
-        .select(`
+        .select(
+          `
           *,
           admin:members!admin_activity_logs_admin_id_fkey(name)
-        `, { count: 'exact' })
+        `,
+          { count: 'exact' }
+        )
         .order('created_at', { ascending: false });
 
       // Apply filters
@@ -1134,9 +1126,9 @@ export class AdminGalleryAPI {
           error: {
             message: 'Failed to fetch audit logs',
             code: 'FETCH_ERROR',
-            details: error
+            details: error,
           },
-          status: 500
+          status: 500,
         };
       }
 
@@ -1151,18 +1143,17 @@ export class AdminGalleryAPI {
         details: log.details || {},
         ip_address: log.ip_address,
         user_agent: log.user_agent,
-        created_at: log.created_at
+        created_at: log.created_at,
       }));
 
       return {
         data: {
           logs,
-          total: count || 0
+          total: count || 0,
         },
         error: null,
-        status: 200
+        status: 200,
       };
-
     } catch (error) {
       logger.apiError('getAuditLogs', error);
       return {
@@ -1170,9 +1161,9 @@ export class AdminGalleryAPI {
         error: {
           message: 'Internal server error',
           code: 'SERVER_ERROR',
-          details: error
+          details: error,
         },
-        status: 500
+        status: 500,
       };
     }
   }

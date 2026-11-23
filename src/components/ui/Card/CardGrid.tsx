@@ -17,21 +17,19 @@ const CardGrid: React.FC<CardGridProps> = ({
     columns.md ? `md:grid-cols-${columns.md}` : 'md:grid-cols-2',
     columns.lg ? `lg:grid-cols-${columns.lg}` : 'lg:grid-cols-3',
     columns.xl ? `xl:grid-cols-${columns.xl}` : '',
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   // Convert gap to CSS grid gap classes
   const gapClass = {
-    'none': 'gap-0',
-    'sm': 'gap-3',
-    'md': 'gap-6',
-    'lg': 'gap-8',
+    none: 'gap-0',
+    sm: 'gap-3',
+    md: 'gap-6',
+    lg: 'gap-8',
   }[gap];
 
-  return (
-    <div className={`grid ${gridCols} ${gapClass} ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`grid ${gridCols} ${gapClass} ${className}`}>{children}</div>;
 };
 
 export default CardGrid;

@@ -29,7 +29,6 @@ export interface MenuFeatureFlagRule {
  * Feature flag security manager for menu items
  */
 export class MenuFeatureFlagSecurity {
-  
   /**
    * Check if user has access to feature flag
    */
@@ -40,7 +39,7 @@ export class MenuFeatureFlagSecurity {
     try {
       // This would integrate with your feature flag system
       // For now, implementing basic checks
-      
+
       // Check for admin bypass
       if (context.userRoles.includes('superadmin')) {
         return { allowed: true };
@@ -48,7 +47,7 @@ export class MenuFeatureFlagSecurity {
 
       // Simulate feature flag lookup
       const featureFlag = await this.getFeatureFlag(featureFlagId);
-      
+
       if (!featureFlag) {
         return { allowed: false, reason: 'Feature flag not found' };
       }
@@ -59,14 +58,12 @@ export class MenuFeatureFlagSecurity {
 
       // Check role-based access
       if (featureFlag.target_roles && featureFlag.target_roles.length > 0) {
-        const hasRequiredRole = featureFlag.target_roles.some(role => 
-          context.userRoles.includes(role)
-        );
-        
+        const hasRequiredRole = featureFlag.target_roles.some(role => context.userRoles.includes(role));
+
         if (!hasRequiredRole) {
-          return { 
-            allowed: false, 
-            reason: `Requires one of: ${featureFlag.target_roles.join(', ')}` 
+          return {
+            allowed: false,
+            reason: `Requires one of: ${featureFlag.target_roles.join(', ')}`,
           };
         }
       }
@@ -82,26 +79,23 @@ export class MenuFeatureFlagSecurity {
       if (featureFlag.rollout_percentage < 100) {
         const userHash = this.hashUserId(context.userId);
         const userPercentile = userHash % 100;
-        
+
         if (userPercentile >= featureFlag.rollout_percentage) {
-          return { 
-            allowed: false, 
-            reason: `Feature rollout at ${featureFlag.rollout_percentage}%` 
+          return {
+            allowed: false,
+            reason: `Feature rollout at ${featureFlag.rollout_percentage}%`,
           };
         }
       }
 
       // Check additional conditions
       if (featureFlag.conditions) {
-        const conditionsMet = await this.evaluateFeatureConditions(
-          featureFlag.conditions,
-          context
-        );
-        
+        const conditionsMet = await this.evaluateFeatureConditions(featureFlag.conditions, context);
+
         if (!conditionsMet.allowed) {
-          return { 
-            allowed: false, 
-            reason: `Conditions not met: ${conditionsMet.reason}` 
+          return {
+            allowed: false,
+            reason: `Conditions not met: ${conditionsMet.reason}`,
           };
         }
       }
@@ -116,10 +110,7 @@ export class MenuFeatureFlagSecurity {
   /**
    * Filter menu items based on feature flags
    */
-  static async filterMenuItemsByFeatureFlags(
-    items: MenuItem[],
-    context: MenuPermissionContext
-  ): Promise<MenuItem[]> {
+  static async filterMenuItemsByFeatureFlags(items: MenuItem[], context: MenuPermissionContext): Promise<MenuItem[]> {
     const filteredItems: MenuItem[] = [];
 
     for (const item of items) {
@@ -130,11 +121,8 @@ export class MenuFeatureFlagSecurity {
       // Check all required feature flags
       for (const flagRule of featureFlagChecks) {
         if (flagRule.required) {
-          const flagAccess = await this.checkFeatureFlagAccess(
-            flagRule.featureFlagId,
-            context
-          );
-          
+          const flagAccess = await this.checkFeatureFlagAccess(flagRule.featureFlagId, context);
+
           if (!flagAccess.allowed) {
             includeItem = false;
             excludeReason = flagAccess.reason || 'Feature flag denied';
@@ -145,11 +133,8 @@ export class MenuFeatureFlagSecurity {
 
       // Check CSS class feature flags (legacy support)
       if (includeItem && item.css_classes) {
-        const cssFeatureFlagCheck = await this.checkCssFeatureFlags(
-          item.css_classes,
-          context
-        );
-        
+        const cssFeatureFlagCheck = await this.checkCssFeatureFlags(item.css_classes, context);
+
         if (!cssFeatureFlagCheck.allowed) {
           includeItem = false;
           excludeReason = cssFeatureFlagCheck.reason || 'CSS feature flag denied';
@@ -161,7 +146,7 @@ export class MenuFeatureFlagSecurity {
       } else {
         logger.debug(`Menu item filtered by feature flag: ${item.title}`, 'FEATURE_FLAG_SECURITY', {
           itemId: item.id,
-          reason: excludeReason
+          reason: excludeReason,
         });
       }
     }
@@ -184,9 +169,9 @@ export class MenuFeatureFlagSecurity {
   private static async getFeatureFlag(featureFlagId: string): Promise<FeatureFlag | null> {
     // This would integrate with your feature flag system (LaunchDarkly, Flipper, etc.)
     // For now, implementing basic hard-coded flags
-    
+
     const defaultFlags: Record<string, FeatureFlag> = {
-      'beta_menu_features': {
+      beta_menu_features: {
         id: 'beta_menu_features',
         name: 'Beta Menu Features',
         description: 'Access to beta menu management features',
@@ -194,9 +179,9 @@ export class MenuFeatureFlagSecurity {
         rollout_percentage: 50,
         target_roles: ['admin', 'superadmin', 'beta_tester'],
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
-      'admin_menu_bulk_ops': {
+      admin_menu_bulk_ops: {
         id: 'admin_menu_bulk_ops',
         name: 'Admin Menu Bulk Operations',
         description: 'Bulk operations for menu management',
@@ -204,9 +189,9 @@ export class MenuFeatureFlagSecurity {
         rollout_percentage: 100,
         target_roles: ['admin', 'superadmin'],
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
-      'menu_audit_logs': {
+      menu_audit_logs: {
         id: 'menu_audit_logs',
         name: 'Menu Audit Logs',
         description: 'View audit logs for menu changes',
@@ -214,8 +199,8 @@ export class MenuFeatureFlagSecurity {
         rollout_percentage: 100,
         target_roles: ['admin', 'superadmin', 'auditor'],
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
+        updated_at: new Date().toISOString(),
+      },
     };
 
     return defaultFlags[featureFlagId] || null;
@@ -231,7 +216,7 @@ export class MenuFeatureFlagSecurity {
     const flagPatterns = [
       { pattern: /feature-(\w+)/, prefix: 'feature_' },
       { pattern: /ff-(\w+)/, prefix: 'ff_' },
-      { pattern: /flag-(\w+)/, prefix: 'flag_' }
+      { pattern: /flag-(\w+)/, prefix: 'flag_' },
     ];
 
     for (const { pattern, prefix } of flagPatterns) {
@@ -239,7 +224,7 @@ export class MenuFeatureFlagSecurity {
       if (match) {
         const flagId = `${prefix}${match[1]}`;
         const flagAccess = await this.checkFeatureFlagAccess(flagId, context);
-        
+
         if (!flagAccess.allowed) {
           return flagAccess;
         }
@@ -260,11 +245,11 @@ export class MenuFeatureFlagSecurity {
       // Time-based conditions
       if (conditions.start_date || conditions.end_date) {
         const now = new Date();
-        
+
         if (conditions.start_date && new Date(conditions.start_date) > now) {
           return { allowed: false, reason: 'Feature not yet available' };
         }
-        
+
         if (conditions.end_date && new Date(conditions.end_date) < now) {
           return { allowed: false, reason: 'Feature has expired' };
         }
@@ -312,7 +297,7 @@ export class MenuFeatureFlagSecurity {
     let hash = 0;
     for (let i = 0; i < userId.length; i++) {
       const char = userId.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return Math.abs(hash);
@@ -333,16 +318,14 @@ export class MenuFeatureFlagSecurity {
       userId: context.userId,
       userRoles: context.userRoles,
       reason,
-      ...metadata
+      ...metadata,
     });
   }
 
   /**
    * Create feature flag rule for menu item
    */
-  static async createMenuFeatureFlagRule(
-    rule: Omit<MenuFeatureFlagRule, 'id'>
-  ): Promise<MenuFeatureFlagRule> {
+  static async createMenuFeatureFlagRule(rule: Omit<MenuFeatureFlagRule, 'id'>): Promise<MenuFeatureFlagRule> {
     // This would save to database
     // For now, returning the rule with generated ID
     return {

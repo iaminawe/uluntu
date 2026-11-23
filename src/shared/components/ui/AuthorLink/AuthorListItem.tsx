@@ -19,7 +19,7 @@ export function AuthorListItem({
   showTitle = true,
   isSelected = false,
   onSelect,
-  className = ''
+  className = '',
 }: AuthorListItemProps) {
   const handleClick = () => {
     if (onSelect) {
@@ -37,7 +37,7 @@ export function AuthorListItem({
       onClick={handleClick}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleClick();
@@ -57,10 +57,10 @@ export function AuthorListItem({
       {isSelected && (
         <div className="ml-2 text-blue-500">
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path 
-              fillRule="evenodd" 
-              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
-              clipRule="evenodd" 
+            <path
+              fillRule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clipRule="evenodd"
             />
           </svg>
         </div>

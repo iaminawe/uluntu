@@ -23,7 +23,7 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({
   backgroundImage,
   foregroundImage,
   height = 'large',
-  actions = []
+  actions = [],
 }) => {
   const [windowHeight, setWindowHeight] = useState(0);
   const { scrollY } = useScroll();
@@ -43,21 +43,14 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({
   const heightClasses = {
     full: 'h-screen',
     large: 'h-[90vh]',
-    medium: 'h-[70vh]'
+    medium: 'h-[70vh]',
   };
 
   return (
     <section className={`relative ${heightClasses[height]} overflow-hidden`}>
       {/* Background Layer */}
-      <motion.div
-        style={{ y: backgroundY }}
-        className="absolute inset-0 z-0"
-      >
-        <img
-          src={backgroundImage}
-          alt=""
-          className="w-full h-[120%] object-cover"
-        />
+      <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0">
+        <img src={backgroundImage} alt="" className="w-full h-[120%] object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-slate-900/30" />
       </motion.div>
 
@@ -67,19 +60,12 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({
           style={{ y: useTransform(scrollY, [0, windowHeight], [0, windowHeight * 0.2]) }}
           className="absolute inset-0 z-10 pointer-events-none"
         >
-          <img
-            src={foregroundImage}
-            alt=""
-            className="w-full h-full object-cover opacity-50"
-          />
+          <img src={foregroundImage} alt="" className="w-full h-full object-cover opacity-50" />
         </motion.div>
       )}
 
       {/* Content Layer */}
-      <motion.div
-        style={{ y: contentY, opacity }}
-        className="relative z-20 h-full flex items-center"
-      >
+      <motion.div style={{ y: contentY, opacity }} className="relative z-20 h-full flex items-center">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl">
             {subtitle && (
@@ -121,11 +107,12 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({
                 className="flex flex-wrap gap-4"
               >
                 {actions.map((action, index) => {
-                  const baseClasses = "px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300";
+                  const baseClasses = 'px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300';
                   const variantClasses = {
-                    primary: "bg-orange-500 text-white hover:bg-orange-600 shadow-lg hover:shadow-xl transform hover:scale-105",
-                    secondary: "bg-white/10 text-white backdrop-blur-sm border border-white/20 hover:bg-white/20",
-                    ghost: "text-white hover:bg-white/10"
+                    primary:
+                      'bg-orange-500 text-white hover:bg-orange-600 shadow-lg hover:shadow-xl transform hover:scale-105',
+                    secondary: 'bg-white/10 text-white backdrop-blur-sm border border-white/20 hover:bg-white/20',
+                    ghost: 'text-white hover:bg-white/10',
                   };
 
                   return (
@@ -146,30 +133,30 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({
 
       {/* Decorative Elements */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 dark:from-slate-900 to-transparent z-30" />
-      
+
       {/* Floating Elements */}
       <motion.div
         animate={{
           y: [0, -20, 0],
-          rotate: [0, 5, 0]
+          rotate: [0, 5, 0],
         }}
         transition={{
           duration: 6,
           repeat: Infinity,
-          ease: "easeInOut"
+          ease: 'easeInOut',
         }}
         className="absolute top-20 right-10 w-20 h-20 bg-orange-500/20 rounded-full blur-2xl"
       />
-      
+
       <motion.div
         animate={{
           y: [0, 20, 0],
-          rotate: [0, -5, 0]
+          rotate: [0, -5, 0],
         }}
         transition={{
           duration: 8,
           repeat: Infinity,
-          ease: "easeInOut"
+          ease: 'easeInOut',
         }}
         className="absolute bottom-40 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"
       />

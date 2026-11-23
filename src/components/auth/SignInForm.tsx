@@ -37,20 +37,20 @@ export default function SignInForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       handleError('Please enter both email and password');
       return;
     }
-    
+
     try {
       setIsLoading(true);
       clearError();
-      
+
       // Call signIn without destructuring the return value
       // The signIn function dispatches actions to Redux and doesn't return anything
       await signIn(email, password);
-      
+
       // The auth state (status and error) will be updated by Redux
       // and handled by the useEffect hooks above
       console.log('Sign-in request completed');
@@ -63,18 +63,10 @@ export default function SignInForm() {
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 w-full max-w-md mx-auto">
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">
-        Sign In
-      </h2>
-      
-      {error && (
-        <ErrorAlert
-          error={error}
-          onDismiss={clearError}
-          className="mb-6"
-        />
-      )}
-      
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">Sign In</h2>
+
+      {error && <ErrorAlert error={error} onDismiss={clearError} className="mb-6" />}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" htmlFor="email">
@@ -93,12 +85,12 @@ export default function SignInForm() {
               className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md  bg-white dark:bg-slate-700 text-slate-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               disabled={isLoading}
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" htmlFor="password">
             Password
@@ -116,12 +108,12 @@ export default function SignInForm() {
               className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md  bg-white dark:bg-slate-700 text-slate-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               placeholder="••••••••"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               disabled={isLoading}
             />
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <input
@@ -130,20 +122,20 @@ export default function SignInForm() {
               type="checkbox"
               className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-slate-300 rounded"
               checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
+              onChange={e => setRememberMe(e.target.checked)}
             />
             <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700 dark:text-slate-300">
               Remember me
             </label>
           </div>
-          
+
           <div className="text-sm">
             <Link to="/forgot-password" className="font-medium text-orange-500 hover:text-orange-600">
               Forgot your password?
             </Link>
           </div>
         </div>
-        
+
         <div>
           <button
             type="submit"
@@ -154,11 +146,10 @@ export default function SignInForm() {
           </button>
         </div>
       </form>
-      
+
       <div className="mt-6 text-center">
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Don't have an account?{' '}
-          <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup">Sign up</Link>
         </p>
       </div>
     </div>

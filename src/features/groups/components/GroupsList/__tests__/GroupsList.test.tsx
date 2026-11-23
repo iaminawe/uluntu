@@ -14,10 +14,16 @@ jest.mock('../../JoinModal', () => ({
   default: ({ onClose, group }: any) => (
     <div data-testid="join-modal">
       <h2>Join {group?.name}</h2>
-      <button onClick={() => { onClose(); }}>Confirm Join</button>
+      <button
+        onClick={() => {
+          onClose();
+        }}
+      >
+        Confirm Join
+      </button>
       <button onClick={onClose}>Cancel</button>
     </div>
-  )
+  ),
 }));
 
 // Mock the Pagination component
@@ -25,21 +31,17 @@ jest.mock('@/components/Pagination', () => ({
   __esModule: true,
   default: ({ currentPage, totalPages, onPageChange }: any) => (
     <div data-testid="pagination">
-      <button 
-        onClick={() => onPageChange(currentPage - 1)} 
-        disabled={currentPage === 1}
-      >
+      <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
         Previous
       </button>
-      <span>Page {currentPage} of {totalPages}</span>
-      <button 
-        onClick={() => onPageChange(currentPage + 1)} 
-        disabled={currentPage === totalPages}
-      >
+      <span>
+        Page {currentPage} of {totalPages}
+      </span>
+      <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
         Next
       </button>
     </div>
-  )
+  ),
 }));
 
 // Mock Redux hooks
@@ -55,7 +57,7 @@ const mockGroups: Group[] = [
     lastActive: '2025-05-25T14:30:00.000Z',
     members: [],
     created_at: '2024-01-01T00:00:00.000Z',
-    updated_at: '2025-05-25T14:30:00.000Z'
+    updated_at: '2025-05-25T14:30:00.000Z',
   },
   {
     id: '550e8400-e29b-41d4-a716-446655440002',
@@ -68,7 +70,7 @@ const mockGroups: Group[] = [
     lastActive: '2025-05-24T10:00:00.000Z',
     members: [],
     created_at: '2024-02-01T00:00:00.000Z',
-    updated_at: '2025-05-24T10:00:00.000Z'
+    updated_at: '2025-05-24T10:00:00.000Z',
   },
   {
     id: '550e8400-e29b-41d4-a716-446655440003',
@@ -81,8 +83,8 @@ const mockGroups: Group[] = [
     lastActive: '2025-05-23T08:00:00.000Z',
     members: [],
     created_at: '2024-03-01T00:00:00.000Z',
-    updated_at: '2025-05-23T08:00:00.000Z'
-  }
+    updated_at: '2025-05-23T08:00:00.000Z',
+  },
 ];
 
 // Setup mock store
@@ -92,39 +94,35 @@ const createMockStore = (groups: Group[] = mockGroups) => {
       groups: () => ({
         filteredGroups: groups,
         status: 'succeeded',
-        error: null
-      })
-    }
+        error: null,
+      }),
+    },
   });
 };
 
 // Create a function to filter groups based on criteria
 const filterGroups = (groups: Group[], searchTerm: string, visibilityFilter: string[]) => {
   return groups.filter(group => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch =
+      !searchTerm ||
       group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       group.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesVisibility = visibilityFilter.length === 0 || 
-      visibilityFilter.includes(group.visibility);
-    
+
+    const matchesVisibility = visibilityFilter.length === 0 || visibilityFilter.includes(group.visibility);
+
     return matchesSearch && matchesVisibility;
   });
 };
 
 jest.mock('../../../hooks/useGroupsRedux', () => ({
-  useFilteredGroupsRedux: jest.fn((filters) => {
-    const groups = filterGroups(
-      mockGroups, 
-      filters?.search || '', 
-      filters?.visibility || []
-    );
+  useFilteredGroupsRedux: jest.fn(filters => {
+    const groups = filterGroups(mockGroups, filters?.search || '', filters?.visibility || []);
     return {
       groups: groups,
       isLoading: false,
-      error: null
+      error: null,
     };
-  })
+  }),
 }));
 
 jest.mock('@/hooks/useGroupQueries');
@@ -132,21 +130,19 @@ jest.mock('@/hooks/useGroupQueries');
 // Import the module to get access to the mocked functions
 import * as useQueriesModule from '@/hooks/useGroupQueries';
 
-const mockUseGroupsWithFilters = useQueriesModule.useGroupsWithFilters as jest.MockedFunction<typeof useQueriesModule.useGroupsWithFilters>;
+const mockUseGroupsWithFilters = useQueriesModule.useGroupsWithFilters as jest.MockedFunction<
+  typeof useQueriesModule.useGroupsWithFilters
+>;
 
 describe('GroupsList Component', () => {
   beforeEach(() => {
     // Reset mock to default state before each test
-    mockUseGroupsWithFilters.mockImplementation((filters) => {
-      const filteredGroups = filterGroups(
-        mockGroups,
-        filters?.search || '',
-        filters?.visibility || []
-      );
+    mockUseGroupsWithFilters.mockImplementation(filters => {
+      const filteredGroups = filterGroups(mockGroups, filters?.search || '', filters?.visibility || []);
       return createMockQueryResult({
         data: filteredGroups,
         isLoading: false,
-        error: null
+        error: null,
       });
     });
   });
@@ -154,19 +150,14 @@ describe('GroupsList Component', () => {
   const renderWithProviders = (ui: React.ReactElement, store = createMockStore()) => {
     return render(
       <Provider store={store}>
-        <BrowserRouter>
-          {ui}
-        </BrowserRouter>
+        <BrowserRouter>{ui}</BrowserRouter>
       </Provider>
     );
   };
 
-
   describe('Rendering States', () => {
     it('GL-001: should render groups list with all groups when no filters applied', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       expect(screen.getByText('Kootenay Coders Collective')).toBeInTheDocument();
       expect(screen.getByText('Nelson UX/UI Designers')).toBeInTheDocument();
@@ -178,13 +169,11 @@ describe('GroupsList Component', () => {
         createMockQueryResult({
           data: undefined,
           isLoading: true,
-          error: null
+          error: null,
         })
       );
 
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       expect(screen.getByTestId('groups-loading')).toBeInTheDocument();
     });
@@ -194,13 +183,11 @@ describe('GroupsList Component', () => {
         createMockQueryResult({
           data: undefined,
           isLoading: false,
-          error: { message: 'Failed to fetch groups' }
+          error: { message: 'Failed to fetch groups' },
         })
       );
 
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       expect(screen.getByText(/Error loading groups/i)).toBeInTheDocument();
       expect(screen.getByText(/Failed to fetch groups/i)).toBeInTheDocument();
@@ -211,21 +198,17 @@ describe('GroupsList Component', () => {
         createMockQueryResult({
           data: [],
           isLoading: false,
-          error: null
+          error: null,
         })
       );
 
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       expect(screen.getByText(/No groups found/i)).toBeInTheDocument();
     });
 
     it('GL-005: should show filtered empty state when filters yield no results', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="nonexistent" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="nonexistent" visibilityFilter={[]} />);
 
       expect(screen.getByText(/No groups match your search criteria/i)).toBeInTheDocument();
     });
@@ -234,9 +217,7 @@ describe('GroupsList Component', () => {
   describe('Data Source Selection', () => {
     it('GL-006: should use provided groups when passed as prop', () => {
       const customGroups = [mockGroups[0]];
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} groups={customGroups} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} groups={customGroups} />);
 
       expect(screen.getByText('Kootenay Coders Collective')).toBeInTheDocument();
       expect(screen.queryByText('Nelson UX/UI Designers')).not.toBeInTheDocument();
@@ -247,12 +228,10 @@ describe('GroupsList Component', () => {
       useFilteredGroupsRedux.mockReturnValue({
         groups: [mockGroups[1]],
         isLoading: false,
-        error: null
+        error: null,
       });
 
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} useRedux={true} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} useRedux={true} />);
 
       expect(screen.getByText('Nelson UX/UI Designers')).toBeInTheDocument();
       expect(useFilteredGroupsRedux).toHaveBeenCalled();
@@ -260,10 +239,8 @@ describe('GroupsList Component', () => {
 
     it('GL-008: should use React Query by default', () => {
       const { useGroupsWithFilters } = require('@/hooks/useGroupQueries');
-      
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       expect(useGroupsWithFilters).toHaveBeenCalled();
     });
@@ -271,27 +248,21 @@ describe('GroupsList Component', () => {
 
   describe('Filtering', () => {
     it('GL-009: should filter groups by search term (name)', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="Coders" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="Coders" visibilityFilter={[]} />);
 
       expect(screen.getByText('Kootenay Coders Collective')).toBeInTheDocument();
       expect(screen.queryByText('Nelson UX/UI Designers')).not.toBeInTheDocument();
     });
 
     it('GL-010: should filter groups by search term (description)', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="Design professionals" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="Design professionals" visibilityFilter={[]} />);
 
       expect(screen.queryByText('Kootenay Coders Collective')).not.toBeInTheDocument();
       expect(screen.getByText('Nelson UX/UI Designers')).toBeInTheDocument();
     });
 
     it('GL-011: should filter groups by visibility - public only', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={['public']} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={['public']} />);
 
       expect(screen.getByText('Kootenay Coders Collective')).toBeInTheDocument();
       expect(screen.queryByText('Nelson UX/UI Designers')).not.toBeInTheDocument();
@@ -299,9 +270,7 @@ describe('GroupsList Component', () => {
     });
 
     it('GL-012: should filter groups by multiple visibility types', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={['open', 'closed']} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={['open', 'closed']} />);
 
       expect(screen.getByText('Kootenay Coders Collective')).toBeInTheDocument();
       expect(screen.getByText('Nelson UX/UI Designers')).toBeInTheDocument();
@@ -309,9 +278,7 @@ describe('GroupsList Component', () => {
     });
 
     it('GL-013: should combine search and visibility filters', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="tech" visibilityFilter={['secret']} />
-      );
+      renderWithProviders(<GroupsList searchTerm="tech" visibilityFilter={['secret']} />);
 
       expect(screen.queryByText('Kootenay Coders Collective')).not.toBeInTheDocument();
       expect(screen.queryByText('Nelson UX/UI Designers')).not.toBeInTheDocument();
@@ -319,9 +286,7 @@ describe('GroupsList Component', () => {
     });
 
     it('GL-014: should be case-insensitive when filtering', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="CODERS" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="CODERS" visibilityFilter={[]} />);
 
       expect(screen.getByText('Kootenay Coders Collective')).toBeInTheDocument();
     });
@@ -333,26 +298,24 @@ describe('GroupsList Component', () => {
       const manyGroups = Array.from({ length: 10 }, (_, i) => ({
         ...mockGroups[0],
         id: `550e8400-e29b-41d4-a716-44665544${i.toString().padStart(4, '0')}`,
-        name: `Group ${i + 1}`
+        name: `Group ${i + 1}`,
       }));
 
       mockUseGroupsWithFilters.mockReturnValue(
         createMockQueryResult({
           data: manyGroups,
           isLoading: false,
-          error: null
+          error: null,
         })
       );
 
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       // Should show first 8 groups
       for (let i = 1; i <= 8; i++) {
         expect(screen.getByText(`Group ${i}`)).toBeInTheDocument();
       }
-      
+
       // Should not show groups 9 and 10
       expect(screen.queryByText('Group 9')).not.toBeInTheDocument();
       expect(screen.queryByText('Group 10')).not.toBeInTheDocument();
@@ -365,20 +328,18 @@ describe('GroupsList Component', () => {
       const manyGroups = Array.from({ length: 10 }, (_, i) => ({
         ...mockGroups[0],
         id: `550e8400-e29b-41d4-a716-44665544${i.toString().padStart(4, '0')}`,
-        name: `Group ${i + 1}`
+        name: `Group ${i + 1}`,
       }));
 
       mockUseGroupsWithFilters.mockReturnValue(
         createMockQueryResult({
           data: manyGroups,
           isLoading: false,
-          error: null
+          error: null,
         })
       );
 
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       // Click next button
       fireEvent.click(screen.getByText('Next'));
@@ -386,7 +347,7 @@ describe('GroupsList Component', () => {
       // Should now show groups 9 and 10
       expect(screen.getByText('Group 9')).toBeInTheDocument();
       expect(screen.getByText('Group 10')).toBeInTheDocument();
-      
+
       // Should not show group 1
       expect(screen.queryByText('Group 1')).not.toBeInTheDocument();
     });
@@ -395,39 +356,33 @@ describe('GroupsList Component', () => {
       const manyGroups = Array.from({ length: 10 }, (_, i) => ({
         ...mockGroups[0],
         id: `550e8400-e29b-41d4-a716-44665544${i.toString().padStart(4, '0')}`,
-        name: `Group ${i + 1}`
+        name: `Group ${i + 1}`,
       }));
 
       mockUseGroupsWithFilters.mockReturnValue(
         createMockQueryResult({
           data: manyGroups,
           isLoading: false,
-          error: null
+          error: null,
         })
       );
 
-      const { rerender } = renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+      const { rerender } = renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       // Navigate to page 2
       fireEvent.click(screen.getByText('Next'));
       expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
 
       // Change search term - this should filter to only show 1 group
-      mockUseGroupsWithFilters.mockImplementation((filters) => {
-        const filteredGroups = filterGroups(
-          manyGroups,
-          'Group 5',
-          []
-        );
+      mockUseGroupsWithFilters.mockImplementation(filters => {
+        const filteredGroups = filterGroups(manyGroups, 'Group 5', []);
         return createMockQueryResult({
           data: filteredGroups,
           isLoading: false,
-          error: null
+          error: null,
         });
       });
-      
+
       rerender(
         <Provider store={createMockStore()}>
           <BrowserRouter>
@@ -444,17 +399,15 @@ describe('GroupsList Component', () => {
   describe('User Interactions', () => {
     it('GL-018: should show join modal when join button is clicked for open group', async () => {
       // Mock to return only one open group for cleaner testing
-      mockUseGroupsWithFilters.mockImplementation((filters) => {
+      mockUseGroupsWithFilters.mockImplementation(filters => {
         return createMockQueryResult({
           data: [mockGroups[0]], // Only Kootenay Coders Collective
           isLoading: false,
-          error: null
+          error: null,
         });
       });
-      
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={['open']} />
-      );
+
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={['open']} />);
 
       const joinButton = screen.getByRole('button', { name: /join/i });
       fireEvent.click(joinButton);
@@ -466,26 +419,20 @@ describe('GroupsList Component', () => {
     });
 
     it('GL-019: should show request to join for closed groups', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={['closed']} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={['closed']} />);
 
       expect(screen.getByRole('button', { name: /request to join/i })).toBeInTheDocument();
     });
 
     it('GL-020: should not show join button for secret groups', () => {
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={['secret']} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={['secret']} />);
 
       expect(screen.queryByRole('button', { name: /join/i })).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /request to join/i })).not.toBeInTheDocument();
     });
 
     it('GL-021: should close join modal when cancelled', async () => {
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={['open']} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={['open']} />);
 
       const joinButtons = screen.getAllByRole('button', { name: /join/i });
       fireEvent.click(joinButtons[0]);
@@ -504,9 +451,7 @@ describe('GroupsList Component', () => {
 
     it('GL-022: should handle join confirmation', async () => {
       const mockOnJoin = jest.fn();
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={['open']} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={['open']} />);
 
       const joinButtons = screen.getAllByRole('button', { name: /join/i });
       fireEvent.click(joinButtons[0]);
@@ -536,20 +481,18 @@ describe('GroupsList Component', () => {
         lastActive: '',
         members: [],
         createdAt: '2024-01-01T00:00:00.000Z',
-        updatedAt: '2024-01-01T00:00:00.000Z'
+        updatedAt: '2024-01-01T00:00:00.000Z',
       };
 
       mockUseGroupsWithFilters.mockReturnValue(
         createMockQueryResult({
           data: [incompleteGroup],
           isLoading: false,
-          error: null
+          error: null,
         })
       );
 
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       expect(screen.getByText('Minimal Group')).toBeInTheDocument();
       expect(screen.getByText('0 members')).toBeInTheDocument();
@@ -559,20 +502,18 @@ describe('GroupsList Component', () => {
       const longGroup: Group = {
         ...mockGroups[0],
         name: 'A'.repeat(100),
-        description: 'B'.repeat(200)
+        description: 'B'.repeat(200),
       };
 
       mockUseGroupsWithFilters.mockReturnValue(
         createMockQueryResult({
           data: [longGroup],
           isLoading: false,
-          error: null
+          error: null,
         })
       );
 
-      renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={[]} />
-      );
+      renderWithProviders(<GroupsList searchTerm="" visibilityFilter={[]} />);
 
       // Should truncate or handle long text appropriately
       const nameElements = screen.getAllByText((_content, element) => {
@@ -582,22 +523,16 @@ describe('GroupsList Component', () => {
     });
 
     it('GL-025: should handle empty search results gracefully', () => {
-      mockUseGroupsWithFilters.mockImplementation((filters) => {
-        const filteredGroups = filterGroups(
-          mockGroups,
-          'xyz123nonexistent',
-          []
-        );
+      mockUseGroupsWithFilters.mockImplementation(filters => {
+        const filteredGroups = filterGroups(mockGroups, 'xyz123nonexistent', []);
         return createMockQueryResult({
           data: filteredGroups,
           isLoading: false,
-          error: null
+          error: null,
         });
       });
-      
-      renderWithProviders(
-        <GroupsList searchTerm="xyz123nonexistent" visibilityFilter={[]} />
-      );
+
+      renderWithProviders(<GroupsList searchTerm="xyz123nonexistent" visibilityFilter={[]} />);
 
       expect(screen.getByText(/No groups match your search criteria/i)).toBeInTheDocument();
       expect(screen.queryByTestId('pagination')).not.toBeInTheDocument();

@@ -42,7 +42,7 @@ const marketplaceUISlice = createSlice({
     updateFilters: (state, action: PayloadAction<Partial<MarketplaceFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    clearFilters: (state) => {
+    clearFilters: state => {
       state.filters = {};
       state.priceRange = [0, 10000];
     },

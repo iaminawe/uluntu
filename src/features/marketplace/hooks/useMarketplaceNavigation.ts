@@ -17,68 +17,73 @@ export interface NavigationAnalytics {
 export const useMarketplaceNavigation = () => {
   const navigate = useNavigate();
 
-  const navigateToListing = useCallback((
-    listing: MarketplaceListing,
-    source: string = 'marketplace_card',
-    method: NavigationAnalytics['navigation_method'] = 'click'
-  ) => {
-    // Prepare analytics data
-    const analyticsData: NavigationAnalytics = {
-      listing_id: listing.id,
-      listing_type: listing.type,
-      listing_title: listing.title,
-      source_component: source,
-      navigation_method: method
-    };
+  const navigateToListing = useCallback(
+    (
+      listing: MarketplaceListing,
+      source: string = 'marketplace_card',
+      method: NavigationAnalytics['navigation_method'] = 'click'
+    ) => {
+      // Prepare analytics data
+      const analyticsData: NavigationAnalytics = {
+        listing_id: listing.id,
+        listing_type: listing.type,
+        listing_title: listing.title,
+        source_component: source,
+        navigation_method: method,
+      };
 
-    // Track the navigation event (placeholder for analytics integration)
-    trackMarketplaceNavigation(analyticsData);
+      // Track the navigation event (placeholder for analytics integration)
+      trackMarketplaceNavigation(analyticsData);
 
-    // Navigate to the listing detail page
-    navigate(getMarketplaceListingUrl(listing));
-  }, [navigate]);
+      // Navigate to the listing detail page
+      navigate(getMarketplaceListingUrl(listing));
+    },
+    [navigate]
+  );
 
-  const navigateToMarketplace = useCallback((filters?: {
-    type?: string;
-    search?: string;
-    seller?: string;
-  }) => {
-    let path = '/marketplace';
-    
-    if (filters) {
-      const searchParams = new URLSearchParams();
-      if (filters.type && filters.type !== 'all') {
-        searchParams.set('type', filters.type);
-      }
-      if (filters.search) {
-        searchParams.set('search', filters.search);
-      }
-      if (filters.seller) {
-        searchParams.set('seller', filters.seller);
-      }
-      
-      const queryString = searchParams.toString();
-      if (queryString) {
-        path += `?${queryString}`;
-      }
-    }
+  const navigateToMarketplace = useCallback(
+    (filters?: { type?: string; search?: string; seller?: string }) => {
+      let path = '/marketplace';
 
-    navigate(path);
-  }, [navigate]);
+      if (filters) {
+        const searchParams = new URLSearchParams();
+        if (filters.type && filters.type !== 'all') {
+          searchParams.set('type', filters.type);
+        }
+        if (filters.search) {
+          searchParams.set('search', filters.search);
+        }
+        if (filters.seller) {
+          searchParams.set('seller', filters.seller);
+        }
+
+        const queryString = searchParams.toString();
+        if (queryString) {
+          path += `?${queryString}`;
+        }
+      }
+
+      navigate(path);
+    },
+    [navigate]
+  );
 
   const navigateToCreateListing = useCallback(() => {
     navigate('/marketplace/create');
   }, [navigate]);
 
-  const navigateToEditListing = useCallback((listingId: string) => {
-    navigate(`/marketplace/${listingId}/edit`);
-  }, [navigate]);
+  const navigateToEditListing = useCallback(
+    (listingId: string) => {
+      navigate(`/marketplace/${listingId}/edit`);
+    },
+    [navigate]
+  );
 
   return {
     navigateToListing,
     navigateToMarketplace,
     navigateToCreateListing,
-    navigateToEditListing
+    navigateToEditListing,
   };
 };
 

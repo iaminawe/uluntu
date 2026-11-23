@@ -4,19 +4,19 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { 
-  Shield, 
-  Key, 
-  Lock, 
+import {
+  Shield,
+  Key,
+  Lock,
   AlertTriangle,
   Eye,
   EyeOff,
-  Save, 
-  RotateCcw, 
+  Save,
+  RotateCcw,
   Info,
   CheckCircle,
   XCircle,
-  Zap
+  Zap,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -51,25 +51,25 @@ const authenticationFields: SettingField[] = [
     type: 'number',
     placeholder: '8',
     description: 'Minimum number of characters required for passwords',
-    validation: { min: 4, max: 50 }
+    validation: { min: 4, max: 50 },
   },
   {
     key: 'password_require_uppercase',
     label: 'Require Uppercase Letters',
     type: 'boolean',
-    description: 'Passwords must contain at least one uppercase letter'
+    description: 'Passwords must contain at least one uppercase letter',
   },
   {
     key: 'password_require_numbers',
     label: 'Require Numbers',
     type: 'boolean',
-    description: 'Passwords must contain at least one number'
+    description: 'Passwords must contain at least one number',
   },
   {
     key: 'password_require_symbols',
     label: 'Require Special Characters',
     type: 'boolean',
-    description: 'Passwords must contain at least one special character'
+    description: 'Passwords must contain at least one special character',
   },
   {
     key: 'max_login_attempts',
@@ -77,7 +77,7 @@ const authenticationFields: SettingField[] = [
     type: 'number',
     placeholder: '5',
     description: 'Number of failed login attempts before account lockout',
-    validation: { min: 3, max: 20 }
+    validation: { min: 3, max: 20 },
   },
   {
     key: 'lockout_duration_minutes',
@@ -85,8 +85,8 @@ const authenticationFields: SettingField[] = [
     type: 'number',
     placeholder: '30',
     description: 'How long accounts remain locked after failed attempts',
-    validation: { min: 5, max: 1440 }
-  }
+    validation: { min: 5, max: 1440 },
+  },
 ];
 
 const sessionFields: SettingField[] = [
@@ -98,20 +98,20 @@ const sessionFields: SettingField[] = [
     options: [
       { value: 'basic', label: 'Basic - Standard session management' },
       { value: 'enhanced', label: 'Enhanced - Additional security checks' },
-      { value: 'strict', label: 'Strict - Maximum security (may impact UX)' }
-    ]
+      { value: 'strict', label: 'Strict - Maximum security (may impact UX)' },
+    ],
   },
   {
     key: 'require_https',
     label: 'Force HTTPS',
     type: 'boolean',
-    description: 'Redirect all HTTP traffic to HTTPS automatically'
+    description: 'Redirect all HTTP traffic to HTTPS automatically',
   },
   {
     key: 'secure_cookies_only',
     label: 'Secure Cookies Only',
     type: 'boolean',
-    description: 'Only allow cookies over secure HTTPS connections'
+    description: 'Only allow cookies over secure HTTPS connections',
   },
   {
     key: 'same_site_cookie_policy',
@@ -121,9 +121,9 @@ const sessionFields: SettingField[] = [
     options: [
       { value: 'lax', label: 'Lax - Balanced security and functionality' },
       { value: 'strict', label: 'Strict - Maximum protection' },
-      { value: 'none', label: 'None - Allow all cross-site requests' }
-    ]
-  }
+      { value: 'none', label: 'None - Allow all cross-site requests' },
+    ],
+  },
 ];
 
 const accessControlFields: SettingField[] = [
@@ -131,7 +131,7 @@ const accessControlFields: SettingField[] = [
     key: 'ip_whitelist_enabled',
     label: 'Enable IP Whitelist',
     type: 'boolean',
-    description: 'Restrict admin access to specific IP addresses'
+    description: 'Restrict admin access to specific IP addresses',
   },
   {
     key: 'admin_ip_whitelist',
@@ -139,13 +139,13 @@ const accessControlFields: SettingField[] = [
     type: 'text',
     placeholder: '192.168.1.0/24, 10.0.0.1',
     description: 'Comma-separated list of allowed IP addresses/ranges for admin access',
-    sensitive: true
+    sensitive: true,
   },
   {
     key: 'rate_limit_enabled',
     label: 'Enable Rate Limiting',
     type: 'boolean',
-    description: 'Limit API requests per user to prevent abuse'
+    description: 'Limit API requests per user to prevent abuse',
   },
   {
     key: 'api_rate_limit_per_minute',
@@ -153,8 +153,8 @@ const accessControlFields: SettingField[] = [
     type: 'number',
     placeholder: '60',
     description: 'Maximum API requests per user per minute',
-    validation: { min: 10, max: 1000 }
-  }
+    validation: { min: 10, max: 1000 },
+  },
 ];
 
 const encryptionFields: SettingField[] = [
@@ -162,7 +162,7 @@ const encryptionFields: SettingField[] = [
     key: 'data_encryption_enabled',
     label: 'Enable Data Encryption',
     type: 'boolean',
-    description: 'Encrypt sensitive data at rest in the database'
+    description: 'Encrypt sensitive data at rest in the database',
   },
   {
     key: 'encryption_algorithm',
@@ -172,9 +172,9 @@ const encryptionFields: SettingField[] = [
     options: [
       { value: 'aes-256-gcm', label: 'AES-256-GCM (Recommended)' },
       { value: 'aes-256-cbc', label: 'AES-256-CBC' },
-      { value: 'chacha20-poly1305', label: 'ChaCha20-Poly1305' }
-    ]
-  }
+      { value: 'chacha20-poly1305', label: 'ChaCha20-Poly1305' },
+    ],
+  },
 ];
 
 const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
@@ -182,7 +182,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
   features,
   onUpdateSetting,
   onRefresh,
-  isLoading
+  isLoading,
 }) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
@@ -211,22 +211,22 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
     setSaving(true);
     try {
       const updates: UpdateSettingRequest[] = [];
-      
+
       for (const fieldKey of changedFields) {
         const [category, settingKey] = fieldKey.split('.');
         const value = formData[fieldKey];
-        
+
         const setting = settings.find(s => s.setting_key === settingKey && s.category === category);
         updates.push({
           setting_key: settingKey,
           setting_value: value,
           category: category as any,
-          data_type: (setting?.data_type as SettingDataType) || ('string' as SettingDataType)
+          data_type: (setting?.data_type as SettingDataType) || ('string' as SettingDataType),
         });
       }
-      
+
       await Promise.all(updates.map(update => onUpdateSetting(update)));
-      
+
       setChangedFields(new Set());
       toast.success(`Saved ${updates.length} security settings successfully`);
       onRefresh();
@@ -253,7 +253,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
     const fieldKey = `${category}.${field.key}`;
     const value = formData[fieldKey];
     const hasChanged = changedFields.has(fieldKey);
-    
+
     return (
       <div key={fieldKey} className="space-y-3">
         <label className="block text-sm font-medium text-gray-700">
@@ -265,7 +265,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
             </Badge>
           )}
         </label>
-        
+
         {field.type === 'boolean' ? (
           <div className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
             <div className="flex-1">
@@ -275,23 +275,23 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
                 ) : (
                   <XCircle className="h-4 w-4 text-red-400" />
                 )}
-                <span className="text-sm font-medium">
-                  {value ? 'Enabled' : 'Disabled'}
-                </span>
+                <span className="text-sm font-medium">{value ? 'Enabled' : 'Disabled'}</span>
               </div>
             </div>
             <Switch
               checked={value || false}
-              onCheckedChange={(checked) => handleFieldChange(category, field.key, checked)}
+              onCheckedChange={checked => handleFieldChange(category, field.key, checked)}
               className={hasChanged ? 'ring-2 ring-red-300' : ''}
             />
           </div>
         ) : field.type === 'select' ? (
           <select
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors ${
-              hasChanged ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-300 dark:border-slate-600'
+              hasChanged
+                ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-slate-300 dark:border-slate-600'
             }`}
           >
             <option value="">Select an option...</option>
@@ -305,12 +305,14 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
           <input
             type="number"
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, parseInt(e.target.value) || 0)}
+            onChange={e => handleFieldChange(category, field.key, parseInt(e.target.value) || 0)}
             placeholder={field.placeholder}
             min={field.validation?.min}
             max={field.validation?.max}
             className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors ${
-              hasChanged ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-300 dark:border-slate-600'
+              hasChanged
+                ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-slate-300 dark:border-slate-600'
             }`}
           />
         ) : field.type === 'password' || field.sensitive ? (
@@ -318,7 +320,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
             <input
               type={showSensitive ? 'text' : 'password'}
               value={value || ''}
-              onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+              onChange={e => handleFieldChange(category, field.key, e.target.value)}
               placeholder={field.placeholder}
               className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors ${
                 hasChanged ? 'border-red-300 bg-red-50' : 'border-gray-300'
@@ -329,25 +331,23 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
               onClick={() => setShowSensitive(!showSensitive)}
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
-              {showSensitive ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
-              )}
+              {showSensitive ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
             </button>
           </div>
         ) : (
           <input
             type="text"
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             placeholder={field.placeholder}
             className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors ${
-              hasChanged ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-300 dark:border-slate-600'
+              hasChanged
+                ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-slate-300 dark:border-slate-600'
             }`}
           />
         )}
-        
+
         {field.description && (
           <p className="text-xs text-gray-500 flex items-start">
             <Info className="h-3 w-3 mt-0.5 mr-1 flex-shrink-0" />
@@ -398,11 +398,12 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
   };
 
   // Filter security features
-  const securityFeatures = features.filter(f => 
-    f.feature_key.includes('security') || 
-    f.feature_key.includes('auth') || 
-    f.feature_key.includes('mfa') ||
-    f.feature_key.includes('encryption')
+  const securityFeatures = features.filter(
+    f =>
+      f.feature_key.includes('security') ||
+      f.feature_key.includes('auth') ||
+      f.feature_key.includes('mfa') ||
+      f.feature_key.includes('encryption')
   );
 
   return (
@@ -415,7 +416,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
             Configure authentication, encryption, and access control settings
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
@@ -425,19 +426,14 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
             {previewMode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             <span>{previewMode ? 'Hide Preview' : 'Show Preview'}</span>
           </Button>
-          
+
           {changedFields.size > 0 && (
             <>
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                disabled={saving}
-                className="flex items-center space-x-2"
-              >
+              <Button variant="outline" onClick={handleReset} disabled={saving} className="flex items-center space-x-2">
                 <RotateCcw className="h-4 w-4" />
                 <span>Reset</span>
               </Button>
-              
+
               <Button
                 onClick={handleSaveAll}
                 disabled={saving}
@@ -445,9 +441,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
               >
                 <Save className="h-4 w-4" />
                 <span>Save Changes</span>
-                <span className="ml-1 px-2 py-0.5 bg-red-500 text-xs rounded-full">
-                  {changedFields.size}
-                </span>
+                <span className="ml-1 px-2 py-0.5 bg-red-500 text-xs rounded-full">{changedFields.size}</span>
               </Button>
             </>
           )}
@@ -463,15 +457,12 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
           <CardContent className="space-y-6">
             {/* Security Score */}
             <div className="text-center">
-              <div className={`text-4xl font-bold ${getScoreColor(securityScore)}`}>
-                {securityScore}%
-              </div>
+              <div className={`text-4xl font-bold ${getScoreColor(securityScore)}`}>{securityScore}%</div>
               <p className="text-sm text-gray-600">Security Score</p>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <div 
+                <div
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    securityScore >= 80 ? 'bg-green-500' :
-                    securityScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                    securityScore >= 80 ? 'bg-green-500' : securityScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
                   }`}
                   style={{ width: `${securityScore}%` }}
                 />
@@ -599,9 +590,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {sessionFields.map(field => renderField('security', field))}
-          </div>
+          <div className="space-y-6">{sessionFields.map(field => renderField('security', field))}</div>
         </CardContent>
       </Card>
 
@@ -614,9 +603,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {accessControlFields.map(field => renderField('security', field))}
-          </div>
+          <div className="space-y-6">{accessControlFields.map(field => renderField('security', field))}</div>
         </CardContent>
       </Card>
 
@@ -629,9 +616,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {encryptionFields.map(field => renderField('security', field))}
-          </div>
+          <div className="space-y-6">{encryptionFields.map(field => renderField('security', field))}</div>
         </CardContent>
       </Card>
 
@@ -649,24 +634,27 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {securityFeatures.map((feature) => (
-                <div key={feature.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg bg-red-50">
+              {securityFeatures.map(feature => (
+                <div
+                  key={feature.id}
+                  className="flex items-center justify-between p-3 border border-gray-100 rounded-lg bg-red-50"
+                >
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
                       <h4 className="font-medium text-gray-900 text-sm">
                         {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </h4>
                       {feature.enabled && (
-                        <Badge variant="success" size="sm">Active</Badge>
+                        <Badge variant="success" size="sm">
+                          Active
+                        </Badge>
                       )}
                     </div>
-                    {feature.description && (
-                      <p className="text-xs text-gray-500 mt-1">{feature.description}</p>
-                    )}
+                    {feature.description && <p className="text-xs text-gray-500 mt-1">{feature.description}</p>}
                   </div>
                   <Switch
                     checked={feature.enabled || false}
-                    onCheckedChange={(checked) => {
+                    onCheckedChange={checked => {
                       toast.success('Security feature toggle functionality coming soon');
                     }}
                     disabled={isLoading}
@@ -688,11 +676,21 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
         </CardHeader>
         <CardContent>
           <ul className="list-disc list-inside space-y-2 text-sm text-red-700">
-            <li><strong>Test in staging first:</strong> Security changes can lock out users or break functionality</li>
-            <li><strong>Backup before changes:</strong> Always backup your database before modifying security settings</li>
-            <li><strong>Monitor after deployment:</strong> Watch for increased support tickets or login failures</li>
-            <li><strong>Document changes:</strong> Keep records of what was changed and when for audit purposes</li>
-            <li><strong>IP whitelist warning:</strong> Adding IP restrictions can lock you out if configured incorrectly</li>
+            <li>
+              <strong>Test in staging first:</strong> Security changes can lock out users or break functionality
+            </li>
+            <li>
+              <strong>Backup before changes:</strong> Always backup your database before modifying security settings
+            </li>
+            <li>
+              <strong>Monitor after deployment:</strong> Watch for increased support tickets or login failures
+            </li>
+            <li>
+              <strong>Document changes:</strong> Keep records of what was changed and when for audit purposes
+            </li>
+            <li>
+              <strong>IP whitelist warning:</strong> Adding IP restrictions can lock you out if configured incorrectly
+            </li>
           </ul>
         </CardContent>
       </Card>
@@ -705,27 +703,19 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className={`text-2xl font-bold ${getScoreColor(securityScore)}`}>
-                {securityScore}%
-              </div>
+              <div className={`text-2xl font-bold ${getScoreColor(securityScore)}`}>{securityScore}%</div>
               <div className="text-sm text-gray-600">Security Score</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {authenticationFields.length}
-              </div>
+              <div className="text-2xl font-bold text-blue-600">{authenticationFields.length}</div>
               <div className="text-sm text-gray-600">Auth Settings</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {securityFeatures.filter(f => f.enabled).length}
-              </div>
+              <div className="text-2xl font-bold text-green-600">{securityFeatures.filter(f => f.enabled).length}</div>
               <div className="text-sm text-gray-600">Active Features</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
-                {changedFields.size}
-              </div>
+              <div className="text-2xl font-bold text-orange-600">{changedFields.size}</div>
               <div className="text-sm text-gray-600">Unsaved Changes</div>
             </div>
           </div>

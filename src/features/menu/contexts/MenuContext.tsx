@@ -19,7 +19,7 @@ const initialState: MenuState = {
   items: {},
   loading: {},
   errors: {},
-  lastFetch: {}
+  lastFetch: {},
 };
 
 // Reducer function
@@ -29,7 +29,7 @@ function menuReducer(state: MenuState, action: MenuAction): MenuState {
       return {
         ...state,
         loading: { ...state.loading, [action.payload.position]: true },
-        errors: { ...state.errors, [action.payload.position]: null }
+        errors: { ...state.errors, [action.payload.position]: null },
       };
 
     case 'FETCH_SUCCESS':
@@ -38,14 +38,14 @@ function menuReducer(state: MenuState, action: MenuAction): MenuState {
         items: { ...state.items, [action.payload.position]: action.payload.items },
         loading: { ...state.loading, [action.payload.position]: false },
         errors: { ...state.errors, [action.payload.position]: null },
-        lastFetch: { ...state.lastFetch, [action.payload.position]: Date.now() }
+        lastFetch: { ...state.lastFetch, [action.payload.position]: Date.now() },
       };
 
     case 'FETCH_ERROR':
       return {
         ...state,
         loading: { ...state.loading, [action.payload.position]: false },
-        errors: { ...state.errors, [action.payload.position]: action.payload.error }
+        errors: { ...state.errors, [action.payload.position]: action.payload.error },
       };
 
     case 'CLEAR_CACHE':
@@ -55,12 +55,12 @@ function menuReducer(state: MenuState, action: MenuAction): MenuState {
         const { [action.payload.position]: removedLoading, ...restLoading } = state.loading;
         const { [action.payload.position]: removedErrors, ...restErrors } = state.errors;
         const { [action.payload.position]: removedFetch, ...restFetch } = state.lastFetch;
-        
+
         return {
           items: restItems,
           loading: restLoading,
           errors: restErrors,
-          lastFetch: restFetch
+          lastFetch: restFetch,
         };
       } else {
         // Clear all cache
@@ -71,7 +71,7 @@ function menuReducer(state: MenuState, action: MenuAction): MenuState {
       const { [action.payload.position]: removed, ...restLastFetch } = state.lastFetch;
       return {
         ...state,
-        lastFetch: restLastFetch
+        lastFetch: restLastFetch,
       };
 
     default:
@@ -87,62 +87,80 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [state, dispatch] = useReducer(menuReducer, initialState);
 
   // Check if cache is valid for a position
-  const isCacheValid = useCallback((position: string): boolean => {
-    const lastFetch = state.lastFetch[position];
-    if (!lastFetch) return false;
-    
-    const now = Date.now();
-    return (now - lastFetch) < CACHE_DURATION;
-  }, [state.lastFetch]);
+  const isCacheValid = useCallback(
+    (position: string): boolean => {
+      const lastFetch = state.lastFetch[position];
+      if (!lastFetch) return false;
+
+      const now = Date.now();
+      return now - lastFetch < CACHE_DURATION;
+    },
+    [state.lastFetch]
+  );
 
   // Fetch menu items for a position
-  const fetchMenu = useCallback(async (position: string, forceRefresh = false): Promise<void> => {
-    // Check cache first (unless force refresh)
-    if (!forceRefresh && isCacheValid(position) && state.items[position]) {
-      return;
-    }
+  const fetchMenu = useCallback(
+    async (position: string, forceRefresh = false): Promise<void> => {
+      // Check cache first (unless force refresh)
+      if (!forceRefresh && isCacheValid(position) && state.items[position]) {
+        return;
+      }
 
-    // Don't fetch if already loading
-    if (state.loading[position]) {
-      return;
-    }
+      // Don't fetch if already loading
+      if (state.loading[position]) {
+        return;
+      }
 
-    dispatch({ type: 'FETCH_START', payload: { position } });
+      dispatch({ type: 'FETCH_START', payload: { position } });
 
-    try {
-      const items = await fetchMenuHierarchy(position);
-      dispatch({ 
-        type: 'FETCH_SUCCESS', 
-        payload: { position, items: items || [] } 
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch menu';
-      dispatch({ 
-        type: 'FETCH_ERROR', 
-        payload: { position, error: errorMessage } 
-      });
-    }
-  }, [state.loading, state.items, isCacheValid]);
+      try {
+        const items = await fetchMenuHierarchy(position);
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: { position, items: items || [] },
+        });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch menu';
+        dispatch({
+          type: 'FETCH_ERROR',
+          payload: { position, error: errorMessage },
+        });
+      }
+    },
+    [state.loading, state.items, isCacheValid]
+  );
 
   // Get menu items for a position
-  const getMenuItems = useCallback((position: string): MenuItem[] => {
-    return state.items[position] || [];
-  }, [state.items]);
+  const getMenuItems = useCallback(
+    (position: string): MenuItem[] => {
+      return state.items[position] || [];
+    },
+    [state.items]
+  );
 
   // Check loading state for a position
-  const isLoading = useCallback((position: string): boolean => {
-    return Boolean(state.loading[position]);
-  }, [state.loading]);
+  const isLoading = useCallback(
+    (position: string): boolean => {
+      return Boolean(state.loading[position]);
+    },
+    [state.loading]
+  );
 
   // Get error for a position
-  const getError = useCallback((position: string): string | null => {
-    return state.errors[position] || null;
-  }, [state.errors]);
+  const getError = useCallback(
+    (position: string): string | null => {
+      return state.errors[position] || null;
+    },
+    [state.errors]
+  );
 
   // Refresh menu for a position
-  const refreshMenu = useCallback(async (position: string): Promise<void> => {
-    await fetchMenu(position, true);
-  }, [fetchMenu]);
+  const refreshMenu = useCallback(
+    async (position: string): Promise<void> => {
+      await fetchMenu(position, true);
+    },
+    [fetchMenu]
+  );
 
   // Clear cache for specific position or all
   const clearCache = useCallback((position?: string): void => {
@@ -154,10 +172,10 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanup = () => {
       const now = Date.now();
       const positions = Object.keys(state.lastFetch);
-      
+
       positions.forEach(position => {
         const lastFetch = state.lastFetch[position];
-        if (lastFetch && (now - lastFetch) > CACHE_DURATION * 2) {
+        if (lastFetch && now - lastFetch > CACHE_DURATION * 2) {
           // Remove expired cache entries
           dispatch({ type: 'CLEAR_CACHE', payload: { position } });
         }
@@ -169,26 +187,28 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => clearInterval(cleanupInterval);
   }, [state.lastFetch]);
 
-  const contextValue: MenuContextType = useMemo(() => ({
-    getMenuItems,
-    isLoading,
-    getError,
-    refreshMenu,
-    clearCache
-  }), [getMenuItems, isLoading, getError, refreshMenu, clearCache]);
-  
-  // Also expose internal state and fetchMenu for useMenuItems hook
-  const internalContext = useMemo(() => ({
-    ...contextValue,
-    state,
-    fetchMenu
-  }), [contextValue, state, fetchMenu]);
-
-  return (
-    <MenuContext.Provider value={internalContext as any}>
-      {children}
-    </MenuContext.Provider>
+  const contextValue: MenuContextType = useMemo(
+    () => ({
+      getMenuItems,
+      isLoading,
+      getError,
+      refreshMenu,
+      clearCache,
+    }),
+    [getMenuItems, isLoading, getError, refreshMenu, clearCache]
   );
+
+  // Also expose internal state and fetchMenu for useMenuItems hook
+  const internalContext = useMemo(
+    () => ({
+      ...contextValue,
+      state,
+      fetchMenu,
+    }),
+    [contextValue, state, fetchMenu]
+  );
+
+  return <MenuContext.Provider value={internalContext as any}>{children}</MenuContext.Provider>;
 };
 
 // Hook to use menu context
@@ -204,23 +224,23 @@ export const useMenu = (): MenuContextType => {
 export const useMenuItems = (position: string) => {
   const { getMenuItems, isLoading, getError, refreshMenu } = useMenu();
   const context = useContext(MenuContext);
-  
+
   // Use effect to trigger fetch outside of render phase
   useEffect(() => {
     if (!context) return;
-    
+
     const state = (context as any).state;
     const fetchMenu = (context as any).fetchMenu;
-    
+
     if (state && fetchMenu && !state.items[position] && !state.loading[position] && !state.errors[position]) {
       fetchMenu(position);
     }
   }, [position, context]);
-  
+
   return {
     items: getMenuItems(position),
     loading: isLoading(position),
     error: getError(position),
-    refresh: () => refreshMenu(position)
+    refresh: () => refreshMenu(position),
   };
 };

@@ -52,10 +52,12 @@ describe('UserMenu Performance Tests', () => {
 
   describe('Initial Render Performance', () => {
     it('should render quickly for unauthenticated users', async () => {
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: null,
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: null,
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const renderTime = await measureRenderTime(() => {
@@ -68,13 +70,15 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should render quickly for authenticated users', async () => {
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(
-        createMockQueryResult({ 
-          data: { id: 'member123', name: 'Test User' } 
+        createMockQueryResult({
+          data: { id: 'member123', name: 'Test User' },
         })
       );
 
@@ -87,14 +91,16 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should handle slow member data loading gracefully', async () => {
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
 
       // Simulate slow loading
       mockUseMemberByUserId.mockReturnValue(
-        createMockQueryResult({ 
+        createMockQueryResult({
           data: null,
           isLoading: true,
           error: null,
@@ -112,10 +118,12 @@ describe('UserMenu Performance Tests', () => {
 
   describe('Interaction Performance', () => {
     it('should open dropdown quickly', async () => {
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
@@ -131,15 +139,17 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should close dropdown quickly', async () => {
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
       const button = screen.getByRole('button');
-      
+
       // Open dropdown first
       fireEvent.click(button);
       expect(screen.getByText('Edit Profile')).toBeTruthy();
@@ -153,17 +163,19 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should handle rapid clicks efficiently', async () => {
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
       const button = screen.getByRole('button');
 
       const start = performance.now();
-      
+
       // Simulate rapid clicking
       await act(async () => {
         for (let i = 0; i < 10; i++) {
@@ -184,10 +196,12 @@ describe('UserMenu Performance Tests', () => {
       const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
       const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
 
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const { unmount } = renderUserMenu();
@@ -205,10 +219,12 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should not cause memory leaks with multiple mounts/unmounts', async () => {
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       // Mount and unmount multiple times
@@ -231,13 +247,15 @@ describe('UserMenu Performance Tests', () => {
         return <UserMenu />;
       };
 
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(
-        createMockQueryResult({ 
-          data: { id: 'member123', name: 'Test User' } 
+        createMockQueryResult({
+          data: { id: 'member123', name: 'Test User' },
         })
       );
 
@@ -262,23 +280,27 @@ describe('UserMenu Performance Tests', () => {
 
     it('should handle auth state changes efficiently', async () => {
       const mockSignOut = jest.fn();
-      
+
       // Start with authenticated user
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const { rerender } = renderUserMenu();
-      
+
       const start = performance.now();
 
       // Change to unauthenticated
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: null,
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: null,
+          isAdmin: false,
+        })
+      );
 
       await act(async () => {
         rerender(
@@ -299,13 +321,15 @@ describe('UserMenu Performance Tests', () => {
 
   describe('Large Scale Performance', () => {
     it('should handle admin users with many permissions efficiently', async () => {
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'admin123', email: 'admin@example.com' },
-        isAdmin: true,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'admin123', email: 'admin@example.com' },
+          isAdmin: true,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(
-        createMockQueryResult({ 
-          data: { id: 'admin123', name: 'Admin User' } 
+        createMockQueryResult({
+          data: { id: 'admin123', name: 'Admin User' },
         })
       );
 
@@ -317,7 +341,7 @@ describe('UserMenu Performance Tests', () => {
       expect(renderTime).toBeLessThan(100);
 
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Should show all menu items
       expect(screen.getByText('Your Profile')).toBeTruthy();
       expect(screen.getByText('Edit Profile')).toBeTruthy();
@@ -327,10 +351,12 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should handle concurrent interactions gracefully', async () => {
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: { id: 'user123', email: 'test@example.com' },
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: { id: 'user123', email: 'test@example.com' },
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
@@ -366,14 +392,16 @@ describe('UserMenu Performance Tests', () => {
     it('should import minimal dependencies', () => {
       // This test would ideally check bundle analysis
       // For now, we verify the component renders without heavy dependencies
-      mockUseAuth.mockReturnValue(createMockAuthContext({
-        user: null,
-        isAdmin: false,
-      }));
+      mockUseAuth.mockReturnValue(
+        createMockAuthContext({
+          user: null,
+          isAdmin: false,
+        })
+      );
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const { container } = renderUserMenu();
-      
+
       // Component should render with minimal DOM nodes
       const nodes = container.querySelectorAll('*');
       expect(nodes.length).toBeLessThan(20); // Reasonable DOM complexity

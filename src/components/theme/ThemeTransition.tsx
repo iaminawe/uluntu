@@ -36,11 +36,11 @@ export const ThemeTransition: React.FC<ThemeTransitionProps> = ({
   useEffect(() => {
     if (theme.slug !== currentTheme.slug) {
       setIsTransitioning(true);
-      
+
       // Animate color transitions
       primarySpring.set(1);
       backgroundSpring.set(1);
-      
+
       const timeout = setTimeout(() => {
         setCurrentTheme(theme);
         primarySpring.set(0);
@@ -136,7 +136,7 @@ export const ThemeMorphTransition: React.FC<{
                 <stop offset="100%" stopColor={toTheme.configurations.colors.secondary} />
               </radialGradient>
             </defs>
-            
+
             <motion.circle
               cx="50%"
               cy="50%"
@@ -172,10 +172,7 @@ export const ThemeRipple: React.FC<{
       transition={{ duration: 1.5, ease: 'easeOut' }}
       onAnimationComplete={onComplete}
     >
-      <div
-        className="w-10 h-10 rounded-full"
-        style={{ backgroundColor: color, transform: 'translate(-50%, -50%)' }}
-      />
+      <div className="w-10 h-10 rounded-full" style={{ backgroundColor: color, transform: 'translate(-50%, -50%)' }} />
     </motion.div>
   );
 };
@@ -269,11 +266,7 @@ export const ThemePulse: React.FC<{
   return (
     <motion.div
       animate={{
-        boxShadow: [
-          `0 0 0 0 ${color}40`,
-          `0 0 0 10px ${color}00`,
-          `0 0 0 0 ${color}00`,
-        ],
+        boxShadow: [`0 0 0 0 ${color}40`, `0 0 0 10px ${color}00`, `0 0 0 0 ${color}00`],
       }}
       transition={{
         duration,
@@ -296,10 +289,7 @@ export const ThemeSkeletonShimmer: React.FC<{
   borderRadius?: string;
 }> = ({ width = '100%', height = '20px', borderRadius = '4px' }) => {
   return (
-    <div
-      className="relative overflow-hidden bg-gray-200"
-      style={{ width, height, borderRadius }}
-    >
+    <div className="relative overflow-hidden bg-gray-200" style={{ width, height, borderRadius }}>
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent"
         animate={{ x: ['100%', '-100%'] }}
@@ -323,7 +313,7 @@ export function useThemeTransition(theme: PresetTheme) {
   useEffect(() => {
     if (theme.slug !== previousTheme.slug) {
       setIsTransitioning(true);
-      
+
       const timeout = setTimeout(() => {
         setPreviousTheme(theme);
         setIsTransitioning(false);

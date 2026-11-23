@@ -12,7 +12,7 @@ export const adminModerationApi = {
     console.warn('Admin moderation queue temporarily disabled - returning empty data');
     return {
       data: [] as ModerationItem[],
-      count: 0
+      count: 0,
     };
   },
 
@@ -45,7 +45,7 @@ export const adminModerationApi = {
     console.warn('Admin moderation stats temporarily disabled');
     return {
       totalPending: 0,
-      byType: {}
+      byType: {},
     };
-  }
+  },
 };

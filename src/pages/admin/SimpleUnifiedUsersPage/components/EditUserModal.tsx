@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { adminRolesApi } from '@/features/admin/api/roles';
-import {
-  Shield,
-  Ban,
-  User,
-  Briefcase,
-  Save,
-  X,
-  Archive,
-  UserCheck,
-  AlertTriangle
-} from 'lucide-react';
+import { Shield, Ban, User, Briefcase, Save, X, Archive, UserCheck, AlertTriangle } from 'lucide-react';
 import { AdminUser, UserFormData } from '../types';
 
 export interface EditUserModalProps {
@@ -29,12 +19,7 @@ export interface EditUserModalProps {
  * - Quick actions (Block, Unblock, Archive)
  * - Form validation and loading states
  */
-export const EditUserModal: React.FC<EditUserModalProps> = ({
-  user,
-  onClose,
-  onSave,
-  currentUserRoles
-}) => {
+export const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSave, currentUserRoles }) => {
   const [activeTab, setActiveTab] = useState('account');
   const [formData, setFormData] = useState<UserFormData>({
     email: user.email,
@@ -44,7 +29,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
     company: user.member_profile?.company || '',
     bio: user.member_profile?.bio || '',
     status: user.member_profile?.status || 'draft',
-    featured: user.member_profile?.featured || false
+    featured: user.member_profile?.featured || false,
   });
 
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set(user.roles));
@@ -55,7 +40,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
 
   const { data: availableRoles } = useQuery({
     queryKey: ['admin-roles'],
-    queryFn: () => adminRolesApi.getRoles()
+    queryFn: () => adminRolesApi.getRoles(),
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -65,7 +50,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
     try {
       await onSave(user.user_id, {
         profile: formData,
-        roles: Array.from(selectedRoles)
+        roles: Array.from(selectedRoles),
       });
       onClose();
     } catch (error) {
@@ -150,7 +135,9 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                   readOnly
                   disabled
                 />
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed here - managed by authentication system</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Email cannot be changed here - managed by authentication system
+                </p>
               </div>
 
               <div>
@@ -158,18 +145,19 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Enter full name"
                 />
               </div>
 
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profile Status</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Profile Status
+                </label>
                 <select
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  onChange={e => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value="draft">Draft (Private)</option>
@@ -183,7 +171,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                   type="checkbox"
                   id="featured"
                   checked={formData.featured}
-                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                  onChange={e => setFormData({ ...formData, featured: e.target.checked })}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <label htmlFor="featured" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
@@ -201,7 +189,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="e.g., Software Engineer"
                 />
@@ -212,7 +200,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                 <input
                   type="text"
                   value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  onChange={e => setFormData({ ...formData, company: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="e.g., Acme Corp"
                 />
@@ -223,18 +211,17 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                 <input
                   type="text"
                   value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  onChange={e => setFormData({ ...formData, location: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="e.g., San Francisco, CA"
                 />
               </div>
 
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bio</label>
                 <textarea
                   value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  onChange={e => setFormData({ ...formData, bio: e.target.value })}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Tell us about yourself..."
@@ -278,9 +265,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                             <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{role.description}</div>
                           )}
                         </div>
-                        {role.id === 'superadmin' && (
-                          <Shield className="h-4 w-4 text-red-500 ml-2" />
-                        )}
+                        {role.id === 'superadmin' && <Shield className="h-4 w-4 text-red-500 ml-2" />}
                       </label>
                     );
                   })}
@@ -307,7 +292,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                         onClick={() => {
                           onSave(user.user_id, {
                             profile: { ...formData, status: 'blocked' },
-                            roles: Array.from(selectedRoles)
+                            roles: Array.from(selectedRoles),
                           });
                         }}
                         className="px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center text-sm"
@@ -322,7 +307,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                         onClick={() => {
                           onSave(user.user_id, {
                             profile: { ...formData, status: 'published' },
-                            roles: Array.from(selectedRoles)
+                            roles: Array.from(selectedRoles),
                           });
                         }}
                         className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm"
@@ -337,7 +322,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                         onClick={() => {
                           onSave(user.user_id, {
                             profile: { ...formData, status: 'archived' },
-                            roles: Array.from(selectedRoles)
+                            roles: Array.from(selectedRoles),
                           });
                         }}
                         className="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center text-sm"

@@ -21,21 +21,23 @@ const mockGetUserProfile = getUserProfile as jest.MockedFunction<typeof getUserP
 
 describe('OnboardingWizard', () => {
   let store: any;
-  
+
   beforeEach(() => {
     store = configureStore({
       reducer: {
-        onboarding: (state = {
-          currentStep: 1,
-          completedSteps: [],
-          skippedSteps: [],
-          stepData: {},
-          isLoading: false,
-          errors: {},
-        }) => state,
+        onboarding: (
+          state = {
+            currentStep: 1,
+            completedSteps: [],
+            skippedSteps: [],
+            stepData: {},
+            isLoading: false,
+            errors: {},
+          }
+        ) => state,
       },
     });
-    
+
     jest.clearAllMocks();
   });
 
@@ -45,7 +47,7 @@ describe('OnboardingWizard', () => {
       onComplete: jest.fn(),
       onExit: jest.fn(),
     };
-    
+
     return render(
       <Provider store={store}>
         <BrowserRouter>
@@ -69,11 +71,11 @@ describe('OnboardingWizard', () => {
         },
         startedAt: new Date().toISOString(),
       };
-      
+
       mockOnboardingService.getSession.mockResolvedValue(mockSession);
-      mockGetUserProfile.mockResolvedValue({ 
+      mockGetUserProfile.mockResolvedValue({
         id: 'test-user-123',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
 
       // When: The wizard is rendered
@@ -89,11 +91,11 @@ describe('OnboardingWizard', () => {
     it('should create new session for first-time user', async () => {
       // Given: A new user with no existing session
       mockOnboardingService.getSession.mockResolvedValue(null);
-      mockGetUserProfile.mockResolvedValue({ 
+      mockGetUserProfile.mockResolvedValue({
         id: 'new-user',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
-      
+
       const newSession = {
         userId: 'new-user',
         currentStep: 1,
@@ -117,12 +119,12 @@ describe('OnboardingWizard', () => {
 
     it('should redirect if onboarding is already completed', async () => {
       // Given: A user who has completed onboarding
-      const mockUser = { 
+      const mockUser = {
         id: 'test-user-123',
-        onboarding_completed_at: '2024-01-01T00:00:00Z' 
+        onboarding_completed_at: '2024-01-01T00:00:00Z',
       };
       mockGetUserProfile.mockResolvedValue(mockUser);
-      
+
       const mockNavigate = jest.fn();
       jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(mockNavigate);
 
@@ -138,11 +140,11 @@ describe('OnboardingWizard', () => {
 
   describe('Navigation', () => {
     beforeEach(() => {
-      mockGetUserProfile.mockResolvedValue({ 
+      mockGetUserProfile.mockResolvedValue({
         id: 'test-user-123',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
-      
+
       mockOnboardingService.getSession.mockResolvedValue({
         userId: 'test-user-123',
         currentStep: 1,
@@ -156,14 +158,14 @@ describe('OnboardingWizard', () => {
     it('should not allow skipping mandatory steps', async () => {
       // Given: User is on mandatory step 1
       renderComponent();
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('current-step')).toHaveTextContent('Step 1');
       });
 
       // When: User tries to skip
       const skipButton = screen.queryByTestId('skip-button');
-      
+
       // Then: Skip button should not be available
       expect(skipButton).not.toBeInTheDocument();
     });
@@ -171,20 +173,20 @@ describe('OnboardingWizard', () => {
     it('should save progress when navigating forward', async () => {
       // Given: User completes step 1
       renderComponent();
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('current-step')).toHaveTextContent('Step 1');
       });
-      
+
       // Fill in the form
-      fireEvent.change(screen.getByLabelText('Name'), { 
-        target: { value: 'John Doe' } 
+      fireEvent.change(screen.getByLabelText('Name'), {
+        target: { value: 'John Doe' },
       });
-      fireEvent.change(screen.getByLabelText('Title'), { 
-        target: { value: 'Developer' } 
+      fireEvent.change(screen.getByLabelText('Title'), {
+        target: { value: 'Developer' },
       });
-      fireEvent.change(screen.getByLabelText('Location'), { 
-        target: { value: 'Vancouver' } 
+      fireEvent.change(screen.getByLabelText('Location'), {
+        target: { value: 'Vancouver' },
       });
 
       // When: User clicks next
@@ -214,9 +216,9 @@ describe('OnboardingWizard', () => {
         stepData: {},
         startedAt: new Date().toISOString(),
       });
-      
+
       renderComponent();
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('current-step')).toHaveTextContent('Step 3');
       });
@@ -234,7 +236,7 @@ describe('OnboardingWizard', () => {
     it('should show validation errors for incomplete mandatory fields', async () => {
       // Given: User is on step 1
       renderComponent();
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('current-step')).toHaveTextContent('Step 1');
       });
@@ -254,11 +256,11 @@ describe('OnboardingWizard', () => {
   describe('Progress Tracking', () => {
     it('should calculate progress correctly', async () => {
       // Given: User has completed 2 of 5 steps
-      mockGetUserProfile.mockResolvedValue({ 
+      mockGetUserProfile.mockResolvedValue({
         id: 'test-user-123',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
-      
+
       mockOnboardingService.getSession.mockResolvedValue({
         userId: 'test-user-123',
         currentStep: 3,
@@ -267,26 +269,23 @@ describe('OnboardingWizard', () => {
         stepData: {},
         startedAt: new Date().toISOString(),
       });
-      
+
       renderComponent();
 
       // Then: Progress should be 40%
       await waitFor(() => {
-        expect(screen.getByTestId('progress-bar')).toHaveAttribute(
-          'aria-valuenow',
-          '40'
-        );
+        expect(screen.getByTestId('progress-bar')).toHaveAttribute('aria-valuenow', '40');
         expect(screen.getByTestId('progress-percentage')).toHaveTextContent('40%');
       });
     });
 
     it('should show completion available when mandatory steps done', async () => {
       // Given: User completed mandatory steps (1, 3)
-      mockGetUserProfile.mockResolvedValue({ 
+      mockGetUserProfile.mockResolvedValue({
         id: 'test-user-123',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
-      
+
       mockOnboardingService.getSession.mockResolvedValue({
         userId: 'test-user-123',
         currentStep: 5,
@@ -295,7 +294,7 @@ describe('OnboardingWizard', () => {
         stepData: {},
         startedAt: new Date().toISOString(),
       });
-      
+
       renderComponent();
 
       // Then: Complete button should be enabled
@@ -308,11 +307,11 @@ describe('OnboardingWizard', () => {
 
     it('should display step indicators correctly', async () => {
       // Given: User at step 2 with step 1 completed
-      mockGetUserProfile.mockResolvedValue({ 
+      mockGetUserProfile.mockResolvedValue({
         id: 'test-user-123',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
-      
+
       mockOnboardingService.getSession.mockResolvedValue({
         userId: 'test-user-123',
         currentStep: 2,
@@ -321,7 +320,7 @@ describe('OnboardingWizard', () => {
         stepData: {},
         startedAt: new Date().toISOString(),
       });
-      
+
       renderComponent();
 
       await waitFor(() => {
@@ -340,14 +339,12 @@ describe('OnboardingWizard', () => {
   describe('Error Handling', () => {
     it('should handle session loading errors gracefully', async () => {
       // Given: API error when loading session
-      mockGetUserProfile.mockResolvedValue({ 
+      mockGetUserProfile.mockResolvedValue({
         id: 'test-user-123',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
-      
-      mockOnboardingService.getSession.mockRejectedValue(
-        new Error('Network error')
-      );
+
+      mockOnboardingService.getSession.mockRejectedValue(new Error('Network error'));
 
       // When: Component renders
       renderComponent();
@@ -363,12 +360,12 @@ describe('OnboardingWizard', () => {
 
     it('should auto-save progress periodically', async () => {
       jest.useFakeTimers();
-      
-      mockGetUserProfile.mockResolvedValue({ 
+
+      mockGetUserProfile.mockResolvedValue({
         id: 'test-user-123',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
-      
+
       mockOnboardingService.getSession.mockResolvedValue({
         userId: 'test-user-123',
         currentStep: 1,
@@ -377,16 +374,16 @@ describe('OnboardingWizard', () => {
         stepData: {},
         startedAt: new Date().toISOString(),
       });
-      
+
       renderComponent();
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('current-step')).toHaveTextContent('Step 1');
       });
 
       // Fill in some data
-      fireEvent.change(screen.getByLabelText('Name'), { 
-        target: { value: 'John' } 
+      fireEvent.change(screen.getByLabelText('Name'), {
+        target: { value: 'John' },
       });
 
       // Fast forward 30 seconds
@@ -408,11 +405,11 @@ describe('OnboardingWizard', () => {
   describe('Completion', () => {
     it('should complete onboarding successfully', async () => {
       // Given: User has completed all mandatory steps
-      mockGetUserProfile.mockResolvedValue({ 
+      mockGetUserProfile.mockResolvedValue({
         id: 'test-user-123',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
-      
+
       mockOnboardingService.getSession.mockResolvedValue({
         userId: 'test-user-123',
         currentStep: 5,
@@ -421,13 +418,13 @@ describe('OnboardingWizard', () => {
         stepData: {},
         startedAt: new Date().toISOString(),
       });
-      
+
       mockOnboardingService.completeOnboarding.mockResolvedValue({
         success: true,
         profileCompletion: 60,
         redirectTo: '/dashboard/welcome',
       });
-      
+
       const onComplete = jest.fn();
       renderComponent({ onComplete });
 
@@ -440,20 +437,18 @@ describe('OnboardingWizard', () => {
 
       // Then: Should complete onboarding
       await waitFor(() => {
-        expect(mockOnboardingService.completeOnboarding).toHaveBeenCalledWith(
-          'test-user-123'
-        );
+        expect(mockOnboardingService.completeOnboarding).toHaveBeenCalledWith('test-user-123');
         expect(onComplete).toHaveBeenCalled();
       });
     });
 
     it('should not allow completion without mandatory steps', async () => {
       // Given: User has not completed mandatory step 3
-      mockGetUserProfile.mockResolvedValue({ 
+      mockGetUserProfile.mockResolvedValue({
         id: 'test-user-123',
-        onboarding_completed_at: null 
+        onboarding_completed_at: null,
       });
-      
+
       mockOnboardingService.getSession.mockResolvedValue({
         userId: 'test-user-123',
         currentStep: 5,
@@ -462,7 +457,7 @@ describe('OnboardingWizard', () => {
         stepData: {},
         startedAt: new Date().toISOString(),
       });
-      
+
       renderComponent();
 
       // Then: Complete button should not be shown

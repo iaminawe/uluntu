@@ -89,10 +89,7 @@ describe('Gallery CRUD Operations', () => {
 
       (galleryApi.createGallery as any).mockResolvedValue(newGallery);
 
-      const { getByText, getByLabelText } = render(
-        <GalleryManagementPanel />,
-        { wrapper: createWrapper() }
-      );
+      const { getByText, getByLabelText } = render(<GalleryManagementPanel />, { wrapper: createWrapper() });
 
       // Click create button
       fireEvent.click(getByText('Create Gallery'));
@@ -100,7 +97,7 @@ describe('Gallery CRUD Operations', () => {
       // Fill in form
       const titleInput = getByLabelText('Title');
       const descriptionInput = getByLabelText('Description');
-      
+
       await userEvent.type(titleInput, 'New Gallery');
       await userEvent.type(descriptionInput, 'New gallery description');
 
@@ -118,10 +115,7 @@ describe('Gallery CRUD Operations', () => {
     });
 
     it('should handle validation errors', async () => {
-      const { getByText, getByLabelText } = render(
-        <GalleryManagementPanel />,
-        { wrapper: createWrapper() }
-      );
+      const { getByText, getByLabelText } = render(<GalleryManagementPanel />, { wrapper: createWrapper() });
 
       fireEvent.click(getByText('Create Gallery'));
 
@@ -292,15 +286,9 @@ describe('Gallery CRUD Operations', () => {
 
   describe('Entity Gallery Attachments', () => {
     const mockEntities = {
-      groups: [
-        { id: 'group-1', name: 'Test Group', hero_image: 'image.jpg' },
-      ],
-      events: [
-        { id: 'event-1', title: 'Test Event', image: 'event.jpg' },
-      ],
-      companies: [
-        { id: 'company-1', name: 'Test Company', logo: 'logo.jpg' },
-      ],
+      groups: [{ id: 'group-1', name: 'Test Group', hero_image: 'image.jpg' }],
+      events: [{ id: 'event-1', title: 'Test Event', image: 'event.jpg' }],
+      companies: [{ id: 'company-1', name: 'Test Company', logo: 'logo.jpg' }],
     };
 
     beforeEach(() => {

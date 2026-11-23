@@ -49,15 +49,15 @@ describe('UserMenu Accessibility Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ 
-        data: { id: 'member123', name: 'Test User' } 
+      mockUseMemberByUserId.mockReturnValue({
+        data: { id: 'member123', name: 'Test User' },
       });
 
       const { container } = renderUserMenu();
-      
+
       // Open the menu
       fireEvent.click(screen.getByRole('button'));
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -72,10 +72,10 @@ describe('UserMenu Accessibility Tests', () => {
 
       renderUserMenu();
       const button = screen.getByRole('button');
-      
+
       expect(button).toHaveAttribute('aria-expanded', 'false');
       expect(button).toHaveAttribute('aria-haspopup', 'true');
-      
+
       fireEvent.click(button);
       expect(button).toHaveAttribute('aria-expanded', 'true');
     });
@@ -90,7 +90,7 @@ describe('UserMenu Accessibility Tests', () => {
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Check for menu structure
       const menu = screen.getByRole('button').parentElement?.querySelector('.absolute');
       expect(menu).toBeInTheDocument();
@@ -109,14 +109,14 @@ describe('UserMenu Accessibility Tests', () => {
 
       renderUserMenu();
       const button = screen.getByRole('button');
-      
+
       // Focus the button
       button.focus();
       expect(document.activeElement).toBe(button);
-      
+
       // Open with Enter key
       fireEvent.keyDown(button, { key: 'Enter', code: 'Enter' });
-      
+
       // Menu items should be present
       expect(screen.getByText('Edit Profile')).toBeInTheDocument();
     });
@@ -127,17 +127,17 @@ describe('UserMenu Accessibility Tests', () => {
         signOut: jest.fn(),
         isAdmin: true,
       });
-      mockUseMemberByUserId.mockReturnValue({ 
-        data: { id: 'member123', name: 'Test User' } 
+      mockUseMemberByUserId.mockReturnValue({
+        data: { id: 'member123', name: 'Test User' },
       });
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Get all interactive elements
       const links = screen.getAllByRole('link');
       const signOutButton = screen.getByText('Sign out').closest('button');
-      
+
       expect(links.length).toBeGreaterThan(0);
       expect(signOutButton).toBeInTheDocument();
     });
@@ -152,12 +152,12 @@ describe('UserMenu Accessibility Tests', () => {
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('Edit Profile')).toBeInTheDocument();
-      
+
       // Press Escape
       fireEvent.keyDown(document.body, { key: 'Escape', code: 'Escape' });
-      
+
       // Note: The current implementation doesn't handle Escape key
       // This is a potential improvement area
     });
@@ -170,24 +170,24 @@ describe('UserMenu Accessibility Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ 
-        data: { id: 'member123', name: 'Test User' } 
+      mockUseMemberByUserId.mockReturnValue({
+        data: { id: 'member123', name: 'Test User' },
       });
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Check that all links have accessible text
       const profileLink = screen.getByText('Your Profile');
       const editLink = screen.getByText('Edit Profile');
       const settingsLink = screen.getByText('Settings');
       const signOutButton = screen.getByText('Sign out');
-      
+
       expect(profileLink).toBeInTheDocument();
       expect(editLink).toBeInTheDocument();
       expect(settingsLink).toBeInTheDocument();
       expect(signOutButton).toBeInTheDocument();
-      
+
       // Check that icons have accompanying text
       const icons = screen.getByRole('button').parentElement?.querySelectorAll('svg');
       icons?.forEach(icon => {
@@ -206,14 +206,14 @@ describe('UserMenu Accessibility Tests', () => {
 
       renderUserMenu();
       const button = screen.getByRole('button');
-      
+
       // Initial state
       expect(button).toHaveAttribute('aria-expanded', 'false');
-      
+
       // Open menu
       fireEvent.click(button);
       expect(button).toHaveAttribute('aria-expanded', 'true');
-      
+
       // Close menu
       fireEvent.click(button);
       expect(button).toHaveAttribute('aria-expanded', 'false');
@@ -231,13 +231,11 @@ describe('UserMenu Accessibility Tests', () => {
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Get all focusable elements
       const menu = screen.getByRole('button').parentElement;
-      const focusableElements = menu?.querySelectorAll(
-        'a, button, [tabindex]:not([tabindex="-1"])'
-      );
-      
+      const focusableElements = menu?.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])');
+
       expect(focusableElements?.length).toBeGreaterThan(0);
     });
 
@@ -251,15 +249,15 @@ describe('UserMenu Accessibility Tests', () => {
 
       renderUserMenu();
       const button = screen.getByRole('button');
-      
+
       // Focus and open menu
       button.focus();
       fireEvent.click(button);
-      
+
       // Click a link to close menu
       const editLink = screen.getByText('Edit Profile');
       fireEvent.click(editLink);
-      
+
       // Note: Focus return is handled by browser navigation
     });
   });
@@ -275,11 +273,11 @@ describe('UserMenu Accessibility Tests', () => {
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Check that menu has proper background classes for contrast
       const menu = screen.getByRole('button').parentElement?.querySelector('.absolute');
       expect(menu).toHaveClass('bg-white', 'dark:bg-slate-800');
-      
+
       // Check text color classes
       const links = screen.getAllByRole('link');
       links.forEach(link => {

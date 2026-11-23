@@ -35,16 +35,8 @@ import { useMenuSelection } from './hooks/useMenuSelection';
 
 const AdminMenuManagementPageContent: React.FC = () => {
   // Data fetching and security
-  const {
-    allMenuItems,
-    isLoading,
-    error,
-    refetch,
-    hasAdminAccess,
-    userRoles,
-    menuSecurity,
-    secureMenuApi
-  } = useMenuData();
+  const { allMenuItems, isLoading, error, refetch, hasAdminAccess, userRoles, menuSecurity, secureMenuApi } =
+    useMenuData();
 
   // Tab state
   const [activeTab, setActiveTab] = useState<MenuType>('main');
@@ -69,23 +61,20 @@ const AdminMenuManagementPageContent: React.FC = () => {
     currentTabItems,
     menuCounts,
     getParentOptionsForItem,
-    getItemChildren
+    getItemChildren,
   } = useMenuTree({ allMenuItems, activeTab });
 
   // Mutations
-  const {
-    createMutation,
-    updateMutation,
-    deleteMutation,
-    toggleMutation,
-    reorderMutation
-  } = useMenuMutations({ secureMenuApi, menuSecurity });
+  const { createMutation, updateMutation, deleteMutation, toggleMutation, reorderMutation } = useMenuMutations({
+    secureMenuApi,
+    menuSecurity,
+  });
 
   // Drag-drop functionality
   const { handleDragEnd } = useDragDrop({
     currentItems: currentTabItems,
     activeTab,
-    reorderMutation
+    reorderMutation,
   });
 
   // Selection and bulk operations
@@ -96,12 +85,12 @@ const AdminMenuManagementPageContent: React.FC = () => {
     handleDeselectAll,
     handleBulkEnable,
     handleBulkDisable,
-    handleBulkDelete
+    handleBulkDelete,
   } = useMenuSelection({
     allMenuItems,
     menuSecurity,
     toggleMutation,
-    deleteMutation
+    deleteMutation,
   });
 
   /**
@@ -164,7 +153,7 @@ const AdminMenuManagementPageContent: React.FC = () => {
       css_classes: item.css_classes,
       visibility: item.visibility,
       required_roles: item.required_roles,
-      is_external: item.is_external
+      is_external: item.is_external,
     };
 
     createMutation.mutate(duplicateData);
@@ -181,15 +170,11 @@ const AdminMenuManagementPageContent: React.FC = () => {
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Access Denied</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-2">
-            You don't have permission to access menu management.
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-2">You don't have permission to access menu management.</p>
           <p className="text-gray-500 dark:text-gray-500 text-sm">
             Required roles: Admin, Super Admin, or Menu Manager
           </p>
-          <p className="text-gray-500 dark:text-gray-500 text-sm">
-            Your roles: {userRoles.join(', ') || 'None'}
-          </p>
+          <p className="text-gray-500 dark:text-gray-500 text-sm">Your roles: {userRoles.join(', ') || 'None'}</p>
         </div>
       </div>
     );
@@ -201,9 +186,7 @@ const AdminMenuManagementPageContent: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Error Loading Menu
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Error Loading Menu</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">{error.message}</p>
           <Button onClick={() => refetch()} variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
@@ -224,8 +207,8 @@ const AdminMenuManagementPageContent: React.FC = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Menu Management</h1>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Manage your site's navigation menus. Drag and drop to reorder items, create hierarchies, and
-          control visibility.
+          Manage your site's navigation menus. Drag and drop to reorder items, create hierarchies, and control
+          visibility.
         </p>
       </div>
 
@@ -308,9 +291,7 @@ const AdminMenuManagementPageContent: React.FC = () => {
                     <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                       <Settings className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
                       <p>No menu items found.</p>
-                      <p className="text-sm">
-                        Try adjusting your filters or click "Add Item" to get started.
-                      </p>
+                      <p className="text-sm">Try adjusting your filters or click "Add Item" to get started.</p>
                     </div>
                   )}
                 </div>
@@ -331,12 +312,7 @@ const AdminMenuManagementPageContent: React.FC = () => {
             <MenuStatistics items={currentTabItems} />
 
             {/* Quick Actions */}
-            <MenuQuickActions
-              activeTab={activeTab}
-              items={currentTabItems}
-              onRefresh={refetch}
-              isLoading={isLoading}
-            />
+            <MenuQuickActions activeTab={activeTab} items={currentTabItems} onRefresh={refetch} isLoading={isLoading} />
           </div>
         </div>
       </div>
@@ -392,12 +368,7 @@ const AdminMenuManagementPage: React.FC = () => {
   return (
     <FeatureErrorBoundary
       featureName="Menu Management"
-      fallback={
-        <MenuErrorFallback
-          onRetry={() => window.location.reload()}
-          onGoBack={() => navigate('/admin')}
-        />
-      }
+      fallback={<MenuErrorFallback onRetry={() => window.location.reload()} onGoBack={() => navigate('/admin')} />}
     >
       <AdminMenuManagementPageContent />
     </FeatureErrorBoundary>

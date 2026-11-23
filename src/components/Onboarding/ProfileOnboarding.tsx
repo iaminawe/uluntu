@@ -66,15 +66,15 @@ export function ProfileOnboarding({ onComplete, onSkip, showSkipOption = true }:
             <span className="text-2xl">{privacyDisplay.icon}</span>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Privacy</h2>
-          <p className="text-gray-600">
-            Would you like your profile to be visible in the community directory?
-          </p>
+          <p className="text-gray-600">Would you like your profile to be visible in the community directory?</p>
         </div>
 
         <div className="space-y-4 mb-6">
-          <div className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-            currentSettings.isPublic ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-300'
-          }`}>
+          <div
+            className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+              currentSettings.isPublic ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-300'
+            }`}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <span className="text-xl">👁️</span>
@@ -93,9 +93,11 @@ export function ProfileOnboarding({ onComplete, onSkip, showSkipOption = true }:
             </div>
           </div>
 
-          <div className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-            !currentSettings.isPublic ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200 hover:border-yellow-300'
-          }`}>
+          <div
+            className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+              !currentSettings.isPublic ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200 hover:border-yellow-300'
+            }`}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <span className="text-xl">🔒</span>
@@ -143,9 +145,7 @@ export function ProfileOnboarding({ onComplete, onSkip, showSkipOption = true }:
           <span className="text-2xl">👋</span>
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Uluntu!</h2>
-        <p className="text-gray-600">
-          Let's help you complete your profile and connect with the community.
-        </p>
+        <p className="text-gray-600">Let's help you complete your profile and connect with the community.</p>
       </div>
 
       {/* Profile completion status */}
@@ -188,9 +188,7 @@ export function ProfileOnboarding({ onComplete, onSkip, showSkipOption = true }:
               </li>
             ))}
             {suggestedFields.length > 3 && (
-              <li className="text-sm text-gray-500">
-                +{suggestedFields.length - 3} more
-              </li>
+              <li className="text-sm text-gray-500">+{suggestedFields.length - 3} more</li>
             )}
           </ul>
         </div>
@@ -211,10 +209,7 @@ export function ProfileOnboarding({ onComplete, onSkip, showSkipOption = true }:
           Set Privacy Preferences
         </button>
         {showSkipOption && (
-          <button
-            onClick={onSkip}
-            className="block w-full text-gray-500 hover:text-gray-700 text-sm transition-colors"
-          >
+          <button onClick={onSkip} className="block w-full text-gray-500 hover:text-gray-700 text-sm transition-colors">
             Skip for now
           </button>
         )}

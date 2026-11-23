@@ -21,10 +21,7 @@ async function authHeaders(): Promise<Record<string, string>> {
  * POST messages to the AI proxy and return the raw streaming Response.
  * Callers that need the stream (e.g. editor integrations) use this directly.
  */
-export async function postAIMessages(
-  messages: CoreMessage[],
-  opts: AIRequestOptions = {}
-): Promise<Response> {
+export async function postAIMessages(messages: CoreMessage[], opts: AIRequestOptions = {}): Promise<Response> {
   const res = await fetch('/api/ai', {
     method: 'POST',
     headers: await authHeaders(),
@@ -38,10 +35,7 @@ export async function postAIMessages(
 }
 
 /** POST messages and accumulate the streamed text into a single string. */
-export async function streamAIText(
-  messages: CoreMessage[],
-  opts: AIRequestOptions = {}
-): Promise<string> {
+export async function streamAIText(messages: CoreMessage[], opts: AIRequestOptions = {}): Promise<string> {
   const res = await postAIMessages(messages, opts);
   if (!res.body) return '';
   const reader = res.body.getReader();

@@ -54,17 +54,13 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
   setEmploymentStatus,
   arrivedInNelson,
   setArrivedInNelson,
-  isSaving
+  isSaving,
 }) => {
   return (
     <div className="space-y-6">
       {/* Profile Image */}
       <SettingsField label="Profile Image">
-        <FormImageUpload
-          currentImage={imageUrl}
-          onImageChange={handleImageChange}
-          disabled={isSaving}
-        />
+        <FormImageUpload currentImage={imageUrl} onImageChange={handleImageChange} disabled={isSaving} />
       </SettingsField>
 
       {/* Basic Info */}
@@ -77,7 +73,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             <input
               type="text"
               value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
+              onChange={e => setDisplayName(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -95,7 +91,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -108,7 +104,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
           <input
             type="text"
             value={company}
-            onChange={(e) => setCompany(e.target.value)}
+            onChange={e => setCompany(e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                      bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                      focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -124,7 +120,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             <input
               type="text"
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={e => setLocation(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -136,7 +132,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
         <SettingsField label="Employment Status">
           <select
             value={employmentStatus}
-            onChange={(e) => setEmploymentStatus(e.target.value)}
+            onChange={e => setEmploymentStatus(e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                      bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                      focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -155,7 +151,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
           <input
             type="text"
             value={arrivedInNelson}
-            onChange={(e) => setArrivedInNelson(e.target.value)}
+            onChange={e => setArrivedInNelson(e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                      bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                      focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -165,14 +161,10 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
       </div>
 
       {/* Bio */}
-      <SettingsField
-        label="Bio"
-        required
-        description={`${bio.length}/500 characters`}
-      >
+      <SettingsField label="Bio" required description={`${bio.length}/500 characters`}>
         <textarea
           value={bio}
-          onChange={(e) => setBio(e.target.value)}
+          onChange={e => setBio(e.target.value)}
           rows={4}
           maxLength={500}
           className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
@@ -187,14 +179,14 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
       <SettingsField
         label="Skills"
         required
-        description={skills.length === 0 ? "Add at least one skill to showcase your expertise" : undefined}
+        description={skills.length === 0 ? 'Add at least one skill to showcase your expertise' : undefined}
       >
         <div className="flex gap-2 mb-2">
           <input
             type="text"
             value={newSkill}
-            onChange={(e) => setNewSkill(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
+            onChange={e => setNewSkill(e.target.value)}
+            onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
             className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                      bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                      focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -212,7 +204,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
         </div>
         {skills.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {skills.map((skill) => (
+            {skills.map(skill => (
               <span
                 key={skill}
                 className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30

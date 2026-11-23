@@ -20,7 +20,7 @@ export const useMenuSelection = ({
   allMenuItems,
   menuSecurity,
   toggleMutation,
-  deleteMutation
+  deleteMutation,
 }: UseMenuSelectionProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -121,6 +121,6 @@ export const useMenuSelection = ({
     handleDeselectAll,
     handleBulkEnable,
     handleBulkDisable,
-    handleBulkDelete
+    handleBulkDelete,
   };
 };
