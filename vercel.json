@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
-    "deploymentEnabled": { "**": false, "main": true }
+    "deploymentEnabled": { "renovate/**": false }
   },
   "rewrites": [
     { "source": "/.well-known/nostr.json", "destination": "/api/nostr/nip05" },
