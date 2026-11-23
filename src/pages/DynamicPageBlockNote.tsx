@@ -56,19 +56,6 @@ export default function DynamicPageBlockNote() {
   const [editedMetaDescription, setEditedMetaDescription] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Redirect if pages feature is disabled
-  if (!featuresLoading && !pagesEnabled) {
-    return <Navigate to="/" replace />;
-  }
-
-  if (featuresLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
   // Check if user is admin
   const { data: isAdmin } = useQuery({
     queryKey: ['user-admin-status', user?.id],
@@ -143,7 +130,8 @@ export default function DynamicPageBlockNote() {
 
       return data as PageData;
     },
-    enabled: isAdmin !== undefined,
+    // Anonymous visitors never run the admin query, so don't wait on it
+    enabled: !user || isAdmin !== undefined,
   });
 
   // Initialize edited data when page loads
@@ -154,6 +142,20 @@ export default function DynamicPageBlockNote() {
       setEditedMetaDescription(page.meta_description || '');
     }
   }, [page]);
+
+  // Early returns go after all hooks (React error #310 otherwise)
+  // Redirect if pages feature is disabled
+  if (!featuresLoading && !pagesEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (featuresLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   // Handle save
   const handleSave = async () => {

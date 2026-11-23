@@ -1,4 +1,5 @@
 import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
+import { parseContentIdentifier } from '@/utils/contentUrlUtils';
 import { adaptResourceFromDatabase, adaptResourceToDatabase } from '../utils/resourceAdapter';
 import { Resource, ContentStatus } from '../types'; // Ensure Resource type is imported
 import { Database } from '../types/supabase'; // Ensure Database type is imported
@@ -90,14 +91,16 @@ export const resourcesApi = {
     }
   },
 
+  // Accepts either the resource UUID or its slug (getResourceUrl prefers slugs)
   async getById(id: string): Promise<Resource | null> {
     try {
+      const { type, value } = parseContentIdentifier(id);
       const { data, error } = await supabase
         .from('resources')
         .select('*')
-        .eq('id', id)
+        .eq(type, value)
         .eq('status', 'published')
-        .single();
+        .maybeSingle();
 
       if (error) {
         handleSupabaseError(error, 'fetching resource by id');
@@ -202,6 +205,7 @@ export const resourcesApi = {
       // Get the current resource to find related ones
       const currentResource = await this.getById(id);
       if (!currentResource) return [];
+      id = currentResource.id;
 
       // Find resources with similar type or tags
       const { data, error } = await supabase

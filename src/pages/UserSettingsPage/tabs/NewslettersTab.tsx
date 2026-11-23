@@ -176,7 +176,7 @@ export const NewslettersTab: React.FC<NewslettersTabProps> = ({
                            focus:ring-orange-500 dark:bg-slate-700"
                   disabled={newsletterLoading}
                 />
-                <span className="text-sm text-slate-700 dark:text-slate-300">Prioritize local Nelson content</span>
+                <span className="text-sm text-slate-700 dark:text-slate-300">Prioritize local content</span>
               </label>
             </SettingsField>
           </div>
@@ -192,7 +192,7 @@ export const NewslettersTab: React.FC<NewslettersTabProps> = ({
             <ul className="text-sm text-blue-700 dark:text-blue-400 space-y-1">
               <li>• Stay updated with community news and events</li>
               <li>• Discover new opportunities and resources</li>
-              <li>• Connect with local tech professionals</li>
+              <li>• Connect with local community members</li>
               <li>• Unsubscribe anytime with one click</li>
               <li>• We respect your privacy and never share your email</li>
             </ul>

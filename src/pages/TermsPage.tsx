@@ -86,7 +86,7 @@ export default function TermsPage() {
             </h3>
             <ul className="space-y-2 text-slate-600 dark:text-slate-300 ml-6">
               <li>• Legal, proper, and in accordance with these Terms</li>
-              <li>• Professional and appropriate for a technology community</li>
+              <li>• Respectful and appropriate for a community space</li>
               <li>• Respectful of other users' rights and privacy</li>
               <li>• Consistent with community guidelines and standards</li>
             </ul>
@@ -184,17 +184,17 @@ export default function TermsPage() {
             <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">Disclaimer of Warranties</h3>
               <p className="text-slate-600 dark:text-slate-300 text-sm">
-                TO THE FULLEST EXTENT PERMITTED BY LAW, NELSON TECH COMMUNITY DISCLAIMS ALL WARRANTIES, EXPRESS OR
-                IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. WE DO NOT
-                WARRANT THAT THE SERVICE WILL BE ERROR-FREE OR UNINTERRUPTED.
+                TO THE FULLEST EXTENT PERMITTED BY LAW, ULUNTU COMMUNITY DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED,
+                INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. WE DO NOT WARRANT
+                THAT THE SERVICE WILL BE ERROR-FREE OR UNINTERRUPTED.
               </p>
             </div>
 
             <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">Limitation of Liability</h3>
               <p className="text-slate-600 dark:text-slate-300 text-sm">
-                IN NO EVENT SHALL NELSON TECH COMMUNITY BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL,
-                OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, DATA, USE, OR GOODWILL, ARISING FROM YOUR USE OF THE
+                IN NO EVENT SHALL ULUNTU COMMUNITY BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR
+                PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, DATA, USE, OR GOODWILL, ARISING FROM YOUR USE OF THE
                 SERVICE.
               </p>
             </div>

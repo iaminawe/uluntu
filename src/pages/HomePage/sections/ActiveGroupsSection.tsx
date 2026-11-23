@@ -38,7 +38,7 @@ export default function ActiveGroupsSection() {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Active Groups</h2>
           <p className="text-xl text-slate-600 dark:text-slate-400">
-            Join thriving community groups and connect with like-minded professionals
+            Join thriving community groups and connect with like-minded people
           </p>
         </div>
 

@@ -10,7 +10,7 @@ export default function NewMembersSection() {
     return members.slice(0, 6).map(member => ({
       id: member.id,
       title: member.name,
-      excerpt: member.bio || 'Welcome to our growing tech community!',
+      excerpt: member.bio || 'Welcome to our growing community!',
       image: member.image,
       date: member.joinDate || member.created_at,
       category: member.title || member.role || 'Community Member',
@@ -35,7 +35,7 @@ export default function NewMembersSection() {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">New Members</h2>
           <p className="text-xl text-slate-600 dark:text-slate-400">
-            Welcome our newest community members to the Kootenay tech scene
+            Welcome our newest members to the Uluntu community
           </p>
         </div>
 

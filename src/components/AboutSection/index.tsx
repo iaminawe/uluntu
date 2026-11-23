@@ -15,7 +15,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ title = 'About the Collecti
   const { value: hostedByName } = useSetting(
     'contact',
     'hosted_by_name',
-    'Kootenay Association for Science & Technology (KAST)'
+    'Uluntu Association for Science & Technology (KAST)'
   );
   const { value: hostedByUrl } = useSetting('contact', 'hosted_by_url', '#');
   const { value: mapsEmbedUrl } = useSetting(

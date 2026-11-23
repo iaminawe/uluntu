@@ -6,7 +6,7 @@ This application uses Redux for state management and includes an enhanced config
 
 The Redux DevTools configuration now includes:
 
-1. **Custom Instance Name**: The Redux store instance is labeled as "Kootenay Tech Community" in the DevTools interface.
+1. **Custom Instance Name**: The Redux store instance is labeled as "Uluntu" in the DevTools interface.
 
 2. **Action Tracing**: Action execution paths through middleware, enhancers, and reducers are traced for better debugging.
 

@@ -88,7 +88,6 @@ const Footer: React.FC<FooterProps> = ({
         title: 'Company',
         links: [
           { text: 'About Us', href: '/about' },
-          { text: 'About Uluntu', href: '/about-uluntu' },
           { text: 'Contact', href: '/contact' },
           { text: 'Privacy', href: '/privacy' },
           { text: 'Terms', href: '/terms' },
@@ -213,9 +212,6 @@ const Footer: React.FC<FooterProps> = ({
                 </a>
                 <a href="/terms" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                   Terms of Service
-                </a>
-                <a href="/accessibility" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                  Accessibility
                 </a>
               </div>
             </div>

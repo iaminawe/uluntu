@@ -27,16 +27,16 @@ export default function NewCompaniesSection() {
     return companies.slice(0, 6).map((company: Company) => ({
       id: company.id,
       title: company.name,
-      excerpt: company.description || 'Discover this innovative tech company',
+      excerpt: company.description || 'Discover this local organization',
       image: company.logo || company.cover_image || undefined,
       date: company.created_at || undefined,
-      category: company.industry?.join(', ') || 'Technology',
+      category: company.industry?.join(', ') || 'Community',
       readTime: company.size || 'Learn more',
       link: `/companies/${company.slug || company.id}`,
       type: 'company' as const,
       author: {
         id: '1',
-        name: company.location || 'Kootenays',
+        name: company.location || 'Uluntu',
         image: '',
       },
     }));
@@ -52,7 +52,7 @@ export default function NewCompaniesSection() {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">New Companies</h2>
           <p className="text-xl text-slate-600 dark:text-slate-400">
-            Discover the latest companies joining our tech ecosystem
+            Discover the latest organizations joining our community
           </p>
         </div>
 

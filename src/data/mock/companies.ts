@@ -40,7 +40,7 @@ export const companies: Company[] = [
     id: '1',
     name: 'Mountain Tech Solutions',
     description:
-      'A leading technology company in the Kootenays specializing in AI and machine learning solutions for environmental monitoring and sustainable resource management.',
+      'A leading technology company in the Uluntu community specializing in AI and machine learning solutions for environmental monitoring and sustainable resource management.',
     logo: 'https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg',
     coverImage: 'https://images.pexels.com/photos/2559941/pexels-photo-2559941.jpeg',
     industry: ['Technology', 'Artificial Intelligence', 'Environmental Tech'],
@@ -59,7 +59,7 @@ export const companies: Company[] = [
   },
   {
     id: '2',
-    name: 'Kootenay AI Solutions',
+    name: 'Uluntu AI Solutions',
     description:
       'Specialized AI consulting firm helping local businesses implement machine learning solutions to improve operations and sustainability.',
     logo: 'https://images.pexels.com/photos/2312369/pexels-photo-2312369.jpeg',
@@ -78,9 +78,9 @@ export const companies: Company[] = [
   },
   {
     id: '3',
-    name: 'Kootenay Data Insights',
+    name: 'Uluntu Data Insights',
     description:
-      'Data analytics company focused on environmental monitoring and conservation efforts in the Kootenay region.',
+      'Data analytics company focused on environmental monitoring and conservation efforts in the Uluntu community.',
     logo: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg',
     coverImage: 'https://images.pexels.com/photos/1181373/pexels-photo-1181373.jpeg',
     industry: ['Data Analytics', 'Environmental', 'Conservation'],
@@ -115,7 +115,7 @@ export const companies: Company[] = [
   },
   {
     id: '5',
-    name: 'Kootenay Creative',
+    name: 'Uluntu Creative',
     description:
       'Design studio specializing in UX/UI design, branding, and digital marketing for sustainable and community-focused businesses.',
     logo: 'https://images.pexels.com/photos/6444/pencil-typography-black-design.jpg',

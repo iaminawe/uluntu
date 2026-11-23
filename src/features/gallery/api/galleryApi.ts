@@ -38,6 +38,12 @@ export const galleryApi = {
           storage_path,
           sort_order,
           visibility
+        ),
+        owner:members!user_galleries_user_id_fkey (
+          id,
+          name,
+          slug,
+          image
         )
       `,
         { count: 'exact' }

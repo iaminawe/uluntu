@@ -97,7 +97,7 @@ const ProfileHeader = ({ member, onContactClick }: ProfileHeaderProps) => {
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <Clock className="h-5 w-5 mr-2 text-orange-500" />
                 <span>
-                  In Nelson since{' '}
+                  In the community since{' '}
                   {new Date(member.arrivedInNelson).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </span>
               </div>
